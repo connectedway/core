@@ -39,15 +39,15 @@ set(SRCS
 include(FetchContent)
 
 FetchContent_Declare(of_core_${OFC_HEAP_IMPL}
-  GIT_REPOSITORY /Users/rschmitt/git/openfiles/of_core_${OFC_HEAP_IMPL}
-  GIT_TAG master
+  GIT_REPOSITORY git@github.com:connectedway/of_core_${OFC_HEAP_IMPL}
+  GIT_TAG main
   )
 
 FetchContent_MakeAvailable(of_core_${OFC_HEAP_IMPL})
 
 FetchContent_Declare(of_core_${OFC_IMPL}
-  GIT_REPOSITORY /Users/rschmitt/git/openfiles/of_core_${OFC_IMPL}
-  GIT_TAG master
+  GIT_REPOSITORY git@github.com:connectedway/of_core_${OFC_IMPL}
+  GIT_TAG main
   )
 
 FetchContent_MakeAvailable(of_core_${OFC_IMPL})
