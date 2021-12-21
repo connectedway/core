@@ -43,8 +43,8 @@
 #cmakedefine BLUE_PARAM_PERF_STATS
 #cmakedefine BLUE_PARAM_HANDLE_DEBUG
 #cmakedefine BLUE_PARAM_MESSAGE_DEBUG
-#cmakedefine BLUE_PARM_APP_DEBUG
-#cmakedefine BLUE_PARM_HEAP_DEBUG
+#cmakedefine BLUE_PARAM_APP_DEBUG
+#cmakedefine BLUE_PARAM_HEAP_DEBUG
 #cmakedefine BLUE_PARAM_UNICODE_API
 #cmakedefine BLUE_STACK_TRACE
 #cmakedefine BLUE_PARAM_PRESELECT_PASS
@@ -66,6 +66,7 @@ typedef @BLUE_PROCESS_ID@ BLUE_PROCESS_ID;
 #define BLUE_PARAM_DEFAULT_DOMAIN "@BLUE_PARAM_DEFAULT_DOMAIN@"
 #cmakedefine BLUE_PARAM_DISCOVER_IPV4
 #cmakedefine BLUE_PARAM_DISCOVER_IPV6
+#cmakedefine OFC_FS_DARWIN
 
 #if defined(BLUE_PARAM_64BIT_POINTER) && !defined(BLUE_PARAM_64BIT_INTEGER)
 #error Must support 64 bit integers if 64 bit pointers defined

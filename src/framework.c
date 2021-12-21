@@ -27,6 +27,10 @@
 
 #include "ofc/heap.h"
 
+#if defined(BLUE_PARAM_PERSIST)
+static BLUE_LPTSTR config_filename = BLUE_NULL ;
+#endif
+
 /**
  * \defgroup BlueInit Initialization
  * \ingroup Applications
@@ -40,12 +44,14 @@ BlueFrameworkInit (BLUE_VOID)
   /*
    * Load Blue Share if not done as part of library load
    */
+#if !defined(BLUE_PARAM_INIT_ON_LOAD)
   BlueUtilLoad() ;
+#endif
 
   /*
    * Print out the banner
    */
-  BlueCprintf ("ConnectedSMB (%s) %d.%d %s\n", 
+  BlueCprintf ("OpenFiles (%s) %d.%d %s\n", 
 	       BLUE_PARAM_SHARE_VARIANT,
 	       BLUE_PARAM_SHARE_MAJOR, BLUE_PARAM_SHARE_MINOR,
 	       BLUE_PARAM_SHARE_TAG) ;
@@ -57,7 +63,16 @@ BlueFrameworkDestroy (BLUE_VOID)
   /*
    * Load Blue Share if not done as part of library load
    */
+#if defined(BLUE_PARAM_PERSIST)
+  if (config_filename != BLUE_NULL)
+    {
+      BlueHeapFree(config_filename);
+      config_filename = BLUE_NULL;
+    }
+#endif
+#if !defined(BLUE_PARAM_INIT_ON_LOAD)
   BlueUtilUnload() ;
+#endif
 }
 
 BLUE_CORE_LIB BLUE_VOID
@@ -90,10 +105,6 @@ BlueFrameworkShutdown (BLUE_VOID)
 #endif
 #endif
 }
-
-#if defined(BLUE_PARAM_PERSIST)
-static BLUE_LPTSTR config_filename = BLUE_NULL ;
-#endif
 
 BLUE_CORE_LIB BLUE_VOID BlueFrameworkLoad(BLUE_LPCTSTR filename)
 {

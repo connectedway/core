@@ -329,7 +329,7 @@ static BLUE_VOID BluePathUpdateType (BLUE_PATH *path)
       BluePathSetType (path, BLUE_FS_WIN32) ;
 #elif defined(BLUE_PARAM_FS_WINCE)
       BluePathSetType (path, BLUE_FS_WINCE) ;
-#elif defined(BLUE_PARAM_FS_DARWIN)
+#elif defined(OFC_FS_DARWIN)
       BluePathSetType (path, BLUE_FS_DARWIN) ;
 #elif defined(BLUE_PARAM_FS_LINUX)
       BluePathSetType (path, BLUE_FS_LINUX) ;
@@ -465,10 +465,12 @@ BluePathCreateW (BLUE_LPCTSTR lpFileName)
 					       sizeof (BLUE_LPCTSTR *) *
 					       (path->num_dirs)) ;
 		}
+	      BlueHeapFree (dir) ;
 	    }
 	  else if (BlueCtstrcmp (dir, TSTR(".")) == 0)
 	    {
 	      /* Skip it */
+	      BlueHeapFree (dir) ;
 	    }
 	  /*
 	   * if we're remote and if dir index is 1 we're looking at a share or

@@ -77,13 +77,13 @@ BlueHeapFreeAcct (struct blueheap_chunk *chunk)
 BLUE_CORE_LIB BLUE_VOID 
 BlueHeapLoad (BLUE_VOID)
 {
-  BlueHeapStats.lock = BlueLockInit () ;
   BlueHeapStats.Max = 0 ;
   BlueHeapStats.Total = 0 ;
 #if defined(BLUE_PARAM_HEAP_DEBUG)
   BlueHeapStats.Allocated = BLUE_NULL ;
 #endif
   BlueHeapInitImpl () ;
+  BlueHeapStats.lock = BlueLockInit () ;
 }
 
 BLUE_CORE_LIB BLUE_VOID 
@@ -182,6 +182,9 @@ BlueHeapDump (BLUE_VOID)
   BlueHeapDumpStats() ;
 #if defined(BLUE_PARAM_HEAP_DEBUG)
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
+  len = BlueCsnprintf (obuf, OBUF_SIZE, "Last 2 chunks are heap locks and cannot be freed\n");
+  BlueWriteConsole (obuf) ;
+
   len = BlueCsnprintf (obuf, OBUF_SIZE, "%-10s %-10s %-10s %-10s %-10s %-10s\n",
 		       "Address", "Size", "Caller1", "Caller2", "Caller3", 
 		       "Caller4") ;

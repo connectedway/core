@@ -173,7 +173,7 @@ BlueFSInit (BLUE_VOID)
 #if defined (BLUE_PARAM_FS_WINCE)
   BlueFSWinCEStartup() ;
 #endif
-#if defined(BLUE_PARAM_FS_DARWIN)
+#if defined(OFC_FS_DARWIN)
   BlueFSDarwinStartup() ;
 #endif
 #if defined(BLUE_PARAM_FS_LINUX)
@@ -216,7 +216,7 @@ BlueFSDestroy (BLUE_VOID)
   BlueFSWinCEShutdown() ;
   BlueFSRegister (BLUE_FS_WINCE, &BlueFSUnknown);
 #endif
-#if defined(BLUE_PARAM_FS_DARWIN)
+#if defined(OFC_FS_DARWIN)
   BlueFSDarwinShutdown() ;
   BlueFSRegister (BLUE_FS_DARWIN, &BlueFSUnknown);
 #endif

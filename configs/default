@@ -2,8 +2,7 @@
 option(BLUE_PARAM_64BIT_INTEGER "Compiler supports 64 bit integers" ON)
 option(BLUE_PARAM_64BIT_POINTER "Compiler supports 64 bit pointers" ON)
 option(BLUE_PARAM_LONGINT_64 "Compiler treats a long int as 64 bits" ON)
-# FIXME: We need to set up BLUE_ENV_HOME and rewrite config files
-option(BLUE_PARAM_PERSIST "Build in persistent configuration support" OFF)
+option(BLUE_PARAM_PERSIST "Build in persistent configuration support" ON)
 option(BLUE_PARAM_PERF_STATS "Build in performance statistics" OFF)
 option(BLUE_PARAM_HANDLE_DEBUG "Build in debug checks for handles" OFF)
 option(BLUE_PARAM_MESSAGE_DEBUG "Build in debug checks for messages" OFF)
@@ -31,7 +30,7 @@ set(BLUE_SIGAIO "SIGRTMIN" CACHE STRING "Signal Mapping for Async IO Signal")
 option(INCLUDE_PLATFORM_SIGNALS "Include platform signals" ON)
 set(PLATFORM_SIGNALS "signal.h" CACHE STRING "Include File Name for signals")
 
-set(BLUE_PARAM_SHARE_VARIANT "master" CACHE STRING "Variant name of build")
+set(BLUE_PARAM_SHARE_VARIANT "main" CACHE STRING "Variant name of build")
 set(BLUE_PARAM_DEFAULT_NETBIOS_MODE "BLUE_CONFIG_BMODE" CACHE STRING "Interface default NetBIOS Mode")
 
 set(BLUE_PARAM_DEFAULT_NAME "localhost" CACHE STRING "Default system name")
@@ -43,6 +42,7 @@ set(BLUE_LOAD "__attribute__((constructor))" CACHE STRING "Compiler attribute fo
 set(BLUE_UNLOAD "__attribute__((destructor))" CACHE STRING "Compile attribute for destructor")
 
 set(OFC_IMPL "darwin" CACHE STRING "Core platform implementation to use")
-set(OFC_HEAP_IMPL "cheap" CACHE STRING "Heap implementation to use")
+set(OFC_HEAP_IMPL "binheap" CACHE STRING "Heap implementation to use")
 option(BLUE_PARAM_DISCOVER_IPV4 "Support IPv4 Addressing" ON)
 option(BLUE_PARAM_DISCOVER_IPV6 "Support IPv6 Addressing" ON)
+option(OFC_FS_DARWIN "Add Open File Darwin File System" ON)

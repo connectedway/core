@@ -68,8 +68,9 @@ BLUE_INT test_startup(BLUE_VOID)
 BLUE_VOID test_shutdown(BLUE_VOID)
 {
   BlueEventDestroy(hEvent);
-  BlueSchedDestroy(hScheduler);
+  BlueSchedQuit(hScheduler);
   BlueFrameworkShutdown();
+  BlueFrameworkDestroy();
 }
 
 typedef enum

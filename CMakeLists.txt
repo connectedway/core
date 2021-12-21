@@ -49,8 +49,18 @@ FetchContent_Declare(of_core_${OFC_IMPL}
   GIT_REPOSITORY git@github.com:connectedway/of_core_${OFC_IMPL}
   GIT_TAG main
   )
-
 FetchContent_MakeAvailable(of_core_${OFC_IMPL})
+
+if(DEFINED CACHE{OFC_FS_DARWIN})
+  message("Adding FS Darwin")
+  FetchContent_Declare(of_core_fs_darwin
+  GIT_REPOSITORY git@github.com:connectedway/of_core_fs_darwin
+  GIT_TAG main
+  )
+
+  FetchContent_MakeAvailable(of_core_fs_darwin)
+  list(APPEND fs_library_list of_core_fs_darwin)
+endif()
 
 add_library(of_core_static STATIC ${SRCS})
 add_library(of_core_shared SHARED ${SRCS})
@@ -65,10 +75,12 @@ target_include_directories (of_core_shared PUBLIC include)
 target_link_libraries (of_core_static PRIVATE
 		      of_core_${OFC_HEAP_IMPL}
 		      of_core_${OFC_IMPL}
+		      ${fs_library_list}
 		      )
 target_link_libraries (of_core_shared PRIVATE
 		      of_core_${OFC_HEAP_IMPL}
 		      of_core_${OFC_IMPL}
+		      ${fs_library_list}
 		      )
 
 enable_testing()

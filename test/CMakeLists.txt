@@ -43,7 +43,7 @@ include_directories(
 
 
 add_executable(test_timer test_timer.c)
-target_link_libraries(test_timer PRIVATE of_core_static unityextras)
+target_link_libraries(test_timer PRIVATE of_core_shared unityextras)
 add_test(timer test_timer COMMAND $<TARGET_FILE:test_timer>)
 
 #add_executable(test_event test_event.c)
