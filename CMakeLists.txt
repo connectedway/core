@@ -71,7 +71,5 @@ target_link_libraries (of_core_shared PRIVATE
 		      of_core_${OFC_IMPL}
 		      )
 
-add_executable(hello helloworld.c)
-
 enable_testing()
 add_subdirectory(test)
