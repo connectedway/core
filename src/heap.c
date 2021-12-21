@@ -50,7 +50,7 @@ typedef struct
 #endif
 } BLUE_HEAP_STATS ;
 
-static BLUE_HEAP_STATS BlueHeapStats ;
+static BLUE_HEAP_STATS BlueHeapStats = {0};
 
 static BLUE_VOID 
 BlueHeapMallocAcct (BLUE_SIZET size, struct blueheap_chunk *chunk)

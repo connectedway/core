@@ -100,9 +100,6 @@ typedef struct
 
 static BLUE_VOID BlueConfigLock(BLUE_VOID) ;
 static BLUE_VOID BlueConfigUnlock(BLUE_VOID) ;
-#if defined(BLUE_PARAM_PERSIST)
-static BLUE_DOMDocument *BlueConfigMakeDOM (BLUE_VOID) ;
-static BLUE_VOID BlueConfigParseDOM (BLUE_DOMNode *bpconfig_dom) ;
 
 static BLUE_CONFIG *g_config = NULL;
 
@@ -120,6 +117,10 @@ BlueGetConfig (BLUE_VOID)
   ret = g_config;
   return (ret) ;
 }
+
+#if defined(BLUE_PARAM_PERSIST)
+static BLUE_DOMDocument *BlueConfigMakeDOM (BLUE_VOID) ;
+static BLUE_VOID BlueConfigParseDOM (BLUE_DOMNode *bpconfig_dom) ;
 
 static BLUE_DOMDocument *
 BlueConfigMakeDOM (BLUE_VOID)

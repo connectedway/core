@@ -31,13 +31,15 @@ BlueLockTry (BLUE_LOCK lock)
 BLUE_CORE_LIB BLUE_VOID 
 BlueLock (BLUE_LOCK pLock) 
 {
-  BlueLockImpl (pLock) ;
+  if (pLock != BLUE_NULL)
+    BlueLockImpl (pLock) ;
 }
 
 BLUE_CORE_LIB BLUE_VOID 
 BlueUnlock (BLUE_LOCK pLock) 
 {
-  BlueUnlockImpl (pLock) ;
+  if (pLock != BLUE_NULL)
+    BlueUnlockImpl (pLock) ;
 }
 
 BLUE_CORE_LIB BLUE_LOCK
