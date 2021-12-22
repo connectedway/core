@@ -39,23 +39,20 @@ set(SRCS
 include(FetchContent)
 
 FetchContent_Declare(of_core_${OFC_HEAP_IMPL}
-  GIT_REPOSITORY git@github.com:connectedway/of_core_${OFC_HEAP_IMPL}
-  GIT_TAG main
+  URL ${openfiles_SOURCE_DIR}/of_core_${OFC_HEAP_IMPL}
   )
 
 FetchContent_MakeAvailable(of_core_${OFC_HEAP_IMPL})
 
 FetchContent_Declare(of_core_${OFC_IMPL}
-  GIT_REPOSITORY git@github.com:connectedway/of_core_${OFC_IMPL}
-  GIT_TAG main
+  URL ${openfiles_SOURCE_DIR}/of_core_${OFC_IMPL}
   )
 FetchContent_MakeAvailable(of_core_${OFC_IMPL})
 
 if(DEFINED CACHE{OFC_FS_DARWIN})
   message("Adding FS Darwin")
   FetchContent_Declare(of_core_fs_darwin
-  GIT_REPOSITORY git@github.com:connectedway/of_core_fs_darwin
-  GIT_TAG main
+  URL ${openfiles_SOURCE_DIR}/of_core_fs_darwin
   )
 
   FetchContent_MakeAvailable(of_core_fs_darwin)

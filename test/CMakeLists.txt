@@ -1,10 +1,7 @@
 include(FetchContent)
-FetchContent_Declare(
-	unity
-	GIT_REPOSITORY git@github.com:connectedway/Unity.git
-	GIT_SHALLOW TRUE
-	GIT_TAG master
-	)
+FetchContent_Declare(unity
+  URL ${openfiles_SOURCE_DIR}/Unity
+  )
 FetchContent_MakeAvailable(unity)
 
 add_library(unityextras INTERFACE)
