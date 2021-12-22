@@ -75,9 +75,6 @@ BlueUtilUnload (BLUE_VOID)
 
   BlueHandle16Free() ;
 
-  BlueCprintf ("About to unload heap\n") ;
-  BlueHeapDump() ;
-
   BlueHeapUnload() ;
 }
 

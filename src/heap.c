@@ -19,6 +19,7 @@
 #include "ofc/console.h"
 #include "ofc/thread.h"
 #include "ofc/process.h"
+#include "ofc/heap.h"
 
 #include "ofc/impl/heapimpl.h"
 
@@ -90,7 +91,9 @@ BLUE_CORE_LIB BLUE_VOID
 BlueHeapUnload (BLUE_VOID)
 {
   BlueLockDestroy (BlueHeapStats.lock) ;
+  BlueHeapStats.lock = BLUE_NULL;
   BlueHeapUnloadImpl() ;
+  BlueHeapDump();
 }
 
 #if defined(BLUE_PARAM_HEAP_DEBUG)
@@ -182,13 +185,20 @@ BlueHeapDump (BLUE_VOID)
   BlueHeapDumpStats() ;
 #if defined(BLUE_PARAM_HEAP_DEBUG)
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
-  len = BlueCsnprintf (obuf, OBUF_SIZE, "Last 2 chunks are heap locks and cannot be freed\n");
-  BlueWriteConsole (obuf) ;
-
-  len = BlueCsnprintf (obuf, OBUF_SIZE, "%-10s %-10s %-10s %-10s %-10s %-10s\n",
-		       "Address", "Size", "Caller1", "Caller2", "Caller3", 
-		       "Caller4") ;
-  BlueWriteConsole (obuf) ;
+  if (BlueHeapStats.Allocated == BLUE_NULL)
+    {
+      len = BlueCsnprintf (obuf, OBUF_SIZE,
+			   "\nHeap is Empty, No leaks detected\n");
+      BlueWriteConsole (obuf) ;
+    }
+  else
+    {
+      len = BlueCsnprintf (obuf, OBUF_SIZE,
+			   "%-10s %-10s %-10s %-10s %-10s %-10s\n",
+			   "Address", "Size", "Caller1", "Caller2", "Caller3", 
+			   "Caller4") ;
+      BlueWriteConsole (obuf) ;
+    }
 
   BlueLock (BlueHeapStats.lock) ;
   for (chunk = BlueHeapStats.Allocated ;

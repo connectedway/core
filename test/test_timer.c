@@ -1,10 +1,8 @@
 #include "unity.h"
 #include "unity_fixture.h"
 
-#include "ofc/core.h"
 #include "ofc/config.h"
 #include "ofc/types.h"
-#include "ofc/net.h"
 #include "ofc/framework.h"
 #include "ofc/persist.h"
 #include "ofc/env.h"
@@ -17,7 +15,7 @@
 #include "ofc/event.h"
 
 static BLUE_HANDLE hScheduler;
-static BLUE_HANDLE hEvent;
+static BLUE_HANDLE hDone;
 
 static BLUE_INT
 test_startup_persist(BLUE_VOID)
@@ -35,7 +33,6 @@ test_startup_persist(BLUE_VOID)
 
 BLUE_INT test_startup_default(BLUE_VOID)
 {
-  BLUE_INT ret = 0;
   static BLUE_UUID uuid =
     {
      0x04, 0x5d, 0x88, 0x8a, 0xeb, 0x1c, 0xc9, 0x11,
@@ -47,12 +44,12 @@ BLUE_INT test_startup_default(BLUE_VOID)
   BlueConfigSetNodeName(TSTR("localhost"), TSTR("WORKGROUP"),
 			TSTR("OpenFiles Unit Test"));
   BlueConfigSetUUID(&uuid);
-  return(ret);
+  return(0);
 }
 
 BLUE_INT test_startup(BLUE_VOID)
 {
-  BLUE_INT ret = 0;
+  BLUE_INT ret;
   BlueFrameworkInit();
 #if defined(BLUE_PARAM_PERSIST)
   ret = test_startup_persist();
@@ -60,14 +57,14 @@ BLUE_INT test_startup(BLUE_VOID)
   ret = test_startup_default();
 #endif
   hScheduler = BlueSchedCreate();
-  hEvent = BlueEventCreate(BLUE_EVENT_AUTO);
+  hDone = BlueEventCreate(BLUE_EVENT_AUTO);
 
   return(ret);
 }
 
 BLUE_VOID test_shutdown(BLUE_VOID)
 {
-  BlueEventDestroy(hEvent);
+  BlueEventDestroy(hDone);
   BlueSchedQuit(hScheduler);
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -224,10 +221,10 @@ TEST(timer, test_timer)
 
   hApp = BlueAppCreate (hScheduler, &TimerTestAppDef, timerTest) ;
 
-  if (hEvent != BLUE_HANDLE_NULL)
+  if (hDone != BLUE_HANDLE_NULL)
     {
-      BlueAppSetWait (hApp, hEvent) ;
-      BlueEventWait(hEvent);
+      BlueAppSetWait (hApp, hDone) ;
+      BlueEventWait(hDone);
     }
 }	  
 

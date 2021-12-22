@@ -30,7 +30,6 @@ typedef struct _BLUEAPP
   BLUE_HANDLE scheduler ;	/* Scheduler Hanlder */
   BLUE_BOOL destroy ;		/* Flag to destroy app */
   BLUE_VOID *app_data ;
-  struct _BLUEAPP *master;
   BLUE_HANDLE hNotify ;
 } BLUEAPP ;
 

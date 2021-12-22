@@ -43,9 +43,7 @@ typedef struct _SCHEDULER
   BLUE_MSTIME avg_sleep ;
   BLUE_UINT32 avg_count ;
 #endif
-#if !defined(SHUTDOWN)
   BLUE_HANDLE hEvent ;
-#endif
 } SCHEDULER ;
 
 static BLUE_INT g_instance = 0 ;
@@ -71,9 +69,7 @@ BlueSchedCreate(BLUE_VOID)
 
   scheduler->quit = BLUE_FALSE ;
   scheduler->significant_event = BLUE_FALSE ;
-#if !defined(SHUTDOWN)
   scheduler->hEvent = BLUE_HANDLE_NULL ;
-#endif
 
   scheduler->hEventSet = BlueWaitSetCreate() ;
 
@@ -88,19 +84,11 @@ BlueSchedCreate(BLUE_VOID)
   /*
    * Create a thread for the scheduler
    */
-#if defined(SHUTDOWN)
   scheduler->thread =
     BlueThreadCreate (&BlueSchedulerLoop, 
 		      BLUE_THREAD_SCHED, g_instance++,
 		      (BLUE_VOID *) hScheduler,
 		      BLUE_THREAD_JOIN, BLUE_HANDLE_NULL) ;
-#else
-  scheduler->thread =
-    BlueThreadCreate (&BlueSchedulerLoop, 
-		      BLUE_THREAD_SCHED, g_instance++,
-		      (BLUE_VOID *) hScheduler,
-		      BLUE_THREAD_JOIN, BLUE_HANDLE_NULL) ;
-#endif
   return (hScheduler) ;
 }
 
@@ -141,7 +129,6 @@ BlueSchedJoin (BLUE_HANDLE hScheduler)
   scheduler = BlueHandleLock (hScheduler) ;
   if (scheduler != BLUE_NULL)
     {
-#if !defined(SHUTDOWN)
       if (scheduler->hEvent == BLUE_HANDLE_NULL)
 	scheduler->hEvent = BlueEventCreate (BLUE_EVENT_AUTO) ;
 
@@ -151,9 +138,6 @@ BlueSchedJoin (BLUE_HANDLE hScheduler)
 	  BlueEventWait (scheduler->hEvent) ;
 	  BlueEventDestroy (scheduler->hEvent) ;
 	}
-#else
-      BlueThreadWait (scheduler->thread) ;
-#endif
       BlueHandleUnlock (hScheduler) ;
     }
 }
@@ -398,10 +382,8 @@ BlueSchedDestroy (BLUE_HANDLE hScheduler)
   scheduler = BlueHandleLock (hScheduler) ;
   if (scheduler != BLUE_NULL)
     {
-#if !defined(SHUTDOWN)
       if (scheduler->hEvent != BLUE_HANDLE_NULL)
 	BlueEventSet (scheduler->hEvent) ;
-#endif
       /*
        * Dequeue all the applications and destroy them
        */
@@ -569,39 +551,6 @@ BlueSchedulerLoop (BLUE_HANDLE hThread, BLUE_VOID *context)
 
   while (!BlueThreadIsDeleting (hThread))
     {
-#if defined(SHUTDOWN)
-      /*
-       * If we're shutting down, we want to kill all our apps and
-       * schedule us for deletion.  The Preslect routine will
-       * do the actual cleanup of the apps
-       */
-      if (BlueGetShutdown())
-	{
-	  BlueSchedKillAll (hScheduler) ;
-	  BlueSchedPreselect (hScheduler) ;
-	  BlueThreadDelete (hThread) ;
-	}
-      else
-	{
-#if defined(BLUE_PARAM_PRESELECT_PASS)
-	  /*
-	   * Do a preselect path
-	   */
-	  BlueSchedPreselect (hScheduler) ;
-#else
-	  if (scheduler->significant_event)
-	    BlueSchedPreselect (hScheduler) ;
-#endif
-	  /*
-	   * Wait for some significant event
-	   */
-	  BlueSchedWait (hScheduler) ;
-	  /*
-	   * And do a post select path
-	   */
-	  BlueSchedPostselect (hScheduler) ;
-	}
-#else
 #if defined(BLUE_PARAM_PRESELECT_PASS)
       /*
        * Do a preselect path
@@ -619,12 +568,9 @@ BlueSchedulerLoop (BLUE_HANDLE hThread, BLUE_VOID *context)
        * And do a post select path
        */
       BlueSchedPostselect (hScheduler) ;
-#endif
     }
 
-#if !defined(SHUTDOWN)
   BlueSchedDestroy (hScheduler) ;
-#endif
   BlueHandleUnlock (hScheduler) ;
   return (0) ;
 }

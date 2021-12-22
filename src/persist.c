@@ -819,6 +819,7 @@ BlueConfigPrint (BLUE_LPVOID *buf, BLUE_SIZET *len)
 	  *len = BlueDOMsprintDocument (BLUE_NULL, 0, bpconfig_dom) ;
 	  *buf = (BLUE_LPVOID) BlueHeapMalloc (*len + 1) ;
 	  BlueDOMsprintDocument (*buf, *len+1, bpconfig_dom) ;
+	  BlueDOMdestroyDocument(bpconfig_dom);
 	}
       BlueConfigUnlock() ;
     }
@@ -918,6 +919,7 @@ BlueConfigLoad (BLUE_LPCTSTR lpFileName)
   
       if (bpconfig_dom != BLUE_NULL)
 	{
+	  BlueConfigFree ();
 	  BlueConfigParseDOM (bpconfig_dom) ;
 	  BlueDOMdestroyDocument (bpconfig_dom) ;
 	}
