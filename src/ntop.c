@@ -1,4 +1,5 @@
 /* Copyright (c) 2021 Connected Way, LLC. All rights reserved.
+ */
 /* Copyright (c) 1996 by Internet Software Consortium.
  *
  * Permission to use, copy, modify, and distribute this software for any
