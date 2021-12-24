@@ -187,7 +187,7 @@ BlueFSInit (BLUE_VOID)
   BlueFSBrowseServersStartup() ;
   BlueFSBrowseSharesStartup() ;
 #endif
-#if defined(BLUE_PARAM_FS_BOOKMARKS)
+#if defined(OFC_FS_BOOKMARKS)
   BlueFSBookmarksStartup() ;
 #endif
 #if defined(BLUE_PARAM_LANMAN)
@@ -235,7 +235,7 @@ BlueFSDestroy (BLUE_VOID)
   BlueFSRegister (BLUE_FS_BROWSE_SERVERS, &BlueFSUnknown);
   BlueFSRegister (BLUE_FS_BROWSE_SHARES, &BlueFSUnknown);
 #endif
-#if defined(BLUE_PARAM_FS_BOOKMARKS)
+#if defined(OFC_FS_BOOKMARKS)
   BlueFSBookmarksShutdown() ;
   BlueFSRegister (BLUE_FS_BOOKMARKS, &BlueFSUnknown);
 #endif

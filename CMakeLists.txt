@@ -59,6 +59,16 @@ if(DEFINED CACHE{OFC_FS_DARWIN})
   list(APPEND fs_library_list of_core_fs_darwin)
 endif()
 
+if(DEFINED CACHE{OFC_FS_BOOKMARKS})
+  message("Adding FS Bookmarks")
+  FetchContent_Declare(of_core_fs_bookmarks
+  URL ${openfiles_SOURCE_DIR}/of_core_fs_bookmarks
+  )
+
+  FetchContent_MakeAvailable(of_core_fs_bookmarks)
+  list(APPEND fs_library_list of_core_fs_bookmarks)
+endif()
+
 add_library(of_core_static STATIC ${SRCS})
 add_library(of_core_shared SHARED ${SRCS})
 

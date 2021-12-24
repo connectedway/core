@@ -61,6 +61,7 @@ typedef @BLUE_PROCESS_ID@ BLUE_PROCESS_ID;
 #cmakedefine BLUE_PARAM_DISCOVER_IPV4
 #cmakedefine BLUE_PARAM_DISCOVER_IPV6
 #cmakedefine OFC_FS_DARWIN
+#cmakedefine OFC_FS_BOOKMARKS
 
 #if defined(BLUE_PARAM_64BIT_POINTER) && !defined(BLUE_PARAM_64BIT_INTEGER)
 #error Must support 64 bit integers if 64 bit pointers defined
