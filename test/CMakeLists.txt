@@ -55,9 +55,9 @@ add_executable(test_thread test_thread.c)
 target_link_libraries(test_thread PRIVATE of_core_shared unityextras)
 add_test(thread test_thread COMMAND $<TARGET_FILE:test_thread>)
 
-#add_executable(test_dgram test_dgram.c)
-#target_link_libraries(test_dgram INTERFACE of_core_shared unityextras)
-#add_test(timer test_dgram COMMAND $<TARGET_FILE:test_dgram>)
+add_executable(test_dg test_dg.c)
+target_link_libraries(test_dg PRIVATE of_core_shared unityextras)
+add_test(dg test_dg COMMAND $<TARGET_FILE:test_dg>)
 
 #add_executable(test_stream test_stream.c)
 #target_link_libraries(test_stream INTERFACE of_core_shared unityextras)
