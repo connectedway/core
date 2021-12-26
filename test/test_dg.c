@@ -23,7 +23,6 @@
 #include "ofc/framework.h"
 #include "ofc/env.h"
 #include "ofc/persist.h"
-#include "ofc/thread.h"
 
 static BLUE_HANDLE hScheduler;
 static BLUE_HANDLE hDone;
@@ -315,6 +314,7 @@ typedef enum
   {
     DGRAM_TEST_CLIENT_STATE_IDLE,
     DGRAM_TEST_CLIENT_STATE_CONNECTED,
+    DGRAM_TEST_CLIENT_STATE_DESTROYING,
   } DGRAM_TEST_CLIENT_STATE ;
 
 #define DGRAM_TEST_CLIENT_INTERVAL 1000
@@ -333,6 +333,7 @@ typedef struct
   BLUE_HANDLE hTimer ;
   BLUE_INT count ;
   BLUE_HANDLE hAppQueue ;
+  BLUE_HANDLE hDestroy;
   BLUE_HANDLE hListenApp ;
   BLUE_HANDLE hCurrApp ;
   BLUE_HANDLE hConfigUpdate ;
@@ -402,6 +403,7 @@ static BLUE_VOID DGramTestClientPreSelect (BLUE_HANDLE app)
 	      /*
 	       * First we want to register for configuration events
 	       */
+	      DGramTestClient->hDestroy = BlueEventCreate(BLUE_EVENT_AUTO);
 	      DGramTestClient->hConfigUpdate = BlueEventCreate(BLUE_EVENT_AUTO) ;
 	      if (DGramTestClient->hConfigUpdate != BLUE_HANDLE_NULL)
 		{
@@ -483,6 +485,8 @@ static BLUE_VOID DGramTestClientPreSelect (BLUE_HANDLE app)
 					DGramTestClient->hTimer) ;
 		      BlueSchedAddWait (DGramTestClient->scheduler, app, 
 					DGramTestClient->hConfigUpdate) ;
+		      BlueSchedAddWait (DGramTestClient->scheduler, app, 
+					DGramTestClient->hDestroy) ;
 		    }
 		  else
 		    BlueAppKill(app) ;
@@ -503,7 +507,14 @@ static BLUE_VOID DGramTestClientPreSelect (BLUE_HANDLE app)
 				DGramTestClient->hTimer) ;
 	      BlueSchedAddWait (DGramTestClient->scheduler, app, 
 				DGramTestClient->hConfigUpdate) ;
+	      BlueSchedAddWait(DGramTestClient->scheduler, app,
+			       DGramTestClient->hDestroy);
 	      break ;
+
+	    case DGRAM_TEST_CLIENT_STATE_DESTROYING:
+	      BlueSchedAddWait(DGramTestClient->scheduler, app,
+			       DGramTestClient->hDestroy);
+	      break;
 	    }
 	}
       while (DGramTestClient->state != entry_state) ;
@@ -694,7 +705,7 @@ static BLUE_HANDLE DGramTestClientPostSelect (BLUE_HANDLE app,
 				DGRAM_TEST_CLIENT_INTERVAL) ;
 		  DGramTestClient->count++ ;
 		  if (DGramTestClient->count >= DGRAM_TEST_COUNT)
-		    BlueAppKill(app) ;
+		    BlueEventSet(DGramTestClient->hDestroy);
 		}
 	      else if (hSocket == DGramTestClient->hSocket)
 		{
@@ -713,7 +724,58 @@ static BLUE_HANDLE DGramTestClientPostSelect (BLUE_HANDLE app,
 		{
 		  DGramTestReconfig (DGramTestClient) ;
 		}
+	      else if (hSocket == DGramTestClient->hDestroy)
+		{
+		  BLUE_HANDLE hDestroyApp;
+		  DGramTestClient->state = DGRAM_TEST_CLIENT_STATE_DESTROYING;
+		  hDestroyApp =
+		    (BLUE_HANDLE) BlueQdequeue (DGramTestClient->hAppQueue);
+		  if (hDestroyApp == BLUE_HANDLE_NULL)
+		    {
+		      hDestroyApp = DGramTestClient->hListenApp;
+		      DGramTestClient->hListenApp = BLUE_HANDLE_NULL;
+		    }
+		  if (hDestroyApp != BLUE_HANDLE_NULL)
+		    {
+		      BlueAppSetWait (hDestroyApp, DGramTestClient->hDestroy) ;
+		      BlueAppKill (hDestroyApp);
+		    }
+		  else
+		    {
+		      BlueAppKill(app);
+		    }
+		}
+	      else
+		{
+		  BlueAppKill (app);
+		}
+	      break;
 
+	    case DGRAM_TEST_CLIENT_STATE_DESTROYING:
+	      if (hSocket == DGramTestClient->hDestroy)
+		{
+		  BLUE_HANDLE hDestroyApp;
+		  hDestroyApp =
+		    (BLUE_HANDLE) BlueQdequeue (DGramTestClient->hAppQueue);
+		  if (hDestroyApp == BLUE_HANDLE_NULL)
+		    {
+		      hDestroyApp = DGramTestClient->hListenApp;
+		      DGramTestClient->hListenApp = BLUE_HANDLE_NULL;
+		    }
+		  if (hDestroyApp != BLUE_HANDLE_NULL)
+		    {
+		      BlueAppSetWait (hDestroyApp, DGramTestClient->hDestroy) ;
+		      BlueAppKill (hDestroyApp);
+		    }
+		  else
+		    {
+		      BlueAppKill(app);
+		    }
+		}
+	      else
+		{
+		  BlueAppKill(app);
+		}
 	      break ;
 	    }
 	}
@@ -736,6 +798,7 @@ static BLUE_VOID DGramTestClientDestroy (BLUE_HANDLE app)
 	case DGRAM_TEST_CLIENT_STATE_IDLE:
 	  break ;
 
+	case DGRAM_TEST_CLIENT_STATE_DESTROYING:
 	case DGRAM_TEST_CLIENT_STATE_CONNECTED:
 	  BlueSocketDestroy (DGramTestClient->hSocket) ;
 	  if (DGramTestClient->send_msg != BLUE_NULL)
@@ -743,9 +806,8 @@ static BLUE_VOID DGramTestClientDestroy (BLUE_HANDLE app)
 	  BlueTimerDestroy (DGramTestClient->hTimer) ;
 	  BlueConfigUnregisterUpdate (DGramTestClient->hConfigUpdate) ;
 	  BlueEventDestroy (DGramTestClient->hConfigUpdate) ;
-
+	  BlueEventDestroy (DGramTestClient->hDestroy);
 	  break ;
-
 	}
 
       for (hAppServer = 
@@ -754,13 +816,16 @@ static BLUE_VOID DGramTestClientDestroy (BLUE_HANDLE app)
 	   hAppServer = (BLUE_HANDLE) 
 	     BlueQdequeue (DGramTestClient->hAppQueue))
 	{
+	  BlueCprintf ("App Server still queued at destroy");
 	  BlueAppKill (hAppServer) ;
 	}
       BlueQdestroy (DGramTestClient->hAppQueue) ;
 
       if (DGramTestClient->hListenApp != BLUE_HANDLE_NULL)
-	BlueAppKill (DGramTestClient->hListenApp) ;
-
+	{
+	  BlueCprintf ("Listener still active at destroy");
+	  BlueAppKill (DGramTestClient->hListenApp) ;
+	}
       BlueHeapFree (DGramTestClient) ;
     }
 }
@@ -800,10 +865,6 @@ TEST(dg, test_dg)
       BlueAppSetWait (hApp, hDone) ;
       BlueEventWait(hDone);
     }
-  /*
-   * FIXME: Give server apps a chance to clean up
-   */
-  BlueSleep(1000);
 
 #if defined (BLUE_PARAM_DISCOVER_IPV6)
   DGramTestClient = BlueHeapMalloc (sizeof (BLUE_DGRAM_TEST_CLIENT)) ;
@@ -823,10 +884,6 @@ TEST(dg, test_dg)
       BlueAppSetWait (hApp, hDone) ;
       BlueEventWait(hDone);
     }
-  /*
-   * FIXME: Give server apps a chance to clean up
-   */
-  BlueSleep(1000);
 }	  
 
 TEST_GROUP_RUNNER(dg)
