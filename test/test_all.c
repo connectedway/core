@@ -6,13 +6,14 @@
 #include "unity_fixture.h"
 
 static void runAllTests(void) {
-	RUN_TEST_GROUP(timer)
-	RUN_TEST_GROUP(event)
-        RUN_TEST_GROUP(waitq)
-        RUN_TEST_GROUP(thread)
-        RUN_TEST_GROUP(dgram)
-        RUN_TEST_GROUP(stream)
-        RUN_TEST_GROUP(path)
+	RUN_TEST_GROUP(timer);
+	RUN_TEST_GROUP(event);
+        RUN_TEST_GROUP(waitq);
+        RUN_TEST_GROUP(thread);
+        RUN_TEST_GROUP(dg);
+        RUN_TEST_GROUP(stream);
+        RUN_TEST_GROUP(path);
+	RUN_TEST_GROUP(fs_darwin);
 }
 
 int main(int argc, const char *argv[]) {

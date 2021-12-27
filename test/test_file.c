@@ -2433,7 +2433,7 @@ BLUE_INT test_file (BLUE_LPCSTR test_root)
   BlueSleep (3000) ;
   BlueThreadCreateLocalStorage() ;
 
-  count = 1;
+  count = 0;
 
   device = BlueCcstr2tstr(test_root);
 
@@ -2553,7 +2553,7 @@ BLUE_INT test_file (BLUE_LPCSTR test_root)
 	BlueCprintf ("*** File Test Failed ***\n") ;
       else
 	BlueCprintf ("File Test Succeeded\n") ;
-      count-- ;
+      count++ ;
 
       if (count != OFC_FILE_TEST_COUNT)
 	BlueSleep (BLUE_FS_TEST_INTERVAL) ;

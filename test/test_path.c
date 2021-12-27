@@ -13,13 +13,13 @@
 #include "ofc/heap.h"
 #include "ofc/framework.h"
 
-BLUE_INT test_startup(BLUE_VOID)
+static BLUE_INT test_startup(BLUE_VOID)
 {
   BlueFrameworkInit();
   return(0);
 }
 
-BLUE_VOID test_shutdown(BLUE_VOID)
+static BLUE_VOID test_shutdown(BLUE_VOID)
 {
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();

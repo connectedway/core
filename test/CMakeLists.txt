@@ -17,18 +17,20 @@ target_sources(unityextras INTERFACE
     )
 
 
-#add_executable(test_all
-#    test_all.c
-#    test_timer.c
-#    test_event.c
-#    test_waitq.c
-#    test_thread.c
-#    test_dgram.c
-#    test_stream.c
-#    test_path.c
-#    )
-#target_compile_definitions(test_all PUBLIC NO_MAIN ON)
-#target_link_libraries(test_all INTERFACE of_core_shared)
+add_executable(test_all
+    test_all.c
+    test_timer.c
+    test_event.c
+    test_waitq.c
+    test_thread.c
+    test_dg.c
+    test_stream.c
+    test_path.c
+    test_file.c
+    test_fs_darwin.c
+    )
+target_compile_definitions(test_all PUBLIC NO_MAIN ON)
+target_link_libraries(test_all PRIVATE of_core_shared unityextras)
 
 include_directories(
 	${of_core_BINARY_DIR}

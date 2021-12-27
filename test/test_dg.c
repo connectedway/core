@@ -41,7 +41,7 @@ test_startup_persist(BLUE_VOID)
   return (ret);
 }
 
-BLUE_INT test_startup_default(BLUE_VOID)
+static BLUE_INT test_startup_default(BLUE_VOID)
 {
   static BLUE_UUID uuid =
     {
@@ -57,7 +57,7 @@ BLUE_INT test_startup_default(BLUE_VOID)
   return(0);
 }
 
-BLUE_INT test_startup(BLUE_VOID)
+static BLUE_INT test_startup(BLUE_VOID)
 {
   BLUE_INT ret;
   BlueFrameworkInit();
@@ -72,7 +72,7 @@ BLUE_INT test_startup(BLUE_VOID)
   return(ret);
 }
 
-BLUE_VOID test_shutdown(BLUE_VOID)
+static BLUE_VOID test_shutdown(BLUE_VOID)
 {
   BlueEventDestroy(hDone);
   BlueSchedQuit(hScheduler);
