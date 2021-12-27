@@ -36,6 +36,7 @@ include_directories(
 	${unity_SOURCE_DIR}/src
 	${unity_SOURCE_DIR}/extras/fixture/src
 	${unity_SOURCE_DIR}/extras/memory/src
+	${CMAKE_CURRENT_SOURCE_DIR}
 	)
 
 
@@ -63,6 +64,10 @@ add_executable(test_stream test_stream.c)
 target_link_libraries(test_stream PRIVATE of_core_shared unityextras)
 add_test(timer test_stream COMMAND $<TARGET_FILE:test_stream>)
 
-#add_executable(test_path test_path.c)
-#target_link_libraries(test_path INTERFACE of_core_shared unityextras)
-#add_test(timer test_path COMMAND $<TARGET_FILE:test_path>)
+add_executable(test_path test_path.c)
+target_link_libraries(test_path PRIVATE of_core_shared unityextras)
+add_test(timer test_path COMMAND $<TARGET_FILE:test_path>)
+
+add_executable(test_fs_darwin test_fs_darwin.c test_file.c)
+target_link_libraries(test_fs_darwin PRIVATE of_core_shared unityextras)
+add_test(fs_darwin test_fs_darwin COMMAND $<TARGET_FILE:test_fs_darwin>)

@@ -47,3 +47,5 @@ option(BLUE_PARAM_DISCOVER_IPV4 "Support IPv4 Addressing" ON)
 option(BLUE_PARAM_DISCOVER_IPV6 "Support IPv6 Addressing" ON)
 option(OFC_FS_DARWIN "Add Open File Darwin File System" ON)
 option(OFC_FS_BOOKMARKS "Add Open File Bookmarks File System" ON)
+
+set(OFC_TEST_FS_DARWIN_PATH "/tmp/openfiles/test/" CACHE STRING "Path to store test files for fs darwin")

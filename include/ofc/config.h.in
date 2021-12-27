@@ -63,6 +63,8 @@ typedef @BLUE_PROCESS_ID@ BLUE_PROCESS_ID;
 #cmakedefine OFC_FS_DARWIN
 #cmakedefine OFC_FS_BOOKMARKS
 
+#define OFC_TEST_FS_DARWIN_PATH "@OFC_TEST_FS_DARWIN_PATH@"
+
 #if defined(BLUE_PARAM_64BIT_POINTER) && !defined(BLUE_PARAM_64BIT_INTEGER)
 #error Must support 64 bit integers if 64 bit pointers defined
 #endif
