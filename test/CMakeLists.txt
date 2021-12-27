@@ -59,9 +59,9 @@ add_executable(test_dg test_dg.c)
 target_link_libraries(test_dg PRIVATE of_core_shared unityextras)
 add_test(dg test_dg COMMAND $<TARGET_FILE:test_dg>)
 
-#add_executable(test_stream test_stream.c)
-#target_link_libraries(test_stream INTERFACE of_core_shared unityextras)
-#add_test(timer test_stream COMMAND $<TARGET_FILE:test_stream>)
+add_executable(test_stream test_stream.c)
+target_link_libraries(test_stream PRIVATE of_core_shared unityextras)
+add_test(timer test_stream COMMAND $<TARGET_FILE:test_stream>)
 
 #add_executable(test_path test_path.c)
 #target_link_libraries(test_path INTERFACE of_core_shared unityextras)
