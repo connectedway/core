@@ -13,38 +13,38 @@
 #include "ofc/file.h"
 #include "ofc/libc.h"
 
-OFC_CORE_LIB BLUE_HANDLE
-BlueThreadCreate (OFC_DWORD(scheduler)(BLUE_HANDLE hThread,
+OFC_CORE_LIB OFC_HANDLE
+BlueThreadCreate (OFC_DWORD(scheduler)(OFC_HANDLE hThread,
                                        OFC_VOID *context),
                   OFC_CCHAR *thread_name, OFC_INT thread_instance,
                   OFC_VOID *context,
                   BLUE_THREAD_DETACHSTATE detachstate,
-                  BLUE_HANDLE hNotify)
+                  OFC_HANDLE hNotify)
 {
   return (BlueThreadCreateImpl (scheduler, thread_name, thread_instance,
 				context, detachstate, hNotify)) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadSetWaitSet (BLUE_HANDLE hThread, BLUE_HANDLE wait_set)
+BlueThreadSetWaitSet (OFC_HANDLE hThread, OFC_HANDLE wait_set)
 {
   BlueThreadSetWaitSetImpl (hThread, wait_set) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadDelete (BLUE_HANDLE hThread)
+BlueThreadDelete (OFC_HANDLE hThread)
 {
   BlueThreadDeleteImpl (hThread) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadWait (BLUE_HANDLE hThread)
+BlueThreadWait (OFC_HANDLE hThread)
 {
   BlueThreadWaitImpl (hThread) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueThreadIsDeleting (BLUE_HANDLE hThread)
+BlueThreadIsDeleting (OFC_HANDLE hThread)
 {
   OFC_BOOL ret ;
   ret = BlueThreadIsDeletingImpl (hThread) ;

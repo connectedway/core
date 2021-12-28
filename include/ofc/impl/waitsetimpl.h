@@ -35,7 +35,7 @@ extern "C"
    * \returns
    * Handle to member that is ready to run
    */
-  BLUE_HANDLE BlueWaitSetWaitImpl (BLUE_HANDLE handle) ;
+  OFC_HANDLE BlueWaitSetWaitImpl (OFC_HANDLE handle) ;
   /**
    * Wake up a Wait Set on behalf of an event
    *
@@ -48,17 +48,17 @@ extern "C"
    * \param hHandle
    * Handle to Wait Set
    */
-  OFC_VOID BlueWaitSetSetAssocImpl (BLUE_HANDLE hHandle,
-                                    BLUE_HANDLE hApp, BLUE_HANDLE hSet) ;
+  OFC_VOID BlueWaitSetSetAssocImpl (OFC_HANDLE hHandle,
+                                    OFC_HANDLE hApp, OFC_HANDLE hSet) ;
   OFC_VOID
-  BlueWaitSetSignalImpl (BLUE_HANDLE handle, BLUE_HANDLE hEvent) ;
+  BlueWaitSetSignalImpl (OFC_HANDLE handle, OFC_HANDLE hEvent) ;
   /**
    * Wake up a wait set
    *
    * \param handle
    * Handle of wake set to wake
    */
-  OFC_VOID BlueWaitSetWakeImpl (BLUE_HANDLE handle) ;
+  OFC_VOID BlueWaitSetWakeImpl (OFC_HANDLE handle) ;
   /**
    * Create a wait set
    *
@@ -90,8 +90,8 @@ extern "C"
    * Handle to the event to add
    */
   OFC_VOID
-  BlueWaitSetAddImpl (BLUE_HANDLE handle, BLUE_HANDLE hApp,
-		      BLUE_HANDLE hEvent) ;
+  BlueWaitSetAddImpl (OFC_HANDLE handle, OFC_HANDLE hApp,
+                      OFC_HANDLE hEvent) ;
 
 #if defined(__cplusplus)
 }

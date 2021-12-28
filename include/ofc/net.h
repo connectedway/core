@@ -410,12 +410,12 @@ extern "C"
    * Register a Config Event
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetRegisterConfig (BLUE_HANDLE hEvent) ;
+  BlueNetRegisterConfig (OFC_HANDLE hEvent) ;
   /**
    * Unregister a Config Event
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetUnregisterConfig (BLUE_HANDLE hEvent) ;
+  BlueNetUnregisterConfig (OFC_HANDLE hEvent) ;
   /**
    * Resolve a name to an IP address
    *

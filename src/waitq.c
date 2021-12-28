@@ -17,8 +17,8 @@
 
 typedef struct
 {
-  BLUE_HANDLE hEvent ;
-  BLUE_HANDLE hQueue ;
+  OFC_HANDLE hEvent ;
+  OFC_HANDLE hQueue ;
   BLUE_LOCK lock ;
 } WAIT_QUEUE ;
 
@@ -31,23 +31,23 @@ typedef struct
  * Returns:
  *    Queue
  */
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 BlueWaitQcreate (OFC_VOID)
 {
   WAIT_QUEUE *wait_queue ;
-  BLUE_HANDLE hWaitQueue ;
+  OFC_HANDLE hWaitQueue ;
 
   /*
    * Allocate space for the queue head
    */
-  hWaitQueue = BLUE_HANDLE_NULL ;
+  hWaitQueue = OFC_HANDLE_NULL ;
   wait_queue = BlueHeapMalloc (sizeof (WAIT_QUEUE)) ;
   
   if (wait_queue != OFC_NULL)
     {
       wait_queue->hQueue = BlueQcreate () ;
       wait_queue->hEvent = ofc_event_create (OFC_EVENT_MANUAL) ;
-      hWaitQueue = BlueHandleCreate (BLUE_HANDLE_WAIT_QUEUE, wait_queue) ;
+      hWaitQueue = ofc_handle_create (OFC_HANDLE_WAIT_QUEUE, wait_queue) ;
       wait_queue->lock = BlueLockInit () ;
     }
   return (hWaitQueue) ;
@@ -63,12 +63,12 @@ BlueWaitQcreate (OFC_VOID)
  *    Nothing
  */
 OFC_CORE_LIB OFC_VOID
-BlueWaitQdestroy (BLUE_HANDLE qHandle)
+BlueWaitQdestroy (OFC_HANDLE qHandle)
 {
   WAIT_QUEUE *pWaitQueue ;
 
 
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
 
   if (pWaitQueue != OFC_NULL)
     {
@@ -77,8 +77,8 @@ BlueWaitQdestroy (BLUE_HANDLE qHandle)
       ofc_event_destroy (pWaitQueue->hEvent) ;
 
       BlueHeapFree (pWaitQueue) ;
-      BlueHandleDestroy (qHandle) ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_destroy (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
 }
 
@@ -90,18 +90,18 @@ BlueWaitQdestroy (BLUE_HANDLE qHandle)
  *    qElement - Pointer to element to add to list
  */
 OFC_CORE_LIB OFC_VOID
-BlueWaitQenqueue (BLUE_HANDLE qHandle, OFC_VOID *qElement)
+BlueWaitQenqueue (OFC_HANDLE qHandle, OFC_VOID *qElement)
 {
   WAIT_QUEUE *pWaitQueue ;
 
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   if (pWaitQueue != OFC_NULL)
     {
       BlueLock (pWaitQueue->lock) ;
       BlueQenqueue (pWaitQueue->hQueue, qElement) ;
       ofc_event_set (pWaitQueue->hEvent) ;
       BlueUnlock (pWaitQueue->lock) ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
 }
 
@@ -115,12 +115,12 @@ BlueWaitQenqueue (BLUE_HANDLE qHandle, OFC_VOID *qElement)
  *    Item at the front or NB_NULL
  */
 OFC_CORE_LIB OFC_VOID *
-BlueWaitQdequeue (BLUE_HANDLE qHandle)
+BlueWaitQdequeue (OFC_HANDLE qHandle)
 {
   WAIT_QUEUE *pWaitQueue ;
   OFC_VOID *qElement ;
 
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   qElement = OFC_NULL ;
   if (pWaitQueue != OFC_NULL)
     {
@@ -129,7 +129,7 @@ BlueWaitQdequeue (BLUE_HANDLE qHandle)
       if (BlueQempty (pWaitQueue->hQueue))
 	ofc_event_reset (pWaitQueue->hEvent) ;
       BlueUnlock (pWaitQueue->lock) ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
   return (qElement) ;
 }
@@ -144,20 +144,20 @@ BlueWaitQdequeue (BLUE_HANDLE qHandle)
  *    True if empty, false otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-BlueWaitQempty (BLUE_HANDLE qHandle) 
+BlueWaitQempty (OFC_HANDLE qHandle)
 {
   WAIT_QUEUE *pWaitQueue ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
 
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   if (pWaitQueue != OFC_NULL)
     {
       BlueLock (pWaitQueue->lock) ;
       ret = BlueQempty (pWaitQueue->hQueue) ;
       BlueUnlock (pWaitQueue->lock) ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
   return (ret) ;
 }
@@ -172,19 +172,19 @@ BlueWaitQempty (BLUE_HANDLE qHandle)
  *    VOID * - Element that was at the front of the list
  */
 OFC_CORE_LIB OFC_VOID *
-BlueWaitQfirst (BLUE_HANDLE qHandle)
+BlueWaitQfirst (OFC_HANDLE qHandle)
 {
   OFC_VOID *qElement ;
   WAIT_QUEUE *pWaitQueue ;
 
   qElement = OFC_NULL ;
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   if (pWaitQueue != OFC_NULL)
     {
       BlueLock (pWaitQueue->lock) ;
       qElement = BlueQfirst (pWaitQueue->hQueue) ;
       BlueUnlock (pWaitQueue->lock) ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
   return (qElement) ;
 }
@@ -200,19 +200,19 @@ BlueWaitQfirst (BLUE_HANDLE qHandle)
  *    VOID * - Pointer to the next element
  */
 OFC_CORE_LIB OFC_VOID *
-BlueWaitQnext (BLUE_HANDLE qHandle, OFC_VOID *qElement)
+BlueWaitQnext (OFC_HANDLE qHandle, OFC_VOID *qElement)
 {
   WAIT_QUEUE *pWaitQueue ;
   OFC_VOID *qReturn ;
 
   qReturn = OFC_NULL ;
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   if (pWaitQueue != OFC_NULL)
     {
       BlueLock (pWaitQueue->lock) ;
       qReturn = BlueQnext (pWaitQueue->hQueue, qElement) ;
       BlueUnlock (pWaitQueue->lock) ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
   return (qReturn) ;
 }
@@ -228,11 +228,11 @@ BlueWaitQnext (BLUE_HANDLE qHandle, OFC_VOID *qElement)
  *    nothing
  */
 OFC_CORE_LIB OFC_VOID
-BlueWaitQunlink (BLUE_HANDLE qHandle, OFC_VOID *qElement)
+BlueWaitQunlink (OFC_HANDLE qHandle, OFC_VOID *qElement)
 {
   WAIT_QUEUE *pWaitQueue ;
 
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   if (pWaitQueue != OFC_NULL)
     {
       BlueLock (pWaitQueue->lock) ;
@@ -240,17 +240,17 @@ BlueWaitQunlink (BLUE_HANDLE qHandle, OFC_VOID *qElement)
       if (BlueQempty (pWaitQueue->hQueue))
 	ofc_event_reset (pWaitQueue->hEvent) ;
       BlueUnlock (pWaitQueue->lock) ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueWaitQclear (BLUE_HANDLE qHandle)
+BlueWaitQclear (OFC_HANDLE qHandle)
 {
   WAIT_QUEUE *pWaitQueue ;
   OFC_VOID *entry ;
 
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   if (pWaitQueue != OFC_NULL)
     {
       BlueLock (pWaitQueue->lock) ;
@@ -259,37 +259,37 @@ BlueWaitQclear (BLUE_HANDLE qHandle)
 	   entry = BlueQdequeue (pWaitQueue->hQueue)) ;
       BlueUnlock (pWaitQueue->lock) ;
 
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
 }
 
-OFC_CORE_LIB BLUE_HANDLE
-BlueWaitQGetEventHandle (BLUE_HANDLE qHandle)
+OFC_CORE_LIB OFC_HANDLE
+BlueWaitQGetEventHandle (OFC_HANDLE qHandle)
 {
   WAIT_QUEUE *pWaitQueue ;
-  BLUE_HANDLE hEvent ;
+  OFC_HANDLE hEvent ;
 
-  hEvent = BLUE_HANDLE_NULL ;
+  hEvent = OFC_HANDLE_NULL ;
 
-  pWaitQueue = BlueHandleLock (qHandle) ;
+  pWaitQueue = ofc_handle_lock (qHandle) ;
   if (pWaitQueue != OFC_NULL)
     {
       hEvent = pWaitQueue->hEvent ;
-      BlueHandleUnlock (qHandle) ;
+      ofc_handle_unlock (qHandle) ;
     }
   return (hEvent) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueWaitQBlock (BLUE_HANDLE waitq)
+BlueWaitQBlock (OFC_HANDLE waitq)
 {
   WAIT_QUEUE *pWaitQueue ;
 
-  pWaitQueue = BlueHandleLock (waitq) ;
+  pWaitQueue = ofc_handle_lock (waitq) ;
   if (pWaitQueue != OFC_NULL)
     {
       if (BlueQempty (pWaitQueue->hQueue))
 	ofc_event_wait (pWaitQueue->hEvent) ;
-      BlueHandleUnlock (waitq) ;
+      ofc_handle_unlock (waitq) ;
     }
 }

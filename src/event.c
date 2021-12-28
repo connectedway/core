@@ -11,44 +11,44 @@
 #include "ofc/event.h"
 #include "ofc/impl/eventimpl.h"
 
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 ofc_event_create (OFC_EVENT_TYPE eventType)
 {
   return (BlueEventCreateImpl (eventType)) ;
 }
   
 OFC_CORE_LIB OFC_EVENT_TYPE
-ofc_event_get_type (BLUE_HANDLE hEvent)
+ofc_event_get_type (OFC_HANDLE hEvent)
 {
   return (BlueEventGetTypeImpl (hEvent)) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_event_set (BLUE_HANDLE hEvent)
+ofc_event_set (OFC_HANDLE hEvent)
 {
   BlueEventSetImpl (hEvent) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_event_reset (BLUE_HANDLE hEvent)
+ofc_event_reset (OFC_HANDLE hEvent)
 {
   BlueEventResetImpl (hEvent) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_event_destroy (BLUE_HANDLE hEvent)
+ofc_event_destroy (OFC_HANDLE hEvent)
 {
   BlueEventDestroyImpl (hEvent) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_event_wait (BLUE_HANDLE hEvent)
+ofc_event_wait (OFC_HANDLE hEvent)
 {
   BlueEventWaitImpl (hEvent) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_event_test (BLUE_HANDLE hEvent)
+ofc_event_test (OFC_HANDLE hEvent)
 {
   return (BlueEventTestImpl (hEvent)) ;
 }

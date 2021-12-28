@@ -28,7 +28,7 @@ extern "C"
    * \returns
    * Handle to the linked list
    */
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   BlueQcreate (OFC_VOID) ;
   /**
    * Destroy a queue
@@ -37,7 +37,7 @@ extern "C"
    * Head of queue
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQdestroy (BLUE_HANDLE qHead) ;
+  BlueQdestroy (OFC_HANDLE qHead) ;
   /**
    * Add an element to the end of the list
    *
@@ -48,7 +48,7 @@ extern "C"
    * Pointer to element to add to list
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQenqueue (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
+  BlueQenqueue (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Remove an element from the front of the list
    *
@@ -59,7 +59,7 @@ extern "C"
    * Item at the front or OFC_NULL
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueQdequeue (BLUE_HANDLE qHead) ;
+  BlueQdequeue (OFC_HANDLE qHead) ;
   /**
    * See if queue is empty
    *
@@ -70,7 +70,7 @@ extern "C"
    * OFC_TRUE if empty, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueQempty (BLUE_HANDLE qHead) ;
+  BlueQempty (OFC_HANDLE qHead) ;
   /**
    * Return the head of the linked list
    *
@@ -81,7 +81,7 @@ extern "C"
    * Element that was at the front of the list
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueQfirst (BLUE_HANDLE qHead) ;
+  BlueQfirst (OFC_HANDLE qHead) ;
   /**
    * Return the next element on the list
    *
@@ -95,7 +95,7 @@ extern "C"
    * Pointer to the next element
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueQnext (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
+  BlueQnext (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Unlink the current element from the list
    *
@@ -106,7 +106,7 @@ extern "C"
    * Pointer to the current element
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQunlink (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
+  BlueQunlink (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Clear the contents of a linked list
    *
@@ -121,7 +121,7 @@ extern "C"
    * information is freed someother way.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQclear (BLUE_HANDLE qHandle) ;
+  BlueQclear (OFC_HANDLE qHandle) ;
 
 #if defined(__cplusplus)
 }

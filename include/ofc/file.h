@@ -670,11 +670,11 @@ typedef enum _OFC_GET_FILEEX_INFO_LEVELS
 typedef struct _OFC_OVERLAPPED
 {
   OFC_BOOL status ;
-  BLUE_HANDLE hFile ;
+  OFC_HANDLE hFile ;
   OFC_DWORD dwLen ;
   OFC_OFFT offset ;
-  BLUE_HANDLE hContext ;
-  BLUE_HANDLE hUser ;
+  OFC_HANDLE hContext ;
+  OFC_HANDLE hUser ;
 #if defined(OFC_PERF_STATS)
   OFC_INT perf_id ;
   OFC_MSTIME stamp ;
@@ -844,7 +844,7 @@ typedef struct _OFC_FILE_RENAME_INFO
   /**
    * A Handle to the root directory of the file to be renamed
    */
-  BLUE_HANDLE RootDirectory ;
+  OFC_HANDLE RootDirectory ;
   /**
    * The size of the FileName
    */
@@ -1603,7 +1603,7 @@ typedef struct
 
 typedef struct
 {
-  BLUE_HANDLE find_file ;
+  OFC_HANDLE find_file ;
 } FILE_CALL_CLOSE ;
 
 typedef struct
@@ -1632,7 +1632,7 @@ typedef struct
   OFC_BOOL more ;
   OFC_UINT32 name_length ;
   OFC_UINT32 buffer_length ;
-  BLUE_HANDLE find_file ;
+  OFC_HANDLE find_file ;
   OFC_BOOL reopen ;
 } FILE_CALL_QUERY_DIRECTORY ;
 
@@ -1669,7 +1669,7 @@ typedef struct
   OFC_OFFT offBuffer ;
   OFC_DWORD nNumberOfBytesToRead ;
   OFC_DWORD nNumberOfBytesRead ;
-  BLUE_HANDLE msgqOverlapped ;
+  OFC_HANDLE msgqOverlapped ;
   /*
    * These are added to help the CIFS write call.  Others that call write
    * should set distance to move to 0 and move method to FILE_CURRENT.
@@ -1686,7 +1686,7 @@ typedef struct
   OFC_OFFT offBuffer ;
   OFC_DWORD nNumberOfBytesToWrite ;
   OFC_DWORD nNumberOfBytesWritten ;
-  BLUE_HANDLE msgqOverlapped ;
+  OFC_HANDLE msgqOverlapped ;
   /*
    * These are added to help the CIFS write call.  Others that call write
    * should set distance to move to 0 and move method to FILE_CURRENT.
@@ -1730,7 +1730,7 @@ typedef struct
   OFC_DWORD nInBufferSize ;
   OFC_DWORD nOutBufferSize ;
   OFC_DWORD nBytesRead ;
-  BLUE_HANDLE msgqOverlapped ;
+  OFC_HANDLE msgqOverlapped ;
 } FILE_CALL_TRANSACT2_NAMED_PIPE ;
 
 typedef struct
@@ -1739,7 +1739,7 @@ typedef struct
   OFC_DWORD nInBufferSize ;
   OFC_DWORD nOutBufferSize ;
   OFC_DWORD nBytesReturned ;
-  BLUE_HANDLE msgqOverlapped ;
+  OFC_HANDLE msgqOverlapped ;
 } FILE_CALL_DEVICE_IO_CONTROL ;
 
 typedef struct
@@ -1799,7 +1799,7 @@ typedef struct
 {
   OFC_BOOL status ;
   OFC_DWORD dwLastError ;
-  BLUE_HANDLE hFile ;
+  OFC_HANDLE hFile ;
   OFC_MSTIME stamp ;
   union 
   {
@@ -1859,7 +1859,7 @@ extern "C"
    * OFC_TRUE if the function succeeded, OFC_FALSE if failure
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcCloseHandle (BLUE_HANDLE hObject) ;
+  OfcCloseHandle (OFC_HANDLE hObject) ;
   /**
    * Create or Open a File
    *
@@ -1884,28 +1884,28 @@ extern "C"
    * The file attributes and flag.  The flags used by Win32 are accepted.
    * 
    * \param hTemplateFile
-   * This parameter is ignored and should be BLUE_HANDLE_NULL
+   * This parameter is ignored and should be OFC_HANDLE_NULL
    *
    * \returns
-   * If the function fails, the return valid is BLUE_INVALID_HANDLE_VALUE
+   * If the function fails, the return valid is OFC_INVALID_HANDLE_VALUE
    * If it succeeds, it will return a file handle.
    */
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   OfcCreateFileW (OFC_LPCTSTR lpFileName,
                   OFC_DWORD dwDesiredAccess,
                   OFC_DWORD dwShareMode,
                   OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
                   OFC_DWORD dwCreationDisposition,
                   OFC_DWORD dwFlagsAndAttributes,
-                  BLUE_HANDLE hTemplateFile) ;
-  OFC_CORE_LIB BLUE_HANDLE
+                  OFC_HANDLE hTemplateFile) ;
+  OFC_CORE_LIB OFC_HANDLE
   OfcCreateFileA (OFC_LPCSTR lpFileName,
                   OFC_DWORD dwDesiredAccess,
                   OFC_DWORD dwShareMode,
                   OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
                   OFC_DWORD dwCreationDisposition,
                   OFC_DWORD dwFlagsAndAttributes,
-                  BLUE_HANDLE hTemplateFile) ;
+                  OFC_HANDLE hTemplateFile) ;
   /**
    * Create a directory
    *
@@ -1971,13 +1971,13 @@ extern "C"
    * \returns
    * If the function succeeds, it will return a handle that can be used
    * in subsequent OfcFindNextFile or OfcFindClose call.
-   * If the function failed, it will return BLUE_INVALID_HANDLE_VALUE.
+   * If the function failed, it will return OFC_INVALID_HANDLE_VALUE.
    */
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   OfcFindFirstFileW (OFC_LPCTSTR lpFileName,
                      OFC_LPWIN32_FIND_DATAW lpFindFileData,
                      OFC_BOOL *more) ;
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   OfcFindFirstFileA (OFC_LPCSTR lpFileName,
                      OFC_LPWIN32_FIND_DATAA lpFindFileData,
                      OFC_BOOL *more) ;
@@ -1999,11 +1999,11 @@ extern "C"
    * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcFindNextFileW (BLUE_HANDLE hFindFile,
+  OfcFindNextFileW (OFC_HANDLE hFindFile,
                     OFC_LPWIN32_FIND_DATAW lpFindFileData,
                     OFC_BOOL *more) ;
   OFC_CORE_LIB OFC_BOOL
-  OfcFindNextFileA (BLUE_HANDLE hFindFile,
+  OfcFindNextFileA (OFC_HANDLE hFindFile,
                     OFC_LPWIN32_FIND_DATAA lpFindFileData,
                     OFC_BOOL *more) ;
   /**
@@ -2016,7 +2016,7 @@ extern "C"
    * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcFindClose (BLUE_HANDLE hFindFile) ;
+  OfcFindClose (OFC_HANDLE hFindFile) ;
   /**
    * Write all buffered data to the file and clear any buffer cache
    *
@@ -2027,7 +2027,7 @@ extern "C"
    * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcFlushFileBuffers (BLUE_HANDLE hFile) ;
+  OfcFlushFileBuffers (OFC_HANDLE hFile) ;
   /**
    * Retrieves Attributes for a specified file or directory
    *
@@ -2079,7 +2079,7 @@ extern "C"
    * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcGetFileInformationByHandleEx (BLUE_HANDLE hFile,
+  OfcGetFileInformationByHandleEx (OFC_HANDLE hFile,
                                    OFC_FILE_INFO_BY_HANDLE_CLASS
 				    FileInformationClass,
                                    OFC_LPVOID lpFileInformation,
@@ -2125,11 +2125,11 @@ extern "C"
    * OFC_FALSE if the function fails, OFC_TRUE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcReadFile (BLUE_HANDLE hFile,
+  OfcReadFile (OFC_HANDLE hFile,
                OFC_LPVOID lpBuffer,
                OFC_DWORD nNumberOfBytesToRead,
                OFC_LPDWORD lpNumberOfBytesRead,
-               BLUE_HANDLE hOverlapped) ;
+               OFC_HANDLE hOverlapped) ;
   /**
    * Create an Overlapped I/O Structure for the desired platform
    *
@@ -2140,8 +2140,8 @@ extern "C"
    * \returns
    * Handle to the Overlapped I/O Context
    */
-  OFC_CORE_LIB BLUE_HANDLE
-  OfcCreateOverlapped (BLUE_HANDLE hFile) ;
+  OFC_CORE_LIB OFC_HANDLE
+  OfcCreateOverlapped (OFC_HANDLE hFile) ;
   /**
    * Destroy an Overlapped I/O context
    *
@@ -2152,7 +2152,7 @@ extern "C"
    * The overlapped context to destroy
    */
   OFC_CORE_LIB OFC_VOID
-  OfcDestroyOverlapped (BLUE_HANDLE hFile, BLUE_HANDLE hOverlapped) ;
+  OfcDestroyOverlapped (OFC_HANDLE hFile, OFC_HANDLE hOverlapped) ;
   /**
    * Set the offset at which an overlapped I/O should occur
    *
@@ -2170,7 +2170,7 @@ extern "C"
    * The file offset to set
    */
   OFC_CORE_LIB OFC_VOID
-  OfcSetOverlappedOffset (BLUE_HANDLE hFile, BLUE_HANDLE hOverlapped,
+  OfcSetOverlappedOffset (OFC_HANDLE hFile, OFC_HANDLE hOverlapped,
                           OFC_OFFT offset) ;
   /**
    * Retrieves the results of an overlapped operation on the specified file
@@ -2192,8 +2192,8 @@ extern "C"
    * OFC_TRUE if the function succeeds, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcGetOverlappedResult (BLUE_HANDLE hFile,
-                          BLUE_HANDLE hOverlapped,
+  OfcGetOverlappedResult (OFC_HANDLE hFile,
+                          OFC_HANDLE hOverlapped,
                           OFC_LPDWORD lpNumberOfBytesTransferred,
                           OFC_BOOL bWait) ;
   /**
@@ -2206,7 +2206,7 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcSetEndOfFile (BLUE_HANDLE hFile) ;
+  OfcSetEndOfFile (OFC_HANDLE hFile) ;
   /**
    * Sets the attributes for a file or directory
    *
@@ -2247,7 +2247,7 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcSetFileInformationByHandle (BLUE_HANDLE hFile,
+  OfcSetFileInformationByHandle (OFC_HANDLE hFile,
                                  OFC_FILE_INFO_BY_HANDLE_CLASS
 				  FileInformationClass,
                                  OFC_LPVOID lpFileInformation,
@@ -2278,7 +2278,7 @@ extern "C"
    * be taken not to get false negatives.
    */
   OFC_CORE_LIB OFC_DWORD
-  OfcSetFilePointer (BLUE_HANDLE hFile, OFC_LONG lDistanceToMove,
+  OfcSetFilePointer (OFC_HANDLE hFile, OFC_LONG lDistanceToMove,
                      OFC_PLONG lpDistanceToMoveHigh,
                      OFC_DWORD dwMoveMethod) ;
 
@@ -2304,11 +2304,11 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE if failed
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcWriteFile (BLUE_HANDLE hFile,
+  OfcWriteFile (OFC_HANDLE hFile,
                 OFC_LPCVOID lpBuffer,
                 OFC_DWORD nNumberOfBytesToWrite,
                 OFC_LPDWORD lpNumberOfBytesWritten,
-                BLUE_HANDLE hOverlapped) ;
+                OFC_HANDLE hOverlapped) ;
   /**
    * Perform a transaction on a named pipe
    *
@@ -2338,13 +2338,13 @@ extern "C"
    * will return the error code
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcTransactNamedPipe (BLUE_HANDLE hFile,
+  OfcTransactNamedPipe (OFC_HANDLE hFile,
                         OFC_LPVOID lpInBuffer,
                         OFC_DWORD nInBufferSize,
                         OFC_LPVOID lpOutBuffer,
                         OFC_DWORD nOutBufferSize,
                         OFC_LPDWORD lpBytesRead,
-                        BLUE_HANDLE hOverlapped) ;
+                        OFC_HANDLE hOverlapped) ;
   /**
    * Get the last file error that occured in this file handler for
    * this thread
@@ -2355,7 +2355,7 @@ extern "C"
    * NOTE: Use OfcGetLastError instead.
    */
   OFC_CORE_LIB OFC_UINT32
-  OfcGetLastFileError (BLUE_HANDLE hHandle) ;
+  OfcGetLastFileError (OFC_HANDLE hHandle) ;
   /**
    * Get the last error encountered by the File Component of 
    * Open Files
@@ -2476,8 +2476,8 @@ extern "C"
    * \returns
    * The type of file system
    */  
-  OFC_CORE_LIB BLUE_FS_TYPE
-  OfcFileGetFSType (BLUE_HANDLE hHandle) ;
+  OFC_CORE_LIB OFC_FST_TYPE
+  OfcFileGetFSType (OFC_HANDLE hHandle) ;
   /**
    * An internal call to return the native file system handle
    *
@@ -2487,8 +2487,8 @@ extern "C"
    * \returns
    * A handle to the lower file system specific file
    */
-  OFC_CORE_LIB BLUE_HANDLE
-  OfcFileGetFSHandle (BLUE_HANDLE hHandle) ;
+  OFC_CORE_LIB OFC_HANDLE
+  OfcFileGetFSHandle (OFC_HANDLE hHandle) ;
   /**
    * Unlock a region in a file
    * 
@@ -2508,10 +2508,10 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcUnlockFileEx (BLUE_HANDLE hFile,
+  OfcUnlockFileEx (OFC_HANDLE hFile,
                    OFC_UINT32 length_low,
                    OFC_UINT32 length_high,
-                   BLUE_HANDLE hOverlapped) ;
+                   OFC_HANDLE hOverlapped) ;
   /**
    * Lock a region of a file
    * 
@@ -2534,9 +2534,9 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  OfcLockFileEx (BLUE_HANDLE hFile, OFC_DWORD flags,
+  OfcLockFileEx (OFC_HANDLE hFile, OFC_DWORD flags,
                  OFC_DWORD length_low, OFC_DWORD length_high,
-                 BLUE_HANDLE hOverlapped) ;
+                 OFC_HANDLE hOverlapped) ;
   /**
    * Get the event handle of the overlapped event (deprecated)
    *
@@ -2546,8 +2546,8 @@ extern "C"
    * \returns
    * The event handle
    */
-  OFC_CORE_LIB BLUE_HANDLE
-  OfcFileGetOverlappedEvent (BLUE_HANDLE hOverlapped) ;
+  OFC_CORE_LIB OFC_HANDLE
+  OfcFileGetOverlappedEvent (OFC_HANDLE hOverlapped) ;
   /**
    * Get the Message Queue of the overlapped event
    *
@@ -2557,8 +2557,8 @@ extern "C"
    * \returns
    * The msgq handle
    */
-  OFC_CORE_LIB BLUE_HANDLE
-  OfcFileGetOverlappedWaitQ (BLUE_HANDLE hOverlapped) ;
+  OFC_CORE_LIB OFC_HANDLE
+  OfcFileGetOverlappedWaitQ (OFC_HANDLE hOverlapped) ;
   /**
    * Dismount an SMB client connection
    *
@@ -2582,14 +2582,14 @@ extern "C"
    *
    * This is an internal API that is used for DFS resolution
    */
-  OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl (BLUE_HANDLE hFile,
+  OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl (OFC_HANDLE hFile,
                                             OFC_DWORD dwIoControlCode,
                                             OFC_LPVOID lpInBuffer,
                                             OFC_DWORD nInBufferSize,
                                             OFC_LPVOID lpOutBuffer,
                                             OFC_DWORD nOutBufferSize,
                                             OFC_LPDWORD lpBytesReturned,
-                                            BLUE_HANDLE hOverlapped) ;
+                                            OFC_HANDLE hOverlapped) ;
 #if defined(__cplusplus)
 }
 #endif

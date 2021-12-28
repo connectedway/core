@@ -22,8 +22,8 @@
 
 typedef struct _BLUE_FILE_CONTEXT
 {
-  BLUE_HANDLE fsHandle ;
-  BLUE_FS_TYPE fsType ;
+  OFC_HANDLE fsHandle ;
+  OFC_FST_TYPE fsType ;
 #if defined(OFC_FILE_DEBUG)
   struct _BLUE_FILE_CONTEXT * dbgnext ;
   struct _BLUE_FILE_CONTEXT * dbgprev ;
@@ -36,7 +36,7 @@ typedef struct _BLUE_FILE_CONTEXT
   BLUE_VOID *caller ;
 #endif
 #endif
-  BLUE_HANDLE overlappedList ;
+  OFC_HANDLE overlappedList ;
 } BLUE_FILE_CONTEXT ;
 
 OFC_DWORD OfcLastError ;
@@ -130,9 +130,9 @@ BlueFileDebugDump (BLUE_VOID)
 }
 #endif
 
-static BLUE_FS_TYPE MapType (BLUE_PATH *path)
+static OFC_FST_TYPE MapType (BLUE_PATH *path)
 {
-  BLUE_FS_TYPE fstype ;
+  OFC_FST_TYPE fstype ;
   OFC_LPCTSTR server ;
   OFC_LPCTSTR share ;
   OFC_BOOL server_wild ;
@@ -212,19 +212,19 @@ static BLUE_FS_TYPE MapType (BLUE_PATH *path)
   return (fstype) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 OfcCreateFileW (OFC_LPCTSTR lpFileName,
                 OFC_DWORD dwDesiredAccess,
                 OFC_DWORD dwShareMode,
                 OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
                 OFC_DWORD dwCreationDisposition,
                 OFC_DWORD dwFlagsAndAttributes,
-                BLUE_HANDLE hTemplateFile)
+                OFC_HANDLE hTemplateFile)
 {
   OFC_LPTSTR lpMappedFileName ;
   BLUE_FILE_CONTEXT *fileContext ;
-  BLUE_HANDLE retHandle ;
-  BLUE_HANDLE hMappedTemplateHandle ;
+  OFC_HANDLE retHandle ;
+  OFC_HANDLE hMappedTemplateHandle ;
 
   fileContext = BlueHeapMalloc (sizeof (BLUE_FILE_CONTEXT)) ;
 
@@ -235,30 +235,30 @@ OfcCreateFileW (OFC_LPCTSTR lpFileName,
 #endif
   BluePathMapW (lpFileName, &lpMappedFileName, &fileContext->fsType) ;
 
-  hMappedTemplateHandle = BLUE_HANDLE_NULL ;
-  if (hTemplateFile != BLUE_HANDLE_NULL)
+  hMappedTemplateHandle = OFC_HANDLE_NULL ;
+  if (hTemplateFile != OFC_HANDLE_NULL)
     {
       BLUE_FILE_CONTEXT *templateContext ;
-      templateContext = BlueHandleLock (hTemplateFile) ;
+      templateContext = ofc_handle_lock (hTemplateFile) ;
       if (templateContext != OFC_NULL)
 	{
 	  hMappedTemplateHandle = templateContext->fsHandle ;
-	  BlueHandleUnlock (hTemplateFile) ;
+	  ofc_handle_unlock (hTemplateFile) ;
 	}
     }
 
-  fileContext->fsHandle = BlueFSCreateFile (fileContext->fsType, 
-					    lpMappedFileName,
-					    dwDesiredAccess,
-					    dwShareMode,
-					    lpSecurityAttributes,
-					    dwCreationDisposition,
-					    dwFlagsAndAttributes,
-					    hMappedTemplateHandle) ;
+  fileContext->fsHandle = OfcFSCreateFile (fileContext->fsType,
+                                           lpMappedFileName,
+                                           dwDesiredAccess,
+                                           dwShareMode,
+                                           lpSecurityAttributes,
+                                           dwCreationDisposition,
+                                           dwFlagsAndAttributes,
+                                           hMappedTemplateHandle) ;
 
 
-  if (fileContext->fsHandle == BLUE_HANDLE_NULL ||
-      fileContext->fsHandle == BLUE_INVALID_HANDLE_VALUE)
+  if (fileContext->fsHandle == OFC_HANDLE_NULL ||
+      fileContext->fsHandle == OFC_INVALID_HANDLE_VALUE)
     {
       retHandle = fileContext->fsHandle ;
       BlueQdestroy (fileContext->overlappedList) ;
@@ -268,24 +268,24 @@ OfcCreateFileW (OFC_LPCTSTR lpFileName,
       BlueHeapFree (fileContext) ;
     }
   else
-    retHandle = BlueHandleCreate (BLUE_HANDLE_FILE, fileContext) ;
+    retHandle = ofc_handle_create (OFC_HANDLE_FILE, fileContext) ;
 
   BlueHeapFree (lpMappedFileName) ;
 
   return (retHandle) ;
 } 
 
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 OfcCreateFileA (OFC_LPCSTR lpFileName,
                 OFC_DWORD dwDesiredAccess,
                 OFC_DWORD dwShareMode,
                 OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
                 OFC_DWORD dwCreationDisposition,
                 OFC_DWORD dwFlagsAndAttributes,
-                BLUE_HANDLE hTemplateFile)
+                OFC_HANDLE hTemplateFile)
 {
   OFC_TCHAR *lptFileName ;
-  BLUE_HANDLE ret ;
+  OFC_HANDLE ret ;
 
   lptFileName = BlueCcstr2tstr (lpFileName) ;
   ret = OfcCreateFileW (lptFileName, dwDesiredAccess, dwShareMode,
@@ -300,12 +300,12 @@ OfcCreateDirectoryW (OFC_LPCTSTR lpPathName,
                      OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr)
 {
   OFC_LPTSTR lpMappedPathName ;
-  BLUE_FS_TYPE type ;	
+  OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
   BluePathMapW (lpPathName, &lpMappedPathName, &type) ;
 
-  ret = BlueFSCreateDirectory (type, lpMappedPathName, lpSecurityAttr) ;
+  ret = OfcFSCreateDirectory (type, lpMappedPathName, lpSecurityAttr) ;
 
   BlueHeapFree (lpMappedPathName) ;
 
@@ -326,25 +326,25 @@ OfcCreateDirectoryA (OFC_LPCSTR lpPathName,
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcWriteFile (BLUE_HANDLE hFile,
+OfcWriteFile (OFC_HANDLE hFile,
               OFC_LPCVOID lpBuffer,
               OFC_DWORD nNumberOfBytesToWrite,
               OFC_LPDWORD lpNumberOfBytesWritten,
-              BLUE_HANDLE hOverlapped)
+              OFC_HANDLE hOverlapped)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSWriteFile (fileContext->fsType,
-			     fileContext->fsHandle,
-			     lpBuffer,
-			     nNumberOfBytesToWrite,
-			     lpNumberOfBytesWritten,
-			     hOverlapped) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSWriteFile (fileContext->fsType,
+                            fileContext->fsHandle,
+                            lpBuffer,
+                            nNumberOfBytesToWrite,
+                            lpNumberOfBytesWritten,
+                            hOverlapped) ;
+      ofc_handle_unlock (hFile) ;
     }
   else
     ret = OFC_FALSE ;
@@ -353,29 +353,29 @@ OfcWriteFile (BLUE_HANDLE hFile,
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcTransactNamedPipe (BLUE_HANDLE hFile,
+OfcTransactNamedPipe (OFC_HANDLE hFile,
                       OFC_LPVOID lpInBuffer,
                       OFC_DWORD nInBufferSize,
                       OFC_LPVOID lpOutBuffer,
                       OFC_DWORD nOutBufferSize,
                       OFC_LPDWORD lpBytesRead,
-                      BLUE_HANDLE hOverlapped)
+                      OFC_HANDLE hOverlapped)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSTransactNamedPipe (fileContext->fsType,
-				     fileContext->fsHandle,
-				     lpInBuffer,
-				     nInBufferSize,
-				     lpOutBuffer,
-				     nOutBufferSize,
-				     lpBytesRead,
-				     hOverlapped) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSTransactNamedPipe (fileContext->fsType,
+                                    fileContext->fsHandle,
+                                    lpInBuffer,
+                                    nInBufferSize,
+                                    lpOutBuffer,
+                                    nOutBufferSize,
+                                    lpBytesRead,
+                                    hOverlapped) ;
+      ofc_handle_unlock (hFile) ;
     }
   else
     ret = OFC_FALSE ;
@@ -384,22 +384,22 @@ OfcTransactNamedPipe (BLUE_HANDLE hFile,
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcCloseHandle (BLUE_HANDLE hObject)
+OfcCloseHandle (OFC_HANDLE hObject)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
-  BLUE_HANDLE hOverlapped ;
+  OFC_HANDLE hOverlapped ;
 
-  fileContext = BlueHandleLock (hObject) ;
+  fileContext = ofc_handle_lock (hObject) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSCloseHandle (fileContext->fsType,
-			       fileContext->fsHandle) ;
+      ret = OfcFSCloseHandle (fileContext->fsType,
+                              fileContext->fsHandle) ;
       for (hOverlapped = 
-	     (BLUE_HANDLE) BlueQfirst (fileContext->overlappedList) ;
-	   hOverlapped != BLUE_HANDLE_NULL ;
+	     (OFC_HANDLE) BlueQfirst (fileContext->overlappedList) ;
+           hOverlapped != OFC_HANDLE_NULL ;
 	   hOverlapped = 
-	     (BLUE_HANDLE) BlueQfirst (fileContext->overlappedList))
+	     (OFC_HANDLE) BlueQfirst (fileContext->overlappedList))
 	{
 	  /*
 	   * This will also remove it from the overlapped list so first 
@@ -408,8 +408,8 @@ OfcCloseHandle (BLUE_HANDLE hObject)
 	  OfcDestroyOverlapped (hObject, hOverlapped) ;
 	}
       BlueQdestroy (fileContext->overlappedList) ;
-      BlueHandleUnlock (hObject) ;
-      BlueHandleDestroy (hObject) ;
+      ofc_handle_unlock (hObject) ;
+      ofc_handle_destroy (hObject) ;
 #if defined(OFC_FILE_DEBUG)
       BlueFileDebugFree (fileContext) ;
 #endif
@@ -422,25 +422,25 @@ OfcCloseHandle (BLUE_HANDLE hObject)
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcReadFile (BLUE_HANDLE hFile,
+OfcReadFile (OFC_HANDLE hFile,
              OFC_LPVOID lpBuffer,
              OFC_DWORD nNumberOfBytesToRead,
              OFC_LPDWORD lpNumberOfBytesRead,
-             BLUE_HANDLE hOverlapped)
+             OFC_HANDLE hOverlapped)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSReadFile (fileContext->fsType,
-			    fileContext->fsHandle,
-			    lpBuffer,
-			    nNumberOfBytesToRead,
-			    lpNumberOfBytesRead,
-			    hOverlapped) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSReadFile (fileContext->fsType,
+                           fileContext->fsHandle,
+                           lpBuffer,
+                           nNumberOfBytesToRead,
+                           lpNumberOfBytesRead,
+                           hOverlapped) ;
+      ofc_handle_unlock (hFile) ;
     }
   else
     ret = OFC_FALSE ;
@@ -448,71 +448,71 @@ OfcReadFile (BLUE_HANDLE hFile,
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
-OfcCreateOverlapped (BLUE_HANDLE hFile)
+OFC_CORE_LIB OFC_HANDLE
+OfcCreateOverlapped (OFC_HANDLE hFile)
 {
   BLUE_FILE_CONTEXT *fileContext ;
-  BLUE_HANDLE ret ;
+  OFC_HANDLE ret ;
 
-  ret = BLUE_HANDLE_NULL ;
-  fileContext = BlueHandleLock (hFile) ;
+  ret = OFC_HANDLE_NULL ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSCreateOverlapped (fileContext->fsType) ;
-      if (ret != BLUE_HANDLE_NULL)
+      ret = OfcFSCreateOverlapped (fileContext->fsType) ;
+      if (ret != OFC_HANDLE_NULL)
 	BlueQenqueue (fileContext->overlappedList, (OFC_VOID *) ret) ;
-      BlueHandleUnlock (hFile) ;
+      ofc_handle_unlock (hFile) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-OfcDestroyOverlapped (BLUE_HANDLE hFile, BLUE_HANDLE hOverlapped)
+OfcDestroyOverlapped (OFC_HANDLE hFile, OFC_HANDLE hOverlapped)
 {
   BLUE_FILE_CONTEXT *fileContext ;
 
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
       BlueQunlink (fileContext->overlappedList, (OFC_VOID *) hOverlapped) ;
-      BlueFSDestroyOverlapped (fileContext->fsType, hOverlapped) ;
-      BlueHandleUnlock (hFile) ;
+      OfcFSDestroyOverlapped (fileContext->fsType, hOverlapped) ;
+      ofc_handle_unlock (hFile) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-OfcSetOverlappedOffset (BLUE_HANDLE hFile,
-                        BLUE_HANDLE hOverlapped,
+OfcSetOverlappedOffset (OFC_HANDLE hFile,
+                        OFC_HANDLE hOverlapped,
                         OFC_OFFT offset)
 {
   BLUE_FILE_CONTEXT *fileContext ;
 
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      BlueFSSetOverlappedOffset (fileContext->fsType, hOverlapped, offset) ;
-      BlueHandleUnlock (hFile) ;
+      OfcFSSetOverlappedOffset (fileContext->fsType, hOverlapped, offset) ;
+      ofc_handle_unlock (hFile) ;
     }
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcGetOverlappedResult (BLUE_HANDLE hFile,
-                        BLUE_HANDLE hOverlapped,
+OfcGetOverlappedResult (OFC_HANDLE hFile,
+                        OFC_HANDLE hOverlapped,
                         OFC_LPDWORD lpNumberOfBytesTransferred,
                         OFC_BOOL bWait)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSGetOverlappedResult (fileContext->fsType,
-				       fileContext->fsHandle,
-				       hOverlapped,
-				       lpNumberOfBytesTransferred,
-				       bWait) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSGetOverlappedResult (fileContext->fsType,
+                                      fileContext->fsHandle,
+                                      hOverlapped,
+                                      lpNumberOfBytesTransferred,
+                                      bWait) ;
+      ofc_handle_unlock (hFile) ;
     }
   else
     ret = OFC_FALSE ;
@@ -525,12 +525,12 @@ OFC_CORE_LIB OFC_BOOL
 OfcDeleteFileW (OFC_LPCTSTR lpFileName)
 {
   OFC_LPTSTR lpMappedFileName ;
-  BLUE_FS_TYPE type ;	
+  OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
   BluePathMapW (lpFileName, &lpMappedFileName, &type) ;
 
-  ret = BlueFSDeleteFile (type, lpMappedFileName) ;
+  ret = OfcFSDeleteFile (type, lpMappedFileName) ;
 
   BlueHeapFree (lpMappedFileName) ;
 
@@ -553,12 +553,12 @@ OFC_CORE_LIB OFC_BOOL
 OfcRemoveDirectoryW (OFC_LPCTSTR lpPathName)
 {
   OFC_LPTSTR lpMappedPathName ;
-  BLUE_FS_TYPE type ;	
+  OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
   BluePathMapW (lpPathName, &lpMappedPathName, &type) ;
 
-  ret = BlueFSRemoveDirectory (type, lpMappedPathName) ;
+  ret = OfcFSRemoveDirectory (type, lpMappedPathName) ;
 
   BlueHeapFree (lpMappedPathName) ;
 
@@ -577,18 +577,18 @@ OfcRemoveDirectoryA (OFC_LPCSTR lpPathName)
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 OfcFindFirstFileW (OFC_LPCTSTR lpFileName,
                    OFC_LPWIN32_FIND_DATAW lpFindFileData,
                    OFC_BOOL *more)
 {
   OFC_LPTSTR lpMappedFileName ;
   BLUE_FILE_CONTEXT *fileContext ;
-  BLUE_HANDLE retHandle ;
+  OFC_HANDLE retHandle ;
   BLUE_PATH *path ;
 
 
-  retHandle = BLUE_INVALID_HANDLE_VALUE ;
+  retHandle = OFC_INVALID_HANDLE_VALUE ;
   fileContext = BlueHeapMalloc (sizeof (BLUE_FILE_CONTEXT)) ;
   if (fileContext != OFC_NULL)
     {
@@ -599,14 +599,14 @@ OfcFindFirstFileW (OFC_LPCTSTR lpFileName,
 
       fileContext->fsType = MapType (path) ;
 
-      fileContext->fsHandle = BlueFSFindFirstFile (fileContext->fsType, 
-	                                           lpMappedFileName, 
-                                                   lpFindFileData,
-						   more) ;
-      if (fileContext->fsHandle == BLUE_HANDLE_NULL ||
-          fileContext->fsHandle == BLUE_INVALID_HANDLE_VALUE)
+      fileContext->fsHandle = OfcFSFindFirstFile (fileContext->fsType,
+                                                  lpMappedFileName,
+                                                  lpFindFileData,
+                                                  more) ;
+      if (fileContext->fsHandle == OFC_HANDLE_NULL ||
+          fileContext->fsHandle == OFC_INVALID_HANDLE_VALUE)
         {
-	  if (fileContext->fsType == BLUE_FS_BROWSE_SERVERS &&
+	  if (fileContext->fsType == OFC_FST_BROWSE_SERVERS &&
           BluePathServer(path) != OFC_NULL)
 	    RemoveWorkgroup (BluePathServer(path)) ;
 
@@ -618,8 +618,8 @@ OfcFindFirstFileW (OFC_LPCTSTR lpFileName,
         }
       else
 	{
-	  retHandle = BlueHandleCreate (BLUE_HANDLE_FILE, fileContext) ;
-	  if (fileContext->fsType == BLUE_FS_BROWSE_WORKGROUPS)
+	  retHandle = ofc_handle_create (OFC_HANDLE_FILE, fileContext) ;
+	  if (fileContext->fsType == OFC_FST_BROWSE_WORKGROUPS)
 	    UpdateWorkgroup (lpFindFileData->cFileName) ;
 	}
       BlueHeapFree (lpMappedFileName) ;
@@ -659,25 +659,25 @@ BlueFileFindDataW2FindDataA (OFC_LPWIN32_FIND_DATAA lpaFindFileData,
       (OFC_CHAR) lpwFindFileData->cAlternateFileName[i] ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 OfcFindFirstFileA (OFC_LPCSTR lpFileName,
                    OFC_LPWIN32_FIND_DATAA lpFindFileData,
                    OFC_BOOL *more)
 {
-  BLUE_HANDLE ret ;
+  OFC_HANDLE ret ;
   OFC_TCHAR *lptFileName ;
   OFC_WIN32_FIND_DATAW tFindFileData ;
 
   lptFileName = BlueCcstr2tstr (lpFileName) ;
   ret = OfcFindFirstFileW (lptFileName, &tFindFileData, more) ;
   BlueHeapFree (lptFileName) ;
-  if (ret != BLUE_INVALID_HANDLE_VALUE)
+  if (ret != OFC_INVALID_HANDLE_VALUE)
     BlueFileFindDataW2FindDataA (lpFindFileData, &tFindFileData) ;
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcFindNextFileW (BLUE_HANDLE hFindFile,
+OfcFindNextFileW (OFC_HANDLE hFindFile,
                   OFC_LPWIN32_FIND_DATAW lpFindFileData,
                   OFC_BOOL *more)
 {
@@ -685,25 +685,25 @@ OfcFindNextFileW (BLUE_HANDLE hFindFile,
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFindFile) ;
+  fileContext = ofc_handle_lock (hFindFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSFindNextFile (fileContext->fsType,
-			        fileContext->fsHandle,
-                                lpFindFileData,
-				more) ;
+      ret = OfcFSFindNextFile (fileContext->fsType,
+                               fileContext->fsHandle,
+                               lpFindFileData,
+                               more) ;
 
-      if (ret == OFC_TRUE && fileContext->fsType == BLUE_FS_BROWSE_WORKGROUPS)
+      if (ret == OFC_TRUE && fileContext->fsType == OFC_FST_BROWSE_WORKGROUPS)
 	UpdateWorkgroup (lpFindFileData->cFileName) ;
 
-      BlueHandleUnlock (hFindFile) ;
+      ofc_handle_unlock (hFindFile) ;
     }
 
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcFindNextFileA (BLUE_HANDLE hFindFile,
+OfcFindNextFileA (OFC_HANDLE hFindFile,
                   OFC_LPWIN32_FIND_DATAA lpFindFileData,
                   OFC_BOOL *more)
 {
@@ -717,19 +717,19 @@ OfcFindNextFileA (BLUE_HANDLE hFindFile,
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcFindClose (BLUE_HANDLE hFindFile)
+OfcFindClose (OFC_HANDLE hFindFile)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFindFile) ;
+  fileContext = ofc_handle_lock (hFindFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSFindClose (fileContext->fsType,
-			     fileContext->fsHandle) ;
-      BlueHandleUnlock (hFindFile) ;
-      BlueHandleDestroy (hFindFile) ;
+      ret = OfcFSFindClose (fileContext->fsType,
+                            fileContext->fsHandle) ;
+      ofc_handle_unlock (hFindFile) ;
+      ofc_handle_destroy (hFindFile) ;
 #if defined(OFC_FILE_DEBUG)
       BlueFileDebugFree (fileContext) ;
 #endif
@@ -740,18 +740,18 @@ OfcFindClose (BLUE_HANDLE hFindFile)
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcFlushFileBuffers (BLUE_HANDLE hFile)
+OfcFlushFileBuffers (OFC_HANDLE hFile)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSFlushFileBuffers (fileContext->fsType,
-			            fileContext->fsHandle) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSFlushFileBuffers (fileContext->fsType,
+                                   fileContext->fsHandle) ;
+      ofc_handle_unlock (hFile) ;
     }
 
   return (ret) ;
@@ -763,7 +763,7 @@ OfcGetFileAttributesExW (OFC_LPCTSTR lpFileName,
                          OFC_LPVOID lpFileInformation)
 {
   OFC_LPTSTR lpMappedFileName ;
-  BLUE_FS_TYPE type ;	
+  OFC_FST_TYPE type ;
   OFC_BOOL ret ;
   BLUE_PATH *path ;
 
@@ -778,8 +778,8 @@ OfcGetFileAttributesExW (OFC_LPCTSTR lpFileName,
       path = BlueMapPath (lpFileName, &lpMappedFileName) ;
       type = MapType (path) ;
 
-      ret = BlueFSGetFileAttributesEx (type, lpMappedFileName, 
-				       fInfoLevelId, lpFileInformation) ;
+      ret = OfcFSGetFileAttributesEx (type, lpMappedFileName,
+                                      fInfoLevelId, lpFileInformation) ;
       BluePathDelete (path) ;
       BlueHeapFree (lpMappedFileName) ;
     }
@@ -802,7 +802,7 @@ OfcGetFileAttributesExA (OFC_LPCSTR lpFileName,
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcGetFileInformationByHandleEx (BLUE_HANDLE hFile,
+OfcGetFileInformationByHandleEx (OFC_HANDLE hFile,
                                  OFC_FILE_INFO_BY_HANDLE_CLASS
 				  FileInformationClass,
                                  OFC_LPVOID lpFileInformation,
@@ -812,15 +812,15 @@ OfcGetFileInformationByHandleEx (BLUE_HANDLE hFile,
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSGetFileInformationByHandleEx (fileContext->fsType,
-			                        fileContext->fsHandle,
-                                                FileInformationClass,
-                                                lpFileInformation,
-                                                dwBufferSize) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSGetFileInformationByHandleEx (fileContext->fsType,
+                                               fileContext->fsHandle,
+                                               FileInformationClass,
+                                               lpFileInformation,
+                                               dwBufferSize) ;
+      ofc_handle_unlock (hFile) ;
     }
 
   return (ret) ;
@@ -832,8 +832,8 @@ OfcMoveFileW (OFC_LPCTSTR lpExistingFileName,
 {
   OFC_LPTSTR lpExistingMappedFileName ;
   OFC_LPTSTR lpNewMappedFileName ;
-  BLUE_FS_TYPE existingType ;	
-  BLUE_FS_TYPE newType ;
+  OFC_FST_TYPE existingType ;
+  OFC_FST_TYPE newType ;
   OFC_BOOL ret ;
 
   BluePathMapW (lpExistingFileName, &lpExistingMappedFileName, &existingType) ;
@@ -844,9 +844,9 @@ OfcMoveFileW (OFC_LPCTSTR lpExistingFileName,
    */
   BluePathMapW (lpNewFileName, &lpNewMappedFileName, &newType) ;
   
-  ret = BlueFSMoveFile (existingType,
-			lpExistingMappedFileName,
-			lpNewMappedFileName) ;
+  ret = OfcFSMoveFile (existingType,
+                       lpExistingMappedFileName,
+                       lpNewMappedFileName) ;
 
   BlueHeapFree (lpExistingMappedFileName) ;
   BlueHeapFree (lpNewMappedFileName) ;
@@ -870,18 +870,18 @@ OfcMoveFileA (OFC_LPCSTR lpExistingFileName,
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcSetEndOfFile (BLUE_HANDLE hFile)
+OfcSetEndOfFile (OFC_HANDLE hFile)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSSetEndOfFile (fileContext->fsType,
-			        fileContext->fsHandle) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSSetEndOfFile (fileContext->fsType,
+                               fileContext->fsHandle) ;
+      ofc_handle_unlock (hFile) ;
     }
   return (ret) ;
 }
@@ -891,12 +891,12 @@ OfcSetFileAttributesW (OFC_LPCTSTR lpFileName,
                        OFC_DWORD dwFileAttributes)
 {
   OFC_LPTSTR lpMappedFileName ;
-  BLUE_FS_TYPE type ;	
+  OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
   BluePathMapW (lpFileName, &lpMappedFileName, &type) ;
 
-  ret = BlueFSSetFileAttributes (type, lpMappedFileName, dwFileAttributes) ;
+  ret = OfcFSSetFileAttributes (type, lpMappedFileName, dwFileAttributes) ;
 
   BlueHeapFree (lpMappedFileName) ;
   return (ret) ;
@@ -916,7 +916,7 @@ OfcSetFileAttributesA (OFC_LPCSTR lpFileName,
 }
 
 OFC_CORE_LIB OFC_BOOL
-OfcSetFileInformationByHandle (BLUE_HANDLE hFile,
+OfcSetFileInformationByHandle (OFC_HANDLE hFile,
                                OFC_FILE_INFO_BY_HANDLE_CLASS
 				FileInformationClass,
                                OFC_LPVOID lpFileInformation,
@@ -926,22 +926,22 @@ OfcSetFileInformationByHandle (BLUE_HANDLE hFile,
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSSetFileInformationByHandle (fileContext->fsType,
-					      fileContext->fsHandle,
-					      FileInformationClass,
-					      lpFileInformation,
-					      dwBufferSize) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSSetFileInformationByHandle (fileContext->fsType,
+                                             fileContext->fsHandle,
+                                             FileInformationClass,
+                                             lpFileInformation,
+                                             dwBufferSize) ;
+      ofc_handle_unlock (hFile) ;
     }
 
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_DWORD
-OfcSetFilePointer (BLUE_HANDLE hFile,
+OfcSetFilePointer (OFC_HANDLE hFile,
                    OFC_LONG lDistanceToMove,
                    OFC_PLONG lpDistanceToMoveHigh,
                    OFC_DWORD dwMoveMethod)
@@ -950,21 +950,21 @@ OfcSetFilePointer (BLUE_HANDLE hFile,
   OFC_DWORD ret ;
 
   ret = OFC_INVALID_SET_FILE_POINTER ;
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSSetFilePointer (fileContext->fsType,
-			          fileContext->fsHandle,
-                                  lDistanceToMove,
-                                  lpDistanceToMoveHigh,
-                                  dwMoveMethod) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSSetFilePointer (fileContext->fsType,
+                                 fileContext->fsHandle,
+                                 lDistanceToMove,
+                                 lpDistanceToMoveHigh,
+                                 dwMoveMethod) ;
+      ofc_handle_unlock (hFile) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_UINT32
-OfcGetLastFileError (BLUE_HANDLE hHandle)
+OfcGetLastFileError (OFC_HANDLE hHandle)
 {
   OFC_UINT32 last_error ;
 
@@ -1135,7 +1135,7 @@ OfcGetDiskFreeSpaceW (OFC_LPCTSTR lpRootPathName,
                       OFC_LPDWORD lpTotalNumberOfClusters)
 {
   OFC_LPTSTR lpMappedPathName ;
-  BLUE_FS_TYPE type ;	
+  OFC_FST_TYPE type ;
   OFC_BOOL ret ;
   BLUE_PATH *path ;
 
@@ -1146,12 +1146,12 @@ OfcGetDiskFreeSpaceW (OFC_LPCTSTR lpRootPathName,
   type = MapType (path) ;
 #endif
 
-  ret = BlueFSGetDiskFreeSpace (type,
-				lpMappedPathName,
-				lpSectorsPerCluster,
-				lpBytesPerSector,
-				lpNumberOfFreeClusters,
-				lpTotalNumberOfClusters) ;
+  ret = OfcFSGetDiskFreeSpace (type,
+                               lpMappedPathName,
+                               lpSectorsPerCluster,
+                               lpBytesPerSector,
+                               lpNumberOfFreeClusters,
+                               lpTotalNumberOfClusters) ;
 
   BlueHeapFree (lpMappedPathName) ;
 #if 1
@@ -1190,20 +1190,20 @@ OfcGetVolumeInformationW (OFC_LPCTSTR lpRootPathName,
                           OFC_DWORD nFileSystemName)
 {
   OFC_LPTSTR lpMappedPathName ;
-  BLUE_FS_TYPE type ;	
+  OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
   BluePathGetRootW (lpRootPathName, &lpMappedPathName, &type) ;
 
-  ret = BlueFSGetVolumeInformation (type,
-				    lpMappedPathName,
-				    lpVolumeNameBuffer,
-				    nVolumeNameSize,
-				    lpVolumeSerialNumber,
-				    lpMaximumComponentLength,
-				    lpFileSystemFlags,
-				    lpFileSystemName,
-				    nFileSystemName)  ;
+  ret = OfcFSGetVolumeInformation (type,
+                                   lpMappedPathName,
+                                   lpVolumeNameBuffer,
+                                   nVolumeNameSize,
+                                   lpVolumeSerialNumber,
+                                   lpMaximumComponentLength,
+                                   lpFileSystemFlags,
+                                   lpFileSystemName,
+                                   nFileSystemName)  ;
 
   BlueHeapFree (lpMappedPathName) ;
 
@@ -1280,22 +1280,22 @@ OfcGetVolumeInformationA (OFC_LPCSTR lpRootPathName,
  * OFC_TRUE if successful, OFC_FALSE otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-OfcUnlockFileEx (BLUE_HANDLE hFile,
+OfcUnlockFileEx (OFC_HANDLE hFile,
                  OFC_UINT32 length_low, OFC_UINT32 length_high,
-                 BLUE_HANDLE hOverlapped)
+                 OFC_HANDLE hOverlapped)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSUnlockFileEx (fileContext->fsType,
-				fileContext->fsHandle,
-				length_low, length_high, hOverlapped) ;
+      ret = OfcFSUnlockFileEx (fileContext->fsType,
+                               fileContext->fsHandle,
+                               length_low, length_high, hOverlapped) ;
 
-      BlueHandleUnlock (hFile) ;
+      ofc_handle_unlock (hFile) ;
     }
   return (ret) ;
 }
@@ -1322,22 +1322,22 @@ OfcUnlockFileEx (BLUE_HANDLE hFile,
  * OFC_TRUE if successful, OFC_FALSE otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-OfcLockFileEx (BLUE_HANDLE hFile, OFC_DWORD flags,
+OfcLockFileEx (OFC_HANDLE hFile, OFC_DWORD flags,
                OFC_DWORD length_low, OFC_DWORD length_high,
-               BLUE_HANDLE hOverlapped)
+               OFC_HANDLE hOverlapped)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSLockFileEx (fileContext->fsType, 
-			      fileContext->fsHandle, flags,
-			      length_low, length_high, hOverlapped) ;
+      ret = OfcFSLockFileEx (fileContext->fsType,
+                             fileContext->fsHandle, flags,
+                             length_low, length_high, hOverlapped) ;
 
-      BlueHandleUnlock (hFile) ;
+      ofc_handle_unlock (hFile) ;
     }
   return (ret) ;
 }
@@ -1346,12 +1346,12 @@ OFC_CORE_LIB OFC_BOOL
 OfcDismountW (OFC_LPCTSTR lpFileName)
 {
   OFC_LPTSTR lpMappedFileName ;
-  BLUE_FS_TYPE fsType ;
+  OFC_FST_TYPE fsType ;
   OFC_BOOL ret ;
 
   BluePathMapW (lpFileName, &lpMappedFileName, &fsType) ;
 
-  ret = BlueFSDismount (fsType, lpMappedFileName) ;
+  ret = OfcFSDismount (fsType, lpMappedFileName) ;
 
   BlueHeapFree (lpMappedFileName) ;
 
@@ -1371,31 +1371,31 @@ OfcDismountA (OFC_LPCSTR lpFileName)
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl (BLUE_HANDLE hFile,
+OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl (OFC_HANDLE hFile,
                                           OFC_DWORD dwIoControlCode,
                                           OFC_LPVOID lpInBuffer,
                                           OFC_DWORD nInBufferSize,
                                           OFC_LPVOID lpOutBuffer,
                                           OFC_DWORD nOutBufferSize,
                                           OFC_LPDWORD lpBytesReturned,
-                                          BLUE_HANDLE hOverlapped)
+                                          OFC_HANDLE hOverlapped)
 {
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_BOOL ret ;
 
-  fileContext = BlueHandleLock (hFile) ;
+  fileContext = ofc_handle_lock (hFile) ;
   if (fileContext != OFC_NULL)
     {
-      ret = BlueFSDeviceIoControl (fileContext->fsType,
-				   fileContext->fsHandle,
-				   dwIoControlCode,
-				   lpInBuffer,
-				   nInBufferSize,
-				   lpOutBuffer,
-				   nOutBufferSize,
-				   lpBytesReturned,
-				   hOverlapped) ;
-      BlueHandleUnlock (hFile) ;
+      ret = OfcFSDeviceIoControl (fileContext->fsType,
+                                  fileContext->fsHandle,
+                                  dwIoControlCode,
+                                  lpInBuffer,
+                                  nInBufferSize,
+                                  lpOutBuffer,
+                                  nOutBufferSize,
+                                  lpBytesReturned,
+                                  hOverlapped) ;
+      ofc_handle_unlock (hFile) ;
     }
   else
     ret = OFC_FALSE ;
@@ -1403,68 +1403,68 @@ OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl (BLUE_HANDLE hFile,
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_FS_TYPE
-OfcFileGetFSType (BLUE_HANDLE hHandle)
+OFC_CORE_LIB OFC_FST_TYPE
+OfcFileGetFSType (OFC_HANDLE hHandle)
 {
   BLUE_FILE_CONTEXT *pFileContext ;
-  BLUE_FS_TYPE ret ;
+  OFC_FST_TYPE ret ;
 
-  ret = BLUE_FS_UNKNOWN ;
-  pFileContext = BlueHandleLock (hHandle) ;
+  ret = OFC_FST_UNKNOWN ;
+  pFileContext = ofc_handle_lock (hHandle) ;
   if (pFileContext != OFC_NULL)
     {
       ret = pFileContext->fsType ;
-      BlueHandleUnlock (hHandle) ;
+      ofc_handle_unlock (hHandle) ;
     }
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
-OfcFileGetFSHandle (BLUE_HANDLE hHandle)
+OFC_CORE_LIB OFC_HANDLE
+OfcFileGetFSHandle (OFC_HANDLE hHandle)
 {
   BLUE_FILE_CONTEXT *pFileContext ;
-  BLUE_HANDLE ret ;
+  OFC_HANDLE ret ;
 
-  ret = BLUE_HANDLE_NULL ;
-  pFileContext = BlueHandleLock (hHandle) ;
+  ret = OFC_HANDLE_NULL ;
+  pFileContext = ofc_handle_lock (hHandle) ;
   if (pFileContext != OFC_NULL)
     {
       ret = pFileContext->fsHandle ;
-      BlueHandleUnlock (hHandle) ;
+      ofc_handle_unlock (hHandle) ;
     }
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
-OfcFileGetOverlappedEvent (BLUE_HANDLE hOverlapped)
+OFC_CORE_LIB OFC_HANDLE
+OfcFileGetOverlappedEvent (OFC_HANDLE hOverlapped)
 {
   OFC_OVERLAPPED *Overlapped ;
-  BLUE_HANDLE ret ;
+  OFC_HANDLE ret ;
 
-  ret = BLUE_HANDLE_NULL ;
+  ret = OFC_HANDLE_NULL ;
 
-  Overlapped = BlueHandleLock (hOverlapped) ;
+  Overlapped = ofc_handle_lock (hOverlapped) ;
   if (Overlapped != OFC_NULL)
     {
       ret = BlueWaitQGetEventHandle (Overlapped->hUser) ;
-      BlueHandleUnlock (hOverlapped) ;
+      ofc_handle_unlock (hOverlapped) ;
     }
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
-OfcFileGetOverlappedWaitQ (BLUE_HANDLE hOverlapped)
+OFC_CORE_LIB OFC_HANDLE
+OfcFileGetOverlappedWaitQ (OFC_HANDLE hOverlapped)
 {
   OFC_OVERLAPPED *Overlapped ;
-  BLUE_HANDLE ret ;
+  OFC_HANDLE ret ;
 
-  ret = BLUE_HANDLE_NULL ;
+  ret = OFC_HANDLE_NULL ;
 
-  Overlapped = BlueHandleLock (hOverlapped) ;
+  Overlapped = ofc_handle_lock (hOverlapped) ;
   if (Overlapped != OFC_NULL)
     {
       ret = Overlapped->hUser ;
-      BlueHandleUnlock (hOverlapped) ;
+      ofc_handle_unlock (hOverlapped) ;
     }
   return (ret) ;
 }

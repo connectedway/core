@@ -24,8 +24,8 @@
 #include "ofc/env.h"
 #include "ofc/persist.h"
 
-static BLUE_HANDLE hScheduler;
-static BLUE_HANDLE hDone;
+static OFC_HANDLE hScheduler;
+static OFC_HANDLE hDone;
 
 static OFC_INT
 test_startup_persist(OFC_VOID)
@@ -35,7 +35,7 @@ test_startup_persist(OFC_VOID)
 
   if (ofc_env_get (OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE)
     {
-      BlueFrameworkLoad (path);
+      ofc_framework_load (path);
       ret = 0;
     }
   return (ret);
@@ -60,7 +60,7 @@ static OFC_INT test_startup_default(OFC_VOID)
 static OFC_INT test_startup(OFC_VOID)
 {
   OFC_INT ret;
-  BlueFrameworkInit();
+  ofc_framework_init();
 #if defined(OFC_PERSIST)
   ret = test_startup_persist();
 #else
@@ -76,8 +76,8 @@ static OFC_VOID test_shutdown(OFC_VOID)
 {
   ofc_event_destroy(hDone);
   BlueSchedQuit(hScheduler);
-  BlueFrameworkShutdown();
-  BlueFrameworkDestroy();
+  ofc_framework_shutdown();
+  ofc_framework_destroy();
 }
 
 typedef enum
@@ -105,7 +105,7 @@ typedef struct
   /**
    * The Handle of the Socket that is listening on the interface
    */
-  BLUE_HANDLE hListen ;
+  OFC_HANDLE hListen ;
 } BLUE_STREAM_INTERFACE ;
 
 /**
@@ -120,7 +120,7 @@ typedef struct
   /**
    * A Handle to the Applications timer.
    */
-  BLUE_HANDLE hTimer ;
+  OFC_HANDLE hTimer ;
 #if defined(OFC_MULTI_TCP)
   /**
    * A Handle to the configuration update wait queue
@@ -130,11 +130,11 @@ typedef struct
   /**
    * A reference to the Application's scheduler
    */
-  BLUE_HANDLE scheduler ;
+  OFC_HANDLE scheduler ;
   /**
    * A handle to the list of interfaces that this socket server manages.
    */
-  BLUE_HANDLE interfaceList ;
+  OFC_HANDLE interfaceList ;
   /**
    * Number of runs through the test
    */
@@ -142,10 +142,10 @@ typedef struct
   BLUE_FAMILY_TYPE family ;
 } BLUE_STREAM_TEST ;
 
-static OFC_VOID StreamTestPreSelect (BLUE_HANDLE app) ;
-static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, 
-					 BLUE_HANDLE hSocket) ;
-static OFC_VOID StreamTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID StreamTestPreSelect (OFC_HANDLE app) ;
+static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app,
+                                        OFC_HANDLE hSocket) ;
+static OFC_VOID StreamTestDestroy (OFC_HANDLE app) ;
 
 static OFC_APP_TEMPLATE StreamTestAppDef =
   {
@@ -194,15 +194,15 @@ typedef struct
   /**
    * The socket that is listening for incoming connections.
    */
-  BLUE_HANDLE masterSocket ;
+  OFC_HANDLE masterSocket ;
   /**
    * The socket of the accepted connection
    */
-  BLUE_HANDLE hSocket ;
+  OFC_HANDLE hSocket ;
   /**
    * The handle of this application's scheduler
    */
-  BLUE_HANDLE scheduler ;
+  OFC_HANDLE scheduler ;
   /**
    * The message that is being received
    */
@@ -213,9 +213,9 @@ typedef struct
   OFC_UINT32 header ;
 } BLUE_SERVER_TEST ;
 
-static OFC_VOID ServerTestPreSelect (BLUE_HANDLE app) ;
-static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket) ;
-static OFC_VOID ServerTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID ServerTestPreSelect (OFC_HANDLE app) ;
+static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket) ;
+static OFC_VOID ServerTestDestroy (OFC_HANDLE app) ;
 
 static OFC_APP_TEMPLATE ServerTestAppDef =
   {
@@ -259,23 +259,23 @@ typedef struct
   /**
    * The handle to the socket to send the client's message on.
    */
-  BLUE_HANDLE hSocket ;
+  OFC_HANDLE hSocket ;
   /**
    * The handle to the application's scheduler
    */
-  BLUE_HANDLE scheduler ;
+  OFC_HANDLE scheduler ;
   /**
    * The message that the application is sending
    */
   BLUE_MESSAGE *write_msg ;
-  BLUE_HANDLE app ;
+  OFC_HANDLE app ;
   BLUE_IPADDR ip ;
 } BLUE_CLIENT_TEST ;
 
-static OFC_VOID ClientTestPreSelect (BLUE_HANDLE app) ;
-static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, 
-					 BLUE_HANDLE hSocket) ;
-static OFC_VOID ClientTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID ClientTestPreSelect (OFC_HANDLE app) ;
+static OFC_HANDLE ClientTestPostSelect (OFC_HANDLE app,
+                                        OFC_HANDLE hSocket) ;
+static OFC_VOID ClientTestDestroy (OFC_HANDLE app) ;
 
 /**
  * The Stream Client's Application Scheduler Information
@@ -338,7 +338,7 @@ static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
    * Create a Listen Socket for this interface
    */
   interface->hListen = BlueSocketListen (ip, STREAM_TEST_PORT) ;
-  if (interface->hListen == BLUE_HANDLE_NULL)
+  if (interface->hListen == OFC_HANDLE_NULL)
     {
       /*
        * If we had trouble issueing a listen, free up the interface and
@@ -443,7 +443,7 @@ static OFC_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
    * interfaces we've started.
    */
   streamTest->hTimer = BlueTimerCreate("SOCKET") ;
-  if (streamTest->hTimer != BLUE_HANDLE_NULL)
+  if (streamTest->hTimer != OFC_HANDLE_NULL)
     {
       /*
        * The timer is created, so set it with our test interval.  When it
@@ -544,7 +544,7 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
  * \param app
  * The Application's Handle
  */
-static OFC_VOID StreamTestPreSelect (BLUE_HANDLE app)
+static OFC_VOID StreamTestPreSelect (OFC_HANDLE app)
 {
   BLUE_STREAM_TEST *streamTest ;
   BLUE_STREAM_INTERFACE *interface ;
@@ -647,7 +647,7 @@ static OFC_VOID StreamTestPreSelect (BLUE_HANDLE app)
  * \param hSocket
  * The handle of the event that triggered this activity.
  */
-static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket) 
+static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 {
   BLUE_STREAM_TEST *streamTest ;
   BLUE_SERVER_TEST *serverTest ;
@@ -718,7 +718,7 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		       */
 		      serverTest->hSocket = 
 			BlueSocketAccept (serverTest->masterSocket) ;
-		      if (serverTest->hSocket == BLUE_HANDLE_NULL)
+		      if (serverTest->hSocket == OFC_HANDLE_NULL)
 			{
 			  BlueHeapFree (serverTest) ;
 			}
@@ -792,7 +792,7 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 	    }
 	}
     }
-  return (BLUE_HANDLE_NULL) ;
+  return (OFC_HANDLE_NULL) ;
 }
 
 /**
@@ -804,7 +804,7 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
  * \param app
  * The application's handle
  */
-static OFC_VOID StreamTestDestroy (BLUE_HANDLE app)
+static OFC_VOID StreamTestDestroy (OFC_HANDLE app)
 {
   BLUE_STREAM_TEST *streamTest ;
   BLUE_STREAM_INTERFACE *interface ;
@@ -869,7 +869,7 @@ static OFC_VOID StreamTestDestroy (BLUE_HANDLE app)
  * \param app
  * The Application's Handle
  */
-static OFC_VOID ServerTestPreSelect (BLUE_HANDLE app)
+static OFC_VOID ServerTestPreSelect (OFC_HANDLE app)
 {
   BLUE_SERVER_TEST *serverTest ;
   BLUE_SOCKET_EVENT_TYPE event_types ;
@@ -938,7 +938,7 @@ static OFC_VOID ServerTestPreSelect (BLUE_HANDLE app)
  * \param hSocket
  * The handle of the event that triggered this activity.
  */
-static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket) 
+static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 {
   BLUE_SERVER_TEST *serverTest ;
   OFC_SIZET count ;
@@ -1077,7 +1077,7 @@ static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 	    }
 	}
     }
-  return (BLUE_HANDLE_NULL) ;
+  return (OFC_HANDLE_NULL) ;
 }
 
 /**
@@ -1089,7 +1089,7 @@ static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
  * \param app
  * The application's handle
  */
-static OFC_VOID ServerTestDestroy (BLUE_HANDLE app)
+static OFC_VOID ServerTestDestroy (OFC_HANDLE app)
 {
   BLUE_SERVER_TEST *serverTest ;
 
@@ -1148,7 +1148,7 @@ OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
   /*
    * Create a message to hold the header and data
    */
-  if (clientTest->write_msg == BLUE_HANDLE_NULL)
+  if (clientTest->write_msg == OFC_HANDLE_NULL)
     {
       size = BlueCstrlen (CLIENT_MSG_DATA) ;
       clientTest->write_msg = BlueMessageCreate (MSG_ALLOC_HEAP,
@@ -1205,7 +1205,7 @@ OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
  * \param app
  * The Application's Handle
  */
-static OFC_VOID ClientTestPreSelect (BLUE_HANDLE app)
+static OFC_VOID ClientTestPreSelect (OFC_HANDLE app)
 {
   BLUE_CLIENT_TEST *clientTest ;
   BLUE_SOCKET_EVENT_TYPE event_types ;
@@ -1235,7 +1235,7 @@ static OFC_VOID ClientTestPreSelect (BLUE_HANDLE app)
 	      clientTest->write_msg = OFC_NULL ;
 	      clientTest->hSocket = BlueSocketConnect (&clientTest->ip, 
 						       STREAM_TEST_PORT) ;
-	      if (clientTest->hSocket != BLUE_HANDLE_NULL)
+	      if (clientTest->hSocket != OFC_HANDLE_NULL)
 		{
 		  clientTest->state = CLIENT_TEST_STATE_CONNECTING ;
 	      
@@ -1264,7 +1264,7 @@ static OFC_VOID ClientTestPreSelect (BLUE_HANDLE app)
 	       * events
 	       */
 	      event_types = BLUE_SOCKET_EVENT_CLOSE ;
-	      if (clientTest->write_msg == BLUE_HANDLE_NULL)
+	      if (clientTest->write_msg == OFC_HANDLE_NULL)
 		event_types |= BLUE_SOCKET_EVENT_WRITE ;
 	      BlueSocketEnable (clientTest->hSocket, event_types) ;
 
@@ -1289,7 +1289,7 @@ static OFC_VOID ClientTestPreSelect (BLUE_HANDLE app)
  * \param hSocket
  * The handle of the event that triggered this activity.
  */
-static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket) 
+static OFC_HANDLE ClientTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 {
   BLUE_CLIENT_TEST *clientTest ;
   OFC_BOOL progress ;
@@ -1348,7 +1348,7 @@ static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 	    }
 	}
     }
-  return (BLUE_HANDLE_NULL) ;
+  return (OFC_HANDLE_NULL) ;
 }
 
 /**
@@ -1360,7 +1360,7 @@ static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
  * \param app
  * The application's handle
  */
-static OFC_VOID ClientTestDestroy (BLUE_HANDLE app)
+static OFC_VOID ClientTestDestroy (OFC_HANDLE app)
 {
   BLUE_CLIENT_TEST *clientTest ;
 
@@ -1420,7 +1420,7 @@ TEST_TEAR_DOWN(stream)
 TEST(stream, test_stream)
 {
   BLUE_STREAM_TEST *streamTest ;
-  BLUE_HANDLE hApp ;
+  OFC_HANDLE hApp ;
 
   /*
    * Allocate a management context for the socket server application
@@ -1441,7 +1441,7 @@ TEST(stream, test_stream)
    */
   hApp = ofc_app_create (hScheduler, &StreamTestAppDef, streamTest) ;
 
-  if (hDone != BLUE_HANDLE_NULL)
+  if (hDone != OFC_HANDLE_NULL)
     {
       ofc_app_set_wait (hApp, hDone) ;
       ofc_event_wait (hDone);
@@ -1467,7 +1467,7 @@ TEST(stream, test_stream)
    */
   hApp = ofc_app_create (hScheduler, &StreamTestAppDef, streamTest) ;
 
-  if (hDone != BLUE_HANDLE_NULL)
+  if (hDone != OFC_HANDLE_NULL)
     {
       ofc_app_set_wait (hApp, hDone) ;
       ofc_event_wait (hDone);

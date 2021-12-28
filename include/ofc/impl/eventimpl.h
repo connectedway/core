@@ -27,7 +27,7 @@ extern "C"
    * \returns
    * Handle to event
    */
-  BLUE_HANDLE 
+  OFC_HANDLE
   BlueEventCreateImpl (OFC_EVENT_TYPE eventType) ;
   /**
    * Return the event type
@@ -38,7 +38,7 @@ extern "C"
    * \returns
    * The event type
    */
-  OFC_EVENT_TYPE BlueEventGetTypeImpl (BLUE_HANDLE hEvent) ;
+  OFC_EVENT_TYPE BlueEventGetTypeImpl (OFC_HANDLE hEvent) ;
   /**
    * Set an event.  
    *
@@ -47,7 +47,7 @@ extern "C"
    * \param hEvent
    * The event to signal
    */
-  OFC_VOID BlueEventSetImpl (BLUE_HANDLE hEvent) ;
+  OFC_VOID BlueEventSetImpl (OFC_HANDLE hEvent) ;
   /**
    * Reset an Event
    *
@@ -56,7 +56,7 @@ extern "C"
    * \param hEvent
    * The event to rearm
    */
-  OFC_VOID BlueEventResetImpl (BLUE_HANDLE hEvent) ;
+  OFC_VOID BlueEventResetImpl (OFC_HANDLE hEvent) ;
   /**
    * Test if an event has been signalled
    *
@@ -66,21 +66,21 @@ extern "C"
    * \returns
    * OFC_TRUE if set, OFC_FALSE otherwise
    */
-  OFC_BOOL BlueEventTestImpl (BLUE_HANDLE hEvent) ;
+  OFC_BOOL BlueEventTestImpl (OFC_HANDLE hEvent) ;
   /**
    * Destroy an Event
    *
    * \param hEvent
    * The handle to the event to destroy
    */
-  OFC_VOID BlueEventDestroyImpl (BLUE_HANDLE hEvent) ;
+  OFC_VOID BlueEventDestroyImpl (OFC_HANDLE hEvent) ;
   /**
    * Wait for an event to fire.
    *
    * If the event is an automatic event, it is automatically reset after
    * this return returns
    */
-  OFC_VOID BlueEventWaitImpl (BLUE_HANDLE hEvent) ;
+  OFC_VOID BlueEventWaitImpl (OFC_HANDLE hEvent) ;
 #if defined(__cplusplus)
 }
 #endif

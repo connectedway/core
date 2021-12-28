@@ -369,7 +369,7 @@ extern "C"
    * registering that will contain adds for each configured interface.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigRegisterUpdate (BLUE_HANDLE hEvent) ;
+  BlueConfigRegisterUpdate (OFC_HANDLE hEvent) ;
   /**
    * Unregister a Configuration Update Notification
    *
@@ -377,7 +377,7 @@ extern "C"
    * The Event to remove 
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigUnregisterUpdate (BLUE_HANDLE hEvent) ;
+  BlueConfigUnregisterUpdate (OFC_HANDLE hEvent) ;
   /**
    * Initiate a configuration event
    *

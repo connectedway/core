@@ -22,7 +22,7 @@
 
 typedef struct 
 {
-  BLUE_FS_TYPE type ;		/**< The Mapped File System Type   */
+  OFC_FST_TYPE type ;		/**< The Mapped File System Type   */
   OFC_LPTSTR device ;		/**< The device name */
   OFC_LPTSTR username ;	/**< The user name  */
   OFC_LPTSTR password ;	/**< The password  */
@@ -294,7 +294,7 @@ BluePathInitPath (OFC_VOID)
   _BLUE_PATH *path ;
 
   path = BlueHeapMalloc (sizeof (_BLUE_PATH)) ;
-  path->type = BLUE_FS_FILE ;
+  path->type = OFC_FST_FILE ;
   path->device = OFC_NULL ;
   path->username = OFC_NULL ;
   path->password = OFC_NULL ;
@@ -316,15 +316,15 @@ static OFC_VOID BluePathUpdateType (BLUE_PATH *path)
     BluePathSetType (path, BLUE_FS_CIFS) ;
 #endif
 
-  if (BluePathType(path) == BLUE_FS_UNKNOWN ||
-      BluePathType(path) == BLUE_FS_FILE)
+  if (BluePathType(path) == OFC_FST_UNKNOWN ||
+      BluePathType(path) == OFC_FST_FILE)
     {
 #if defined(OFC_FS_WIN32)
       BluePathSetType (path, BLUE_FS_WIN32) ;
 #elif defined(OFC_FS_WINCE)
       BluePathSetType (path, BLUE_FS_WINCE) ;
 #elif defined(OFC_FS_DARWIN)
-      BluePathSetType (path, BLUE_FS_DARWIN) ;
+      BluePathSetType (path, OFC_FST_DARWIN) ;
 #elif defined(OFC_FS_LINUX)
       BluePathSetType (path, BLUE_FS_LINUX) ;
 #elif defined(OFC_FS_ANDROID)
@@ -629,26 +629,26 @@ BluePathPrintW (BLUE_PATH *_path, OFC_LPTSTR *filename, OFC_SIZET *rem)
 
   switch (path->type)
     {
-    case BLUE_FS_WIN32:
-    case BLUE_FS_FILEX:
+    case OFC_FST_WIN32:
+    case OFC_FST_FILEX:
       delimeter = TCHAR_BACKSLASH ;
       break ;
 
-    case BLUE_FS_CIFS:
+    case OFC_FST_SMB:
 #if defined(__ANDROID__)
       delimeter = TCHAR_SLASH ;
 #else
       delimeter = TCHAR_BACKSLASH ;
 #endif
 
-    case BLUE_FS_DARWIN:
-    case BLUE_FS_LINUX:
-    case BLUE_FS_ANDROID:
+    case OFC_FST_DARWIN:
+    case OFC_FST_LINUX:
+    case OFC_FST_ANDROID:
       delimeter = TCHAR_SLASH ;
       break ;
 
-    case BLUE_FS_UNKNOWN:
-    case BLUE_FS_FILE:
+    case OFC_FST_UNKNOWN:
+    case OFC_FST_FILE:
     default:
 #if defined(OFC_FS_WIN32)
       delimeter = TCHAR_BACKSLASH ;
@@ -771,7 +771,7 @@ BluePathPrintA (BLUE_PATH *_path, OFC_LPSTR *filename, OFC_SIZET *rem)
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_FS_TYPE BluePathType (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_FST_TYPE BluePathType (BLUE_PATH *_path)
 {
   _BLUE_PATH *path = (_BLUE_PATH *) _path ;
 
@@ -864,7 +864,7 @@ OFC_CORE_LIB BLUE_PATH *BlueMapPath (OFC_LPCTSTR lpFileName,
  */
 OFC_CORE_LIB OFC_VOID
 BluePathMapW (OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
-              BLUE_FS_TYPE *filesystem)
+              OFC_FST_TYPE *filesystem)
 {
   BLUE_PATH *path ;
   
@@ -877,7 +877,7 @@ BluePathMapW (OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
 
 OFC_CORE_LIB OFC_VOID
 BluePathMapA (OFC_LPCSTR lpFileName, OFC_LPSTR *lppMappedName,
-              BLUE_FS_TYPE *filesystem)
+              OFC_FST_TYPE *filesystem)
 {
   OFC_TCHAR *lptFileName ;
   OFC_TCHAR *lptMappedName ;
@@ -932,7 +932,7 @@ BluePathDestroy (OFC_VOID)
  */
 OFC_CORE_LIB OFC_BOOL
 BluePathAddMapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
-                 BLUE_PATH *_map, BLUE_FS_TYPE fsType, OFC_BOOL thumbnail)
+                 BLUE_PATH *_map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail)
 {
   _BLUE_PATH *map = (_BLUE_PATH *) _map ;
   OFC_INT i ;
@@ -991,7 +991,7 @@ BluePathAddMapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
   
 OFC_CORE_LIB OFC_BOOL
 BluePathAddMapA (OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
-                 BLUE_PATH *_map, BLUE_FS_TYPE fsType, OFC_BOOL thumbnail)
+                 BLUE_PATH *_map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail)
 {
   OFC_BOOL ret ;
   OFC_TCHAR *lptDevice ;
@@ -1290,7 +1290,7 @@ BluePathUpdateCredentialsW (OFC_LPCTSTR filename, OFC_LPCTSTR username,
 	   * Add server to data base
 	   */
 	  BluePathAddMapW (BluePathServer(path), TSTR("Server"),
-                       path, BLUE_FS_CIFS, OFC_TRUE) ;
+                       path, OFC_FST_SMB, OFC_TRUE) ;
 	  map = path ;
 	}
 
@@ -1384,7 +1384,7 @@ BluePathUpdateCredentialsA (BLUE_PATH *path, BLUE_LPCSTR username,
 
 OFC_CORE_LIB OFC_VOID
 BluePathGetRootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
-                  BLUE_FS_TYPE *filesystem)
+                  OFC_FST_TYPE *filesystem)
 {
   OFC_TCHAR *lpMappedPath ;
   OFC_TCHAR *lpMappedName ;
@@ -1423,7 +1423,7 @@ BluePathGetRootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
   len = 0 ;
   len = BluePathPrintW (rootpath, OFC_NULL, &len) ;
 
-  if (rootpath->type == BLUE_FS_WIN32)
+  if (rootpath->type == OFC_FST_WIN32)
     /* Terminating slash */
     len++ ;
   /* EOS */
@@ -1431,7 +1431,7 @@ BluePathGetRootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
   *lpRootName = BlueHeapMalloc (len * sizeof (OFC_TCHAR)) ;
   lpMappedPath = *lpRootName ;
   len = BluePathPrintW (rootpath, &lpMappedPath, &len) ;
-  if (rootpath->type == BLUE_FS_WIN32)
+  if (rootpath->type == OFC_FST_WIN32)
     (*lpRootName)[len++] = TCHAR_BACKSLASH ;
   (*lpRootName)[len] = TCHAR_EOS ;
   BluePathDelete (rootpath) ;
@@ -1441,7 +1441,7 @@ BluePathGetRootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
 
 OFC_CORE_LIB OFC_VOID
 BluePathGetRootA (OFC_CCHAR *lpFileName, OFC_CHAR **lpRoot,
-                  BLUE_FS_TYPE *filesystem)
+                  OFC_FST_TYPE *filesystem)
 {
   OFC_TCHAR *lptFileName ;
   OFC_TCHAR *lptRoot ;
@@ -1833,7 +1833,7 @@ OFC_CORE_LIB OFC_BOOL BluePathAbsolute (BLUE_PATH *_path)
   return (path->absolute) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetType (BLUE_PATH *_path, BLUE_FS_TYPE fstype)
+OFC_CORE_LIB OFC_VOID BluePathSetType (BLUE_PATH *_path, OFC_FST_TYPE fstype)
 {
   _BLUE_PATH *path = (_BLUE_PATH *) _path ;
   path->type = fstype ;
@@ -1980,7 +1980,7 @@ OFC_VOID BluePathDebug (BLUE_PATH *_path)
   BlueCprintf ("  Remote: %s\n", path->remote ? "yes" : "no") ;
 }  
 
-static BLUE_HANDLE hWorkgroups ;
+static OFC_HANDLE hWorkgroups ;
 
 OFC_CORE_LIB OFC_VOID InitWorkgroups (OFC_VOID)
 {
@@ -1998,7 +1998,7 @@ OFC_CORE_LIB OFC_VOID DestroyWorkgroups (OFC_VOID)
 
   BlueQdestroy(hWorkgroups);
 
-  hWorkgroups = BLUE_HANDLE_NULL ;
+  hWorkgroups = OFC_HANDLE_NULL ;
 }
 
 static OFC_LPTSTR FindWorkgroup (OFC_LPCTSTR workgroup)

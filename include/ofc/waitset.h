@@ -27,7 +27,7 @@
  */
 typedef struct
 {
-  BLUE_HANDLE hHandleQueue ;	/**< List of events in wait set  */
+  OFC_HANDLE hHandleQueue ;	/**< List of events in wait set  */
   OFC_VOID *impl ;		/**< Pointer to implementation info  */
 } WAIT_SET ;
 
@@ -45,7 +45,7 @@ extern "C"
    * \returns
    * A handle to the wait set
    */
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   BlueWaitSetCreate (OFC_VOID) ;
   /**
    * Destroy a wait set
@@ -54,7 +54,7 @@ extern "C"
    * Handle of the wait set to destroy
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetDestroy (BLUE_HANDLE handle) ;
+  BlueWaitSetDestroy (OFC_HANDLE handle) ;
   /**
    * Wait for an event in a wait set to be ready
    *
@@ -63,10 +63,10 @@ extern "C"
    *
    * \returns
    * Handle to the app with the event that is ready.  
-   * BLUE_HANDLE_NULL if woken by a wake call.
+   * OFC_HANDLE_NULL if woken by a wake call.
    */
-  OFC_CORE_LIB BLUE_HANDLE
-  BlueWaitSetWait (BLUE_HANDLE handle) ;
+  OFC_CORE_LIB OFC_HANDLE
+  BlueWaitSetWait (OFC_HANDLE handle) ;
   /**
    * Wake up a wait set that is currently waiting.
    *
@@ -74,7 +74,7 @@ extern "C"
    * Handle of the wait set to wake up.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetWake (BLUE_HANDLE handle) ;
+  BlueWaitSetWake (OFC_HANDLE handle) ;
   /**
    * Add an event to the wait set
    *
@@ -88,7 +88,7 @@ extern "C"
    * Handle to the event to add
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetAdd (BLUE_HANDLE hSet, BLUE_HANDLE hApp, BLUE_HANDLE hEvent) ;
+  BlueWaitSetAdd (OFC_HANDLE hSet, OFC_HANDLE hApp, OFC_HANDLE hEvent) ;
   /**
    * Remove an event from a wait set
    *
@@ -99,7 +99,7 @@ extern "C"
    * Handle to event to remove
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetRemove (BLUE_HANDLE hSet, BLUE_HANDLE hEvent) ;
+  BlueWaitSetRemove (OFC_HANDLE hSet, OFC_HANDLE hEvent) ;
   /**
    * Remove all events from a wait set
    *
@@ -107,9 +107,9 @@ extern "C"
    * Handle to wait set
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetClear (BLUE_HANDLE handle) ;
+  BlueWaitSetClear (OFC_HANDLE handle) ;
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetClearApp (BLUE_HANDLE handle, BLUE_HANDLE hApp) ;
+  BlueWaitSetClearApp (OFC_HANDLE handle, OFC_HANDLE hApp) ;
 #if defined(OFC_HANDLE_DEBUG)
   BLUE_CORE_LIB BLUE_VOID 
   BlueWaitSetLogMeasure (BLUE_HANDLE handle)  ;

@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_FS_TYPE_H__)
-#define __BLUE_FS_TYPE_H__
+#if !defined(__OFC_FS_TYPE_H__)
+#define __OFC_FS_TYPE_H__
 
 /**
  * \addtogroup BlueFS
@@ -18,25 +18,25 @@
  */
 typedef enum
   {
-    BLUE_FS_WIN32,		/**< A win32 type filesystem  */
-    BLUE_FS_DARWIN,		/**< A Darwin/Posix type filesystem */
-    BLUE_FS_LINUX,		/**< A Linux/Posix type filesystem */
-    BLUE_FS_FILEX,		/**< A ThreadX type filesystem */
-    BLUE_FS_NUFILE,		/**< A Nucleus NUFile type filesystem */
-    BLUE_FS_ANDROID,		/**< An Android Filesystem */
-    BLUE_FS_OTHER,		/**< A platform specific type filesystem  */
-    BLUE_FS_CIFS,		/**< A CIFS/SMB type filesystem  */
-    BLUE_FS_FILE,		/**< The redirectory filesystem (loopback) */
-    BLUE_FS_PIPE,		/**< A Pipe File System  */
-    BLUE_FS_MAILSLOT,		/**< A Mailslot File System  */
-    BLUE_FS_BROWSE_WORKGROUPS,	/**< A Filesystem for Browsing Workgroups  */
-    BLUE_FS_BROWSE_SERVERS,	/**< A Filesystem for Browsing Servers  */
-    BLUE_FS_BROWSE_SHARES,	/**< A Filesystem for Browsing Shares  */
-    BLUE_FS_BOOKMARKS,		/**< The Bookmarks browser */
-    BLUE_FS_WINCE,		/**< A wince type filesystem  */
-    BLUE_FS_UNKNOWN,		/**< An unknown Filesystem  */
-    BLUE_FS_NUM			/**< The number of filesystems supported  */
-  } BLUE_FS_TYPE ;
+    OFC_FST_WIN32,		/**< A win32 type filesystem  */
+    OFC_FST_DARWIN,		/**< A Darwin/Posix type filesystem */
+    OFC_FST_LINUX,		/**< A Linux/Posix type filesystem */
+    OFC_FST_FILEX,		/**< A ThreadX type filesystem */
+    OFC_FST_NUFILE,		/**< A Nucleus NUFile type filesystem */
+    OFC_FST_ANDROID,		/**< An Android Filesystem */
+    OFC_FST_OTHER,		/**< A platform specific type filesystem  */
+    OFC_FST_SMB,		/**< A CIFS/SMB type filesystem  */
+    OFC_FST_FILE,		/**< The redirectory filesystem (loopback) */
+    OFC_FST_PIPE,		/**< A Pipe File System  */
+    OFC_FST_MAILSLOT,		/**< A Mailslot File System  */
+    OFC_FST_BROWSE_WORKGROUPS,	/**< A Filesystem for Browsing Workgroups  */
+    OFC_FST_BROWSE_SERVERS,	/**< A Filesystem for Browsing Servers  */
+    OFC_FST_BROWSE_SHARES,	/**< A Filesystem for Browsing Shares  */
+    OFC_FST_BOOKMARKS,		/**< The Bookmarks browser */
+    OFC_FST_WINCE,		/**< A wince type filesystem  */
+    OFC_FST_UNKNOWN,		/**< An unknown Filesystem  */
+    OFC_FST_NUM			/**< The number of filesystems supported  */
+  } OFC_FST_TYPE ;
 
 /** \} */
 

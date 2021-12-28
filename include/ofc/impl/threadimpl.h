@@ -61,18 +61,18 @@ extern "C"
    * clean up on it's own
    *
    * \param hNotify
-   * Who to notify when the thread exits.  If BLUE_HANDLE_NULL, then no 
+   * Who to notify when the thread exits.  If OFC_HANDLE_NULL, then no
    * event is set.
    *
    * \returns The thread handle
    */
   
-  BLUE_HANDLE BlueThreadCreateImpl (BLUE_THREAD_FN scheduler,
-                                    OFC_CCHAR *thread_name,
-                                    OFC_INT thread_instance,
-                                    OFC_VOID *context,
-                                    BLUE_THREAD_DETACHSTATE detachstate,
-                                    BLUE_HANDLE hNotify) ;
+  OFC_HANDLE BlueThreadCreateImpl (BLUE_THREAD_FN scheduler,
+                                   OFC_CCHAR *thread_name,
+                                   OFC_INT thread_instance,
+                                   OFC_VOID *context,
+                                   BLUE_THREAD_DETACHSTATE detachstate,
+                                   OFC_HANDLE hNotify) ;
   /**
    * Delete a thread
    *
@@ -83,14 +83,14 @@ extern "C"
    *
    * \param hThread Handle to the thread to delete
    */
-  OFC_VOID BlueThreadDeleteImpl (BLUE_HANDLE hThread) ;
+  OFC_VOID BlueThreadDeleteImpl (OFC_HANDLE hThread) ;
   /**
    * Wait for a thread to exit
    *
    * \param hThread
    * Handle to thread to wait for
    */
-  OFC_VOID BlueThreadWaitImpl (BLUE_HANDLE hThread) ;
+  OFC_VOID BlueThreadWaitImpl (OFC_HANDLE hThread) ;
   /**
    * Check whether thread deletion has been scheduled.
    *
@@ -99,7 +99,7 @@ extern "C"
    * \param hThread Handle of the thread to check
    * \returns OFC_TRUE if deletion is scheduled, OFC_FALSE otherwise
    */
-  OFC_BOOL BlueThreadIsDeletingImpl (BLUE_HANDLE hThread) ;
+  OFC_BOOL BlueThreadIsDeletingImpl (OFC_HANDLE hThread) ;
   /**
    * Sleep for a specified number of milliseconds
    *
@@ -147,7 +147,7 @@ extern "C"
    * wait set to set
    */
   OFC_VOID
-  BlueThreadSetWaitSetImpl (BLUE_HANDLE hThread, BLUE_HANDLE wait_set) ;
+  BlueThreadSetWaitSetImpl (OFC_HANDLE hThread, OFC_HANDLE wait_set) ;
   /**
    * Create Local Storage for Local Variables
    *

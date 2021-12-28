@@ -19,11 +19,11 @@
 typedef struct _OFC_APP_TEMPLATE
 {
   OFC_CHAR *name ;			    /**< Name of App */
-  OFC_VOID (*preselect)(BLUE_HANDLE app) ; /**< App's preselect routine */
+  OFC_VOID (*preselect)(OFC_HANDLE app) ; /**< App's preselect routine */
   /** Apps Postselect routine */
-  BLUE_HANDLE (*postselect)(BLUE_HANDLE app, BLUE_HANDLE hEvent) ;
-  OFC_VOID (*destroy)(BLUE_HANDLE app) ; /**< App's destroy routine */
-  OFC_VOID (*dump)(BLUE_HANDLE app) ;	  /**< App's dump routine  */
+  OFC_HANDLE (*postselect)(OFC_HANDLE app, OFC_HANDLE hEvent) ;
+  OFC_VOID (*destroy)(OFC_HANDLE app) ; /**< App's destroy routine */
+  OFC_VOID (*dump)(OFC_HANDLE app) ;	  /**< App's dump routine  */
 } OFC_APP_TEMPLATE ;
 
 /**/
@@ -43,8 +43,8 @@ extern "C"
    * \returns
    * Handle to the application
    */
-  OFC_CORE_LIB BLUE_HANDLE
-  ofc_app_create (BLUE_HANDLE scheduler, OFC_APP_TEMPLATE *template,
+  OFC_CORE_LIB OFC_HANDLE
+  ofc_app_create (OFC_HANDLE scheduler, OFC_APP_TEMPLATE *template,
                   OFC_VOID *app_dat) ;
   /**
    * schedule the application for destruction.
@@ -53,7 +53,7 @@ extern "C"
    * Handle to the app to kill
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_app_kill (BLUE_HANDLE app) ;
+  ofc_app_kill (OFC_HANDLE app) ;
   /**
    * Destroy an application
    *
@@ -61,7 +61,7 @@ extern "C"
    * Application to destroy
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_app_destroy (BLUE_HANDLE app) ;
+  ofc_app_destroy (OFC_HANDLE app) ;
   /**
    * Call the apps preselect routine
    *
@@ -69,7 +69,7 @@ extern "C"
    * Handle to the app to preselect
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_app_preselect (BLUE_HANDLE app) ;
+  ofc_app_preselect (OFC_HANDLE app) ;
   /**
    * Call the app's postselect routine
    *
@@ -79,8 +79,8 @@ extern "C"
    * \param hEvent
    * Event to pass to app
    */
-  OFC_CORE_LIB BLUE_HANDLE
-  ofc_app_postselect (BLUE_HANDLE hApp, BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB OFC_HANDLE
+  ofc_app_postselect (OFC_HANDLE hApp, OFC_HANDLE hEvent) ;
   /**
    * Signal a significant event for the app.  This is passed to the apps
    * scheduler. This will cause all applications on that scheduler to
@@ -90,7 +90,7 @@ extern "C"
    * Handle to the app to preselect
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_app_sig_event (BLUE_HANDLE app) ;
+  ofc_app_sig_event (OFC_HANDLE app) ;
   /**
    * Return whether we're destroying this app
    *
@@ -101,7 +101,7 @@ extern "C"
    * OFC_TRUE if it's being destroyed.  OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  ofc_app_destroying (BLUE_HANDLE hApp) ;
+  ofc_app_destroying (OFC_HANDLE hApp) ;
   /**
    * Return the apps context
    *
@@ -112,7 +112,7 @@ extern "C"
    * The apps context
    */
   OFC_CORE_LIB OFC_VOID *
-  ofc_app_get_data (BLUE_HANDLE hApp) ;
+  ofc_app_get_data (OFC_HANDLE hApp) ;
   /**
    * Set an event to be notified when the app is destroyed
    *
@@ -123,7 +123,7 @@ extern "C"
    * Event to notify when app exits
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_app_set_wait (BLUE_HANDLE hApp, BLUE_HANDLE hNotify) ;
+  ofc_app_set_wait (OFC_HANDLE hApp, OFC_HANDLE hNotify) ;
 #if defined(BLUE_PARAM_APP_DEBUG)
   /**
    * Dump the state of the app

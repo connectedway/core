@@ -34,7 +34,7 @@ extern "C"
    * \returns
    * Handle to the event
    */
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   ofc_event_create (OFC_EVENT_TYPE eventType) ;
   /**
    * Return the type of event
@@ -46,7 +46,7 @@ extern "C"
    * The event type
    */
   OFC_CORE_LIB OFC_EVENT_TYPE
-  ofc_event_get_type (BLUE_HANDLE hEvent) ;
+  ofc_event_get_type (OFC_HANDLE hEvent) ;
   /**
    * Set an event.  
    *
@@ -56,7 +56,7 @@ extern "C"
    * The event to signal
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_event_set (BLUE_HANDLE hEvent) ;
+  ofc_event_set (OFC_HANDLE hEvent) ;
   /**
    * Reset an Event
    *
@@ -66,7 +66,7 @@ extern "C"
    * The event to rearm
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_event_reset (BLUE_HANDLE hEvent) ;
+  ofc_event_reset (OFC_HANDLE hEvent) ;
   /**
    * Test if an event has been signalled
    *
@@ -77,7 +77,7 @@ extern "C"
    * OFC_TRUE if set, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  ofc_event_test (BLUE_HANDLE hEvent) ;
+  ofc_event_test (OFC_HANDLE hEvent) ;
   /**
    * Destroy an Event
    *
@@ -86,7 +86,7 @@ extern "C"
    * Nothing
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_event_destroy (BLUE_HANDLE hEvent) ;
+  ofc_event_destroy (OFC_HANDLE hEvent) ;
   /**
    * Wait for an event to fire.
    *
@@ -94,7 +94,7 @@ extern "C"
    * this return returns
    */
   OFC_CORE_LIB OFC_VOID
-  ofc_event_wait (BLUE_HANDLE hEvent) ;
+  ofc_event_wait (OFC_HANDLE hEvent) ;
 #if defined(__cplusplus)
 }
 #endif

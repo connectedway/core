@@ -45,7 +45,7 @@ static OFC_CHAR *striconfigtype[BLUE_CONFIG_ICONFIG_NUM] =
 /*
  * Who to notify on configuration events
  */
-static BLUE_HANDLE event_queue ;
+static OFC_HANDLE event_queue ;
 
 typedef struct 
 {
@@ -751,8 +751,8 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 			  if (BluePathRemote(path))
 			    {
 			      if (!BluePathAddMapA (lpBookmark, lpDesc,
-						    path, BLUE_FS_CIFS,
-						    thumbnail))
+                                        path, OFC_FST_SMB,
+                                        thumbnail))
 				BluePathDelete (path) ;
 			    }
 			  else
@@ -822,7 +822,7 @@ OFC_CORE_LIB OFC_VOID
 BlueConfigSave (OFC_LPCTSTR lpFileName)
 {
   OFC_LPVOID buf ;
-  BLUE_HANDLE xml ;
+  OFC_HANDLE xml ;
   OFC_DWORD dwLen ;
   OFC_SIZET len ;
 
@@ -837,11 +837,11 @@ BlueConfigSave (OFC_LPCTSTR lpFileName)
                             OFC_NULL,
                             OFC_CREATE_ALWAYS,
                             OFC_FILE_ATTRIBUTE_NORMAL,
-                            BLUE_HANDLE_NULL) ;
+                            OFC_HANDLE_NULL) ;
 
-      if (xml != BLUE_INVALID_HANDLE_VALUE)
+      if (xml != OFC_INVALID_HANDLE_VALUE)
 	{
-	  OfcWriteFile (xml, buf, dwLen, &dwLen, BLUE_HANDLE_NULL) ;
+	  OfcWriteFile (xml, buf, dwLen, &dwLen, OFC_HANDLE_NULL) ;
 	  OfcCloseHandle (xml) ;
 	}
 
@@ -851,7 +851,7 @@ BlueConfigSave (OFC_LPCTSTR lpFileName)
 
 typedef struct
 {
-  BLUE_HANDLE handle ;
+  OFC_HANDLE handle ;
 } FILE_CONTEXT ;
 
 static OFC_SIZET
@@ -864,7 +864,7 @@ readFile (OFC_VOID *context, OFC_LPVOID buf, OFC_DWORD bufsize)
   fileContext = (FILE_CONTEXT *) context ;
 
   if (!OfcReadFile (fileContext->handle, buf, bufsize,
-                    &bytes_read, BLUE_HANDLE_NULL))
+                    &bytes_read, OFC_HANDLE_NULL))
     ret = -1 ;
   else
     ret = bytes_read ;
@@ -893,12 +893,12 @@ BlueConfigLoad (OFC_LPCTSTR lpFileName)
                                             OFC_NULL,
                                             OFC_OPEN_EXISTING,
                                             OFC_FILE_ATTRIBUTE_NORMAL,
-                                            BLUE_HANDLE_NULL) ;
+                                            OFC_HANDLE_NULL) ;
 
       bpconfig_dom = OFC_NULL ;
 
-      if (fileContext->handle != BLUE_INVALID_HANDLE_VALUE &&
-	  fileContext->handle != BLUE_HANDLE_NULL)
+      if (fileContext->handle != OFC_INVALID_HANDLE_VALUE &&
+          fileContext->handle != OFC_HANDLE_NULL)
 	{
 	  bpconfig_dom = ofc_dom_load_document (readFile,
                                             (OFC_VOID *) fileContext) ;
@@ -1044,15 +1044,15 @@ BlueConfigInit(OFC_VOID)
 OFC_CORE_LIB OFC_VOID
 BlueConfigUnload (OFC_VOID)
 {
-  BLUE_HANDLE hEvent ;
+  OFC_HANDLE hEvent ;
   BLUE_CONFIG *BlueConfig ;
 
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
     {
-      for (hEvent = (BLUE_HANDLE) BlueQdequeue (event_queue) ;
-	   hEvent != BLUE_HANDLE_NULL ;
-	   hEvent = (BLUE_HANDLE) BlueQdequeue (event_queue))
+      for (hEvent = (OFC_HANDLE) BlueQdequeue (event_queue) ;
+           hEvent != OFC_HANDLE_NULL ;
+	   hEvent = (OFC_HANDLE) BlueQdequeue (event_queue))
 	{
 	  ofc_event_destroy (hEvent) ;
 	}
@@ -1606,7 +1606,7 @@ BlueConfigSetUUID (OFC_UUID *uuid)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueConfigRegisterUpdate (BLUE_HANDLE hEvent) 
+BlueConfigRegisterUpdate (OFC_HANDLE hEvent)
 {
   BlueQenqueue (event_queue, (OFC_VOID *) hEvent) ;
   /*
@@ -1616,7 +1616,7 @@ BlueConfigRegisterUpdate (BLUE_HANDLE hEvent)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueConfigUnregisterUpdate (BLUE_HANDLE hEvent) 
+BlueConfigUnregisterUpdate (OFC_HANDLE hEvent)
 {
   BlueQunlink (event_queue, (OFC_VOID *) hEvent) ;
 }
@@ -1624,11 +1624,11 @@ BlueConfigUnregisterUpdate (BLUE_HANDLE hEvent)
 OFC_CORE_LIB OFC_VOID
 BlueConfigNotify (OFC_VOID)
 {
-  BLUE_HANDLE hEvent ;
+  OFC_HANDLE hEvent ;
 
-  for (hEvent = (BLUE_HANDLE) BlueQfirst (event_queue) ;
-       hEvent != BLUE_HANDLE_NULL ;
-       hEvent = (BLUE_HANDLE) BlueQnext (event_queue, (OFC_VOID *) hEvent))
+  for (hEvent = (OFC_HANDLE) BlueQfirst (event_queue) ;
+       hEvent != OFC_HANDLE_NULL ;
+       hEvent = (OFC_HANDLE) BlueQnext (event_queue, (OFC_VOID *) hEvent))
     {
       ofc_event_set (hEvent) ;
     }

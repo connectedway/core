@@ -21,8 +21,8 @@
 #include "ofc/persist.h"
 #include "ofc/event.h"
 
-static BLUE_HANDLE hScheduler;
-static BLUE_HANDLE hDone;
+static OFC_HANDLE hScheduler;
+static OFC_HANDLE hDone;
 
 static OFC_INT
 test_startup_persist(OFC_VOID)
@@ -32,7 +32,7 @@ test_startup_persist(OFC_VOID)
 
   if (ofc_env_get (OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE)
     {
-      BlueFrameworkLoad (path);
+      ofc_framework_load (path);
       ret = 0;
     }
   return (ret);
@@ -57,7 +57,7 @@ static OFC_INT test_startup_default(OFC_VOID)
 static OFC_INT test_startup(OFC_VOID)
 {
   OFC_INT ret;
-  BlueFrameworkInit();
+  ofc_framework_init();
 #if defined(OFC_PERSIST)
   ret = test_startup_persist();
 #else
@@ -73,8 +73,8 @@ static OFC_VOID test_shutdown(OFC_VOID)
 {
   ofc_event_destroy(hDone);
   BlueSchedQuit(hScheduler);
-  BlueFrameworkShutdown();
-  BlueFrameworkDestroy();
+  ofc_framework_shutdown();
+  ofc_framework_destroy();
 }
 
 typedef enum
@@ -90,16 +90,16 @@ typedef enum
 typedef struct
 {
   WAITQ_TEST_STATE state ;
-  BLUE_HANDLE hTimer ;
-  BLUE_HANDLE hWaitQueue ;
-  BLUE_HANDLE scheduler ;
+  OFC_HANDLE hTimer ;
+  OFC_HANDLE hWaitQueue ;
+  OFC_HANDLE scheduler ;
   OFC_INT count ;
 } BLUE_WAITQ_TEST ;
 
-static OFC_VOID WaitQueueTestPreSelect (BLUE_HANDLE app) ;
-static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app, 
-					    BLUE_HANDLE hWaitQueue) ;
-static OFC_VOID WaitQueueTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID WaitQueueTestPreSelect (OFC_HANDLE app) ;
+static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
+                                           OFC_HANDLE hWaitQueue) ;
+static OFC_VOID WaitQueueTestDestroy (OFC_HANDLE app) ;
 
 static OFC_APP_TEMPLATE WaitQueueTestAppDef =
   {
@@ -112,7 +112,7 @@ static OFC_APP_TEMPLATE WaitQueueTestAppDef =
 #endif
   } ;
 
-static OFC_VOID WaitQueueTestPreSelect (BLUE_HANDLE app)
+static OFC_VOID WaitQueueTestPreSelect (OFC_HANDLE app)
 {
   BLUE_WAITQ_TEST *waitqTest ;
   WAITQ_TEST_STATE entry_state ;
@@ -130,10 +130,10 @@ static OFC_VOID WaitQueueTestPreSelect (BLUE_HANDLE app)
 	    default:
 	    case WAITQ_TEST_STATE_IDLE:
 	      waitqTest->hWaitQueue = BlueWaitQcreate() ;
-	      if (waitqTest->hWaitQueue != BLUE_HANDLE_NULL)
+	      if (waitqTest->hWaitQueue != OFC_HANDLE_NULL)
 		{
 		  waitqTest->hTimer = BlueTimerCreate("WQ TEST") ;
-		  if (waitqTest->hTimer != BLUE_HANDLE_NULL)
+		  if (waitqTest->hTimer != OFC_HANDLE_NULL)
 		    {
 		      BlueTimerSet (waitqTest->hTimer, WAITQ_TEST_INTERVAL) ;
 		      waitqTest->state = WAITQ_TEST_STATE_RUNNING ;
@@ -155,15 +155,15 @@ static OFC_VOID WaitQueueTestPreSelect (BLUE_HANDLE app)
     }
 }
 
-static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app, 
-					    BLUE_HANDLE hWaitQueue) 
+static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
+                                           OFC_HANDLE hWaitQueue)
 {
   BLUE_WAITQ_TEST *waitqTest ;
   OFC_CHAR *msg ;
-  BLUE_HANDLE hNext ;
+  OFC_HANDLE hNext ;
   OFC_BOOL progress ;
 
-  hNext = BLUE_HANDLE_NULL ;
+  hNext = OFC_HANDLE_NULL ;
   waitqTest = ofc_app_get_data (app) ;
   if (waitqTest != OFC_NULL)
     {
@@ -202,7 +202,7 @@ static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app,
 		  else
 		    {
 		      ofc_app_kill (app) ;
-		      hNext = BLUE_HANDLE_NULL ;
+		      hNext = OFC_HANDLE_NULL ;
 		    }
 		}
 	      break ;
@@ -212,7 +212,7 @@ static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app,
   return (hNext) ;
 }
 
-static OFC_VOID WaitQueueTestDestroy (BLUE_HANDLE app)
+static OFC_VOID WaitQueueTestDestroy (OFC_HANDLE app)
 {
   BLUE_WAITQ_TEST *waitqTest ;
 
@@ -249,7 +249,7 @@ TEST_TEAR_DOWN(waitq)
 TEST(waitq, test_waitq)
 {
   BLUE_WAITQ_TEST *waitqTest ;
-  BLUE_HANDLE hApp ;
+  OFC_HANDLE hApp ;
 
   waitqTest = BlueHeapMalloc (sizeof (BLUE_WAITQ_TEST)) ;
   waitqTest->count = 0 ;
@@ -258,7 +258,7 @@ TEST(waitq, test_waitq)
 
   hApp = ofc_app_create (hScheduler, &WaitQueueTestAppDef, waitqTest) ;
 
-  if (hDone != BLUE_HANDLE_NULL)
+  if (hDone != OFC_HANDLE_NULL)
     {
       ofc_app_set_wait (hApp, hDone) ;
       ofc_event_wait(hDone);

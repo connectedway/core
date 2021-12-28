@@ -59,13 +59,13 @@ BlueNetInterfaceWins (OFC_INT index, OFC_INT *num_wins,
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueNetRegisterConfig (BLUE_HANDLE hEvent)
+BlueNetRegisterConfig (OFC_HANDLE hEvent)
 {
   BlueNetRegisterConfigImpl (hEvent) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueNetUnregisterConfig (BLUE_HANDLE hEvent)
+BlueNetUnregisterConfig (OFC_HANDLE hEvent)
 {
   BlueNetUnregisterConfigImpl (hEvent) ;
 }

@@ -49,7 +49,7 @@ extern "C"
    * \returns
    * a Handle to the socket
    */
-  BLUE_HANDLE 
+  OFC_HANDLE
   BlueSocketImplCreate (BLUE_FAMILY_TYPE family, 
 			BLUE_SOCKET_TYPE socktype) ;
   /**
@@ -73,7 +73,7 @@ extern "C"
    * OFC_TRUE if the bind was successful, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplBind (BLUE_HANDLE hSocket, const BLUE_IPADDR *ip,
+  BlueSocketImplBind (OFC_HANDLE hSocket, const BLUE_IPADDR *ip,
                       OFC_UINT16 port) ;
   /**
    * Close a socket
@@ -87,7 +87,7 @@ extern "C"
    * OFC_TRUE if socket is closed, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplClose (BLUE_HANDLE hSocket) ;
+  BlueSocketImplClose (OFC_HANDLE hSocket) ;
   /**
    * Connect to a remote
    * 
@@ -106,7 +106,7 @@ extern "C"
    * OFC_TRUE if connect initiated.  OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplConnect (BLUE_HANDLE hSocket,
+  BlueSocketImplConnect (OFC_HANDLE hSocket,
                          const BLUE_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Listen for an incoming connection
@@ -123,7 +123,7 @@ extern "C"
    * OFC_TRUE if socket is listening, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplListen (BLUE_HANDLE hSocket, OFC_INT backlog) ;
+  BlueSocketImplListen (OFC_HANDLE hSocket, OFC_INT backlog) ;
   /**
    * Accept an incoming connection
    *
@@ -143,8 +143,8 @@ extern "C"
    * \returns
    * Handle to socket implementation
    */  
-  BLUE_HANDLE 
-  BlueSocketImplAccept (BLUE_HANDLE hSocket,
+  OFC_HANDLE
+  BlueSocketImplAccept (OFC_HANDLE hSocket,
                         BLUE_IPADDR *ip, OFC_UINT16 *port) ;
   /**
    * Resuse ip address and port
@@ -161,7 +161,7 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplReuseAddr (BLUE_HANDLE hSocket, OFC_BOOL onoff) ;
+  BlueSocketImplReuseAddr (OFC_HANDLE hSocket, OFC_BOOL onoff) ;
   /**
    * Set a socket as non blocking
    *
@@ -177,7 +177,7 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplNoBlock (BLUE_HANDLE hSocket, OFC_BOOL onoff) ;
+  BlueSocketImplNoBlock (OFC_HANDLE hSocket, OFC_BOOL onoff) ;
   /**
    * Test if a socket is connected.
    *
@@ -193,7 +193,7 @@ extern "C"
    * OFC_TRUE if connected, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplConnected (BLUE_HANDLE hSocket) ;
+  BlueSocketImplConnected (OFC_HANDLE hSocket) ;
   /**
    * Send data on a socket
    *
@@ -212,7 +212,7 @@ extern "C"
    * Number of bytes sent, or -1 if error.
    */
   OFC_SIZET
-  BlueSocketImplSend (BLUE_HANDLE hSocket, const OFC_VOID *buf,
+  BlueSocketImplSend (OFC_HANDLE hSocket, const OFC_VOID *buf,
                       OFC_SIZET len) ;
   /**
    * Send data on a datagram socket
@@ -238,7 +238,7 @@ extern "C"
    * Number of bytes sent or -1 if error
    */
   OFC_SIZET
-  BlueSocketImplSendTo (BLUE_HANDLE hSocket, const OFC_VOID *buf,
+  BlueSocketImplSendTo (OFC_HANDLE hSocket, const OFC_VOID *buf,
                         OFC_SIZET len,
                         const BLUE_IPADDR *ip,
                         OFC_UINT16 port) ;
@@ -260,7 +260,7 @@ extern "C"
    * Number of bytes read, or -1 if error.
    */
   OFC_SIZET
-  BlueSocketImplRecv (BLUE_HANDLE hSocket,
+  BlueSocketImplRecv (OFC_HANDLE hSocket,
                       OFC_VOID *buf,
                       OFC_SIZET len) ;
   /**
@@ -287,7 +287,7 @@ extern "C"
    * Number of bytes received, or -1 if error.
    */
   OFC_SIZET
-  BlueSocketImplRecvFrom (BLUE_HANDLE hSocket,
+  BlueSocketImplRecvFrom (OFC_HANDLE hSocket,
                           OFC_VOID *buf,
                           OFC_SIZET len,
                           BLUE_IPADDR *ip,
@@ -301,7 +301,7 @@ extern "C"
    * Socket to destroy
    */
   OFC_VOID
-  BlueSocketImplDestroy (BLUE_HANDLE hSocket) ;
+  BlueSocketImplDestroy (OFC_HANDLE hSocket) ;
   /**
    * Test for an event on the socket
    *
@@ -315,7 +315,7 @@ extern "C"
    * Events that are set
    */
   BLUE_SOCKET_EVENT_TYPE 
-  BlueSocketImplTest (BLUE_HANDLE hSocket) ;
+  BlueSocketImplTest (OFC_HANDLE hSocket) ;
   /**
    * Enable an event on the socket
    *
@@ -332,8 +332,8 @@ extern "C"
    * OFC_TRUE if event is set, otherwise OFC_FALSE
    */
   OFC_BOOL
-  BlueSocketImplEnable (BLUE_HANDLE hSocket, 
-			BLUE_SOCKET_EVENT_TYPE type) ;
+  BlueSocketImplEnable (OFC_HANDLE hSocket,
+                        BLUE_SOCKET_EVENT_TYPE type) ;
   /**
    * Set the sockets receive buffer size
    *
@@ -346,7 +346,7 @@ extern "C"
    * size to set the buffer to
    */
   OFC_VOID
-  BlueSocketImplSetRecvSize (BLUE_HANDLE hSocket, OFC_INT size) ;
+  BlueSocketImplSetRecvSize (OFC_HANDLE hSocket, OFC_INT size) ;
   /**
    * Set the sockets send buffer size
    *
@@ -359,7 +359,7 @@ extern "C"
    * size to set the buffer to
    */
   OFC_VOID
-  BlueSocketImplSetSendSize (BLUE_HANDLE hSocket, OFC_INT size) ;
+  BlueSocketImplSetSendSize (OFC_HANDLE hSocket, OFC_INT size) ;
   /**
    * Get the Implementations Event Handle
    *
@@ -371,8 +371,8 @@ extern "C"
    * \returns
    * The event handle associated with the socket
    */
-  BLUE_HANDLE
-  BlueSocketImplGetEventHandle (BLUE_HANDLE hSocket)  ;
+  OFC_HANDLE
+  BlueSocketImplGetEventHandle (OFC_HANDLE hSocket)  ;
   /**
    * Get the ip and ports of a tcp connection
    *
@@ -389,12 +389,12 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplGetAddresses (BLUE_HANDLE hSock,
-			      BLUE_SOCKADDR *local, 
-			      BLUE_SOCKADDR *remote) ;
-  OFC_INT BlueSocketImplGetFD (BLUE_HANDLE hSocket)  ;
-  OFC_UINT16 BlueSocketImplGetEvent (BLUE_HANDLE hSocket) ;
-  OFC_VOID BlueSocketImplSetEvent (BLUE_HANDLE hSocket,
+  BlueSocketImplGetAddresses (OFC_HANDLE hSock,
+                              BLUE_SOCKADDR *local,
+                              BLUE_SOCKADDR *remote) ;
+  OFC_INT BlueSocketImplGetFD (OFC_HANDLE hSocket)  ;
+  OFC_UINT16 BlueSocketImplGetEvent (OFC_HANDLE hSocket) ;
+  OFC_VOID BlueSocketImplSetEvent (OFC_HANDLE hSocket,
                                    OFC_UINT16 revents) ;
 #if defined(__cplusplus)
 }

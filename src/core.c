@@ -34,12 +34,12 @@ OFC_LOAD OFC_CORE_LIB OFC_VOID
 ofc_core_load (OFC_VOID)
 {
   BlueHeapLoad() ;
-  BlueHandle16Init() ;
+  ofc_handle16_init() ;
   BlueThreadInit() ;
   BlueTraceInit() ;
   BluePathInit() ;
   BlueNetInit() ;
-  BlueFSInit() ;
+  ofc_fs_init() ;
   OfcFileInit() ;
   BlueConfigInit() ;
 #if defined(OFC_PERF_STATS)
@@ -57,7 +57,7 @@ ofc_core_unload (OFC_VOID)
   BlueConfigUnload() ;
   OfcFileDestroy();
 
-  BlueFSDestroy();
+  ofc_fs_destroy();
 
   BlueNetDestroy() ;
 
@@ -67,7 +67,7 @@ ofc_core_unload (OFC_VOID)
 
   BlueThreadDestroy() ;
 
-  BlueHandle16Free() ;
+  ofc_handle16_free() ;
 
   BlueHeapUnload() ;
 }

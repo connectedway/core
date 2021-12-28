@@ -125,10 +125,10 @@ extern "C"
    */
   OFC_CORE_LIB OFC_BOOL
   BluePathAddMapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
-                   BLUE_PATH *map, BLUE_FS_TYPE fsType, OFC_BOOL thumbnail) ;
+                   BLUE_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail) ;
   OFC_CORE_LIB OFC_BOOL
   BluePathAddMapA (OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
-                   BLUE_PATH *map, BLUE_FS_TYPE fsType, OFC_BOOL thumbnail) ;
+                   BLUE_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail) ;
   /**
    * Create a path structure for a path string
    *
@@ -286,10 +286,10 @@ extern "C"
    */
   OFC_CORE_LIB OFC_VOID
   BluePathMapW (OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
-                BLUE_FS_TYPE *filesystem) ;
+                OFC_FST_TYPE *filesystem) ;
   OFC_CORE_LIB OFC_VOID
   BluePathMapA (OFC_LPCSTR lpFileName, OFC_LPSTR *lppMappedName,
-                BLUE_FS_TYPE *filesystem) ;
+                OFC_FST_TYPE *filesystem) ;
 #if 0
   /**
    * Map a local root path to a target root path
@@ -358,10 +358,10 @@ extern "C"
 
   OFC_CORE_LIB OFC_VOID
   BluePathGetRootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
-                    BLUE_FS_TYPE *filesystem) ;
+                    OFC_FST_TYPE *filesystem) ;
   OFC_CORE_LIB OFC_VOID
   BluePathGetRootA (OFC_CCHAR *lpFileName, OFC_CHAR **lpRootName,
-                    BLUE_FS_TYPE *filesystem) ;
+                    OFC_FST_TYPE *filesystem) ;
 
   OFC_CORE_LIB OFC_VOID
   BluePathGetMapW (OFC_INT idx, OFC_LPCTSTR *lpDevice,
@@ -413,9 +413,9 @@ extern "C"
   OFC_CORE_LIB OFC_VOID BluePathSetRelative (BLUE_PATH *path) ;
   OFC_CORE_LIB OFC_VOID BluePathSetAbsolute (BLUE_PATH *path) ;
   OFC_CORE_LIB OFC_BOOL BluePathAbsolute (BLUE_PATH *path) ;
-  OFC_CORE_LIB BLUE_FS_TYPE BluePathType (BLUE_PATH *path) ;
+  OFC_CORE_LIB OFC_FST_TYPE BluePathType (BLUE_PATH *path) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathSetType (BLUE_PATH *path, BLUE_FS_TYPE fstype) ;
+  BluePathSetType (BLUE_PATH *path, OFC_FST_TYPE fstype) ;
   OFC_CORE_LIB OFC_LPCTSTR BluePathFilename (BLUE_PATH *path) ;
   OFC_CORE_LIB OFC_VOID BluePathFreeFilename (BLUE_PATH *path) ;
   OFC_CORE_LIB OFC_INT BluePathNumDirs (BLUE_PATH *path) ;

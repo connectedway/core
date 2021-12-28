@@ -85,11 +85,11 @@ extern "C"
   /**
    * Register a configuration event
    */
-  OFC_VOID BlueNetRegisterConfigImpl (BLUE_HANDLE hEvent) ;
+  OFC_VOID BlueNetRegisterConfigImpl (OFC_HANDLE hEvent) ;
   /**
    * Unregister a configuration event
    */
-  OFC_VOID BlueNetUnregisterConfigImpl (BLUE_HANDLE hEvent) ;
+  OFC_VOID BlueNetUnregisterConfigImpl (OFC_HANDLE hEvent) ;
   /**
    * Resolve a DNS Name on the platform
    *

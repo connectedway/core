@@ -22,14 +22,14 @@
 */
 typedef struct 
 {
-  BLUE_HANDLE impl ;
+  OFC_HANDLE impl ;
   OFC_BOOL connected ;
   BLUE_SOCKET_TYPE type ;
   BLUE_IPADDR ip ;		/* For input stream sockets */
   OFC_UINT16 port ;		/* ... */
   OFC_SIZET write_count ;
   OFC_INT write_offset ;
-  BLUE_HANDLE send_queue ;
+  OFC_HANDLE send_queue ;
 } BLUE_SOCKET ;
 
 static BLUE_SOCKET *BlueSocketAlloc (OFC_VOID) ;
@@ -52,7 +52,7 @@ BlueSocketAlloc (OFC_VOID)
   BLUE_SOCKET *sock ;
 
   sock = BlueHeapMalloc (sizeof (BLUE_SOCKET)) ;
-  sock->impl = BLUE_HANDLE_NULL ;
+  sock->impl = OFC_HANDLE_NULL ;
   sock->type = SOCKET_TYPE_NONE;
 
   return (sock) ;
@@ -74,19 +74,19 @@ BlueSocketFree (BLUE_SOCKET *sock)
  *    nothing
  */
 OFC_CORE_LIB OFC_VOID
-BlueSocketDestroy (BLUE_HANDLE hSock)
+BlueSocketDestroy (OFC_HANDLE hSock)
 {
   BLUE_SOCKET *sock ;
 
-  sock = BlueHandleLock (hSock) ;
+  sock = ofc_handle_lock (hSock) ;
   if (sock != OFC_NULL)
     {
       BlueSocketImplClose (sock->impl) ;
 
       BlueSocketImplDestroy (sock->impl) ;
       BlueSocketFree (sock) ;
-      BlueHandleDestroy (hSock) ;
-      BlueHandleUnlock (hSock) ;
+      ofc_handle_destroy (hSock) ;
+      ofc_handle_unlock (hSock) ;
     }
 }
 
@@ -200,10 +200,10 @@ BlueSocketSourceAddress (const BLUE_IPADDR *dest,
  * Returns:
  *    socket structure for connection
  */
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port)
 {
-  BLUE_HANDLE hSocket ;
+  OFC_HANDLE hSocket ;
   BLUE_SOCKET *pSock ;
   BLUE_IPADDR myinaddr ;
   BLUE_IPADDR dip ;
@@ -211,7 +211,7 @@ BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port)
   /*
    * Create a socket
    */
-  hSocket = BLUE_HANDLE_NULL ;
+  hSocket = OFC_HANDLE_NULL ;
   pSock = BlueSocketAlloc() ;
   pSock->type = SOCKET_TYPE_STREAM;
 
@@ -220,7 +220,7 @@ BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port)
    * Yes, open a stream
    */
   pSock->impl = BlueSocketImplCreate (dip.ip_version, SOCKET_TYPE_STREAM) ;
-  if (pSock->impl != BLUE_HANDLE_NULL)
+  if (pSock->impl != OFC_HANDLE_NULL)
     {
       BlueSocketImplReuseAddr (pSock->impl, OFC_TRUE) ;
 
@@ -233,32 +233,32 @@ BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port)
 
 	  if (BlueSocketImplConnect (pSock->impl, &dip, port))
 	    {
-	      hSocket = BlueHandleCreate (BLUE_HANDLE_SOCKET, pSock) ;
+	      hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, pSock) ;
 	    }
 	}
 
-      if (hSocket == BLUE_HANDLE_NULL)
+      if (hSocket == OFC_HANDLE_NULL)
 	BlueSocketImplDestroy (pSock->impl) ;
     }
 
-  if (hSocket == BLUE_HANDLE_NULL)
+  if (hSocket == OFC_HANDLE_NULL)
     BlueSocketFree (pSock) ;
     
   return (hSocket) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueSocketConnected (BLUE_HANDLE hSocket)
+BlueSocketConnected (OFC_HANDLE hSocket)
 {
   BLUE_SOCKET *pSocket ;
   OFC_BOOL connected ;
 
   connected = OFC_FALSE ;
-  pSocket = BlueHandleLock (hSocket) ;
+  pSocket = ofc_handle_lock (hSocket) ;
   if (pSocket != OFC_NULL)
     {
       connected = BlueSocketImplConnected (pSocket->impl) ;
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
   return (connected) ;
 }
@@ -273,21 +273,21 @@ BlueSocketConnected (BLUE_HANDLE hSocket)
  * Returns:
  *    listening socket
  */
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 BlueSocketListen (const BLUE_IPADDR *ip, OFC_UINT16 port)
 {
-  BLUE_HANDLE hSocket ;
+  OFC_HANDLE hSocket ;
   BLUE_SOCKET *pSock ;
 
   /*
    * Create a socket
    */
-  hSocket = BLUE_HANDLE_NULL ;
+  hSocket = OFC_HANDLE_NULL ;
   pSock = BlueSocketAlloc() ;
   pSock->type = SOCKET_TYPE_STREAM;
 
   pSock->impl = BlueSocketImplCreate (ip->ip_version, SOCKET_TYPE_STREAM) ;
-  if (pSock->impl != BLUE_HANDLE_NULL)
+  if (pSock->impl != OFC_HANDLE_NULL)
     {
       BlueSocketImplReuseAddr (pSock->impl, OFC_TRUE) ;
       if (BlueSocketImplBind (pSock->impl, ip, port))
@@ -295,15 +295,15 @@ BlueSocketListen (const BLUE_IPADDR *ip, OFC_UINT16 port)
 	  BlueSocketImplNoBlock (pSock->impl, OFC_TRUE) ;
 	  if (BlueSocketImplListen (pSock->impl, 5))
 	    {
-	      hSocket = BlueHandleCreate (BLUE_HANDLE_SOCKET, pSock) ;
+	      hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, pSock) ;
 	    }
 	}
 
-      if (hSocket == BLUE_HANDLE_NULL)
+      if (hSocket == OFC_HANDLE_NULL)
 	BlueSocketImplDestroy (pSock->impl) ;
     }
 
-  if (hSocket == BLUE_HANDLE_NULL)
+  if (hSocket == OFC_HANDLE_NULL)
     BlueSocketFree (pSock) ;
 
   return (hSocket) ;
@@ -320,11 +320,11 @@ BlueSocketListen (const BLUE_IPADDR *ip, OFC_UINT16 port)
 * Returns:
 *    datagram socket
 */
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port)
 {
   BLUE_SOCKET *sock ;
-  BLUE_HANDLE hSocket ;
+  OFC_HANDLE hSocket ;
   OFC_BOOL status ;
 
   /*
@@ -335,12 +335,12 @@ BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port)
   /*
    * Yes, open up a datagram socket
    */
-  hSocket = BLUE_HANDLE_NULL ;
+  hSocket = OFC_HANDLE_NULL ;
   sock->impl = BlueSocketImplCreate (ip->ip_version, SOCKET_TYPE_DGRAM) ;
   /*
    * Is it open?
    */
-  if (sock->impl != BLUE_HANDLE_NULL)
+  if (sock->impl != OFC_HANDLE_NULL)
     {
       /*
        * Yes, bind to the ip and port we want to accept datagrams on
@@ -350,13 +350,13 @@ BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port)
       if (status == OFC_TRUE)
 	{
 	  BlueSocketImplNoBlock (sock->impl, OFC_TRUE) ;
-	  hSocket = BlueHandleCreate (BLUE_HANDLE_SOCKET, sock) ;
+	  hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, sock) ;
 	}
       else
 	BlueSocketImplDestroy (sock->impl) ;
     }
 
-  if (hSocket == BLUE_HANDLE_NULL)
+  if (hSocket == OFC_HANDLE_NULL)
     BlueSocketFree (sock) ;
 
   return (hSocket) ;
@@ -373,31 +373,31 @@ BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port)
 * Returns:
 *    datagram socket
 */
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 BlueSocketRaw (const BLUE_IPADDR *ip, BLUE_SOCKET_TYPE socktype)
 {
   BLUE_SOCKET *sock ;
-  BLUE_HANDLE hSocket ;
+  OFC_HANDLE hSocket ;
 
   /*
    * Create the socket
    */
-  hSocket = BLUE_HANDLE_NULL ;
+  hSocket = OFC_HANDLE_NULL ;
 
   sock = BlueSocketAlloc() ;
   sock->type = socktype ;
   /*
    * Yes, open up a datagram socket
    */
-  hSocket = BLUE_HANDLE_NULL ;
+  hSocket = OFC_HANDLE_NULL ;
   sock->impl = BlueSocketImplCreate (ip->ip_version, socktype) ;
   /*
    * Is it open?
    */
-  if (sock->impl != BLUE_HANDLE_NULL)
+  if (sock->impl != OFC_HANDLE_NULL)
     {
       BlueSocketImplNoBlock (sock->impl, OFC_TRUE) ;
-      hSocket = BlueHandleCreate (BLUE_HANDLE_SOCKET, sock) ;
+      hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, sock) ;
     }
   else 
     BlueSocketFree (sock) ;
@@ -414,15 +414,15 @@ BlueSocketRaw (const BLUE_IPADDR *ip, BLUE_SOCKET_TYPE socktype)
  * Returns:
  *    socket structure
  */
-OFC_CORE_LIB BLUE_HANDLE
-BlueSocketAccept (BLUE_HANDLE hMasterSocket)
+OFC_CORE_LIB OFC_HANDLE
+BlueSocketAccept (OFC_HANDLE hMasterSocket)
 {
   BLUE_SOCKET *socket ;
   BLUE_SOCKET *master_socket ;
-  BLUE_HANDLE hSocket ;
+  OFC_HANDLE hSocket ;
   
-  hSocket = BLUE_HANDLE_NULL ;
-  master_socket = BlueHandleLock (hMasterSocket) ;
+  hSocket = OFC_HANDLE_NULL ;
+  master_socket = ofc_handle_lock (hMasterSocket) ;
   if (master_socket != OFC_NULL)
     {
       /*
@@ -434,7 +434,7 @@ BlueSocketAccept (BLUE_HANDLE hMasterSocket)
       socket->impl = BlueSocketImplAccept (master_socket->impl,
 					   &socket->ip, &socket->port) ;
 
-      if (socket->impl == BLUE_HANDLE_NULL)
+      if (socket->impl == OFC_HANDLE_NULL)
 	{
 	  BlueSocketFree (socket) ;
 	}
@@ -442,11 +442,11 @@ BlueSocketAccept (BLUE_HANDLE hMasterSocket)
 	{
 	  BlueSocketImplNoBlock (socket->impl, OFC_TRUE) ;
 
-	  hSocket = BlueHandleCreate (BLUE_HANDLE_SOCKET, socket) ;
-	  if (hSocket == BLUE_HANDLE_NULL)
+	  hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, socket) ;
+	  if (hSocket == OFC_HANDLE_NULL)
 	    BlueSocketFree (socket) ;
 	}
-      BlueHandleUnlock (hMasterSocket) ;
+      ofc_handle_unlock (hMasterSocket) ;
     }
 
   return (hSocket) ;
@@ -466,13 +466,13 @@ BlueSocketAccept (BLUE_HANDLE hMasterSocket)
  *   True if we wrote something, false otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-BlueSocketWrite (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg)
+BlueSocketWrite (OFC_HANDLE hSocket, BLUE_MESSAGE *msg)
 {
   OFC_SIZET nbytes ;
   BLUE_SOCKET *socket ;
   OFC_BOOL progress ;
 
-  socket = BlueHandleLock (hSocket) ;
+  socket = ofc_handle_lock (hSocket) ;
   nbytes = -1 ;
   progress = OFC_FALSE ;
   if (socket != OFC_NULL)
@@ -521,7 +521,7 @@ BlueSocketWrite (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg)
 	{
 	  OFC_VOID *handle ;
 
-	  handle = BlueHandleLock (socket->impl) ;
+	  handle = ofc_handle_lock (socket->impl) ;
 
 	  BlueCprintf ("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
 		       socket->type, socket->impl, handle, msg->count) ;
@@ -531,10 +531,10 @@ BlueSocketWrite (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg)
 	  msg->count = 0 ;
 
 	  if (handle != OFC_NULL)
-	    BlueHandleUnlock (socket->impl) ;
+	    ofc_handle_unlock (socket->impl) ;
 	}
 
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
   return (progress) ;
 }
@@ -550,15 +550,15 @@ BlueSocketWrite (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg)
  *
  */
 OFC_CORE_LIB OFC_BOOL
-BlueSocketRead (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg)
+BlueSocketRead (OFC_HANDLE hSocket, BLUE_MESSAGE *msg)
 {
   BLUE_SOCKET *socket ;
   OFC_SIZET len ;
   OFC_BOOL progress ;
 
-  socket = BlueHandleLock (hSocket) ;
+  socket = ofc_handle_lock (hSocket) ;
   progress = OFC_FALSE ;
-  if (socket != BLUE_HANDLE_NULL)
+  if (socket != OFC_HANDLE_NULL)
     {
       len = 0 ;
       if (msg->count > 0)
@@ -591,102 +591,102 @@ BlueSocketRead (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg)
 	  progress = OFC_TRUE ;
 	}
 
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
   return (progress) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
-BlueSocketGetImpl (BLUE_HANDLE hSocket)
+OFC_CORE_LIB OFC_HANDLE
+BlueSocketGetImpl (OFC_HANDLE hSocket)
 {
   BLUE_SOCKET *sock ;
-  BLUE_HANDLE impl ;
+  OFC_HANDLE impl ;
 
-  impl = BLUE_HANDLE_NULL ;
-  sock = BlueHandleLock (hSocket) ;
+  impl = OFC_HANDLE_NULL ;
+  sock = ofc_handle_lock (hSocket) ;
   if (sock != OFC_NULL)
     {
       impl = sock->impl ;
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
   return (impl) ;
 }
 
 OFC_CORE_LIB BLUE_SOCKET_EVENT_TYPE
-BlueSocketTest (BLUE_HANDLE hSocket)
+BlueSocketTest (OFC_HANDLE hSocket)
 {
   BLUE_SOCKET_EVENT_TYPE ret ;
-  BLUE_HANDLE impl ;
+  OFC_HANDLE impl ;
   BLUE_SOCKET *sock ;
 
   ret = OFC_FALSE ;
-  impl = BLUE_HANDLE_NULL ;
-  sock = BlueHandleLock (hSocket) ;
+  impl = OFC_HANDLE_NULL ;
+  sock = ofc_handle_lock (hSocket) ;
   if (sock != OFC_NULL)
     {
       ret = BlueSocketImplTest (sock->impl) ;
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueSocketEnable (BLUE_HANDLE hSocket, BLUE_SOCKET_EVENT_TYPE type) 
+BlueSocketEnable (OFC_HANDLE hSocket, BLUE_SOCKET_EVENT_TYPE type)
 {
   OFC_BOOL ret ;
-  BLUE_HANDLE impl ;
+  OFC_HANDLE impl ;
   BLUE_SOCKET *sock ;
 
   ret = OFC_FALSE ;
-  impl = BLUE_HANDLE_NULL ;
-  sock = BlueHandleLock (hSocket) ;
+  impl = OFC_HANDLE_NULL ;
+  sock = ofc_handle_lock (hSocket) ;
   if (sock != OFC_NULL)
     {
       ret = BlueSocketImplEnable (sock->impl, type) ;
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSocketSetSendSize (BLUE_HANDLE hSocket, OFC_INT size)
+BlueSocketSetSendSize (OFC_HANDLE hSocket, OFC_INT size)
 {
   BLUE_SOCKET *sock ;
 
-  sock = BlueHandleLock (hSocket) ;
+  sock = ofc_handle_lock (hSocket) ;
   if (sock != OFC_NULL)
     {
       BlueSocketImplSetSendSize (sock->impl, size) ;
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSocketSetRecvSize (BLUE_HANDLE hSocket, OFC_INT size)
+BlueSocketSetRecvSize (OFC_HANDLE hSocket, OFC_INT size)
 {
   BLUE_SOCKET *sock ;
 
-  sock = BlueHandleLock (hSocket) ;
+  sock = ofc_handle_lock (hSocket) ;
   if (sock != OFC_NULL)
     {
       BlueSocketImplSetRecvSize (sock->impl, size) ;
-      BlueHandleUnlock (hSocket) ;
+      ofc_handle_unlock (hSocket) ;
     }
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueSocketGetAddresses (BLUE_HANDLE hSock, BLUE_SOCKADDR *local, 
-			BLUE_SOCKADDR *remote)
+BlueSocketGetAddresses (OFC_HANDLE hSock, BLUE_SOCKADDR *local,
+                        BLUE_SOCKADDR *remote)
 {
   BLUE_SOCKET *sock ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  sock = BlueHandleLock (hSock) ;
+  sock = ofc_handle_lock (hSock) ;
   if (sock != OFC_NULL)
     {
       ret = BlueSocketImplGetAddresses (sock->impl, local, remote) ;
-      BlueHandleUnlock (hSock) ;
+      ofc_handle_unlock (hSock) ;
     }
   return (ret) ;
 }

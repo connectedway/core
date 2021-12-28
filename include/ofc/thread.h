@@ -83,7 +83,7 @@ typedef enum
 /**
  * The prototype for the thread function
  */
-typedef OFC_DWORD(BLUE_THREAD_FN)(BLUE_HANDLE hThread, OFC_VOID *context) ;
+typedef OFC_DWORD(BLUE_THREAD_FN)(OFC_HANDLE hThread, OFC_VOID *context) ;
 
 #if defined(__cplusplus)
 extern "C"
@@ -109,12 +109,12 @@ extern "C"
    *
    * \returns The thread handle
    */
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   BlueThreadCreate (BLUE_THREAD_FN scheduler,
                     OFC_CCHAR *thread_name, OFC_INT thread_instance,
                     OFC_VOID *context,
                     BLUE_THREAD_DETACHSTATE detachstate,
-                    BLUE_HANDLE hNotify) ;
+                    OFC_HANDLE hNotify) ;
   /**
    * Delete a thread
    *
@@ -126,7 +126,7 @@ extern "C"
    * \param hThread Handle to the thread to delete
    */
   OFC_CORE_LIB OFC_VOID
-  BlueThreadDelete (BLUE_HANDLE hThread) ;
+  BlueThreadDelete (OFC_HANDLE hThread) ;
   /**
    * Wait for a thread to exit
    *
@@ -134,7 +134,7 @@ extern "C"
    * Handle to the thread to wait for
    */
   OFC_CORE_LIB OFC_VOID
-  BlueThreadWait (BLUE_HANDLE hThread) ;
+  BlueThreadWait (OFC_HANDLE hThread) ;
   /**
    * Check whether thread deletion has been scheduled.
    *
@@ -144,7 +144,7 @@ extern "C"
    * \returns OFC_TRUE if deletion is scheduled, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueThreadIsDeleting (BLUE_HANDLE hThread) ;
+  BlueThreadIsDeleting (OFC_HANDLE hThread) ;
   /**
    * Sleep for a specified number of milliseconds
    *
@@ -223,7 +223,7 @@ extern "C"
    * Handle to the wait set
    */
   OFC_CORE_LIB OFC_VOID
-  BlueThreadSetWaitSet (BLUE_HANDLE hThread, BLUE_HANDLE wait_set) ;
+  BlueThreadSetWaitSet (OFC_HANDLE hThread, OFC_HANDLE wait_set) ;
 
 #if defined(__cplusplus)
 }

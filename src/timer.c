@@ -18,43 +18,43 @@ typedef struct
   OFC_CCHAR *id ;
 } BLUE_TIMER ;
 
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 BlueTimerCreate (OFC_CCHAR *id)
 {
   BLUE_TIMER *pTimer ;
-  BLUE_HANDLE hTimer ;
+  OFC_HANDLE hTimer ;
 
   pTimer = BlueHeapMalloc (sizeof (BLUE_TIMER)) ;
   pTimer->expiration_time = 0 ;
   pTimer->id = id ;
-  hTimer = BlueHandleCreate (BLUE_HANDLE_TIMER, pTimer) ;
+  hTimer = ofc_handle_create (OFC_HANDLE_TIMER, pTimer) ;
   return (hTimer) ;
 }
 
-OFC_CORE_LIB OFC_CCHAR *BlueTimerID (BLUE_HANDLE hTimer)
+OFC_CORE_LIB OFC_CCHAR *BlueTimerID (OFC_HANDLE hTimer)
 {
   BLUE_TIMER *pTimer ;
   OFC_CCHAR *id ;
 
-  pTimer = BlueHandleLock (hTimer) ;
+  pTimer = ofc_handle_lock (hTimer) ;
   id = OFC_NULL ;
   if (pTimer != OFC_NULL)
     {
       id = pTimer->id ;
-      BlueHandleUnlock (hTimer) ;
+      ofc_handle_unlock (hTimer) ;
     }
   return (id) ;
 }
 
 OFC_CORE_LIB OFC_MSTIME
-BlueTimerGetWaitTime (BLUE_HANDLE hTimer)
+BlueTimerGetWaitTime (OFC_HANDLE hTimer)
 {
   OFC_MSTIME now ;
   BLUE_TIMER *pTimer ;
   OFC_MSTIME ret ;
 
   ret = 0 ;
-  pTimer = BlueHandleLock (hTimer) ;
+  pTimer = ofc_handle_lock (hTimer) ;
   if (pTimer != OFC_NULL)
     {
       OFC_MSTIME elapsed ;
@@ -62,34 +62,34 @@ BlueTimerGetWaitTime (BLUE_HANDLE hTimer)
       elapsed = pTimer->expiration_time - now ;
       if (elapsed > 0)
 	ret = elapsed ;
-      BlueHandleUnlock (hTimer) ;
+      ofc_handle_unlock (hTimer) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueTimerSet (BLUE_HANDLE hTimer, OFC_MSTIME delta)
+BlueTimerSet (OFC_HANDLE hTimer, OFC_MSTIME delta)
 {
   BLUE_TIMER *pTimer ;
 
-  pTimer = BlueHandleLock (hTimer) ;
+  pTimer = ofc_handle_lock (hTimer) ;
   if (pTimer != OFC_NULL)
     {
       pTimer->expiration_time = BlueTimeGetNow() + delta ;
-      BlueHandleUnlock (hTimer) ;
+      ofc_handle_unlock (hTimer) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueTimerDestroy (BLUE_HANDLE hTimer)
+BlueTimerDestroy (OFC_HANDLE hTimer)
 {
   BLUE_TIMER *pTimer ;
 
-  pTimer = BlueHandleLock (hTimer) ;
+  pTimer = ofc_handle_lock (hTimer) ;
   if (pTimer != OFC_NULL)
     {
       BlueHeapFree (pTimer) ;
-      BlueHandleDestroy (hTimer) ;
-      BlueHandleUnlock (hTimer) ;
+      ofc_handle_destroy (hTimer) ;
+      ofc_handle_unlock (hTimer) ;
     }
 }

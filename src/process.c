@@ -20,11 +20,11 @@ BlueProcessGet (OFC_VOID)
   return (pid) ;
 }
 
-OFC_CORE_LIB BLUE_HANDLE
+OFC_CORE_LIB OFC_HANDLE
 BlueProcessExec (OFC_CTCHAR *name, OFC_TCHAR *uname,
                  OFC_INT argc, OFC_CHAR **argv)
 {
-  BLUE_HANDLE hProcess ;
+  OFC_HANDLE hProcess ;
 
   hProcess = BlueProcessExecImpl (name, uname, argc, argv) ;
   return (hProcess) ;
@@ -32,7 +32,7 @@ BlueProcessExec (OFC_CTCHAR *name, OFC_TCHAR *uname,
 
 
 OFC_CORE_LIB BLUE_PROCESS_ID
-BlueProcessGetId (BLUE_HANDLE hProcess)
+BlueProcessGetId (OFC_HANDLE hProcess)
 {
   BLUE_PROCESS_ID ret ;
 
@@ -41,7 +41,7 @@ BlueProcessGetId (BLUE_HANDLE hProcess)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueProcessTerm (BLUE_HANDLE hProcess) 
+BlueProcessTerm (OFC_HANDLE hProcess)
 {
   BlueProcessTermImpl (hProcess) ;
 }

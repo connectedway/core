@@ -100,8 +100,8 @@ typedef enum
  */
 typedef struct
 {
-  BLUE_HANDLE readOverlapped ;	/* The handle to the buffer when reading */
-  BLUE_HANDLE writeOverlapped ;	/* The handle to the buffer when writing */
+  OFC_HANDLE readOverlapped ;	/* The handle to the buffer when reading */
+  OFC_HANDLE writeOverlapped ;	/* The handle to the buffer when writing */
   OFC_CHAR *data ;		/* Pointer to the buffer */
   BUFFER_STATE state ;		/* Buffer state */
   OFC_LARGE_INTEGER offset ;	/* Offset in file for I/O */
@@ -138,7 +138,7 @@ typedef enum
  * OFC_TRUE if success, OFC_FALSE otherwise
  */
 static ASYNC_RESULT 
-AsyncRead (BLUE_HANDLE wait_set, BLUE_HANDLE read_file,
+AsyncRead (OFC_HANDLE wait_set, OFC_HANDLE read_file,
            OFC_FILE_BUFFER *buffer, OFC_DWORD dwLen)
 {
   ASYNC_RESULT result ;
@@ -157,7 +157,7 @@ AsyncRead (BLUE_HANDLE wait_set, BLUE_HANDLE read_file,
   /*
    * Add the buffer to the wait set
    */
-  BlueWaitSetAdd (wait_set, (BLUE_HANDLE) buffer, buffer->readOverlapped) ;
+  BlueWaitSetAdd (wait_set, (OFC_HANDLE) buffer, buffer->readOverlapped) ;
   /*
    * Issue the read (this will be non blocking)
    */
@@ -218,8 +218,8 @@ AsyncRead (BLUE_HANDLE wait_set, BLUE_HANDLE read_file,
  * \returns
  * state of the read
  */
-static ASYNC_RESULT AsyncReadResult (BLUE_HANDLE wait_set,
-                                     BLUE_HANDLE read_file,
+static ASYNC_RESULT AsyncReadResult (OFC_HANDLE wait_set,
+                                     OFC_HANDLE read_file,
                                      OFC_FILE_BUFFER *buffer,
                                      OFC_DWORD *dwLen)
 {
@@ -284,7 +284,7 @@ static ASYNC_RESULT AsyncReadResult (BLUE_HANDLE wait_set,
 /*
  * Submit an asynchronous Write
  */
-static OFC_BOOL AsyncWrite (BLUE_HANDLE wait_set, BLUE_HANDLE write_file,
+static OFC_BOOL AsyncWrite (OFC_HANDLE wait_set, OFC_HANDLE write_file,
                             OFC_FILE_BUFFER *buffer, OFC_DWORD dwLen)
 {
   OFC_BOOL status ;
@@ -294,7 +294,7 @@ static OFC_BOOL AsyncWrite (BLUE_HANDLE wait_set, BLUE_HANDLE write_file,
                           buffer->offset) ;
     
   buffer->state = BUFFER_STATE_WRITE ;
-  BlueWaitSetAdd (wait_set, (BLUE_HANDLE) buffer, buffer->writeOverlapped) ;
+  BlueWaitSetAdd (wait_set, (OFC_HANDLE) buffer, buffer->writeOverlapped) ;
     
   status = OfcWriteFile (write_file, buffer->data, dwLen, OFC_NULL,
                          buffer->writeOverlapped) ;
@@ -315,8 +315,8 @@ static OFC_BOOL AsyncWrite (BLUE_HANDLE wait_set, BLUE_HANDLE write_file,
   return (status) ;
 }
 
-static ASYNC_RESULT AsyncWriteResult (BLUE_HANDLE wait_set,
-                                      BLUE_HANDLE write_file,
+static ASYNC_RESULT AsyncWriteResult (OFC_HANDLE wait_set,
+                                      OFC_HANDLE write_file,
                                       OFC_FILE_BUFFER *buffer,
                                       OFC_DWORD *dwLen)
 {
@@ -377,7 +377,7 @@ static OFC_TCHAR *MakeFilename (OFC_CTCHAR *device, OFC_CTCHAR *name)
 
 static OFC_BOOL OfcCreateFileTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE write_file ;
+  OFC_HANDLE write_file ;
   OFC_MSTIME start_time ;
   OFC_CHAR *buffer ;
   OFC_INT i ;
@@ -414,9 +414,9 @@ static OFC_BOOL OfcCreateFileTest (OFC_CTCHAR *device)
                               OFC_NULL,
                               OFC_CREATE_ALWAYS,
                               OFC_FILE_ATTRIBUTE_NORMAL,
-                              BLUE_HANDLE_NULL) ;
+                              OFC_HANDLE_NULL) ;
         
-  if (write_file == BLUE_INVALID_HANDLE_VALUE)
+  if (write_file == OFC_INVALID_HANDLE_VALUE)
     {
       BlueCprintf ("Failed to open Copy Destination %A, Error Code %d\n",
                    wfilename, OfcGetLastError ()) ;
@@ -449,7 +449,7 @@ static OFC_BOOL OfcCreateFileTest (OFC_CTCHAR *device)
 	       * Write the buffer
 	       */
 	      status = OfcWriteFile (write_file, buffer, BUFFER_SIZE,
-                                 &dwBytesWritten, BLUE_HANDLE_NULL) ;
+                                 &dwBytesWritten, OFC_HANDLE_NULL) ;
 
 	      if (status == OFC_FALSE)
 		{
@@ -507,20 +507,20 @@ static OFC_BOOL OfcDismountTest (OFC_CTCHAR *device)
 
 static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE read_file ;
-  BLUE_HANDLE write_file ;
+  OFC_HANDLE read_file ;
+  OFC_HANDLE write_file ;
   OFC_MSTIME start_time ;
   OFC_LARGE_INTEGER offset ;
   OFC_BOOL eof ;
   OFC_INT pending ;
-  BLUE_HANDLE buffer_list ;
+  OFC_HANDLE buffer_list ;
   OFC_FILE_BUFFER *buffer ;
   OFC_INT i ;
-  BLUE_HANDLE wait_set ;
+  OFC_HANDLE wait_set ;
   OFC_DWORD dwLen ;
   OFC_BOOL status ;
   ASYNC_RESULT result ;
-  BLUE_HANDLE hEvent ;
+  OFC_HANDLE hEvent ;
   OFC_TCHAR *rfilename ;
   OFC_TCHAR *wfilename ;
   OFC_BOOL ret ;
@@ -548,9 +548,9 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
                              OFC_OPEN_EXISTING,
                               OFC_FILE_ATTRIBUTE_NORMAL |
                               OFC_FILE_FLAG_OVERLAPPED,
-                             BLUE_HANDLE_NULL) ;
+                             OFC_HANDLE_NULL) ;
     
-  if (read_file == BLUE_INVALID_HANDLE_VALUE)
+  if (read_file == OFC_INVALID_HANDLE_VALUE)
     {
       BlueCprintf ("Failed to open Copy Source %A, Error Code %d\n",
                    rfilename, OfcGetLastError ()) ;
@@ -568,9 +568,9 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
                                   OFC_CREATE_ALWAYS,
                                    OFC_FILE_ATTRIBUTE_NORMAL |
                                    OFC_FILE_FLAG_OVERLAPPED,
-                                  BLUE_HANDLE_NULL) ;
+                                  OFC_HANDLE_NULL) ;
         
-      if (write_file == BLUE_INVALID_HANDLE_VALUE)
+      if (write_file == OFC_INVALID_HANDLE_VALUE)
 	{
 	  BlueCprintf ("Failed to open Copy Destination %A, Error Code %d\n",
                    wfilename, OfcGetLastError ()) ;
@@ -630,8 +630,8 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 		      buffer->readOverlapped = OfcCreateOverlapped(read_file) ;
 		      buffer->writeOverlapped = 
 			OfcCreateOverlapped(write_file) ;
-		      if (buffer->readOverlapped == BLUE_HANDLE_NULL ||
-			  buffer->writeOverlapped == BLUE_HANDLE_NULL)
+		      if (buffer->readOverlapped == OFC_HANDLE_NULL ||
+                  buffer->writeOverlapped == OFC_HANDLE_NULL)
 			BlueProcessCrash("An Overlapped Handle is NULL");
 		      /*
 		       * Add it to our buffer list
@@ -683,7 +683,7 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	       * we've been in this loop a bit
 	       */
 	      hEvent = BlueWaitSetWait (wait_set) ;
-	      if (hEvent != BLUE_HANDLE_NULL)
+	      if (hEvent != OFC_HANDLE_NULL)
 		{
 		  /*
 		   * We use the app of the event as a pointer to the
@@ -693,7 +693,7 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 		   * we did this kind of thing a lot, I'm all for a
 		   * new property of a handle
 		   */
-		  buffer = (OFC_FILE_BUFFER *) BlueHandleGetApp (hEvent) ;
+		  buffer = (OFC_FILE_BUFFER *) ofc_handle_get_app (hEvent) ;
 		  /*
 		   * Now we have both read and write overlapped descriptors
 		   * See what state we're in
@@ -845,7 +845,7 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 static OFC_BOOL
 OfcDeleteTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE write_file ;
+  OFC_HANDLE write_file ;
   OFC_DWORD dwLastError ;
   OFC_CHAR *buffer ;
   OFC_SIZET len ;
@@ -867,9 +867,9 @@ OfcDeleteTest (OFC_CTCHAR *device)
                               OFC_NULL,
                               OFC_CREATE_ALWAYS,
                               OFC_FILE_ATTRIBUTE_NORMAL,
-                              BLUE_HANDLE_NULL) ;
+                              OFC_HANDLE_NULL) ;
         
-  if (write_file == BLUE_INVALID_HANDLE_VALUE)
+  if (write_file == OFC_INVALID_HANDLE_VALUE)
     {
       BlueCprintf ("Failed to create delete file %A, Error Code %d\n",
                    filename, OfcGetLastError ()) ;
@@ -893,7 +893,7 @@ OfcDeleteTest (OFC_CTCHAR *device)
        * And write it to the file
        */
       status = OfcWriteFile (write_file, buffer, BUFFER_SIZE, &dwBytesWritten,
-                             BLUE_HANDLE_NULL) ;
+                             OFC_HANDLE_NULL) ;
       /*
        * Free the buffer
        */
@@ -933,9 +933,9 @@ OfcDeleteTest (OFC_CTCHAR *device)
                        OFC_NULL,
                        OFC_OPEN_EXISTING,
                        OFC_FILE_FLAG_DELETE_ON_CLOSE,
-                       BLUE_HANDLE_NULL) ;
+                       OFC_HANDLE_NULL) ;
         
-	      if (write_file == BLUE_INVALID_HANDLE_VALUE)
+	      if (write_file == OFC_INVALID_HANDLE_VALUE)
 		{
 		  BlueCprintf ("Failed to create delete on close file %A, "
 			       "Error Code %d\n",
@@ -971,7 +971,7 @@ OfcDeleteTest (OFC_CTCHAR *device)
  */
 static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE rename_file ;
+  OFC_HANDLE rename_file ;
   OFC_DWORD dwLastError ;
   OFC_CHAR *buffer ;
   OFC_SIZET len ;
@@ -981,7 +981,7 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
   OFC_DWORD dwBytesWritten ;
   OFC_BOOL ret ;
   OFC_TCHAR *dirname ;
-  BLUE_HANDLE dirHandle ;
+  OFC_HANDLE dirHandle ;
 
   /*
    * Rename within a directory
@@ -1015,9 +1015,9 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
                                    OFC_NULL,
                                    OFC_CREATE_ALWAYS,
                                    OFC_FILE_ATTRIBUTE_NORMAL,
-                                   BLUE_HANDLE_NULL) ;
+                                   OFC_HANDLE_NULL) ;
         
-      if (rename_file == BLUE_INVALID_HANDLE_VALUE)
+      if (rename_file == OFC_INVALID_HANDLE_VALUE)
 	{
 	  BlueCprintf ("Failed to create rename file %A, Error Code %d\n",
                    filename, OfcGetLastError ()) ;
@@ -1039,7 +1039,7 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
 	    }
 
 	  status = OfcWriteFile (rename_file, buffer, BUFFER_SIZE,
-                             &dwBytesWritten, BLUE_HANDLE_NULL) ;
+                             &dwBytesWritten, OFC_HANDLE_NULL) ;
     
 	  BlueHeapFree (buffer) ;
 	  if (status != OFC_TRUE)
@@ -1103,9 +1103,9 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
                                  OFC_OPEN_EXISTING,
                                   OFC_FILE_FLAG_DELETE_ON_CLOSE |
                                   OFC_FILE_ATTRIBUTE_DIRECTORY,
-                                 BLUE_HANDLE_NULL) ;
+                                 OFC_HANDLE_NULL) ;
         
-      if (dirHandle == BLUE_INVALID_HANDLE_VALUE)
+      if (dirHandle == OFC_INVALID_HANDLE_VALUE)
 	{
 	  BlueCprintf ("Failed to create delete on close dir %A, "
 		       "Error Code %d\n",
@@ -1144,13 +1144,13 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
  */
 static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE rename_file ;
+  OFC_HANDLE rename_file ;
   OFC_DWORD dwLastError ;
   OFC_CHAR *buffer ;
   OFC_SIZET len ;
   OFC_BOOL status ;
   OFC_TCHAR *dirname ;
-  BLUE_HANDLE dirHandle ;
+  OFC_HANDLE dirHandle ;
   OFC_TCHAR *filename ;
   OFC_TCHAR *tofilename ;
   OFC_TCHAR *fulltofilename ;
@@ -1182,9 +1182,9 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
                                    OFC_NULL,
                                    OFC_CREATE_ALWAYS,
                                    OFC_FILE_ATTRIBUTE_NORMAL,
-                                   BLUE_HANDLE_NULL) ;
+                                   OFC_HANDLE_NULL) ;
         
-      if (rename_file == BLUE_INVALID_HANDLE_VALUE)
+      if (rename_file == OFC_INVALID_HANDLE_VALUE)
 	{
 	  BlueCprintf ("Failed to create rename file %A, Error Code %d\n",
                    filename, OfcGetLastError ()) ;
@@ -1206,7 +1206,7 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 	    }
 
 	  status = OfcWriteFile (rename_file, buffer, BUFFER_SIZE, &dwBytesWritten,
-                             BLUE_HANDLE_NULL) ;
+                             OFC_HANDLE_NULL) ;
     
 	  BlueHeapFree (buffer) ;
 	  if (status != OFC_TRUE)
@@ -1236,9 +1236,9 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
                                        OFC_NULL,
                                        OFC_OPEN_EXISTING,
                                        0,
-                                       BLUE_HANDLE_NULL) ;
+                                       OFC_HANDLE_NULL) ;
         
-		  if (rename_file == BLUE_INVALID_HANDLE_VALUE)
+		  if (rename_file == OFC_INVALID_HANDLE_VALUE)
 		    {
 		      BlueCprintf ("Failed to create rename file %S, "
 				   "Error Code %d\n",
@@ -1260,7 +1260,7 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 		      rename_info = BlueHeapMalloc (rename_info_len) ;
 		  
 		      rename_info->ReplaceIfExists = OFC_FALSE ;
-		      rename_info->RootDirectory = BLUE_HANDLE_NULL ;
+		      rename_info->RootDirectory = OFC_HANDLE_NULL ;
 		      rename_info->FileNameLength =
                       (OFC_DWORD) newlen * sizeof (BLUE_WCHAR) ;
 		      BlueCtstrncpy (rename_info->FileName,
@@ -1317,9 +1317,9 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
                                  OFC_OPEN_EXISTING,
                                   OFC_FILE_FLAG_DELETE_ON_CLOSE |
                                   OFC_FILE_ATTRIBUTE_DIRECTORY,
-                                 BLUE_HANDLE_NULL) ;
+                                 OFC_HANDLE_NULL) ;
         
-      if (dirHandle == BLUE_INVALID_HANDLE_VALUE)
+      if (dirHandle == OFC_INVALID_HANDLE_VALUE)
 	{
 	  BlueCprintf ("Failed to create delete on close dir %A, "
 		       "Error Code %d\n",
@@ -1358,7 +1358,7 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
  */
 static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE flush_file ;
+  OFC_HANDLE flush_file ;
   OFC_DWORD dwLastError ;
   OFC_CHAR *buffer ;
   OFC_SIZET len ;
@@ -1381,9 +1381,9 @@ static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
                               OFC_NULL,
                               OFC_CREATE_ALWAYS,
                               OFC_FILE_ATTRIBUTE_NORMAL,
-                              BLUE_HANDLE_NULL) ;
+                              OFC_HANDLE_NULL) ;
         
-  if (flush_file == BLUE_INVALID_HANDLE_VALUE)
+  if (flush_file == OFC_INVALID_HANDLE_VALUE)
     {
       BlueCprintf ("Failed to create flush file %A, Error Code %d\n",
                    filename, OfcGetLastError ()) ;
@@ -1403,7 +1403,7 @@ static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
 			       "This is the Text for line %d\n", i) ;
 
 	  status = OfcWriteFile (flush_file, buffer, (OFC_DWORD) len, &dwBytesWritten,
-                             BLUE_HANDLE_NULL) ;
+                             OFC_HANDLE_NULL) ;
     
 	  if (status != OFC_TRUE)
 	    {
@@ -1496,7 +1496,7 @@ static OFC_BOOL OfcDeleteDirectoryTest (OFC_CTCHAR *device)
   OFC_DWORD dwLastError ;
   OFC_TCHAR *filename ;
   OFC_BOOL ret ;
-  BLUE_HANDLE dirhandle ;
+  OFC_HANDLE dirhandle ;
 
   ret = OFC_TRUE ;
   filename = MakeFilename (device, FS_TEST_DIRECTORY) ;
@@ -1508,9 +1508,9 @@ static OFC_BOOL OfcDeleteDirectoryTest (OFC_CTCHAR *device)
                              OFC_OPEN_EXISTING,
                               OFC_FILE_FLAG_DELETE_ON_CLOSE |
                               OFC_FILE_ATTRIBUTE_DIRECTORY,
-                             BLUE_HANDLE_NULL) ;
+                             OFC_HANDLE_NULL) ;
         
-  if (dirhandle == BLUE_INVALID_HANDLE_VALUE)
+  if (dirhandle == OFC_INVALID_HANDLE_VALUE)
     {
       BlueCprintf ("Failed to create delete on close dir %A, "
 		   "Error Code %d\n",
@@ -1540,7 +1540,7 @@ static OFC_BOOL OfcDeleteDirectoryTest (OFC_CTCHAR *device)
 
 static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE seteof_file ;
+  OFC_HANDLE seteof_file ;
   OFC_DWORD dwLastError ;
   OFC_CHAR *buffer ;
   OFC_SIZET len ;
@@ -1563,9 +1563,9 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
                                OFC_NULL,
                                OFC_CREATE_ALWAYS,
                                OFC_FILE_ATTRIBUTE_NORMAL,
-                               BLUE_HANDLE_NULL) ;
+                               OFC_HANDLE_NULL) ;
         
-  if (seteof_file == BLUE_INVALID_HANDLE_VALUE)
+  if (seteof_file == OFC_INVALID_HANDLE_VALUE)
     {
       BlueCprintf ("Failed to create seteof file %A, Error Code %d\n",
                    filename, OfcGetLastError ()) ;
@@ -1587,7 +1587,7 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 	}
 
       status = OfcWriteFile (seteof_file, buffer, BUFFER_SIZE, &dwBytesWritten,
-                             BLUE_HANDLE_NULL) ;
+                             OFC_HANDLE_NULL) ;
     
       BlueHeapFree (buffer) ;
       if (status != OFC_TRUE)
@@ -1621,9 +1621,9 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
                                        OFC_NULL,
                                        OFC_OPEN_EXISTING,
                                        OFC_FILE_ATTRIBUTE_NORMAL,
-                                       BLUE_HANDLE_NULL) ;
+                                       OFC_HANDLE_NULL) ;
         
-	      if (seteof_file == BLUE_INVALID_HANDLE_VALUE)
+	      if (seteof_file == OFC_INVALID_HANDLE_VALUE)
 		{
 		  BlueCprintf ("Failed to open seteof file %A, "
 			       "Error Code %d\n",
@@ -1884,7 +1884,7 @@ OfcFSPrintFileAttributeData (OFC_WIN32_FILE_ATTRIBUTE_DATA *file_data)
 
 static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE list_handle ;
+  OFC_HANDLE list_handle ;
   OFC_WIN32_FIND_DATA find_data ;
   OFC_BOOL more = OFC_FALSE ;
   OFC_BOOL status ;
@@ -1902,7 +1902,7 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
 
   ret = OFC_TRUE ;
   retry = OFC_TRUE ;
-  list_handle = BLUE_INVALID_HANDLE_VALUE ;
+  list_handle = OFC_INVALID_HANDLE_VALUE ;
   /*
    * The initial credentials in device are anonymous.  If that fails,
    * prompt for credentials and try again.
@@ -1915,7 +1915,7 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
 
       list_handle = OfcFindFirstFile (filename, &find_data, &more) ;
         
-      if (list_handle != BLUE_INVALID_HANDLE_VALUE)
+      if (list_handle != OFC_INVALID_HANDLE_VALUE)
 	retry = OFC_FALSE ;
       else
 	{
@@ -1964,7 +1964,7 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
       BlueHeapFree (filename) ;
     }
 
-  if (list_handle != BLUE_INVALID_HANDLE_VALUE)
+  if (list_handle != OFC_INVALID_HANDLE_VALUE)
     {
       count++ ;
       OfcFSPrintFindData (&find_data) ;
@@ -1999,7 +1999,7 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
 
 static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
 {
-  BLUE_HANDLE getex_file ;
+  OFC_HANDLE getex_file ;
   OFC_DWORD dwLastError ;
   OFC_CHAR *buffer ;
   OFC_SIZET len ;
@@ -2020,9 +2020,9 @@ static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
                               OFC_NULL,
                               OFC_CREATE_ALWAYS,
                               OFC_FILE_ATTRIBUTE_NORMAL,
-                              BLUE_HANDLE_NULL) ;
+                              OFC_HANDLE_NULL) ;
         
-  if (getex_file == BLUE_INVALID_HANDLE_VALUE)
+  if (getex_file == OFC_INVALID_HANDLE_VALUE)
     {
       BlueCprintf ("Failed to create getex file %A, Error Code %d\n",
                    filename, OfcGetLastError ()) ;
@@ -2044,7 +2044,7 @@ static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
 	}
 
       status = OfcWriteFile (getex_file, buffer, BUFFER_SIZE, &dwBytesWritten,
-                             BLUE_HANDLE_NULL) ;
+                             OFC_HANDLE_NULL) ;
     
       BlueHeapFree (buffer) ;
       if (status != OFC_TRUE)
@@ -2288,7 +2288,7 @@ static OFC_BOOL OfcBadFileNamesTest (OFC_CTCHAR *device)
 {
   OFC_BOOL ret ;
   OFC_BOOL test_status ;
-  BLUE_HANDLE hFile ;
+  OFC_HANDLE hFile ;
 
   char uncfilename[OFC_MAX_PATH] ;
   OFC_SIZET filelen ;
@@ -2326,10 +2326,10 @@ static OFC_BOOL OfcBadFileNamesTest (OFC_CTCHAR *device)
                               OFC_NULL,
                               OFC_OPEN_EXISTING,
                               OFC_FILE_ATTRIBUTE_DIRECTORY,
-                              BLUE_HANDLE_NULL) ;
+                              OFC_HANDLE_NULL) ;
 
       test_status = OFC_TRUE ;
-      if (hFile == BLUE_INVALID_HANDLE_VALUE)
+      if (hFile == OFC_INVALID_HANDLE_VALUE)
 	{
 	  lasterror = OfcGetLastError() ;
 	}
@@ -2375,9 +2375,9 @@ static OFC_BOOL OfcBadFileNamesTest (OFC_CTCHAR *device)
                               OFC_CREATE_NEW,
                                OFC_FILE_ATTRIBUTE_TEMPORARY |
                                OFC_FILE_FLAG_DELETE_ON_CLOSE,
-                              BLUE_HANDLE_NULL) ;
+                              OFC_HANDLE_NULL) ;
       test_status = OFC_TRUE ;
-      if (hFile == BLUE_INVALID_HANDLE_VALUE)
+      if (hFile == OFC_INVALID_HANDLE_VALUE)
 	{
 	  lasterror = OfcGetLastError() ;
 	}

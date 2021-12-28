@@ -34,12 +34,12 @@ extern "C"
   OFC_CORE_LIB OFC_VOID
   BlueProcessUnblockSignal (OFC_INT signal) ;
 
-  OFC_CORE_LIB BLUE_HANDLE
+  OFC_CORE_LIB OFC_HANDLE
   BlueProcessExec (OFC_CTCHAR *name, OFC_TCHAR *uname,
                    OFC_INT arg_count, OFC_CHAR **argv) ;
 
   OFC_CORE_LIB OFC_VOID
-  BlueProcessTerm (BLUE_HANDLE hProcess) ;
+  BlueProcessTerm (OFC_HANDLE hProcess) ;
 
   OFC_CORE_LIB OFC_BOOL
   BlueProcessTermTrap (BLUE_PROCESS_TRAP_HANDLER trap) ;
@@ -67,7 +67,7 @@ extern "C"
    * Process Id
    */
   OFC_CORE_LIB BLUE_PROCESS_ID
-  BlueProcessGetId (BLUE_HANDLE hProcess) ;
+  BlueProcessGetId (OFC_HANDLE hProcess) ;
   OFC_CORE_LIB OFC_VOID
   BlueProcessCrash (OFC_CCHAR *obuf) ;
 

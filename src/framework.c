@@ -32,7 +32,7 @@ static OFC_LPTSTR config_filename = OFC_NULL ;
 /** \{ */
 
 OFC_CORE_LIB OFC_VOID
-BlueFrameworkInit (OFC_VOID)
+ofc_framework_init (OFC_VOID)
 {
   /*
    * Load Blue Share if not done as part of library load
@@ -51,7 +51,7 @@ BlueFrameworkInit (OFC_VOID)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueFrameworkDestroy (OFC_VOID)
+ofc_framework_destroy (OFC_VOID)
 {
   /*
    * Load Blue Share if not done as part of library load
@@ -69,16 +69,16 @@ BlueFrameworkDestroy (OFC_VOID)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueFrameworkStartup (OFC_VOID)
+ofc_framework_startup (OFC_VOID)
 {
-  BLUE_HANDLE hScheduler ;
+  OFC_HANDLE hScheduler ;
 
   hScheduler = BlueSchedCreate() ;
-  BlueFrameworkStartupEv(hScheduler, BLUE_HANDLE_NULL);
+    ofc_framework_startup_ev(hScheduler, OFC_HANDLE_NULL);
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueFrameworkStartupEv (BLUE_HANDLE hScheduler, BLUE_HANDLE hEvent)
+ofc_framework_startup_ev (OFC_HANDLE hScheduler, OFC_HANDLE hEvent)
 {
   /*
    * Configuration is complete.  Start up the stack
@@ -90,7 +90,7 @@ BlueFrameworkStartupEv (BLUE_HANDLE hScheduler, BLUE_HANDLE hEvent)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueFrameworkShutdown (OFC_VOID)
+ofc_framework_shutdown (OFC_VOID)
 {
 #if defined(OFC_NETMON)
 #if 0
@@ -99,7 +99,7 @@ BlueFrameworkShutdown (OFC_VOID)
 #endif
 }
 
-OFC_CORE_LIB OFC_VOID BlueFrameworkLoad(OFC_LPCTSTR filename)
+OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)
 {
 #if defined(OFC_PERSIST)
   BlueCprintf ("Loading %S\n", filename) ;
@@ -111,7 +111,7 @@ OFC_CORE_LIB OFC_VOID BlueFrameworkLoad(OFC_LPCTSTR filename)
 #endif
 }
 
-OFC_CORE_LIB OFC_VOID BlueFrameworkSave (OFC_LPCTSTR filename)
+OFC_CORE_LIB OFC_VOID ofc_framework_save (OFC_LPCTSTR filename)
 {
 #if defined(OFC_PERSIST)
   if (filename == OFC_NULL)
@@ -127,13 +127,13 @@ OFC_CORE_LIB OFC_VOID BlueFrameworkSave (OFC_LPCTSTR filename)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueFrameworkSetHostName (OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
-                          OFC_LPCTSTR desc)
+ofc_framework_set_host_name (OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
+                             OFC_LPCTSTR desc)
 {
   BlueConfigSetNodeName (name, workgroup, desc) ;
 }
 
-OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetHostName (OFC_VOID)
+OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_host_name (OFC_VOID)
 {
   OFC_LPCTSTR name ;
   OFC_LPCTSTR workgroup ;
@@ -147,12 +147,12 @@ OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetHostName (OFC_VOID)
   return (tstrName) ;
 }
 
-OFC_CORE_LIB OFC_VOID BlueFrameworkFreeHostName (OFC_LPTSTR str)
+OFC_CORE_LIB OFC_VOID ofc_framework_free_host_name (OFC_LPTSTR str)
 {
   BlueHeapFree (str) ;
 }
 
-OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetWorkgroup (OFC_VOID)
+OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_workgroup (OFC_VOID)
 {
   OFC_LPCTSTR name ;
   OFC_LPCTSTR workgroup ;
@@ -166,12 +166,12 @@ OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetWorkgroup (OFC_VOID)
   return (tstrWorkgroup) ;
 }
 
-OFC_CORE_LIB OFC_VOID BlueFrameworkFreeWorkgroup (OFC_LPTSTR str)
+OFC_CORE_LIB OFC_VOID ofc_framework_free_workgroup (OFC_LPTSTR str)
 {
   BlueHeapFree (str) ;
 }
 
-OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetDescription (OFC_VOID)
+OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_description (OFC_VOID)
 {
   OFC_LPCTSTR name ;
   OFC_LPCTSTR workgroup ;
@@ -185,12 +185,12 @@ OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetDescription (OFC_VOID)
   return (tstrDesc) ;
 }
 
-OFC_CORE_LIB OFC_VOID BlueFrameworkFreeDescription (OFC_LPTSTR str)
+OFC_CORE_LIB OFC_VOID ofc_framework_free_description (OFC_LPTSTR str)
 {
   BlueHeapFree (str) ;
 }
 
-OFC_VOID BlueFrameworkSetUUID (const OFC_CHAR *cuuid)
+OFC_VOID ofc_framework_set_uuid (const OFC_CHAR *cuuid)
 {
   OFC_UUID uuid ;
 
@@ -198,7 +198,7 @@ OFC_VOID BlueFrameworkSetUUID (const OFC_CHAR *cuuid)
   BlueConfigSetUUID (&uuid) ;
 }
 
-OFC_CHAR *BlueFrameworkGetUUID (OFC_VOID)
+OFC_CHAR *ofc_framework_get_uuid (OFC_VOID)
 {
   OFC_UUID uuid ;
   OFC_CHAR *cuuid ;
@@ -210,12 +210,12 @@ OFC_CHAR *BlueFrameworkGetUUID (OFC_VOID)
   return (cuuid) ;
 }
 
-OFC_CORE_LIB OFC_VOID BlueFrameworkFreeUUID (OFC_LPSTR str)
+OFC_CORE_LIB OFC_VOID ofc_framework_free_uuid (OFC_LPSTR str)
 {
   BlueHeapFree (str) ;
 }
 
-OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetRootDir (OFC_VOID)
+OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_root_dir (OFC_VOID)
 {
   OFC_LPTSTR tstrRootDir ;
 
@@ -224,12 +224,12 @@ OFC_CORE_LIB OFC_LPTSTR BlueFrameworkGetRootDir (OFC_VOID)
   return (tstrRootDir) ;
 }
 
-OFC_CORE_LIB OFC_VOID BlueFrameworkFreeRootDir (OFC_LPTSTR str)
+OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir (OFC_LPTSTR str)
 {
   BlueHeapFree (str) ;
 }
 
-OFC_VOID BlueFrameworkSetInterfaceDiscovery (OFC_BOOL on)
+OFC_VOID ofc_framework_set_interface_discovery (OFC_BOOL on)
 {
   BLUE_CONFIG_ICONFIG_TYPE itype ;
 
@@ -240,7 +240,7 @@ OFC_VOID BlueFrameworkSetInterfaceDiscovery (OFC_BOOL on)
   BlueConfigSetInterfaceType (itype) ;
 }
 
-OFC_BOOL BlueFrameworkGetInterfaceDiscovery (OFC_VOID)
+OFC_BOOL ofc_framework_get_interface_discovery (OFC_VOID)
 {
   OFC_BOOL ret ;
 
@@ -250,7 +250,7 @@ OFC_BOOL BlueFrameworkGetInterfaceDiscovery (OFC_VOID)
   return (ret) ;
 }
 
-OFC_VOID BlueFrameworkAddInterface (BLUE_FRAMEWORK_INTERFACE *iface)
+OFC_VOID ofc_framework_add_interface (OFC_FRAMEWORK_INTERFACE *iface)
 {
   OFC_INT old_count ;
   OFC_INT new_count ;
@@ -273,23 +273,23 @@ OFC_VOID BlueFrameworkAddInterface (BLUE_FRAMEWORK_INTERFACE *iface)
   BlueHeapFree (cstr) ;
 }
 
-OFC_VOID BlueFrameworkRemoveInterface (BLUE_IPADDR *ip)
+OFC_VOID ofc_framework_remove_interface (BLUE_IPADDR *ip)
 {
   BlueConfigRemoveInterfaceConfig (ip) ;
 }
 
-BLUE_FRAMEWORK_INTERFACES *BlueFrameworkGetInterfaces (OFC_VOID)
+OFC_FRAMEWORK_INTERFACES *ofc_framework_get_interfaces (OFC_VOID)
 {
-  BLUE_FRAMEWORK_INTERFACES *ifaces ;
+  OFC_FRAMEWORK_INTERFACES *ifaces ;
   OFC_INT i ;
   
 
-  ifaces = BlueHeapMalloc (sizeof (BLUE_FRAMEWORK_INTERFACES)) ;
+  ifaces = BlueHeapMalloc (sizeof (OFC_FRAMEWORK_INTERFACES)) ;
   if (ifaces != OFC_NULL)
     {
       ifaces->num_interfaces = BlueConfigInterfaceCount() ;
-      ifaces->iface = BlueHeapMalloc (sizeof (BLUE_FRAMEWORK_INTERFACE) *
-				      ifaces->num_interfaces) ;
+      ifaces->iface = BlueHeapMalloc (sizeof (OFC_FRAMEWORK_INTERFACE) *
+                                      ifaces->num_interfaces) ;
       for (i = 0 ; i < ifaces->num_interfaces ; i++)
 	{
 	  ifaces->iface[i].netBiosMode = 
@@ -304,7 +304,7 @@ BLUE_FRAMEWORK_INTERFACES *BlueFrameworkGetInterfaces (OFC_VOID)
   return (ifaces) ;
 }
 				 
-OFC_VOID BlueFrameworkFreeInterfaces (BLUE_FRAMEWORK_INTERFACES *ifaces)
+OFC_VOID ofc_framework_free_interfaces (OFC_FRAMEWORK_INTERFACES *ifaces)
 {
   OFC_INT i ;
 
@@ -319,9 +319,9 @@ OFC_VOID BlueFrameworkFreeInterfaces (BLUE_FRAMEWORK_INTERFACES *ifaces)
   BlueHeapFree (ifaces) ;
 }
 
-BLUE_FRAMEWORK_MAPS *BlueFrameworkGetMaps (OFC_VOID)
+OFC_FRAMEWORK_MAPS *ofc_framework_get_maps (OFC_VOID)
 {
-  BLUE_FRAMEWORK_MAPS *maps ;
+  OFC_FRAMEWORK_MAPS *maps ;
   OFC_LPCTSTR prefix ;
   OFC_LPCTSTR desc ;
   OFC_BOOL thumbnail ;
@@ -331,12 +331,12 @@ BLUE_FRAMEWORK_MAPS *BlueFrameworkGetMaps (OFC_VOID)
   OFC_SIZET rem ;
   OFC_LPTSTR ptr ;
   
-  maps = BlueHeapMalloc (sizeof (BLUE_FRAMEWORK_MAPS)) ;
+  maps = BlueHeapMalloc (sizeof (OFC_FRAMEWORK_MAPS)) ;
   if (maps != OFC_NULL)
     {
       maps->numMaps = 0 ;
-      maps->map = BlueHeapMalloc (sizeof (BLUE_FRAMEWORK_MAP) *
-				  OFC_MAX_MAPS) ;
+      maps->map = BlueHeapMalloc (sizeof (OFC_FRAMEWORK_MAP) *
+                                  OFC_MAX_MAPS) ;
       for (i = 0 ; i < OFC_MAX_MAPS ; i++)
 	{
 	  BluePathGetMapW (i, &prefix, &desc, &path, &thumbnail) ;
@@ -362,7 +362,7 @@ BLUE_FRAMEWORK_MAPS *BlueFrameworkGetMaps (OFC_VOID)
   return (maps) ;
 }
 				 
-OFC_VOID BlueFrameworkFreeMaps (BLUE_FRAMEWORK_MAPS *maps)
+OFC_VOID ofc_framework_free_maps (OFC_FRAMEWORK_MAPS *maps)
 {
   OFC_INT i ;
 
@@ -376,7 +376,7 @@ OFC_VOID BlueFrameworkFreeMaps (BLUE_FRAMEWORK_MAPS *maps)
   BlueHeapFree (maps) ;
 }
 
-OFC_VOID BlueFrameworkAddMap (BLUE_FRAMEWORK_MAP *map)
+OFC_VOID ofc_framework_add_map (OFC_FRAMEWORK_MAP *map)
 {
   BLUE_PATH *path ;
 
@@ -389,24 +389,24 @@ OFC_VOID BlueFrameworkRemoveMap (OFC_LPCTSTR tszPrefix)
   BluePathDeleteMapW (tszPrefix) ;
 }
 
-OFC_VOID BlueFrameworkUpdate (OFC_VOID)
+OFC_VOID ofc_framework_update (OFC_VOID)
 {
   BlueConfigUpdate() ;
 }
 
-OFC_VOID BlueFrameworkDumpHeap (OFC_VOID)
+OFC_VOID ofc_framework_dump_heap (OFC_VOID)
 {
   BlueHeapDump() ;
 }
 
 static OFC_INT wifi_ip = 0 ;
 
-OFC_VOID BlueFrameworkSetWifiIP (OFC_INT ip)
+OFC_VOID ofc_framework_set_wifi_ip (OFC_INT ip)
 {
   wifi_ip = BLUE_NET_NTOL (&ip, 0) ;
 }
 
-OFC_INT BlueFrameworkGetWifiIP(OFC_VOID)
+OFC_INT ofc_framework_get_wifi_ip(OFC_VOID)
 {
   return (wifi_ip) ;
 }

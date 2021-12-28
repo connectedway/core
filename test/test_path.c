@@ -15,14 +15,14 @@
 
 static OFC_INT test_startup(OFC_VOID)
 {
-  BlueFrameworkInit();
+  ofc_framework_init();
   return(0);
 }
 
 static OFC_VOID test_shutdown(OFC_VOID)
 {
-  BlueFrameworkShutdown();
-  BlueFrameworkDestroy();
+  ofc_framework_shutdown();
+  ofc_framework_destroy();
 }
 
 TEST_GROUP(path);
