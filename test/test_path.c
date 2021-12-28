@@ -49,76 +49,76 @@ TEST(path, test_path)
 
     rem = 20 ;
     trem = rem ;
-    tfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_TCHAR)) ;
+    tfilename = ofc_malloc ((trem + 1) * sizeof (OFC_TCHAR)) ;
     tcursor = tfilename ;
 
-    len = BluePathMakeURLW (&tcursor, &trem,
-			    TSTR("COYOTE"),
-			    TSTR("ROAD@RUNNER"),
-			    TSTR("ACME"),
-			    TSTR("BOOM"),
-			    TSTR("DESERT"),
-			    TSTR("dir1\\dir2\\dir3"),
-			    TSTR("PAIN")) ;
+    len = ofc_path_make_urlW (&tcursor, &trem,
+                              TSTR("COYOTE"),
+                              TSTR("ROAD@RUNNER"),
+                              TSTR("ACME"),
+                              TSTR("BOOM"),
+                              TSTR("DESERT"),
+                              TSTR("dir1\\dir2\\dir3"),
+                              TSTR("PAIN")) ;
     tfilename[rem] = TCHAR_EOS ;
 
-    BlueCprintf ("Truncated Path is %S\n", tfilename) ;
-    BlueHeapFree (tfilename) ;
+    ofc_printf ("Truncated Path is %S\n", tfilename) ;
+    ofc_free (tfilename) ;
 
     rem = len ;
     trem = rem ;
-    tfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_TCHAR)) ;
+    tfilename = ofc_malloc ((trem + 1) * sizeof (OFC_TCHAR)) ;
     tcursor = tfilename ;
 
-    len = BluePathMakeURLW (&tcursor, &trem,
-			    TSTR("COYOTE"),
-			    TSTR("ROAD@RUNNER"),
-			    TSTR("ACME"),
-			    TSTR("BOOM"),
-			    TSTR("DESERT"),
-			    TSTR("dir1\\dir2\\dir3"),
-			    TSTR("PAIN")) ;
+    len = ofc_path_make_urlW (&tcursor, &trem,
+                              TSTR("COYOTE"),
+                              TSTR("ROAD@RUNNER"),
+                              TSTR("ACME"),
+                              TSTR("BOOM"),
+                              TSTR("DESERT"),
+                              TSTR("dir1\\dir2\\dir3"),
+                              TSTR("PAIN")) ;
     tfilename[rem] = TCHAR_EOS ;
 
-    BlueCprintf ("Expanded Path is %S\n", tfilename) ;
-    BlueHeapFree (tfilename) ;
+    ofc_printf ("Expanded Path is %S\n", tfilename) ;
+    ofc_free (tfilename) ;
 
     rem = 20 ;
     trem = rem ;
-    cfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_CHAR)) ;
+    cfilename = ofc_malloc ((trem + 1) * sizeof (OFC_CHAR)) ;
     ccursor = cfilename ;
 
-    len = BluePathMakeURLA (&ccursor, &trem,
-			    "COYOTE",
-			    "ROAD@RUNNER",
-			    "ACME",
-			    "BOOM",
-			    "DESERT",
-			    "dir1\\dir2\\dir3",
-			    "PAIN") ;
+    len = ofc_path_make_urlA (&ccursor, &trem,
+                              "COYOTE",
+                              "ROAD@RUNNER",
+                              "ACME",
+                              "BOOM",
+                              "DESERT",
+                              "dir1\\dir2\\dir3",
+                              "PAIN") ;
     cfilename[rem] = '\0' ;
 
-    BlueCprintf ("Truncated Path is %s\n", cfilename) ;
-    BlueHeapFree (cfilename) ;
+    ofc_printf ("Truncated Path is %s\n", cfilename) ;
+    ofc_free (cfilename) ;
 
     rem = len ;
     trem = rem ;
-    cfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_CHAR)) ;
+    cfilename = ofc_malloc ((trem + 1) * sizeof (OFC_CHAR)) ;
     ccursor = cfilename ;
 
-    len = BluePathMakeURLA (&ccursor, &trem,
-			    "COYOTE",
-			    "ROAD@RUNNER",
-			    "ACME",
-			    "BOOM",
-			    "DESERT",
-			    "dir1\\dir2\\dir3",
-			    "PAIN") ;
+    len = ofc_path_make_urlA (&ccursor, &trem,
+                              "COYOTE",
+                              "ROAD@RUNNER",
+                              "ACME",
+                              "BOOM",
+                              "DESERT",
+                              "dir1\\dir2\\dir3",
+                              "PAIN") ;
     cfilename[rem] = '\0' ;
 
-    BlueCprintf ("Expanded Path is %s\n", cfilename) ;
+    ofc_printf ("Expanded Path is %s\n", cfilename) ;
 
-    BlueHeapFree (cfilename) ;
+    ofc_free (cfilename) ;
 }	  
 
 TEST_GROUP_RUNNER(path)

@@ -199,7 +199,7 @@ extern "C"
    * \param ip IP Address of interface to remove
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigRemoveInterfaceConfig (BLUE_IPADDR *ip) ;
+  BlueConfigRemoveInterfaceConfig (OFC_IPADDR *ip) ;
   /**
    * Define the number of interfaces supported by Blue Share
    *
@@ -237,12 +237,12 @@ extern "C"
   OFC_CORE_LIB OFC_VOID
   BlueConfigSetInterfaceConfig (OFC_INT i,
                                 BLUE_CONFIG_MODE netbios_mode,
-                                BLUE_IPADDR *ipaddress,
-                                BLUE_IPADDR *bcast,
-                                BLUE_IPADDR *mask,
+                                OFC_IPADDR *ipaddress,
+                                OFC_IPADDR *bcast,
+                                OFC_IPADDR *mask,
                                 OFC_CHAR *master,
                                 OFC_INT num_wins,
-                                BLUE_IPADDR *winslist) ;
+                                OFC_IPADDR *winslist) ;
   /**
    * Return the number of interfaces in use by Blue Share.  
    *
@@ -266,8 +266,8 @@ extern "C"
    * NULL, do not store
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigInterfaceAddr (OFC_INT index, BLUE_IPADDR *addr,
-                           BLUE_IPADDR *pbcast, BLUE_IPADDR *mask) ;
+  BlueConfigInterfaceAddr (OFC_INT index, OFC_IPADDR *addr,
+                           OFC_IPADDR *pbcast, OFC_IPADDR *mask) ;
   /**
    * Configure Only the Local Master Browser for an Interface
    *
@@ -330,7 +330,7 @@ extern "C"
    * \param addr A pointer to a where to put the IP address
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigWINSAddr(OFC_INT xface, OFC_INT index, BLUE_IPADDR *addr) ;
+  BlueConfigWINSAddr(OFC_INT xface, OFC_INT index, OFC_IPADDR *addr) ;
   /**
    * Get the NetBIOS Mode of an Interface
    *
@@ -344,12 +344,12 @@ extern "C"
    * Pointer to where to return Number of wins nodes for this interface
    * \param winslist
    * Pointer to where to return the wins list for this interface.  This
-   * should be freed using BlueHeapFree after done
+   * should be freed using ofc_free after done
    * \returns The NetBIOS Mode of that interface
    */
   OFC_CORE_LIB BLUE_CONFIG_MODE
   BlueConfigInterfaceMode (OFC_INT index, OFC_INT *num_wins,
-                           BLUE_IPADDR **winslist) ;
+                           OFC_IPADDR **winslist) ;
 
   /**
    * Has the configuration been loaded

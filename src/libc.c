@@ -24,9 +24,9 @@
 
 struct trace_t
 {
-  OFC_INT BlueCTraceOffset ;
-  OFC_CHAR BlueCTraceBuf[OFC_TRACE_LEN] ;
-  OFC_OFFT BlueCTraceLock ;
+  OFC_INT trace_offset ;
+  OFC_CHAR trace_buf[OFC_TRACE_LEN] ;
+  OFC_OFFT trace_lock ;
 } ;
 
 /**
@@ -34,7 +34,7 @@ struct trace_t
  * Determine if a character is a whitespace
  */
 OFC_CORE_LIB OFC_INT
-BlueCstrcmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
+ofc_strcmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
 {
   OFC_CCHAR *pa ;
   OFC_CCHAR *pb ;
@@ -73,7 +73,7 @@ BlueCstrcmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCstrcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
+ofc_strcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
 {
   OFC_CCHAR *pa ;
   OFC_CCHAR *pb ;
@@ -94,7 +94,7 @@ BlueCstrcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
       /*
        * Step through the string until one of them reaches a NIL
        */
-      while (BLUE_C_TOUPPER(*pa) == BLUE_C_TOUPPER(*pb) &&
+      while (OFC_TOUPPER(*pa) == OFC_TOUPPER(*pb) &&
 	     *pa != '\0' && *pb != '\0')
 	{
 	  pa++ ;
@@ -107,13 +107,13 @@ BlueCstrcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
        * then a is less, and if they are equal (or both NIL), then the strings
        * are equal.
        */
-      ret = BLUE_C_TOUPPER(*pa) - BLUE_C_TOUPPER(*pb) ;
+      ret = OFC_TOUPPER(*pa) - OFC_TOUPPER(*pb) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCstrncmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
+ofc_strncmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
 {
   OFC_CCHAR *pa ;
   OFC_CCHAR *pb ;
@@ -153,7 +153,7 @@ BlueCstrncmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCstrncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
+ofc_strncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
 {
   OFC_CCHAR *pa ;
   OFC_CCHAR *pb ;
@@ -175,7 +175,7 @@ BlueCstrncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
       /*
        * Step through the string until one of them reaches a NIL
        */
-      while (BLUE_C_TOUPPER(*pa) == BLUE_C_TOUPPER(*pb) &&
+      while (OFC_TOUPPER(*pa) == OFC_TOUPPER(*pb) &&
 	     *pa != '\0' && *pb != '\0' && len > 0)
 	{
 	  pa++ ;
@@ -190,7 +190,7 @@ BlueCstrncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
        * are equal.
        */
       if (len > 0)
-	ret = BLUE_C_TOUPPER(*pa) - BLUE_C_TOUPPER(*pb) ;
+	ret = OFC_TOUPPER(*pa) - OFC_TOUPPER(*pb) ;
     }
   return (ret) ;
 }
@@ -200,7 +200,7 @@ BlueCstrncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
  * Measure the size of a string
  */
 OFC_CORE_LIB OFC_SIZET
-BlueCstrlen (OFC_CCHAR *astr)
+ofc_strlen (OFC_CCHAR *astr)
 {
   OFC_SIZET ret ;
   OFC_CCHAR *pa ;
@@ -222,7 +222,7 @@ BlueCstrlen (OFC_CCHAR *astr)
 }
 
 OFC_CORE_LIB OFC_SIZET
-BlueCstrnlen (OFC_CCHAR *astr, OFC_SIZET len)
+ofc_strnlen (OFC_CCHAR *astr, OFC_SIZET len)
 {
   OFC_SIZET ret ;
   OFC_CCHAR *pa ;
@@ -245,7 +245,7 @@ BlueCstrnlen (OFC_CCHAR *astr, OFC_SIZET len)
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCstrdup (OFC_CCHAR *astr)
+ofc_strdup (OFC_CCHAR *astr)
 {
   OFC_SIZET size ;
   OFC_CHAR *ret ;
@@ -254,15 +254,15 @@ BlueCstrdup (OFC_CCHAR *astr)
     ret = OFC_NULL ;
   else
     {
-      size = BlueCstrlen(astr) ;
-      ret = BlueHeapMalloc (size + 1) ;
-      BlueCstrcpy (ret, astr) ;
+      size = ofc_strlen(astr) ;
+      ret = ofc_malloc (size + 1) ;
+      ofc_strcpy (ret, astr) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCstrndup (OFC_CCHAR *astr, OFC_SIZET len)
+ofc_strndup (OFC_CCHAR *astr, OFC_SIZET len)
 {
   OFC_SIZET size ;
   OFC_CHAR *ret ;
@@ -272,16 +272,16 @@ BlueCstrndup (OFC_CCHAR *astr, OFC_SIZET len)
     ret = OFC_NULL ;
   else
     {
-      slen = BlueCstrnlen(astr, len) ;
-      size = BLUE_C_MIN(slen, len) + 1 ;
-      ret = BlueHeapMalloc (size) ;
-      BlueCstrncpy (ret, astr, size) ;
+      slen = ofc_strnlen(astr, len) ;
+      size = OFC_MIN(slen, len) + 1 ;
+      ret = ofc_malloc (size) ;
+      ofc_strncpy (ret, astr, size) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_TCHAR *
-BlueCtstrndup (OFC_CTCHAR *astr, OFC_SIZET len)
+ofc_tstrndup (OFC_CTCHAR *astr, OFC_SIZET len)
 {
   OFC_SIZET size ;
   OFC_TCHAR *ret ;
@@ -291,16 +291,16 @@ BlueCtstrndup (OFC_CTCHAR *astr, OFC_SIZET len)
     ret = OFC_NULL ;
   else
     {
-      slen = BlueCtstrnlen(astr, len) ;
-      size = BLUE_C_MIN(slen, len) + 1 ;
-      ret = BlueHeapMalloc (size * sizeof (OFC_TCHAR)) ;
-      BlueCtstrncpy (ret, astr, size) ;
+      slen = ofc_tstrnlen(astr, len) ;
+      size = OFC_MIN(slen, len) + 1 ;
+      ret = ofc_malloc (size * sizeof (OFC_TCHAR)) ;
+      ofc_tstrncpy (ret, astr, size) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCstrncpy (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET len)
+ofc_strncpy (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET len)
 {
   OFC_CCHAR *psrc;
   OFC_CHAR *pdst ;
@@ -331,7 +331,7 @@ BlueCstrncpy (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET len)
   return (ret) ;
 }
 
-OFC_CHAR *BlueCstrnupr (OFC_CHAR *src, OFC_SIZET len)
+OFC_CHAR *ofc_strnupr (OFC_CHAR *src, OFC_SIZET len)
 {
   OFC_CHAR *psrc;
   OFC_CHAR *ret ;
@@ -346,7 +346,7 @@ OFC_CHAR *BlueCstrnupr (OFC_CHAR *src, OFC_SIZET len)
 
       while (*psrc != '\0' && len > 0)
 	{
-	  *psrc = BLUE_C_TOUPPER(*psrc) ;
+	  *psrc = OFC_TOUPPER(*psrc) ;
 	  psrc++ ;
 	  len-- ;
 	}
@@ -356,7 +356,7 @@ OFC_CHAR *BlueCstrnupr (OFC_CHAR *src, OFC_SIZET len)
   return (ret) ;
 }
 
-OFC_TCHAR *BlueCtstrnupr (OFC_TCHAR *src, OFC_SIZET len)
+OFC_TCHAR *ofc_tstrnupr (OFC_TCHAR *src, OFC_SIZET len)
 {
   OFC_TCHAR *psrc;
   OFC_TCHAR *ret ;
@@ -371,7 +371,7 @@ OFC_TCHAR *BlueCtstrnupr (OFC_TCHAR *src, OFC_SIZET len)
 
       while (*psrc != '\0' && len > 0)
 	{
-	  *psrc = BLUE_C_TOUPPER(*psrc) ;
+	  *psrc = OFC_TOUPPER(*psrc) ;
 	  psrc++ ;
 	  len-- ;
 	}
@@ -382,7 +382,7 @@ OFC_TCHAR *BlueCtstrnupr (OFC_TCHAR *src, OFC_SIZET len)
 }
 
 OFC_CORE_LIB OFC_TCHAR *
-BlueCtstrncpy (OFC_TCHAR *dst, OFC_CTCHAR *src, OFC_SIZET len)
+ofc_tstrncpy (OFC_TCHAR *dst, OFC_CTCHAR *src, OFC_SIZET len)
 {
   OFC_CTCHAR *psrc;
   OFC_TCHAR *pdst ;
@@ -413,7 +413,7 @@ BlueCtstrncpy (OFC_TCHAR *dst, OFC_CTCHAR *src, OFC_SIZET len)
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCstrcpy (OFC_CHAR *dst, OFC_CCHAR *src)
+ofc_strcpy (OFC_CHAR *dst, OFC_CCHAR *src)
 {
   OFC_CCHAR *psrc;
   OFC_CHAR *pdst ;
@@ -439,7 +439,7 @@ BlueCstrcpy (OFC_CHAR *dst, OFC_CCHAR *src)
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCstrcat (OFC_CHAR *dst, OFC_CCHAR *src)
+ofc_strcat (OFC_CHAR *dst, OFC_CCHAR *src)
 {
   OFC_CCHAR *psrc;
   OFC_CHAR *pdst ;
@@ -450,7 +450,7 @@ BlueCstrcat (OFC_CHAR *dst, OFC_CCHAR *src)
   else
     {
       psrc = src ;
-      pdst = dst + BlueCstrlen(dst) ;
+      pdst = dst + ofc_strlen(dst) ;
 
       while (*psrc != '\0')
 	{
@@ -465,7 +465,7 @@ BlueCstrcat (OFC_CHAR *dst, OFC_CCHAR *src)
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCstrncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size)
+ofc_strncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size)
 {
   OFC_CCHAR *psrc;
   OFC_CHAR *pdst ;
@@ -476,7 +476,7 @@ BlueCstrncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size)
   else
     {
       psrc = src ;
-      pdst = dst + BlueCstrlen(dst) ;
+      pdst = dst + ofc_strlen(dst) ;
 
       while (*psrc != '\0' && size > 0)
 	{
@@ -493,7 +493,7 @@ BlueCstrncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size)
 }
 
 OFC_CORE_LIB OFC_TCHAR *
-BlueCtstrcpy (OFC_TCHAR *dst, OFC_CTCHAR *src)
+ofc_tstrcpy (OFC_TCHAR *dst, OFC_CTCHAR *src)
 {
   OFC_CTCHAR *psrc;
   OFC_TCHAR *pdst ;
@@ -519,7 +519,7 @@ BlueCtstrcpy (OFC_TCHAR *dst, OFC_CTCHAR *src)
 }
 
 OFC_CORE_LIB OFC_SIZET
-BlueCtstrlen (OFC_LPCTSTR str)
+ofc_tstrlen (OFC_LPCTSTR str)
 {
   OFC_SIZET ret ;
   OFC_LPCTSTR p ;
@@ -532,7 +532,7 @@ BlueCtstrlen (OFC_LPCTSTR str)
 }
 
 OFC_CORE_LIB OFC_SIZET
-BlueCtstrnlen (OFC_LPCTSTR str, OFC_SIZET len)
+ofc_tstrnlen (OFC_LPCTSTR str, OFC_SIZET len)
 {
   OFC_SIZET ret ;
   OFC_LPCTSTR p ;
@@ -546,7 +546,7 @@ BlueCtstrnlen (OFC_LPCTSTR str, OFC_SIZET len)
 
 
 OFC_CORE_LIB OFC_LPTSTR
-BlueCtstrdup (OFC_LPCTSTR str)
+ofc_tstrdup (OFC_LPCTSTR str)
 {
   OFC_LPTSTR ret ;
   OFC_SIZET len ;
@@ -554,15 +554,15 @@ BlueCtstrdup (OFC_LPCTSTR str)
   ret = OFC_NULL ;
   if (str != OFC_NULL)
     {
-      len = (BlueCtstrlen(str) + 1) * sizeof (OFC_TCHAR) ;
-      ret = BlueHeapMalloc (len) ;
-      BlueCmemcpy (ret, str, len) ;
+      len = (ofc_tstrlen(str) + 1) * sizeof (OFC_TCHAR) ;
+      ret = ofc_malloc (len) ;
+      ofc_memcpy (ret, str, len) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCtstrcmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
+ofc_tstrcmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
 {
   OFC_CTCHAR *pa ;
   OFC_CTCHAR *pb ;
@@ -601,7 +601,7 @@ BlueCtstrcmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCtstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
+ofc_tstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
 {
   OFC_CTCHAR *pa ;
   OFC_CTCHAR *pb ;
@@ -622,7 +622,7 @@ BlueCtstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
       /*
        * Step through the string until one of them reaches a NIL
        */
-      while (BLUE_C_TTOUPPER(*pa) == BLUE_C_TTOUPPER(*pb) &&
+      while (OFC_TTOUPPER(*pa) == OFC_TTOUPPER(*pb) &&
 	     *pa != TCHAR_EOS && *pb != TCHAR_EOS)
 	{
 	  pa++ ;
@@ -635,13 +635,13 @@ BlueCtstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
        * then a is less, and if they are equal (or both NIL), then the strings
        * are equal.
        */
-      ret =  BLUE_C_TTOUPPER(*pa) - BLUE_C_TTOUPPER(*pb) ;
+      ret =  OFC_TTOUPPER(*pa) - OFC_TTOUPPER(*pb) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCtstrncmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
+ofc_tstrncmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
 {
   OFC_CTCHAR *pa ;
   OFC_CTCHAR *pb ;
@@ -683,7 +683,7 @@ BlueCtstrncmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCtstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
+ofc_tstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
 {
   OFC_CTCHAR *pa ;
   OFC_CTCHAR *pb ;
@@ -705,7 +705,7 @@ BlueCtstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
       /*
        * Step through the string until one of them reaches a NIL
        */
-      while (BLUE_C_TTOUPPER(*pa) == BLUE_C_TTOUPPER(*pb) &&
+      while (OFC_TTOUPPER(*pa) == OFC_TTOUPPER(*pb) &&
 	     *pa != TCHAR_EOS && *pb != TCHAR_EOS && len > 0)
 	{
 	  pa++ ;
@@ -720,13 +720,13 @@ BlueCtstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
        * are equal.
        */
       if (len > 0)
-	ret = BLUE_C_TTOUPPER(*pa) - BLUE_C_TTOUPPER(*pb) ;
+	ret = OFC_TTOUPPER(*pa) - OFC_TTOUPPER(*pb) ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_LPCTSTR
-BlueCtstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
+ofc_tstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
 {
   OFC_LPCTSTR peek ;
   OFC_BOOL hit ;
@@ -740,7 +740,7 @@ BlueCtstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
 	{
 	  OFC_INT i ;
 
-	  for (i = 0 ; i < BlueCtstrlen(terms) && !hit ; i++)
+	  for (i = 0 ; i < ofc_tstrlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
 		hit = OFC_TRUE ;
@@ -754,7 +754,7 @@ BlueCtstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
 }
 
 OFC_CORE_LIB OFC_LPSTR
-BlueCstrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
+ofc_strtok (OFC_LPCSTR str, OFC_LPCSTR terms)
 {
   OFC_LPCSTR peek ;
   OFC_BOOL hit ;
@@ -768,7 +768,7 @@ BlueCstrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
 	{
 	  OFC_INT i ;
 
-	  for (i = 0 ; i < BlueCstrlen(terms) && !hit ; i++)
+	  for (i = 0 ; i < ofc_strlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
 		hit = OFC_TRUE ;
@@ -782,7 +782,7 @@ BlueCstrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
 }
 
 OFC_CORE_LIB OFC_LPSTR
-BlueCstrchr (OFC_LPCSTR str, OFC_CCHAR c)
+ofc_strchr (OFC_LPCSTR str, OFC_CCHAR c)
 {
   OFC_LPCSTR peek ;
   OFC_LPSTR ret ;
@@ -798,7 +798,7 @@ BlueCstrchr (OFC_LPCSTR str, OFC_CCHAR c)
 }
 
 OFC_CORE_LIB OFC_LPSTR
-BlueCmemchr (OFC_LPCSTR str, OFC_CCHAR c, OFC_SIZET size)
+ofc_memchr (OFC_LPCSTR str, OFC_CCHAR c, OFC_SIZET size)
 {
   OFC_LPCSTR peek ;
   OFC_LPSTR ret ;
@@ -814,7 +814,7 @@ BlueCmemchr (OFC_LPCSTR str, OFC_CCHAR c, OFC_SIZET size)
 }
 
 OFC_CORE_LIB OFC_LPCTSTR
-BlueCtstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
+ofc_tstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
 {
   OFC_LPCTSTR peek ;
   OFC_BOOL hit ;
@@ -824,13 +824,13 @@ BlueCtstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
     ret = OFC_NULL ;
   else
     {
-      peek = str + BlueCtstrlen(str) ;
+      peek = str + ofc_tstrlen(str) ;
 
       for (peek--, hit = OFC_FALSE ; peek != str && !hit ; )
 	{
 	  OFC_INT i ;
 
-	  for (i = 0 ; i < BlueCtstrlen(terms) && !hit ; i++)
+	  for (i = 0 ; i < ofc_tstrlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
 		hit = OFC_TRUE ;
@@ -844,7 +844,7 @@ BlueCtstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
 }
 
 OFC_CORE_LIB OFC_LPCSTR
-BlueCstrrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
+ofc_strrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
 {
   OFC_LPCSTR peek ;
   OFC_BOOL hit ;
@@ -854,13 +854,13 @@ BlueCstrrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
     ret = OFC_NULL ;
   else
     {
-      peek = str + BlueCstrlen(str) ;
+      peek = str + ofc_strlen(str) ;
 
       for (peek--, hit = OFC_FALSE ; peek != str && !hit ; )
 	{
 	  OFC_INT i ;
 
-	  for (i = 0 ; i < BlueCstrlen(terms) && !hit ; i++)
+	  for (i = 0 ; i < ofc_strlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
 		hit = OFC_TRUE ;
@@ -874,7 +874,7 @@ BlueCstrrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCtstr2cstr (OFC_LPCTSTR str)
+ofc_tstr2cstr (OFC_LPCTSTR str)
 {
   OFC_SIZET len ;
   OFC_CHAR *cstr ;
@@ -885,8 +885,8 @@ BlueCtstr2cstr (OFC_LPCTSTR str)
   cstr = OFC_NULL ;
   if (str != OFC_NULL)
     {
-      len = BlueCtstrlen (str) ;
-      cstr = BlueHeapMalloc (len + 1) ;
+      len = ofc_tstrlen (str) ;
+      cstr = ofc_malloc (len + 1) ;
       pcstr = cstr ;
       ptstr = str ;
       for (i = 0 ; i < len ; i++)
@@ -897,7 +897,7 @@ BlueCtstr2cstr (OFC_LPCTSTR str)
 }
 
 OFC_CORE_LIB OFC_LPTSTR
-BlueCcstr2tstr (OFC_CCHAR *str)
+ofc_cstr2tstr (OFC_CCHAR *str)
 {
   OFC_SIZET len ;
   OFC_LPTSTR tstr ;
@@ -908,8 +908,8 @@ BlueCcstr2tstr (OFC_CCHAR *str)
   tstr = OFC_NULL ;
   if (str != OFC_NULL)
     {
-      len = BlueCstrlen (str) ;
-      tstr = BlueHeapMalloc ((len + 1) * sizeof (OFC_TCHAR)) ;
+      len = ofc_strlen (str) ;
+      tstr = ofc_malloc ((len + 1) * sizeof (OFC_TCHAR)) ;
       ptstr = tstr ;
       pcstr = str ;
       for (i = 0 ; i < len ; i++)
@@ -920,7 +920,7 @@ BlueCcstr2tstr (OFC_CCHAR *str)
 }
 
 OFC_CORE_LIB OFC_INT
-BlueCmemcmp (OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size)
+ofc_memcmp (OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size)
 {
   OFC_INT ret ;
   OFC_UINT32 *puint32 ;
@@ -993,7 +993,7 @@ BlueCmemcmp (OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size)
 }
 
 OFC_CORE_LIB OFC_LPVOID
-BlueCmemcpy (OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size)
+ofc_memcpy (OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size)
 {
   OFC_LPVOID dst ;
   OFC_UINT32 *puint32 ;
@@ -1061,7 +1061,7 @@ BlueCmemcpy (OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size)
 }
 
 OFC_CORE_LIB OFC_LPVOID
-BlueCmemset (OFC_LPVOID dst, OFC_INT c, OFC_SIZET size)
+ofc_memset (OFC_LPVOID dst, OFC_INT c, OFC_SIZET size)
 {
   OFC_CHAR *pa ;
   OFC_LPVOID ret ;
@@ -1094,7 +1094,7 @@ static OFC_UINT8 cvtIn[] =
   } ;
 
 OFC_CORE_LIB OFC_ULONG
-BlueCstrtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
+ofc_strtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
 {
   const OFC_CHAR *p;
   OFC_ULONG result = 0 ;
@@ -1109,7 +1109,7 @@ BlueCstrtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
        * Skip any leading blanks.
        */
       p = string ;
-      while (BLUE_C_ISSPACE(*p))
+      while (OFC_ISSPACE(*p))
 	{
 	  p += 1 ;
 	}
@@ -1236,7 +1236,7 @@ BlueCstrtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
 }
 
 OFC_CORE_LIB OFC_LONG
-BlueCstrtol (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
+ofc_strtol (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
 {
   const OFC_CHAR *p;
   OFC_LONG result;
@@ -1249,7 +1249,7 @@ BlueCstrtol (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
        * Skip any leading blanks.
        */
       p = string;
-      while (BLUE_C_ISSPACE(*p))
+      while (OFC_ISSPACE(*p))
 	{
 	  p += 1;
 	}
@@ -1261,7 +1261,7 @@ BlueCstrtol (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
       if (*p == '-')
 	{
 	  p += 1 ;
-	  result = -((OFC_LONG) BlueCstrtoul(p, endPtr, base)) ;
+	  result = -((OFC_LONG) ofc_strtoul(p, endPtr, base)) ;
 	}
       else
 	{
@@ -1269,7 +1269,7 @@ BlueCstrtol (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
 	    {
 	      p += 1 ;
 	    }
-	  result = BlueCstrtoul(p, endPtr, base) ;
+	  result = ofc_strtoul(p, endPtr, base) ;
 	}
 
       if ((result == 0) && (endPtr != 0) && (*endPtr == p))
@@ -1402,7 +1402,7 @@ dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args)
 	  break ;
 
 	case DP_S_MIN:
-	  if (BLUE_C_ISDIGIT((OFC_UINT8)ch))
+	  if (OFC_ISDIGIT((OFC_UINT8)ch))
 	    {
 	      min = 10 * min + CHAR_TO_INT (ch) ;
 	      ch = *format++ ;
@@ -1430,7 +1430,7 @@ dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args)
 	    }
 	  break ;
 	case DP_S_MAX:
-	  if (BLUE_C_ISDIGIT((OFC_UINT8)ch))
+	  if (OFC_ISDIGIT((OFC_UINT8)ch))
 	    {
 	      if (max < 0)
 		max = 0 ;
@@ -1560,7 +1560,7 @@ dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args)
 		strvalue = "(no error)" ;
 	      if (max == -1)
 		{
-		  max = BlueCstrlen(strvalue) ;
+		  max = ofc_strlen(strvalue) ;
 		}
 	      if (min > 0 && max >= 0 && min > max)
 		max = min ;
@@ -1573,7 +1573,7 @@ dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args)
 		strvalue = "(null)" ;
 	      if (max == -1)
 		{
-		  max = BlueCstrlen(strvalue) ;
+		  max = ofc_strlen(strvalue) ;
 		}
 	      if (min > 0 && max >= 0 && min > max)
 		max = min ;
@@ -1585,7 +1585,7 @@ dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args)
 		tstrvalue = TSTR("(null)") ;
 	      if (max == -1)
 		{
-		  max = BlueCtstrlen(tstrvalue) ;
+		  max = ofc_tstrlen(tstrvalue) ;
 		}
 	      if (min > 0 && max >= 0 && min > max)
 		max = min ;
@@ -1597,7 +1597,7 @@ dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args)
 		tastrvalue = TASTR("(null)") ;
 	      if (max == -1)
 		{
-		  max = BlueCtastrlen(tastrvalue) ;
+		  max = ofc_tastrlen(tastrvalue) ;
 		}
 	      if (min > 0 && max >= 0 && min > max)
 		max = min ;
@@ -1672,7 +1672,7 @@ fmtstr(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
   OFC_SIZET strln ;
   OFC_INT cnt = 0 ;
 
-  strln  = BlueCstrlen (value) ;
+  strln  = ofc_strlen (value) ;
 
   padlen = min - strln ;
 
@@ -1708,7 +1708,7 @@ fmttstr(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
   OFC_SIZET strln ;
   OFC_INT cnt = 0 ;
 
-  strln  = BlueCtstrlen (value) ;
+  strln  = ofc_tstrlen (value) ;
 
   padlen = min - strln ;
 
@@ -1744,7 +1744,7 @@ fmttastr(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
   OFC_SIZET strln ;
   OFC_INT cnt = 0 ;
 
-  strln  = BlueCtastrlen (value) ;
+  strln  = ofc_tastrlen (value) ;
 
   padlen = min - strln ;
 
@@ -1826,14 +1826,14 @@ fmtint(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
   convert[place] = 0 ;
 
   zpadlen = max - place ;
-  spadlen = min - BLUE_C_MAX (max, place) - (signvalue ? 1 : 0) ;
+  spadlen = min - OFC_MAX (max, place) - (signvalue ? 1 : 0) ;
   if (zpadlen < 0)
     zpadlen = 0 ;
   if (spadlen < 0)
     spadlen = 0 ;
   if (flags & DP_F_ZERO)
     {
-      zpadlen = BLUE_C_MAX(zpadlen, spadlen) ;
+      zpadlen = OFC_MAX(zpadlen, spadlen) ;
       spadlen = 0 ;
     }
   if (flags & DP_F_MINUS)
@@ -1884,8 +1884,8 @@ dopr_outch(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
 }
 
 OFC_CORE_LIB OFC_SIZET
-BlueCvsnprintf (OFC_CHAR *str, OFC_SIZET count,
-                OFC_CCHAR *fmt, va_list args)
+ofc_vsnprintf (OFC_CHAR *str, OFC_SIZET count,
+               OFC_CCHAR *fmt, va_list args)
 {
   OFC_SIZET res ;
 
@@ -1898,14 +1898,14 @@ BlueCvsnprintf (OFC_CHAR *str, OFC_SIZET count,
 }
 
 OFC_CORE_LIB OFC_SIZET
-BlueCsnprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...)
+ofc_snprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...)
 {
   OFC_SIZET ret ;
   va_list ap ;
 
   va_start(ap, fmt) ;
 
-  ret = BlueCvsnprintf(str, count, fmt, ap) ;
+  ret = ofc_vsnprintf(str, count, fmt, ap) ;
 
   va_end(ap) ;
   return ret ;
@@ -1913,7 +1913,7 @@ BlueCsnprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...)
 
 
 OFC_CORE_LIB OFC_VOID
-BlueCprintf(OFC_CCHAR *fmt, ...)
+ofc_printf(OFC_CCHAR *fmt, ...)
 {
   OFC_CHAR *obuf ;
   OFC_SIZET len ;
@@ -1921,21 +1921,21 @@ BlueCprintf(OFC_CCHAR *fmt, ...)
   va_list ap ;
 
   va_start(ap,fmt) ;
-  len = BlueCvsnprintf(OFC_NULL, 0, fmt, ap) ;
+  len = ofc_vsnprintf(OFC_NULL, 0, fmt, ap) ;
   va_end(ap) ;
 
-  obuf = BlueHeapMalloc (len+1) ;
+  obuf = ofc_malloc (len + 1) ;
   va_start(ap,fmt) ;
-  BlueCvsnprintf(obuf, len+1, fmt, ap) ;
+  ofc_vsnprintf(obuf, len + 1, fmt, ap) ;
   va_end(ap) ;
 
   ofc_write_stdout (obuf, len) ;
 
-  BlueHeapFree (obuf) ;
+  ofc_free (obuf) ;
 }
 
 OFC_CORE_LIB OFC_CHAR *
-BlueCsaprintf(OFC_CCHAR *fmt, ...)
+ofc_saprintf(OFC_CCHAR *fmt, ...)
 {
   OFC_CHAR *obuf ;
   OFC_SIZET len ;
@@ -1943,59 +1943,59 @@ BlueCsaprintf(OFC_CCHAR *fmt, ...)
   va_list ap ;
 
   va_start(ap, fmt) ;
-  len = BlueCvsnprintf(OFC_NULL, 0, fmt, ap) ;
+  len = ofc_vsnprintf(OFC_NULL, 0, fmt, ap) ;
   va_end(ap) ;
 
-  obuf = BlueHeapMalloc (len+1) ;
+  obuf = ofc_malloc (len + 1) ;
   va_start(ap,fmt) ;
-  BlueCvsnprintf(obuf, len+1, fmt, ap) ;
+  ofc_vsnprintf(obuf, len + 1, fmt, ap) ;
   va_end(ap) ;
 
   return (obuf) ;
 }
 
 #if 0
-BLUE_CORE_LIB BLUE_VOID 
-BlueTraceInit (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID 
+ofc_trace_init (OFC_VOID)
 {
   struct trace_t *trace ;
 
-  trace = BlueGetTrace() ;
-  if (trace == BLUE_NULL)
+  trace = ofc_get_trace() ;
+  if (trace == OFC_NULL)
     {
-      trace = BlueHeapMalloc (sizeof (struct trace_t)) ;
-      if (trace != BLUE_NULL)
+      trace = ofc_malloc (sizeof (struct trace_t)) ;
+      if (trace != OFC_NULL)
 	{
-	  BlueCmemset (trace, '\0', sizeof (struct trace_t)) ;
-	  trace->BlueCTraceOffset = 0 ;
-	  trace->BlueCTraceLock = BlueLockInit() ;
-	  BlueSetTrace (trace) ;
-	  BlueCTrace ("Trace Buffer Initialized\n") ;
+	  ofc_memset (trace, '\0', sizeof (struct trace_t)) ;
+	  trace->trace_offset = 0 ;
+	  trace->trace_lock = BlueLockInit() ;
+	  ofc_set_trace (trace) ;
+	  ofc_trace ("Trace Buffer Initialized\n") ;
 	}
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueTraceDestroy (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID 
+ofc_trace_destroy (OFC_VOID)
 {
   struct trace_t *trace ;
 
-  trace = BlueGetTrace() ;
-  if (trace != BLUE_NULL)
+  trace = ofc_get_trace() ;
+  if (trace != OFC_NULL)
     {
-      BlueLockDestroy(trace->BlueCTraceLock);
-      BlueSetTrace(BLUE_NULL);
-      BlueHeapFree (trace);
+      BlueLockDestroy(trace->trace_lock);
+      ofc_set_trace(OFC_NULL);
+      ofc_free (trace);
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueCTrace(BLUE_CCHAR *fmt,...)
+OFC_CORE_LIB OFC_VOID 
+ofc_trace(OFC_CCHAR *fmt,...)
 {
-  BLUE_CHAR *obuf ;
-  BLUE_CHAR *obuf2 ;
-  BLUE_SIZET len ;
-  BLUE_SIZET olen ;
+  OFC_CHAR *obuf ;
+  OFC_CHAR *obuf2 ;
+  OFC_SIZET len ;
+  OFC_SIZET olen ;
   struct trace_t *trace ;
   BLUE_PROCESS_ID pid ;
 
@@ -2003,71 +2003,71 @@ BlueCTrace(BLUE_CCHAR *fmt,...)
 
   va_start(ap, fmt) ;
 
-  len = BlueCvsnprintf(BLUE_NULL, 0, fmt, ap) ;
+  len = ofc_vsnprintf(OFC_NULL, 0, fmt, ap) ;
   va_end(ap) ;
-  obuf = BlueHeapMalloc (len+1) ;
+  obuf = ofc_malloc (len+1) ;
   va_start(ap, fmt) ;
-  BlueCvsnprintf(obuf, len+1, fmt, ap) ;
+  ofc_vsnprintf(obuf, len+1, fmt, ap) ;
   va_end(ap) ;
 
   /*
    * prepend process id
    */
   pid = BlueProcessGet() ;
-  obuf2 = BlueCsaprintf ("%8d: %s\n", pid, obuf) ;
-  len = BlueCstrlen (obuf2) ;
-  BlueHeapFree (obuf) ;
+  obuf2 = ofc_saprintf ("%8d: %s\n", pid, obuf) ;
+  len = ofc_strlen (obuf2) ;
+  ofc_free (obuf) ;
 
-  trace = BlueGetTrace() ;
-  if (trace != BLUE_NULL && ((len + 1) < OFC_TRACE_LEN))
+  trace = ofc_get_trace() ;
+  if (trace != OFC_NULL && ((len + 1) < OFC_TRACE_LEN))
     {
-      BlueLock (trace->BlueCTraceLock) ;
-      olen = BLUE_C_MIN (len, OFC_TRACE_LEN - 
-			 trace->BlueCTraceOffset - 1) ;
-      BlueCmemcpy (trace->BlueCTraceBuf + trace->BlueCTraceOffset, 
+      BlueLock (trace->trace_lock) ;
+      olen = OFC_MIN (len, OFC_TRACE_LEN - 
+			 trace->trace_offset - 1) ;
+      ofc_memcpy (trace->trace_buf + trace->trace_offset, 
 		   obuf2, olen) ;
-      *(trace->BlueCTraceBuf + trace->BlueCTraceOffset + olen) = '\0' ;
+      *(trace->trace_buf + trace->trace_offset + olen) = '\0' ;
 
-      trace->BlueCTraceOffset += (olen + 1) ;
-      if ((trace->BlueCTraceOffset) == OFC_TRACE_LEN)
-	trace->BlueCTraceOffset = 0 ;
+      trace->trace_offset += (olen + 1) ;
+      if ((trace->trace_offset) == OFC_TRACE_LEN)
+	trace->trace_offset = 0 ;
 
       len -= olen ;
       if (len > 0)
 	{
-	  BlueCmemcpy (trace->BlueCTraceBuf + trace->BlueCTraceOffset, 
+	  ofc_memcpy (trace->trace_buf + trace->trace_offset, 
 		       obuf2 + olen, len) ;
-	  *(trace->BlueCTraceBuf + trace->BlueCTraceOffset + len) = 
+	  *(trace->trace_buf + trace->trace_offset + len) = 
 	    '\0' ;
-	  trace->BlueCTraceOffset += (len + 1) ;
+	  trace->trace_offset += (len + 1) ;
 	}
-      BlueUnlock (trace->BlueCTraceLock) ;
+      BlueUnlock (trace->trace_lock) ;
     }
-  BlueHeapFree (obuf2) ;
+  ofc_free (obuf2) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID BlueCDumpTrace(BLUE_VOID)
+OFC_CORE_LIB OFC_VOID ofc_dump_trace(OFC_VOID)
 {
   struct trace_t *trace ;
 
-  BLUE_CHAR *obuf ;
-  BLUE_SIZET olen ;
-  BLUE_INT off ;
+  OFC_CHAR *obuf ;
+  OFC_SIZET olen ;
+  OFC_INT off ;
 
-  trace = BlueGetTrace() ;
-  if (trace != BLUE_NULL)
+  trace = ofc_get_trace() ;
+  if (trace != OFC_NULL)
     {
-      off = trace->BlueCTraceOffset ;
+      off = trace->trace_offset ;
       do
 	{
-	  obuf = trace->BlueCTraceBuf + off ;
-	  olen = BlueCstrlen (obuf) ;
-	  BlueCprintf ("%s", obuf) ;
+	  obuf = trace->trace_buf + off ;
+	  olen = ofc_strlen (obuf) ;
+	  ofc_printf ("%s", obuf) ;
 	  off += (olen + 1) ;
 	  if (off == OFC_TRACE_LEN)
 	    off = 0 ;
 	} 
-      while (off != trace->BlueCTraceOffset) ;
+      while (off != trace->trace_offset) ;
     }
 }
 #endif
@@ -2078,7 +2078,7 @@ BLUE_CORE_LIB BLUE_VOID BlueCDumpTrace(BLUE_VOID)
     (a) >= 'a' && (a) <= 'f' ? ((a) - 'a' + 10) : ((a) - 'A' + 10))
 
 OFC_VOID
-BlueCuuidtoa (OFC_UUID uuid, OFC_CHAR *out)
+ofc_uuidtoa (OFC_UUID uuid, OFC_CHAR *out)
 {
   OFC_INT i ;
   OFC_INT val ;
@@ -2121,7 +2121,7 @@ BlueCuuidtoa (OFC_UUID uuid, OFC_CHAR *out)
 }
 
 OFC_VOID
-BlueCatouuid (const OFC_CHAR *in, OFC_UUID uuid)
+ofc_atouuid (const OFC_CHAR *in, OFC_UUID uuid)
 {
   OFC_INT i ;
   OFC_INT val ;

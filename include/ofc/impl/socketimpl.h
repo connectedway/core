@@ -50,8 +50,8 @@ extern "C"
    * a Handle to the socket
    */
   OFC_HANDLE
-  BlueSocketImplCreate (BLUE_FAMILY_TYPE family, 
-			BLUE_SOCKET_TYPE socktype) ;
+  BlueSocketImplCreate (OFC_FAMILY_TYPE family,
+                        BLUE_SOCKET_TYPE socktype) ;
   /**
    * Bind a socket to an address and port
    *
@@ -73,7 +73,7 @@ extern "C"
    * OFC_TRUE if the bind was successful, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplBind (OFC_HANDLE hSocket, const BLUE_IPADDR *ip,
+  BlueSocketImplBind (OFC_HANDLE hSocket, const OFC_IPADDR *ip,
                       OFC_UINT16 port) ;
   /**
    * Close a socket
@@ -107,7 +107,7 @@ extern "C"
    */
   OFC_BOOL
   BlueSocketImplConnect (OFC_HANDLE hSocket,
-                         const BLUE_IPADDR *ip, OFC_UINT16 port) ;
+                         const OFC_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Listen for an incoming connection
    *
@@ -145,7 +145,7 @@ extern "C"
    */  
   OFC_HANDLE
   BlueSocketImplAccept (OFC_HANDLE hSocket,
-                        BLUE_IPADDR *ip, OFC_UINT16 *port) ;
+                        OFC_IPADDR *ip, OFC_UINT16 *port) ;
   /**
    * Resuse ip address and port
    *
@@ -240,7 +240,7 @@ extern "C"
   OFC_SIZET
   BlueSocketImplSendTo (OFC_HANDLE hSocket, const OFC_VOID *buf,
                         OFC_SIZET len,
-                        const BLUE_IPADDR *ip,
+                        const OFC_IPADDR *ip,
                         OFC_UINT16 port) ;
   /**
    * Receive data from a socket
@@ -290,7 +290,7 @@ extern "C"
   BlueSocketImplRecvFrom (OFC_HANDLE hSocket,
                           OFC_VOID *buf,
                           OFC_SIZET len,
-                          BLUE_IPADDR *ip,
+                          OFC_IPADDR *ip,
                           OFC_UINT16 *port) ;
   /**
    * Destroy a socket
@@ -390,8 +390,8 @@ extern "C"
    */
   OFC_BOOL
   BlueSocketImplGetAddresses (OFC_HANDLE hSock,
-                              BLUE_SOCKADDR *local,
-                              BLUE_SOCKADDR *remote) ;
+                              OFC_SOCKADDR *local,
+                              OFC_SOCKADDR *remote) ;
   OFC_INT BlueSocketImplGetFD (OFC_HANDLE hSocket)  ;
   OFC_UINT16 BlueSocketImplGetEvent (OFC_HANDLE hSocket) ;
   OFC_VOID BlueSocketImplSetEvent (OFC_HANDLE hSocket,

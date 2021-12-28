@@ -47,7 +47,7 @@ ofc_app_create (OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
   /*
    * Allocate structure for app
    */
-  app = BlueHeapMalloc (sizeof (BLUEAPP)) ;
+  app = ofc_malloc (sizeof (BLUEAPP)) ;
 
   /*
    * Initialize the application
@@ -141,7 +141,7 @@ ofc_app_destroy (OFC_HANDLE hApp)
 
       ofc_handle_destroy (hApp) ;
       ofc_handle_unlock (hApp) ;
-      BlueHeapFree (app) ;
+      ofc_free (app) ;
     }
 }
 

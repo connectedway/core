@@ -75,8 +75,8 @@ BlueThreadGetVariable (OFC_DWORD var)
 
   val = BlueThreadGetVariableImpl (var) ;
   if (val > (OFC_DWORD_PTR) OFC_ERROR_NOT_ENOUGH_QUOTA)
-    BlueCprintf ("Obtained Bad Status on variable %d, val 0x%08x\n",
-		 var, (OFC_UINT) (OFC_DWORD_PTR) val) ;
+    ofc_printf ("Obtained Bad Status on variable %d, val 0x%08x\n",
+                var, (OFC_UINT) (OFC_DWORD_PTR) val) ;
   return (val) ;
 }
 
@@ -84,8 +84,8 @@ OFC_CORE_LIB OFC_VOID
 BlueThreadSetVariable (OFC_DWORD var, OFC_DWORD_PTR val)
 {
   if (val > (OFC_DWORD_PTR) OFC_ERROR_NOT_ENOUGH_QUOTA)
-    BlueCprintf ("Setting Bad Status on variable %d, val 0x%08x\n",
-		 var, (OFC_UINT) val) ;
+    ofc_printf ("Setting Bad Status on variable %d, val 0x%08x\n",
+                var, (OFC_UINT) val) ;
   if (var != OfcLastError || val != (OFC_DWORD_PTR) OFC_ERROR_SUCCESS)
     BlueThreadSetVariableImpl (var, val) ;
 }  

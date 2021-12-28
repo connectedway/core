@@ -25,20 +25,20 @@
 #define INADDRSZ 4
 #define INT16SZ 2
 
-static const OFC_CHAR *BlueNETntop4(const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size);
-static const OFC_CHAR *BlueNETntop6(const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size);
+static const OFC_CHAR *BlueNETntop4(const OFC_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size);
+static const OFC_CHAR *BlueNETntop6(const OFC_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size);
 
 const OFC_CHAR *
-BlueNETntop (const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size)
+ofc_ntop (const OFC_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size)
 {
-  BLUE_FAMILY_TYPE family ;
+  OFC_FAMILY_TYPE family ;
 
   family = src->ip_version ;
   switch (family) 
     {
-    case BLUE_FAMILY_IP:
+    case OFC_FAMILY_IP:
       return (BlueNETntop4(src, dst, size));
-    case BLUE_FAMILY_IPV6:
+    case OFC_FAMILY_IPV6:
       return (BlueNETntop6(src, dst, size));
     default:
       return (OFC_NULL);
@@ -46,7 +46,7 @@ BlueNETntop (const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size)
 }
 
 static const OFC_CHAR *
-BlueNETntop4(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
+BlueNETntop4(const OFC_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
 {
   static const OFC_CHAR fmt[] = "%u.%u.%u.%u";
   OFC_CHAR tmp[IPSTR_LEN] ;
@@ -54,17 +54,17 @@ BlueNETntop4(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
 
   src = (OFC_UCHAR *) &ip->u.ipv4.addr ;
 
-  BlueCsnprintf(tmp, IPSTR_LEN, fmt, src[3], src[2], src[1], src[0]);
-  if (BlueCstrnlen(tmp, IPSTR_LEN) > size) 
+  ofc_snprintf(tmp, IPSTR_LEN, fmt, src[3], src[2], src[1], src[0]);
+  if (ofc_strnlen(tmp, IPSTR_LEN) > size)
     {
       return (OFC_NULL);
     }
-  BlueCstrcpy(dst, tmp);
+  ofc_strcpy(dst, tmp);
   return (dst);
 }
 
 static const OFC_CHAR *
-BlueNETntop6(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
+BlueNETntop6(const OFC_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
 {
   /*
    * Note that int32_t and int16_t need only be "at least" large enough
@@ -82,17 +82,17 @@ BlueNETntop6(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
   OFC_UINT16 words[IN6ADDRSZ / INT16SZ];
   OFC_INT i;
   const OFC_UCHAR *src ;
-  BLUE_IPADDR ipv4 ;
+  OFC_IPADDR ipv4 ;
 
-  src = (OFC_UCHAR *) &ip->u.ipv6.blue_s6_addr ;
-  BlueCmemset (tmp, '\0', IP6STR_LEN) ;
+  src = (OFC_UCHAR *) &ip->u.ipv6._s6_addr ;
+  ofc_memset (tmp, '\0', IP6STR_LEN) ;
   /*
    * Preprocess:
    *Copy the input (bytewise) array into a wordwise array.
    *Find the longest run of 0x00's in src[] for :: shorthanding.
    */
   
-  BlueCmemset(words, '\0', sizeof words);
+  ofc_memset(words, '\0', sizeof words);
   for (i = 0; i < IN6ADDRSZ; i++)
     words[i / 2] |= (src[i] << ((1 - (i % 2)) << 3));
   best.base = -1;
@@ -130,7 +130,7 @@ BlueNETntop6(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
   /*
    * Format the result.
    */
-  BlueCmemset (tmp, '\0', IP6STR_LEN) ;
+  ofc_memset (tmp, '\0', IP6STR_LEN) ;
   tp = tmp;
   for (i = 0; i < (IN6ADDRSZ / INT16SZ); i++) 
     {
@@ -149,17 +149,17 @@ BlueNETntop6(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
       if (i == 6 && best.base == 0 &&
 	  (best.len == 6 || (best.len == 5 && words[5] == 0xffff))) 
 	{
-	  ipv4.ip_version = BLUE_FAMILY_IP ;
-	  ipv4.u.ipv4.addr = BLUE_NET_NTOL (src, 12) ;
+	  ipv4.ip_version = OFC_FAMILY_IP ;
+	  ipv4.u.ipv4.addr = OFC_NET_NTOL (src, 12) ;
 	  if (!BlueNETntop4(&ipv4, tp, sizeof tmp - (tp - tmp)))
 	    return (OFC_NULL);
-	  tp += BlueCstrnlen(tp, sizeof tmp - (tp - tmp));
+	  tp += ofc_strnlen(tp, sizeof tmp - (tp - tmp));
 	  break;
 	}
-      BlueCsnprintf(tp, 
-		    IP6STR_LEN - BlueCstrnlen(tp, sizeof tmp - (tp - tmp)), 
-		    "%x", words[i]);
-      tp += BlueCstrnlen(tp, sizeof tmp - (tp - tmp));
+      ofc_snprintf(tp,
+                    IP6STR_LEN - ofc_strnlen(tp, sizeof tmp - (tp - tmp)),
+                   "%x", words[i]);
+      tp += ofc_strnlen(tp, sizeof tmp - (tp - tmp));
     }
   /* Was it a trailing run of 0x00's? */
   if (best.base != -1 && (best.base + best.len) == (IN6ADDRSZ / INT16SZ))
@@ -173,13 +173,13 @@ BlueNETntop6(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
     {
       return (OFC_NULL);
     }
-  BlueCstrcpy(dst, tmp);
+  ofc_strcpy(dst, tmp);
   return (dst);
 }
 
 
-static OFC_BOOL BlueNETpton4 (const OFC_CHAR *src, BLUE_IPADDR *dst) ;
-static OFC_BOOL BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst) ;
+static OFC_BOOL BlueNETpton4 (const OFC_CHAR *src, OFC_IPADDR *dst) ;
+static OFC_BOOL BlueNETpton6 (const OFC_CHAR *src, OFC_IPADDR *dst) ;
 
 /* OFC_INT
  * inet_pton(af, src, dst)
@@ -193,11 +193,11 @@ static OFC_BOOL BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst) ;
  *Paul Vixie, 1996.
  */
 OFC_INT
-BlueNETpton (const OFC_CHAR *src, BLUE_IPADDR *dst)
+ofc_pton (const OFC_CHAR *src, OFC_IPADDR *dst)
 {
   OFC_INT ret ;
 
-  if (BlueCstrchr (src, ':') != OFC_NULL)
+  if (ofc_strchr (src, ':') != OFC_NULL)
     ret = BlueNETpton6(src, dst);
   else 
     ret = BlueNETpton4 (src, dst) ;
@@ -217,7 +217,7 @@ BlueNETpton (const OFC_CHAR *src, BLUE_IPADDR *dst)
  *Paul Vixie, 1996.
  */
 static OFC_BOOL
-BlueNETpton4 (const OFC_CHAR *src, BLUE_IPADDR *dst)
+BlueNETpton4 (const OFC_CHAR *src, OFC_IPADDR *dst)
 {
   OFC_INT saw_digit, octets, ch;
   OFC_UCHAR tmp[INADDRSZ], *tp;
@@ -257,8 +257,8 @@ BlueNETpton4 (const OFC_CHAR *src, BLUE_IPADDR *dst)
   if (octets < 4)
     return (0);
 
-  dst->ip_version = BLUE_FAMILY_IP ;
-  dst->u.ipv4.addr = BLUE_NET_NTOL (tmp, 0) ;
+  dst->ip_version = OFC_FAMILY_IP ;
+  dst->u.ipv4.addr = OFC_NET_NTOL (tmp, 0) ;
   return (1);
 }
 
@@ -276,17 +276,17 @@ BlueNETpton4 (const OFC_CHAR *src, BLUE_IPADDR *dst)
  *Paul Vixie, 1996.
  */
 static OFC_BOOL
-BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst)
+BlueNETpton6 (const OFC_CHAR *src, OFC_IPADDR *dst)
 {
   static const OFC_CHAR xdigits[] = "0123456789abcdef";
   OFC_UCHAR tmp[IN6ADDRSZ], *tp, *endp, *colonp;
   const OFC_CHAR *curtok;
   OFC_UINT ch, saw_xdigit;
   OFC_UINT16 val;
-  BLUE_IPADDR ipv4 ;
+  OFC_IPADDR ipv4 ;
   OFC_CHAR sch ;
 
-  tp = BlueCmemset(tmp, '\0', IN6ADDRSZ);
+  tp = ofc_memset(tmp, '\0', IN6ADDRSZ);
   endp = tp + IN6ADDRSZ;
   colonp = OFC_NULL;
   /* Leading :: requires some special handling. */
@@ -303,8 +303,8 @@ BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst)
       const OFC_UCHAR *pch;
 
       sch = *src++ ;
-      ch = BLUE_C_TOLOWER (sch) ;
-      pch = (OFC_UCHAR *) BlueCstrchr(xdigits, ch);
+      ch = OFC_TOLOWER (sch) ;
+      pch = (OFC_UCHAR *) ofc_strchr(xdigits, ch);
       if (pch != OFC_NULL)
 	{
 	  val <<= 4;
@@ -341,7 +341,7 @@ BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst)
       if (ch == '.' && ((tp + INADDRSZ) <= endp) &&
 	  BlueNETpton4(curtok, &ipv4) > 0) 
 	{
-	  BLUE_NET_LTON (tp, 0, ipv4.u.ipv4.addr) ;
+	  OFC_NET_LTON (tp, 0, ipv4.u.ipv4.addr) ;
 	  tp += INADDRSZ;
 	  saw_xdigit = 0;
 	  break;/* '\0' was seen by inet_pton4(). */
@@ -381,7 +381,7 @@ BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst)
     {
       return (0);
     }
-  dst->ip_version = BLUE_FAMILY_IPV6 ;
-  BlueCmemcpy(&dst->u.ipv6, tmp, IN6ADDRSZ);
+  dst->ip_version = OFC_FAMILY_IPV6 ;
+  ofc_memcpy(&dst->u.ipv6, tmp, IN6ADDRSZ);
   return (1);
 }

@@ -184,19 +184,19 @@ static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
 		  if (msg != OFC_NULL)
 		    {
 		      progress = OFC_TRUE ;
-		      BlueCprintf (msg) ;
-		      BlueHeapFree (msg) ;
+		      ofc_printf (msg) ;
+		      ofc_free (msg) ;
 		    }
 		}
 	      else if (hWaitQueue == waitqTest->hTimer)
 		{
 		  if (waitqTest->count++ < WAITQ_TEST_COUNT)
 		    {
-		      msg = BlueHeapMalloc (BlueCstrlen (WAITQ_MESSAGE)+1) ;
-		      BlueCstrcpy (msg, WAITQ_MESSAGE) ;
+		      msg = ofc_malloc (ofc_strlen (WAITQ_MESSAGE) + 1) ;
+		      ofc_strcpy (msg, WAITQ_MESSAGE) ;
 		      BlueWaitQenqueue (waitqTest->hWaitQueue, msg) ;
 		      BlueTimerSet (waitqTest->hTimer, WAITQ_TEST_INTERVAL) ;
-		      BlueCprintf ("Wait Queue Timer Triggered\n") ;
+		      ofc_printf ("Wait Queue Timer Triggered\n") ;
 		      hNext = waitqTest->hWaitQueue ;
 		    }
 		  else
@@ -230,7 +230,7 @@ static OFC_VOID WaitQueueTestDestroy (OFC_HANDLE app)
 	  BlueWaitQdestroy (waitqTest->hWaitQueue) ;
 	  break ;
 	}
-      BlueHeapFree (waitqTest) ;
+      ofc_free (waitqTest) ;
     }
 }
 
@@ -251,7 +251,7 @@ TEST(waitq, test_waitq)
   BLUE_WAITQ_TEST *waitqTest ;
   OFC_HANDLE hApp ;
 
-  waitqTest = BlueHeapMalloc (sizeof (BLUE_WAITQ_TEST)) ;
+  waitqTest = ofc_malloc (sizeof (BLUE_WAITQ_TEST)) ;
   waitqTest->count = 0 ;
   waitqTest->state = WAITQ_TEST_STATE_IDLE ;
   waitqTest->scheduler = hScheduler ;

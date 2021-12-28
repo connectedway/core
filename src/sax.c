@@ -46,7 +46,7 @@ BlueXMLparserCreate (OFC_VOID *p)
 {
   XML_PARSER_CONTEXT *parser ;
 
-  parser = (XML_PARSER_CONTEXT *) BlueHeapMalloc (sizeof (XML_PARSER_CONTEXT)) ;
+  parser = (XML_PARSER_CONTEXT *) ofc_malloc (sizeof (XML_PARSER_CONTEXT)) ;
   parser->startelement = OFC_NULL ;
   parser->endelement = OFC_NULL ;
   parser->charhandler = OFC_NULL ;
@@ -62,7 +62,7 @@ BlueXMLparserFree (OFC_VOID *parsertoken)
   XML_PARSER_CONTEXT *parser ;
 
   parser = (XML_PARSER_CONTEXT *) parsertoken ;
-  BlueHeapFree (parser) ;
+  ofc_free (parser) ;
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -171,9 +171,9 @@ XML_ParseTagXML (XML_PARSER_CONTEXT *parser)
   parser->encoding = OFC_NULL ;
   for (i = 0 ; parser->atts[i] != OFC_NULL ; i+=2)
     {
-      if (BlueCstrcmp (parser->atts[i], "version") == 0)
+      if (ofc_strcmp (parser->atts[i], "version") == 0)
 	parser->version = parser->atts[i+1] ;
-      if (BlueCstrcmp (parser->atts[i], "encoding") == 0)
+      if (ofc_strcmp (parser->atts[i], "encoding") == 0)
 	parser->encoding = parser->atts[i+1] ;
     }
 }

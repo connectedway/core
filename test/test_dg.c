@@ -93,13 +93,13 @@ typedef enum
 typedef struct
 {
   DGRAM_TEST_SERVER_STATE state ;
-  BLUE_IPADDR ip ;
-  BLUE_IPADDR bcast ;
-  BLUE_IPADDR mask ;
+  OFC_IPADDR ip ;
+  OFC_IPADDR bcast ;
+  OFC_IPADDR mask ;
   OFC_HANDLE hTimer ;
   OFC_HANDLE scheduler ;
   OFC_HANDLE hSocket ;
-  BLUE_MESSAGE *recv_msg ;
+  OFC_MESSAGE *recv_msg ;
 } BLUE_DGRAM_TEST_SERVER ;
 
 static OFC_VOID DGramTestServerPreSelect (OFC_HANDLE app) ;
@@ -196,7 +196,7 @@ static OFC_VOID DGramTestServerPreSelect (OFC_HANDLE app)
 static OFC_BOOL ServiceRead (BLUE_DGRAM_TEST_SERVER *DGramTestServer)
 {
   OFC_BOOL progress ;
-  BLUE_IPADDR ip ;
+  OFC_IPADDR ip ;
   OFC_UINT16 port ;
   OFC_CHAR packet_ip[IP6STR_LEN] ;
   OFC_CHAR interface_ip[IP6STR_LEN] ;
@@ -204,18 +204,18 @@ static OFC_BOOL ServiceRead (BLUE_DGRAM_TEST_SERVER *DGramTestServer)
   progress = 
     BlueSocketRead (DGramTestServer->hSocket, DGramTestServer->recv_msg) ;
 	      
-  if (BlueMessageOffset(DGramTestServer->recv_msg) != 0)
+  if (ofc_message_offset(DGramTestServer->recv_msg) != 0)
     {
-      BlueMessageAddr (DGramTestServer->recv_msg, &ip, &port) ;
-      BlueNETntop (&ip, packet_ip, IP6STR_LEN) ;
-      BlueNETntop (&DGramTestServer->ip, interface_ip, IP6STR_LEN) ;
-      BlueCprintf ("Read %d Bytes in Message from %s:%d on interface %s\n",
-		   BlueMessageOffset(DGramTestServer->recv_msg),
-		   packet_ip, port, interface_ip) ;
-      BlueCprintf ("%s\n", BlueMessageData (DGramTestServer->recv_msg)) ;
-      BlueMessageDestroy (DGramTestServer->recv_msg) ;
+      ofc_message_addr (DGramTestServer->recv_msg, &ip, &port) ;
+      ofc_ntop (&ip, packet_ip, IP6STR_LEN) ;
+      ofc_ntop (&DGramTestServer->ip, interface_ip, IP6STR_LEN) ;
+      ofc_printf ("Read %d Bytes in Message from %s:%d on interface %s\n",
+                  ofc_message_offset(DGramTestServer->recv_msg),
+                  packet_ip, port, interface_ip) ;
+      ofc_printf ("%s\n", ofc_message_data (DGramTestServer->recv_msg)) ;
+      ofc_message_destroy (DGramTestServer->recv_msg) ;
       DGramTestServer->recv_msg = 
-	BlueMessageCreate (MSG_ALLOC_HEAP, 1000, OFC_NULL) ;
+	ofc_message_create (MSG_ALLOC_HEAP, 1000, OFC_NULL) ;
     }
   return (progress);
 }
@@ -255,13 +255,13 @@ static OFC_HANDLE DGramTestServerPostSelect (OFC_HANDLE app,
 			}
 		      else
 			{
-			  BlueCprintf ("Listening for Datagrams on Interface "
-				       "on %s\n", 
-				       BlueNETntop (&DGramTestServer->ip,
-						    ip_addr, IP6STR_LEN)) ;
+			  ofc_printf ("Listening for Datagrams on Interface "
+				       "on %s\n",
+                          ofc_ntop (&DGramTestServer->ip,
+                                    ip_addr, IP6STR_LEN)) ;
 			  DGramTestServer->recv_msg = 
-			    BlueMessageCreate (MSG_ALLOC_HEAP, 1000,
-                                   OFC_NULL) ;
+			    ofc_message_create (MSG_ALLOC_HEAP, 1000,
+                                    OFC_NULL) ;
 			}
 		    }
 		  DGramTestServer->state = DGRAM_TEST_SERVER_STATE_BODY ;
@@ -284,7 +284,7 @@ static OFC_VOID DGramTestServerDestroy (OFC_HANDLE app)
 {
   BLUE_DGRAM_TEST_SERVER *DGramTestServer ;
 
-  BlueCprintf ("Destroying Datagram Test Server Application\n") ;
+  ofc_printf ("Destroying Datagram Test Server Application\n") ;
   DGramTestServer = ofc_app_get_data (app) ;
   if (DGramTestServer != OFC_NULL)
     {
@@ -305,8 +305,8 @@ static OFC_VOID DGramTestServerDestroy (OFC_HANDLE app)
 	  break ;
 	}
       if (DGramTestServer->recv_msg != OFC_NULL)
-	BlueMessageDestroy (DGramTestServer->recv_msg) ;
-      BlueHeapFree (DGramTestServer) ;
+	ofc_message_destroy (DGramTestServer->recv_msg) ;
+      ofc_free (DGramTestServer) ;
     }
 }
 
@@ -325,11 +325,11 @@ typedef enum
 
 typedef struct
 {
-  BLUE_FAMILY_TYPE family ;
+  OFC_FAMILY_TYPE family ;
   DGRAM_TEST_CLIENT_STATE state ;
   OFC_HANDLE hSocket ;
   OFC_HANDLE scheduler ;
-  BLUE_MESSAGE *send_msg ;
+  OFC_MESSAGE *send_msg ;
   OFC_HANDLE hTimer ;
   OFC_INT count ;
   OFC_HANDLE hAppQueue ;
@@ -383,7 +383,7 @@ static OFC_VOID DGramTestClientPreSelect (OFC_HANDLE app)
   BLUE_DGRAM_TEST_SERVER *DGramTestServer ;
   OFC_CHAR ip_addr[IP6STR_LEN] ;
 #endif
-  BLUE_IPADDR ipaddr ;
+  OFC_IPADDR ipaddr ;
   DGRAM_TEST_CLIENT_STATE entry_state ;
 
   DGramTestClient = ofc_app_get_data (app) ;
@@ -416,33 +416,33 @@ static OFC_VOID DGramTestClientPreSelect (OFC_HANDLE app)
 	      /*
 	       * On some systems, we need to listen on the any address
 	       */
-	      DGramTestServer = BlueHeapMalloc (sizeof (BLUE_DGRAM_TEST_SERVER)) ;
-	      if (DGramTestClient->family == BLUE_FAMILY_IP)
+	      DGramTestServer = ofc_malloc (sizeof (BLUE_DGRAM_TEST_SERVER)) ;
+	      if (DGramTestClient->family == OFC_FAMILY_IP)
 		{
-		  DGramTestServer->ip.ip_version = BLUE_FAMILY_IP ;
-		  DGramTestServer->ip.u.ipv4.addr = BLUE_INADDR_ANY ;
-		  DGramTestServer->bcast.ip_version = BLUE_FAMILY_IP ;
-		  DGramTestServer->bcast.u.ipv4.addr = BLUE_INADDR_BROADCAST ;
-		  DGramTestServer->mask.ip_version = BLUE_FAMILY_IP ;
-		  DGramTestServer->mask.u.ipv4.addr = BLUE_INADDR_ANY ;
+		  DGramTestServer->ip.ip_version = OFC_FAMILY_IP ;
+		  DGramTestServer->ip.u.ipv4.addr = OFC_INADDR_ANY ;
+		  DGramTestServer->bcast.ip_version = OFC_FAMILY_IP ;
+		  DGramTestServer->bcast.u.ipv4.addr = OFC_INADDR_BROADCAST ;
+		  DGramTestServer->mask.ip_version = OFC_FAMILY_IP ;
+		  DGramTestServer->mask.u.ipv4.addr = OFC_INADDR_ANY ;
 		}
 #if defined(OFC_DISCOVER_IPV6)
 	      else
 		{
-		  DGramTestServer->ip.ip_version = BLUE_FAMILY_IPV6 ;
-		  DGramTestServer->ip.u.ipv6 = blue_in6addr_any ;
-		  DGramTestServer->bcast.ip_version = BLUE_FAMILY_IPV6 ;
-		  DGramTestServer->bcast.u.ipv6 = blue_in6addr_bcast ;
-		  DGramTestServer->mask.ip_version = BLUE_FAMILY_IPV6 ;
-		  DGramTestServer->mask.u.ipv6 = blue_in6addr_any ;
+		  DGramTestServer->ip.ip_version = OFC_FAMILY_IPV6 ;
+		  DGramTestServer->ip.u.ipv6 = ofc_in6addr_any ;
+		  DGramTestServer->bcast.ip_version = OFC_FAMILY_IPV6 ;
+		  DGramTestServer->bcast.u.ipv6 = ofc_in6addr_bcast ;
+		  DGramTestServer->mask.ip_version = OFC_FAMILY_IPV6 ;
+		  DGramTestServer->mask.u.ipv6 = ofc_in6addr_any ;
 		}
 #endif
 	      DGramTestServer->state = DGRAM_TEST_SERVER_STATE_IDLE ;
 	      DGramTestServer->scheduler = DGramTestClient->scheduler ;
 
-	      BlueCprintf ("Creating Datagram Test Server Application on %s\n",
-			   BlueNETntop (&DGramTestServer->ip,
-					ip_addr, IP6STR_LEN)) ;
+	      ofc_printf ("Creating Datagram Test Server Application on %s\n",
+                      ofc_ntop (&DGramTestServer->ip,
+                                ip_addr, IP6STR_LEN)) ;
 
 	      DGramTestClient->hListenApp = 
 		ofc_app_create (DGramTestServer->scheduler,
@@ -450,16 +450,16 @@ static OFC_VOID DGramTestClientPreSelect (OFC_HANDLE app)
 #endif
 
 	      DGramTestClient->send_msg = OFC_NULL ;
-	      if (DGramTestClient->family == BLUE_FAMILY_IP)
+	      if (DGramTestClient->family == OFC_FAMILY_IP)
 		{
-		  ipaddr.ip_version = BLUE_FAMILY_IP ;
-		  ipaddr.u.ipv4.addr = BLUE_INADDR_ANY ;
+		  ipaddr.ip_version = OFC_FAMILY_IP ;
+		  ipaddr.u.ipv4.addr = OFC_INADDR_ANY ;
 		}
 #if defined(OFC_DISCOVER_IPV6)
 	      else
 		{
-		  ipaddr.ip_version = BLUE_FAMILY_IPV6 ;
-		  ipaddr.u.ipv6 = blue_in6addr_any ;
+		  ipaddr.ip_version = OFC_FAMILY_IPV6 ;
+		  ipaddr.u.ipv6 = ofc_in6addr_any ;
 		}
 #endif
 	      DGramTestClient->hSocket = 
@@ -524,9 +524,9 @@ static OFC_VOID DGramTestClientPreSelect (OFC_HANDLE app)
 static OFC_VOID DGramTestReconfig (BLUE_DGRAM_TEST_CLIENT *DGramTestClient)
 {
   int i ;
-  BLUE_IPADDR ip ;
-  BLUE_IPADDR mask ;
-  BLUE_IPADDR bcast ;
+  OFC_IPADDR ip ;
+  OFC_IPADDR mask ;
+  OFC_IPADDR bcast ;
   OFC_HANDLE next_app ;
   OFC_HANDLE hServerApp ;
   OFC_BOOL found ;
@@ -545,9 +545,9 @@ static OFC_VOID DGramTestReconfig (BLUE_DGRAM_TEST_CLIENT *DGramTestClient)
       for (i = 0 ; i < BlueConfigInterfaceCount() && !found ;)
 	{
 	  BlueConfigInterfaceAddr (i, &ip, &bcast, &mask) ;
-	  if (BlueNETIsAddrEqual (&DGramTestServer->ip, &ip) &&
-	      BlueNETIsAddrEqual (&DGramTestServer->bcast, &bcast) &&
-	      BlueNETIsAddrEqual (&DGramTestServer->mask, &mask))
+	  if (ofc_net_is_addr_equal (&DGramTestServer->ip, &ip) &&
+		  ofc_net_is_addr_equal (&DGramTestServer->bcast, &bcast) &&
+		  ofc_net_is_addr_equal (&DGramTestServer->mask, &mask))
 	    found = OFC_TRUE ;
 	  else
 	    i++ ;
@@ -573,16 +573,16 @@ static OFC_VOID DGramTestReconfig (BLUE_DGRAM_TEST_CLIENT *DGramTestClient)
            hServerApp != OFC_HANDLE_NULL && !found ;)
 	{
 	  DGramTestServer = ofc_app_get_data (hServerApp) ;
-	  if (BlueNETIsAddrEqual (&DGramTestServer->ip, &ip) &&
-	      BlueNETIsAddrEqual (&DGramTestServer->bcast, &bcast) &&
-	      BlueNETIsAddrEqual (&DGramTestServer->mask, &mask))
+	  if (ofc_net_is_addr_equal (&DGramTestServer->ip, &ip) &&
+		  ofc_net_is_addr_equal (&DGramTestServer->bcast, &bcast) &&
+		  ofc_net_is_addr_equal (&DGramTestServer->mask, &mask))
 	    found = OFC_TRUE ;
 	  else
 	    hServerApp = (OFC_HANDLE) BlueQnext (DGramTestClient->hAppQueue,
                                              (OFC_VOID *) hServerApp) ;
 	}
 
-      if (!found && (!BlueNETIsAddrLinkLocal (&ip)))
+      if (!found && (!ofc_net_is_addr_link_local (&ip)))
 	/*
 	 * Only configure link local interfaces for dg test
 	 */
@@ -603,7 +603,7 @@ static OFC_VOID DGramTestReconfig (BLUE_DGRAM_TEST_CLIENT *DGramTestClient)
 
       if (!found && (DGramTestClient->family == ip.ip_version))
 	{
-	  DGramTestServer = BlueHeapMalloc (sizeof (BLUE_DGRAM_TEST_SERVER)) ;
+	  DGramTestServer = ofc_malloc (sizeof (BLUE_DGRAM_TEST_SERVER)) ;
 	  if (DGramTestServer != OFC_NULL)
 	    {
 	      DGramTestServer->ip = ip ;
@@ -612,9 +612,9 @@ static OFC_VOID DGramTestReconfig (BLUE_DGRAM_TEST_CLIENT *DGramTestClient)
 	      DGramTestServer->state = DGRAM_TEST_SERVER_STATE_IDLE ;
 	      DGramTestServer->scheduler = DGramTestClient->scheduler ;
 
-	      BlueCprintf ("Creating Datagram Test Server Application on %s\n",
-			   BlueNETntop (&DGramTestServer->ip,
-					ip_addr, IP6STR_LEN)) ;
+	      ofc_printf ("Creating Datagram Test Server Application on %s\n",
+                      ofc_ntop (&DGramTestServer->ip,
+                                ip_addr, IP6STR_LEN)) ;
 
 	      hServerApp = ofc_app_create (DGramTestServer->scheduler,
                                        &DGramTestServerAppDef,
@@ -623,7 +623,7 @@ static OFC_VOID DGramTestReconfig (BLUE_DGRAM_TEST_CLIENT *DGramTestClient)
 		BlueQenqueue (DGramTestClient->hAppQueue, 
 			      (OFC_VOID *) hServerApp) ;
 	      else
-		BlueHeapFree (DGramTestServer) ;
+		ofc_free (DGramTestServer) ;
 	    }
 	}
     }
@@ -667,36 +667,36 @@ static OFC_HANDLE DGramTestClientPostSelect (OFC_HANDLE app,
 			  BlueQfirst (DGramTestClient->hAppQueue) ;
 
 		      if (DGramTestClient->hCurrApp == OFC_HANDLE_NULL)
-			BlueCprintf ("No %s Targets to Send message To\n",
-				     DGramTestClient->family ==
-				     BLUE_FAMILY_IP ? "IPv4" : "IPv6") ;
+			ofc_printf ("No %s Targets to Send message To\n",
+                        DGramTestClient->family ==
+                        OFC_FAMILY_IP ? "IPv4" : "IPv6") ;
 		      else
 			{
 			  DGramTestServer = 
 			    ofc_app_get_data (DGramTestClient->hCurrApp) ;
 			  DGramTestClient->send_msg = 
-			    BlueDatagramCreate (MSG_ALLOC_HEAP,
-						BlueCstrlen (CLIENT_MSG_DATA) + 
-						1,
-                                    OFC_NULL,
-                                    &DGramTestServer->bcast,
-                                    DGRAM_TEST_PORT) ;
-			  buffer = BlueMessageData(DGramTestClient->send_msg) ;
-			  BlueCstrncpy (&buffer[OFFSET_CLIENT_MSG_DATA],
-					CLIENT_MSG_DATA, 
-					BlueCstrlen (CLIENT_MSG_DATA) + 1) ;
+			    ofc_datagram_create (MSG_ALLOC_HEAP,
+                                    ofc_strlen (CLIENT_MSG_DATA) +
+                                    1,
+                                     OFC_NULL,
+                                     &DGramTestServer->bcast,
+                                     DGRAM_TEST_PORT) ;
+			  buffer = ofc_message_data(DGramTestClient->send_msg) ;
+			  ofc_strncpy (&buffer[OFFSET_CLIENT_MSG_DATA],
+                           CLIENT_MSG_DATA,
+                            ofc_strlen (CLIENT_MSG_DATA) + 1) ;
 			  BlueSocketWrite (DGramTestClient->hSocket, 
 					   DGramTestClient->send_msg) ;
-			  if (BlueMessageDone (DGramTestClient->send_msg))
+			  if (ofc_message_done (DGramTestClient->send_msg))
 			    {
-			      BlueNETntop (&DGramTestServer->bcast,
-					   packet_ip, IP6STR_LEN) ;
-			      BlueNETntop (&DGramTestServer->ip,
-					   interface_ip, IP6STR_LEN) ;
-			      BlueCprintf 
+			      ofc_ntop (&DGramTestServer->bcast,
+                            packet_ip, IP6STR_LEN) ;
+			      ofc_ntop (&DGramTestServer->ip,
+                            interface_ip, IP6STR_LEN) ;
+			      ofc_printf
 				("Wrote Message to %s on interface %s\n",
 				 packet_ip, interface_ip) ;
-			      BlueMessageDestroy (DGramTestClient->send_msg) ;
+			      ofc_message_destroy (DGramTestClient->send_msg) ;
 			      DGramTestClient->send_msg = OFC_NULL ;
 			    }
 			}
@@ -713,9 +713,9 @@ static OFC_HANDLE DGramTestClientPostSelect (OFC_HANDLE app,
 		    {
 		      progress |= BlueSocketWrite (DGramTestClient->hSocket, 
 						   DGramTestClient->send_msg) ;
-		      if (BlueMessageDone (DGramTestClient->send_msg))
+		      if (ofc_message_done (DGramTestClient->send_msg))
 			{
-			  BlueMessageDestroy (DGramTestClient->send_msg) ;
+			  ofc_message_destroy (DGramTestClient->send_msg) ;
 			  DGramTestClient->send_msg = OFC_NULL ;
 			}
 		    }
@@ -788,7 +788,7 @@ static OFC_VOID DGramTestClientDestroy (OFC_HANDLE app)
   BLUE_DGRAM_TEST_CLIENT *DGramTestClient ;
   OFC_HANDLE hAppServer ;
 
-  BlueCprintf ("Destroying DGram Test Client Application\n") ;
+  ofc_printf ("Destroying DGram Test Client Application\n") ;
   DGramTestClient = ofc_app_get_data (app) ;
   if (DGramTestClient != OFC_NULL)
     {
@@ -802,7 +802,7 @@ static OFC_VOID DGramTestClientDestroy (OFC_HANDLE app)
 	case DGRAM_TEST_CLIENT_STATE_CONNECTED:
 	  BlueSocketDestroy (DGramTestClient->hSocket) ;
 	  if (DGramTestClient->send_msg != OFC_NULL)
-	    BlueMessageDestroy (DGramTestClient->send_msg) ;
+	    ofc_message_destroy (DGramTestClient->send_msg) ;
 	  BlueTimerDestroy (DGramTestClient->hTimer) ;
 	  BlueConfigUnregisterUpdate (DGramTestClient->hConfigUpdate) ;
 	  ofc_event_destroy (DGramTestClient->hConfigUpdate) ;
@@ -816,17 +816,17 @@ static OFC_VOID DGramTestClientDestroy (OFC_HANDLE app)
 	   hAppServer = (OFC_HANDLE)
 	     BlueQdequeue (DGramTestClient->hAppQueue))
 	{
-	  BlueCprintf ("App Server still queued at destroy");
+	  ofc_printf ("App Server still queued at destroy");
 	  ofc_app_kill (hAppServer) ;
 	}
       BlueQdestroy (DGramTestClient->hAppQueue) ;
 
       if (DGramTestClient->hListenApp != OFC_HANDLE_NULL)
 	{
-	  BlueCprintf ("Listener still active at destroy");
+	  ofc_printf ("Listener still active at destroy");
 	  ofc_app_kill (DGramTestClient->hListenApp) ;
 	}
-      BlueHeapFree (DGramTestClient) ;
+      ofc_free (DGramTestClient) ;
     }
 }
 
@@ -849,15 +849,15 @@ TEST(dg, test_dg)
   /*
    * Let's create a client
    */
-  DGramTestClient = BlueHeapMalloc (sizeof (BLUE_DGRAM_TEST_CLIENT)) ;
-  DGramTestClient->family = BLUE_FAMILY_IP ;
+  DGramTestClient = ofc_malloc (sizeof (BLUE_DGRAM_TEST_CLIENT)) ;
+  DGramTestClient->family = OFC_FAMILY_IP ;
   DGramTestClient->hAppQueue = BlueQcreate () ;
   DGramTestClient->hListenApp = OFC_HANDLE_NULL ;
   DGramTestClient->count = 0 ;
   DGramTestClient->state = DGRAM_TEST_CLIENT_STATE_IDLE ;
   DGramTestClient->scheduler = hScheduler ;
 
-  BlueCprintf ("Creating Datagram IPV4 Client Application\n") ; 
+  ofc_printf ("Creating Datagram IPV4 Client Application\n") ;
   hApp = ofc_app_create (hScheduler, &DGramTestClientAppDef, DGramTestClient) ;
 
   if (hDone != OFC_HANDLE_NULL)
@@ -867,15 +867,15 @@ TEST(dg, test_dg)
     }
 
 #if defined (OFC_DISCOVER_IPV6)
-  DGramTestClient = BlueHeapMalloc (sizeof (BLUE_DGRAM_TEST_CLIENT)) ;
-  DGramTestClient->family = BLUE_FAMILY_IPV6 ;
+  DGramTestClient = ofc_malloc (sizeof (BLUE_DGRAM_TEST_CLIENT)) ;
+  DGramTestClient->family = OFC_FAMILY_IPV6 ;
   DGramTestClient->hAppQueue = BlueQcreate () ;
   DGramTestClient->hListenApp = OFC_HANDLE_NULL ;
   DGramTestClient->count = 0 ;
   DGramTestClient->state = DGRAM_TEST_CLIENT_STATE_IDLE ;
   DGramTestClient->scheduler = hScheduler ;
 
-  BlueCprintf ("Creating Datagram IPV6 Client Application\n") ; 
+  ofc_printf ("Creating Datagram IPV6 Client Application\n") ;
   hApp = ofc_app_create (hScheduler, &DGramTestClientAppDef, DGramTestClient) ;
 #endif
 

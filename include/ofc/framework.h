@@ -17,15 +17,15 @@
 typedef struct
 {
   OFC_INT num_wins ;
-  BLUE_IPADDR *winsaddr ;
+  OFC_IPADDR *winsaddr ;
 } OFC_FRAMEWORK_WINSLIST ;
 
 typedef struct 
 {
   BLUE_CONFIG_MODE netBiosMode ;
-  BLUE_IPADDR ip ;
-  BLUE_IPADDR bcast ;
-  BLUE_IPADDR mask ;
+  OFC_IPADDR ip ;
+  OFC_IPADDR bcast ;
+  OFC_IPADDR mask ;
   OFC_LPCSTR lmb ;
   OFC_FRAMEWORK_WINSLIST wins ;
 } OFC_FRAMEWORK_INTERFACE ;
@@ -178,7 +178,7 @@ extern "C"
    *
    * Only useful if interface discovery is off
    */
-  OFC_VOID ofc_framework_remove_interface (BLUE_IPADDR *ip) ;
+  OFC_VOID ofc_framework_remove_interface (OFC_IPADDR *ip) ;
   /**
    * Get configured interfaces
    */

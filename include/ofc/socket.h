@@ -116,8 +116,8 @@ extern "C"
 #endif
 
   OFC_CORE_LIB OFC_VOID
-  BlueSocketSourceAddress (const BLUE_IPADDR *dest, 
-			   BLUE_IPADDR *source) ;
+  BlueSocketSourceAddress (const OFC_IPADDR *dest,
+                           OFC_IPADDR *source) ;
   /**
    * Create a Stream socket and connect to a remote target
    *
@@ -138,7 +138,7 @@ extern "C"
    * handle and a call to BlueSocketConnected will return success.
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port) ;
+  BlueSocketConnect (const OFC_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Create a TCP socket and listen for incoming connections
    * 
@@ -148,7 +148,7 @@ extern "C"
    *
    * \param ip
    * The ip for the interface to listen for connections on.  Can be
-   * BLUE_INADDR_ANY to listen for connections on any interface.
+   * OFC_INADDR_ANY to listen for connections on any interface.
    *
    * \param port
    * The port to listen for incoming connections on.
@@ -160,7 +160,7 @@ extern "C"
    * A subsequent call to BlueSocketAccept can then be issued.
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueSocketListen (const BLUE_IPADDR *ip, OFC_UINT16 port) ;
+  BlueSocketListen (const OFC_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Create a datagram socket
    *
@@ -170,7 +170,7 @@ extern "C"
    * \param ip
    * IP of the interface that the datagram socket should be assigned to. The
    * datagram socket will receive incoming datagrams from this interface.  If
-   * the ip is BLUE_INADDR_ANY, then this socket will accept datagrams from
+   * the ip is OFC_INADDR_ANY, then this socket will accept datagrams from
    * any interface.
    *
    * \param port
@@ -183,9 +183,9 @@ extern "C"
    * traffic arrives or buffer space is available.
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port) ;
+  BlueSocketDatagram (const OFC_IPADDR *ip, OFC_UINT16 port) ;
   OFC_CORE_LIB OFC_HANDLE
-  BlueSocketRaw (const BLUE_IPADDR *ip, BLUE_SOCKET_TYPE socktype) ;
+  BlueSocketRaw (const OFC_IPADDR *ip, BLUE_SOCKET_TYPE socktype) ;
   /**
    * Accept an incoming TCP connection
    *
@@ -222,19 +222,19 @@ extern "C"
    * Socket to write the data on.
    *
    * \param msg
-   * The message to write.  See BLUE_MESSAGE for a description of the format
+   * The message to write.  See OFC_MESSAGE for a description of the format
    * of this parameter.
    *
    * \returns
    * True if we made progress on a write, false otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueSocketWrite (OFC_HANDLE hSocket, BLUE_MESSAGE *msg) ;
+  BlueSocketWrite (OFC_HANDLE hSocket, OFC_MESSAGE *msg) ;
   /**
    * Read Data from a socket
    * 
    * Read data from a datagram or stream socket.  Any received data will
-   * be reflected in the specified message.  See BLUE_MESSAGE for more
+   * be reflected in the specified message.  See OFC_MESSAGE for more
    * detail.
    *
    * \param hSocket
@@ -247,7 +247,7 @@ extern "C"
    * True if we made progress on a read, false otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueSocketRead (OFC_HANDLE hSocket, BLUE_MESSAGE *msg) ;
+  BlueSocketRead (OFC_HANDLE hSocket, OFC_MESSAGE *msg) ;
   /**
    * Test if a socket is connected or not
    *
@@ -328,8 +328,8 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueSocketGetAddresses (OFC_HANDLE hSock, BLUE_SOCKADDR *local,
-                          BLUE_SOCKADDR *remote) ;
+  BlueSocketGetAddresses (OFC_HANDLE hSock, OFC_SOCKADDR *local,
+                          OFC_SOCKADDR *remote) ;
 
   /**
    * Get a handle to the socket implementation.

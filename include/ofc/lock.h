@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_LOCK_H__)
-#define __BLUE_LOCK_H__
+#if !defined(__OFC_LOCK_H__)
+#define __OFC_LOCK_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -12,7 +12,7 @@
 /**
  * The Platform Abstracted Lock Structure
  */
-typedef OFC_VOID *BLUE_LOCK ;
+typedef OFC_VOID *OFC_LOCK ;
 
 #if defined(__cplusplus)
 extern "C"
@@ -23,8 +23,8 @@ extern "C"
    *
    * Pointer to lock to initialize
    */
-  OFC_CORE_LIB BLUE_LOCK
-  BlueLockInit (OFC_VOID) ;
+  OFC_CORE_LIB OFC_LOCK
+  ofc_lock_init (OFC_VOID) ;
   /**
    * Destroy a Lock
    *
@@ -32,7 +32,7 @@ extern "C"
    * Pointer to the lock to destroy
    */
   OFC_CORE_LIB OFC_VOID
-  BlueLockDestroy (BLUE_LOCK lock) ;
+  ofc_lock_destroy (OFC_LOCK lock) ;
   /**
    * Test if a lock is available and lock it if it is.
    *
@@ -46,7 +46,7 @@ extern "C"
    * not available
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueLockTry (BLUE_LOCK lock) ;
+  ofc_lock_try (OFC_LOCK lock) ;
   /**
    * Wait for a lock
    *
@@ -56,7 +56,7 @@ extern "C"
    * Pointer to lock to obtain
    */
   OFC_CORE_LIB OFC_VOID
-  BlueLock (BLUE_LOCK pLock) ;
+  ofc_lock (OFC_LOCK pLock) ;
   /**
    * Release a Lock
    *
@@ -64,7 +64,7 @@ extern "C"
    * Pointer to lock to release
    */
   OFC_CORE_LIB OFC_VOID
-  BlueUnlock (BLUE_LOCK pLock) ;
+  ofc_unlock (OFC_LOCK pLock) ;
 #if defined(__cplusplus)
 }
 #endif

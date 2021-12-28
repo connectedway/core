@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_NET_IMPL_H__)
-#define __BLUE_NET_IMPL_H__
+#if !defined(__OFC_NET_IMPL_H__)
+#define __OFC_NET_IMPL_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -30,7 +30,7 @@ extern "C"
    * This is called during system initialization to perform any platform
    * specific initialization necessary
    */
-  OFC_VOID BlueNetInitImpl (OFC_VOID) ;
+  OFC_VOID ofc_net_init_impl (OFC_VOID) ;
   /**
    * Return the number of interfaces configured on the platform
    *
@@ -42,7 +42,7 @@ extern "C"
    * Number of configured interfaces
    */
   OFC_INT
-  BlueNetInterfaceCountImpl (OFC_VOID) ;
+  ofc_net_interface_count_impl (OFC_VOID) ;
   /**
    * Return IP information for an interface
    *
@@ -62,10 +62,10 @@ extern "C"
    * Pointer to where to return the mask info
    */
   OFC_VOID
-  BlueNetInterfaceAddrImpl (OFC_INT index,
-                            BLUE_IPADDR *pinaddr,
-                            BLUE_IPADDR *pbcast,
-                            BLUE_IPADDR *pmask) ;
+  ofc_net_interface_addr_impl (OFC_INT index,
+                               OFC_IPADDR *pinaddr,
+                               OFC_IPADDR *pbcast,
+                               OFC_IPADDR *pmask) ;
   /**
    * Return the wins configuration for an interface
    *
@@ -77,19 +77,19 @@ extern "C"
    *
    * \param winslist
    * Pointer to where to return the wins ip address list.  This list should
-   * be freed with BlueHeapFree when no longer needed.
+   * be freed with ofc_free when no longer needed.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetInterfaceWinsImpl (OFC_INT index, OFC_INT *num_wins,
-                            BLUE_IPADDR **winslist) ;
+  ofc_net_interface_wins_impl (OFC_INT index, OFC_INT *num_wins,
+                               OFC_IPADDR **winslist) ;
   /**
    * Register a configuration event
    */
-  OFC_VOID BlueNetRegisterConfigImpl (OFC_HANDLE hEvent) ;
+  OFC_VOID ofc_net_register_config_impl (OFC_HANDLE hEvent) ;
   /**
    * Unregister a configuration event
    */
-  OFC_VOID BlueNetUnregisterConfigImpl (OFC_HANDLE hEvent) ;
+  OFC_VOID ofc_net_unregister_config_impl (OFC_HANDLE hEvent) ;
   /**
    * Resolve a DNS Name on the platform
    *
@@ -102,9 +102,9 @@ extern "C"
    * Pointer to where to return the ip info for the node
    */
   OFC_VOID
-  BlueNetResolveDNSNameImpl (OFC_LPCSTR name,
-                             OFC_UINT16 *num_addrs,
-                             BLUE_IPADDR *ip) ;
+  ofc_net_resolve_dns_name_impl (OFC_LPCSTR name,
+                                 OFC_UINT16 *num_addrs,
+                                 OFC_IPADDR *ip) ;
 #if defined(__cplusplus)
 }
 #endif

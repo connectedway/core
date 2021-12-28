@@ -24,7 +24,7 @@ BlueTimerCreate (OFC_CCHAR *id)
   BLUE_TIMER *pTimer ;
   OFC_HANDLE hTimer ;
 
-  pTimer = BlueHeapMalloc (sizeof (BLUE_TIMER)) ;
+  pTimer = ofc_malloc (sizeof (BLUE_TIMER)) ;
   pTimer->expiration_time = 0 ;
   pTimer->id = id ;
   hTimer = ofc_handle_create (OFC_HANDLE_TIMER, pTimer) ;
@@ -88,7 +88,7 @@ BlueTimerDestroy (OFC_HANDLE hTimer)
   pTimer = ofc_handle_lock (hTimer) ;
   if (pTimer != OFC_NULL)
     {
-      BlueHeapFree (pTimer) ;
+      ofc_free (pTimer) ;
       ofc_handle_destroy (hTimer) ;
       ofc_handle_unlock (hTimer) ;
     }

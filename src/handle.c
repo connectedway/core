@@ -92,8 +92,8 @@ typedef struct _HANDLE16_CONTEXT
 } HANDLE16_CONTEXT ;
 
 
-BLUE_LOCK OfcHandle16Mutex ;
-BLUE_LOCK HandleLock ;
+OFC_LOCK OfcHandle16Mutex ;
+OFC_LOCK HandleLock ;
 
 #if defined(OFC_HANDLE_DEBUG)
 static HANDLE_CONTEXT *OfcHandleAlloc ;
@@ -250,7 +250,7 @@ ofc_handle_create (OFC_HANDLE_TYPE hType, OFC_VOID *context)
 {
   HANDLE_CONTEXT *handle_context ;
 
-  handle_context = BlueHeapMalloc (sizeof (HANDLE_CONTEXT)) ;
+  handle_context = ofc_malloc (sizeof (HANDLE_CONTEXT)) ;
   handle_context->reference = 0 ;
   handle_context->destroy = OFC_FALSE ;
   handle_context->type = hType ;
@@ -297,7 +297,7 @@ OFC_CORE_LIB OFC_VOID *ofc_handle_lock (OFC_HANDLE handle)
   handle_context = (HANDLE_CONTEXT *) handle ;
   ret = OFC_NULL ;
 
-  BlueLock (HandleLock) ;
+  ofc_lock (HandleLock) ;
 #if defined(DISABLED)
   handle_context->trace[handle_context->trace_idx].event =
     HANDLE_EVENT_LOCK ;
@@ -322,7 +322,7 @@ handle_context->destroy ;
       handle_context->reference++ ;
       ret = handle_context->context ;
     }
-  BlueUnlock (HandleLock) ;
+  ofc_unlock (HandleLock) ;
 
   return (ret) ;
 }
@@ -345,7 +345,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock (OFC_HANDLE handle)
   HANDLE_CONTEXT *handle_context ;
 
   handle_context = (HANDLE_CONTEXT *) handle ;
-  BlueLock (HandleLock) ;
+  ofc_lock (HandleLock) ;
 
   handle_context->reference-- ;
 #if defined(DISABLED)
@@ -374,11 +374,11 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock (OFC_HANDLE handle)
 #if defined(OFC_HANDLE_PERF)
       OfcHandlePrintInterval ("Handle: ", handle) ;
 #endif
-      BlueUnlock (HandleLock) ;
-      BlueHeapFree (handle_context) ;
+      ofc_unlock (HandleLock) ;
+      ofc_free (handle_context) ;
     }
   else
-    BlueUnlock (HandleLock) ;
+    ofc_unlock (HandleLock) ;
 }
 
 OFC_CORE_LIB OFC_VOID ofc_handle_destroy (OFC_HANDLE handle)
@@ -390,7 +390,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle_destroy (OFC_HANDLE handle)
   if (handle_context->wait_set != OFC_HANDLE_NULL)
     BlueWaitSetRemove (handle_context->wait_set, handle) ;
 
-  BlueLock (HandleLock) ;
+  ofc_lock (HandleLock) ;
 #if defined(DISABLED)
   handle_context->trace[handle_context->trace_idx].event =
     HANDLE_EVENT_DESTROY ;
@@ -409,7 +409,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle_destroy (OFC_HANDLE handle)
   handle_context->trace_idx = (handle_context->trace_idx+1) % 100 ;
 #endif
 
-  BlueUnlock (HandleLock) ;
+  ofc_unlock (HandleLock) ;
   if (handle_context->reference == 0)
     {
 
@@ -419,7 +419,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle_destroy (OFC_HANDLE handle)
 #if defined(OFC_HANDLE_PERF)
       OfcHandlePrintInterval ("Handle: ", handle) ;
 #endif
-      BlueHeapFree (handle_context) ;
+      ofc_free (handle_context) ;
     }
   else
     handle_context->destroy = OFC_TRUE ;
@@ -473,8 +473,8 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_init (OFC_VOID)
   OfcHandleDebugInit() ;
 #endif
 
-  OfcHandle16Mutex = BlueLockInit () ;
-  HandleLock = BlueLockInit () ;
+  OfcHandle16Mutex = ofc_lock_init () ;
+  HandleLock = ofc_lock_init () ;
 
   Handle16Free = BlueQcreate() ;
 
@@ -494,8 +494,8 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_free (OFC_VOID)
   BlueQclear (Handle16Free) ;
   BlueQdestroy (Handle16Free) ;
 
-  BlueLockDestroy (OfcHandle16Mutex) ;
-  BlueLockDestroy (HandleLock) ;
+  ofc_lock_destroy (OfcHandle16Mutex) ;
+  ofc_lock_destroy (HandleLock) ;
 }
 
 OFC_CORE_LIB OFC_VOID *ofc_handle16_lock (OFC_HANDLE16 hHandle)
@@ -505,7 +505,7 @@ OFC_CORE_LIB OFC_VOID *ofc_handle16_lock (OFC_HANDLE16 hHandle)
   HANDLE16_CONTEXT *handle ;
 
   ret = OFC_NULL ;
-  BlueLock (OfcHandle16Mutex) ;
+  ofc_lock (OfcHandle16Mutex) ;
   id = HANDLE16_ID (hHandle) ;
   if (id < OFC_MAX_HANDLE16)
     {
@@ -518,7 +518,7 @@ OFC_CORE_LIB OFC_VOID *ofc_handle16_lock (OFC_HANDLE16 hHandle)
         }
     }
       
-  BlueUnlock (OfcHandle16Mutex) ;
+  ofc_unlock (OfcHandle16Mutex) ;
   return (ret) ;
 }
 
@@ -528,7 +528,7 @@ OFC_CORE_LIB OFC_HANDLE16 ofc_handle16_create (OFC_VOID *context)
   OFC_HANDLE16 ret ;
 
   ret = OFC_HANDLE16_INVALID ;
-  BlueLock (OfcHandle16Mutex) ;
+  ofc_lock (OfcHandle16Mutex) ;
   handle = BlueQdequeue (Handle16Free) ;
   if (handle != OFC_NULL)
     {
@@ -553,7 +553,7 @@ OFC_CORE_LIB OFC_HANDLE16 ofc_handle16_create (OFC_VOID *context)
       BlueProcessCrash ("Handle16 Pool Exhausted\n") ;
     }
 
-  BlueUnlock (OfcHandle16Mutex) ;
+  ofc_unlock (OfcHandle16Mutex) ;
   return (ret) ;
 }
 
@@ -562,7 +562,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_destroy (OFC_HANDLE16 hHandle)
   OFC_UCHAR id ;
   HANDLE16_CONTEXT *handle ;
 
-  BlueLock (OfcHandle16Mutex) ;
+  ofc_lock (OfcHandle16Mutex) ;
   id = HANDLE16_ID (hHandle) ;
   if (id < OFC_MAX_HANDLE16)
     {
@@ -571,7 +571,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_destroy (OFC_HANDLE16 hHandle)
           handle->alloc == OFC_TRUE)
         {
           handle->context = OFC_NULL ;
-	  BlueUnlock (OfcHandle16Mutex) ;
+	  ofc_unlock (OfcHandle16Mutex) ;
           ofc_handle16_unlock (hHandle) ;
         }
       else
@@ -579,14 +579,14 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_destroy (OFC_HANDLE16 hHandle)
 	  /*
 	   * Already destroyed 
 	   */
-	  BlueUnlock (OfcHandle16Mutex) ;
+	  ofc_unlock (OfcHandle16Mutex) ;
 	}
     }
   else
     {
-      BlueUnlock (OfcHandle16Mutex) ;
-      BlueCprintf ("Bad Handle being destroyed 0x%08x, %d\n",
-		   hHandle, id) ;
+      ofc_unlock (OfcHandle16Mutex) ;
+      ofc_printf ("Bad Handle being destroyed 0x%08x, %d\n",
+                  hHandle, id) ;
       BlueProcessCrash ("Bad Handle being destroyed\n") ;
     }
 }
@@ -596,7 +596,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_unlock (OFC_HANDLE16 hHandle)
   OFC_UCHAR id ;
   HANDLE16_CONTEXT *handle ;
 
-  BlueLock (OfcHandle16Mutex) ;
+  ofc_lock (OfcHandle16Mutex) ;
   id = HANDLE16_ID (hHandle) ;
   if (id < OFC_MAX_HANDLE16)
     {
@@ -617,7 +617,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_unlock (OFC_HANDLE16 hHandle)
     }
   else
     BlueProcessCrash ("Bad Handle being unlocked\n") ;
-  BlueUnlock (OfcHandle16Mutex) ;
+  ofc_unlock (OfcHandle16Mutex) ;
 }
 
 #if defined(OFC_HANDLE_PERF)

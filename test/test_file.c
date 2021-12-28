@@ -38,7 +38,7 @@
 /*
  * Forward declaration of the File System Test Thread
  */
-static OFC_DWORD OfcFSTestApp (BLUE_PATH *path) ;
+static OFC_DWORD OfcFSTestApp (OFC_PATH *path) ;
 
 /*
  * This test utility will map the destination file location to the device
@@ -148,7 +148,7 @@ AsyncRead (OFC_HANDLE wait_set, OFC_HANDLE read_file,
    * initialize the read buffer using the read file, the read overlapped
    * handle and the current read offset
    */
-  BlueCTrace ("Reading 0x%08x\n", OFC_LARGE_INTEGER_LOW(buffer->offset)) ;
+  ofc_trace ("Reading 0x%08x\n", OFC_LARGE_INTEGER_LOW(buffer->offset)) ;
   OfcSetOverlappedOffset (read_file, buffer->readOverlapped, buffer->offset) ;
   /*
    * Set the state to reading
@@ -261,7 +261,7 @@ static ASYNC_RESULT AsyncReadResult (OFC_HANDLE wait_set,
 	   */
 	  if (dwLastError != OFC_ERROR_HANDLE_EOF)
 	    {
-	      BlueCprintf ("Read Error %d\n", dwLastError) ;
+	      ofc_printf ("Read Error %d\n", dwLastError) ;
 	      result = ASYNC_RESULT_ERROR ;
 	    }
 	  else
@@ -289,7 +289,7 @@ static OFC_BOOL AsyncWrite (OFC_HANDLE wait_set, OFC_HANDLE write_file,
 {
   OFC_BOOL status ;
     
-  BlueCTrace ("Writing 0x%08x\n", OFC_LARGE_INTEGER_LOW(buffer->offset)) ;
+  ofc_trace ("Writing 0x%08x\n", OFC_LARGE_INTEGER_LOW(buffer->offset)) ;
   OfcSetOverlappedOffset (write_file, buffer->writeOverlapped,
                           buffer->offset) ;
     
@@ -336,7 +336,7 @@ static ASYNC_RESULT AsyncWriteResult (OFC_HANDLE wait_set,
 	result = ASYNC_RESULT_PENDING ;
       else
 	{
-	  BlueCprintf ("Write Error %d\n", dwLastError) ;
+	  ofc_printf ("Write Error %d\n", dwLastError) ;
 	  result = ASYNC_RESULT_ERROR ;
 	}
     }
@@ -356,12 +356,12 @@ static OFC_TCHAR *MakeFilename (OFC_CTCHAR *device, OFC_CTCHAR *name)
   OFC_SIZET namelen ;
   OFC_TCHAR *filename ;
 
-  devlen = BlueCtastrlen (device) ;
-  namelen = BlueCtastrlen (name) ;
+  devlen = ofc_tastrlen (device) ;
+  namelen = ofc_tastrlen (name) ;
   filename = 
-    BlueHeapMalloc ((devlen + namelen + 1) * sizeof (OFC_TCHAR)) ;
-  BlueCtastrcpy (filename, device) ;
-  BlueCtastrcpy (&filename[devlen], name) ;
+    ofc_malloc ((devlen + namelen + 1) * sizeof (OFC_TCHAR)) ;
+  ofc_tastrcpy (filename, device) ;
+  ofc_tastrcpy (&filename[devlen], name) ;
   filename[devlen+namelen] = TCHAR_EOS ;
   return (filename) ;
 }
@@ -418,16 +418,16 @@ static OFC_BOOL OfcCreateFileTest (OFC_CTCHAR *device)
         
   if (write_file == OFC_INVALID_HANDLE_VALUE)
     {
-      BlueCprintf ("Failed to open Copy Destination %A, Error Code %d\n",
-                   wfilename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to open Copy Destination %A, Error Code %d\n",
+                  wfilename, OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
   else
     {
-      buffer = BlueHeapMalloc (BUFFER_SIZE) ;
+      buffer = ofc_malloc (BUFFER_SIZE) ;
       if (buffer == OFC_NULL)
 	{
-	  BlueCprintf ("OfcFSTest: Failed to allocate Shared "
+	  ofc_printf ("OfcFSTest: Failed to allocate Shared "
 		       "memory buffer\n") ;
 	  ret = OFC_FALSE ;
 	}
@@ -453,31 +453,31 @@ static OFC_BOOL OfcCreateFileTest (OFC_CTCHAR *device)
 
 	      if (status == OFC_FALSE)
 		{
-		  BlueCprintf ("Write to File Failed with %d\n",
-                       OfcGetLastError()) ;
+		  ofc_printf ("Write to File Failed with %d\n",
+                      OfcGetLastError()) ;
 		  ret = OFC_FALSE ;
 		}
 	      else
 		{
 		  if (size % (1024*1024) == 0)
-		    BlueCprintf ("Wrote %d MB\n", (size / (1024*1024))+1) ;
+		    ofc_printf ("Wrote %d MB\n", (size / (1024 * 1024)) + 1) ;
 		}
 	    }
-	  BlueHeapFree (buffer) ;
+	  ofc_free (buffer) ;
 	}
       OfcCloseHandle (write_file) ;
     }
     
-  BlueHeapFree (wfilename) ;
+  ofc_free (wfilename) ;
 
 #if defined(OFC_PERF_STATS)
   BlueTimePerfDump() ;
 #endif
   if (ret == OFC_TRUE)
-    BlueCprintf ("Create File Done, Elapsed Time %dms\n", 
+    ofc_printf ("Create File Done, Elapsed Time %dms\n",
 		 BlueTimeGetNow() - start_time) ;
   else
-    BlueCprintf ("Create File Test Failed\n") ;
+    ofc_printf ("Create File Test Failed\n") ;
   return (ret) ;
 }
 
@@ -500,7 +500,7 @@ static OFC_BOOL OfcDismountTest (OFC_CTCHAR *device)
    */
   OfcDismount (wfilename) ;
 
-  BlueHeapFree (wfilename) ;
+  ofc_free (wfilename) ;
 
   return (ret) ;
 }
@@ -552,8 +552,8 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
     
   if (read_file == OFC_INVALID_HANDLE_VALUE)
     {
-      BlueCprintf ("Failed to open Copy Source %A, Error Code %d\n",
-                   rfilename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to open Copy Source %A, Error Code %d\n",
+                  rfilename, OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
   else
@@ -572,8 +572,8 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
         
       if (write_file == OFC_INVALID_HANDLE_VALUE)
 	{
-	  BlueCprintf ("Failed to open Copy Destination %A, Error Code %d\n",
-                   wfilename, OfcGetLastError ()) ;
+	  ofc_printf ("Failed to open Copy Destination %A, Error Code %d\n",
+                  wfilename, OfcGetLastError ()) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -601,20 +601,20 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	      /*
 	       * Get the buffer descriptor and the data buffer
 	       */
-	      buffer = BlueHeapMalloc (sizeof (OFC_FILE_BUFFER)) ;
+	      buffer = ofc_malloc (sizeof (OFC_FILE_BUFFER)) ;
 	      if (buffer == OFC_NULL)
 		{
-		  BlueCprintf ("BlueFSTest: Failed to alloc buffer context\n") ;
+		  ofc_printf ("BlueFSTest: Failed to alloc buffer context\n") ;
 		  ret = OFC_FALSE ;
 		}
 	      else
 		{
-		  buffer->data = BlueHeapMalloc (BUFFER_SIZE) ;
+		  buffer->data = ofc_malloc (BUFFER_SIZE) ;
 		  if (buffer->data == OFC_NULL)
 		    {
-		      BlueCprintf ("BlueFSTest: Failed to allocate "
+		      ofc_printf ("BlueFSTest: Failed to allocate "
 				   "memory buffer\n") ;
-		      BlueHeapFree (buffer) ;
+		      ofc_free (buffer) ;
 		      buffer = OFC_NULL ;
 		      ret = OFC_FALSE ;
 		    }
@@ -756,7 +756,7 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 			   * Only report on MB boundaries 
 			   */
 			  if (buffer->offset % (1024*1024) == 0)
-			    BlueCprintf ("Copied %d MB\n", 
+			    ofc_printf ("Copied %d MB\n",
 					 (buffer->offset / (1024 * 1024))+1) ;
 
 			  OFC_LARGE_INTEGER_ASSIGN (buffer->offset, offset) ;
@@ -801,8 +801,8 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	      /*
 	       * Free the data buffer and the buffer descriptor
 	       */
-	      BlueHeapFree (buffer->data) ;
-	      BlueHeapFree (buffer) ;
+	      ofc_free (buffer->data) ;
+	      ofc_free (buffer) ;
 	    }
 	  /*
 	   * Destroy the buffer list
@@ -823,17 +823,17 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
       OfcCloseHandle (read_file) ;
     }
     
-  BlueHeapFree (rfilename) ;
-  BlueHeapFree (wfilename) ;
+  ofc_free (rfilename) ;
+  ofc_free (wfilename) ;
 
 #if defined(OFC_PERF_STATS)
   BlueTimePerfDump() ;
 #endif
   if (ret == OFC_TRUE)
-    BlueCprintf ("Copy Done, Elapsed Time %dms\n", 
+    ofc_printf ("Copy Done, Elapsed Time %dms\n",
 		 BlueTimeGetNow() - start_time) ;
   else
-    BlueCprintf ("Copy Test Failed\n") ;
+    ofc_printf ("Copy Test Failed\n") ;
   return (ret) ;
 }
 
@@ -871,8 +871,8 @@ OfcDeleteTest (OFC_CTCHAR *device)
         
   if (write_file == OFC_INVALID_HANDLE_VALUE)
     {
-      BlueCprintf ("Failed to create delete file %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to create delete file %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
   else
@@ -880,13 +880,13 @@ OfcDeleteTest (OFC_CTCHAR *device)
       /*
        * Let's write some stuff to the file
        */
-      buffer = BlueHeapMalloc (BUFFER_SIZE) ;
+      buffer = ofc_malloc (BUFFER_SIZE) ;
       len = BUFFER_SIZE ;
 
       while (len > 0)
 	{
-	  len -= BlueCsnprintf (buffer + (BUFFER_SIZE-len), len,
-				"This Text begins at offset %d\n", 
+	  len -= ofc_snprintf (buffer + (BUFFER_SIZE - len), len,
+                           "This Text begins at offset %d\n",
 				BUFFER_SIZE - len) ;
 	}
       /*
@@ -897,15 +897,15 @@ OfcDeleteTest (OFC_CTCHAR *device)
       /*
        * Free the buffer
        */
-      BlueHeapFree (buffer) ;
+      ofc_free (buffer) ;
       if (status != OFC_TRUE)
 	{
 	  /*
 	   * We failed writing, complain
 	   */
 	  dwLastError = OfcGetLastError () ;
-	  BlueCprintf ("Write to Delete File Failed with Error %d\n",
-		       dwLastError) ;
+	  ofc_printf ("Write to Delete File Failed with Error %d\n",
+                  dwLastError) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -916,8 +916,8 @@ OfcDeleteTest (OFC_CTCHAR *device)
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Close of Delete File Failed with Error %d\n",
-			   dwLastError) ;
+	      ofc_printf ("Close of Delete File Failed with Error %d\n",
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	  else
@@ -937,10 +937,10 @@ OfcDeleteTest (OFC_CTCHAR *device)
         
 	      if (write_file == OFC_INVALID_HANDLE_VALUE)
 		{
-		  BlueCprintf ("Failed to create delete on close file %A, "
+		  ofc_printf ("Failed to create delete on close file %A, "
 			       "Error Code %d\n",
-                       filename,
-                       OfcGetLastError ()) ;
+                      filename,
+                      OfcGetLastError ()) ;
 		  ret = OFC_FALSE ;
 		}
 	      else
@@ -951,18 +951,18 @@ OfcDeleteTest (OFC_CTCHAR *device)
 		  if (status != OFC_TRUE)
 		    {
 		      dwLastError = OfcGetLastError () ;
-		      BlueCprintf ("Close of Delete on close File "
+		      ofc_printf ("Close of Delete on close File "
 				   "Failed with Error %d\n",
-				   dwLastError) ;
+                          dwLastError) ;
 		      ret = OFC_FALSE ;
 		    }
 		  else
-		    BlueCprintf ("Delete on Close Test Succeeded\n") ;
+		    ofc_printf ("Delete on Close Test Succeeded\n") ;
 		}
 	    }
 	}
     }
-  BlueHeapFree (filename) ;
+  ofc_free (filename) ;
   return (ret) ;
 }
 
@@ -1019,8 +1019,8 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
         
       if (rename_file == OFC_INVALID_HANDLE_VALUE)
 	{
-	  BlueCprintf ("Failed to create rename file %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+	  ofc_printf ("Failed to create rename file %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -1028,25 +1028,25 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
 	  /*
 	   * Let's write some stuff to the file
 	   */
-	  buffer = BlueHeapMalloc (BUFFER_SIZE) ;
+	  buffer = ofc_malloc (BUFFER_SIZE) ;
 	  len = BUFFER_SIZE ;
 
 	  while (len > 0)
 	    {
-	      len -= BlueCsnprintf (buffer + (BUFFER_SIZE-len), len,
-				    "This Text begins at offset %d\n", 
+	      len -= ofc_snprintf (buffer + (BUFFER_SIZE - len), len,
+                               "This Text begins at offset %d\n",
 				    BUFFER_SIZE - len) ;
 	    }
 
 	  status = OfcWriteFile (rename_file, buffer, BUFFER_SIZE,
                              &dwBytesWritten, OFC_HANDLE_NULL) ;
     
-	  BlueHeapFree (buffer) ;
+	  ofc_free (buffer) ;
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Write to Rename File Failed with Error %d\n",
-			   dwLastError) ;
+	      ofc_printf ("Write to Rename File Failed with Error %d\n",
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	  else
@@ -1057,8 +1057,8 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
 	      if (status != OFC_TRUE)
 		{
 		  dwLastError = OfcGetLastError () ;
-		  BlueCprintf ("Close of Rename File Failed with Error %d\n",
-			       dwLastError) ;
+		  ofc_printf ("Close of Rename File Failed with Error %d\n",
+                      dwLastError) ;
 		  ret = OFC_FALSE ;
 		}
 	      else
@@ -1074,27 +1074,27 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
 		       */
 		      status = OfcDeleteFile (tofilename) ;
 		      if (status == OFC_TRUE)
-			BlueCprintf ("Rename Test Succeeded\n") ;
+			ofc_printf ("Rename Test Succeeded\n") ;
 		      else
 			{
 			  dwLastError = OfcGetLastError () ;
-			  BlueCprintf ("Delete Rename File Failed with Error %d\n",
-				       dwLastError) ;
+			  ofc_printf ("Delete Rename File Failed with Error %d\n",
+                          dwLastError) ;
 			  ret = OFC_FALSE ;
 			}
 		    }
 		  else
 		    {
 		      dwLastError = OfcGetLastError () ;
-		      BlueCprintf ("Rename File Failed with Error %d\n",
-				   dwLastError) ;
+		      ofc_printf ("Rename File Failed with Error %d\n",
+                          dwLastError) ;
 		      ret = OFC_FALSE ;
 		    }
 		}
 	    }
 	}
-      BlueHeapFree (filename) ;
-      BlueHeapFree (tofilename) ;
+      ofc_free (filename) ;
+      ofc_free (tofilename) ;
 
       dirHandle = OfcCreateFile (dirname,
                                  OFC_FILE_DELETE,
@@ -1107,10 +1107,10 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
         
       if (dirHandle == OFC_INVALID_HANDLE_VALUE)
 	{
-	  BlueCprintf ("Failed to create delete on close dir %A, "
+	  ofc_printf ("Failed to create delete on close dir %A, "
 		       "Error Code %d\n",
-                   dirname,
-                   OfcGetLastError ()) ;
+                  dirname,
+                  OfcGetLastError ()) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -1121,9 +1121,9 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Close of Delete on close dir "
+	      ofc_printf ("Close of Delete on close dir "
 			   "Failed with Error %d\n",
-			   dwLastError) ;
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	}
@@ -1131,11 +1131,11 @@ static OFC_BOOL OfcMoveTest (OFC_CTCHAR *device)
   else
     {
       dwLastError = OfcGetLastError() ;
-      BlueCprintf ("Create of Directory Failed with Error %d\n",
-		   dwLastError) ;
+      ofc_printf ("Create of Directory Failed with Error %d\n",
+                  dwLastError) ;
       ret = OFC_FALSE ;
     }
-  BlueHeapFree (dirname) ;
+  ofc_free (dirname) ;
   return (ret) ;
 }
 
@@ -1170,7 +1170,7 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
     {
       filename = MakeFilename (device, FS_TEST_RENAME) ;
       fulltofilename = MakeFilename (device, FS_TEST_RENAMETO) ;
-      tofilename = BlueCtastrdup (FS_TEST_RENAMETO_ROOT) ;
+      tofilename = ofc_tastrdup (FS_TEST_RENAMETO_ROOT) ;
       /*
        * First we need to create a file to rename
        * This also tests us creating and writing to a file without overlap
@@ -1186,8 +1186,8 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
         
       if (rename_file == OFC_INVALID_HANDLE_VALUE)
 	{
-	  BlueCprintf ("Failed to create rename file %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+	  ofc_printf ("Failed to create rename file %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -1195,25 +1195,25 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 	  /*
 	   * Let's write some stuff to the file
 	   */
-	  buffer = BlueHeapMalloc (BUFFER_SIZE) ;
+	  buffer = ofc_malloc (BUFFER_SIZE) ;
 	  len = BUFFER_SIZE ;
 
 	  while (len > 0)
 	    {
-	      len -= BlueCsnprintf (buffer + (BUFFER_SIZE-len), len,
-				    "This Text begins at offset %d\n", 
+	      len -= ofc_snprintf (buffer + (BUFFER_SIZE - len), len,
+                               "This Text begins at offset %d\n",
 				    BUFFER_SIZE - len) ;
 	    }
 
 	  status = OfcWriteFile (rename_file, buffer, BUFFER_SIZE, &dwBytesWritten,
                              OFC_HANDLE_NULL) ;
     
-	  BlueHeapFree (buffer) ;
+	  ofc_free (buffer) ;
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Write to Rename File Failed with Error %d\n",
-			   dwLastError) ;
+	      ofc_printf ("Write to Rename File Failed with Error %d\n",
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	  else
@@ -1224,8 +1224,8 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 	      if (status != OFC_TRUE)
 		{
 		  dwLastError = OfcGetLastError () ;
-		  BlueCprintf ("Close of Rename File Failed with Error %d\n",
-			       dwLastError) ;
+		  ofc_printf ("Close of Rename File Failed with Error %d\n",
+                      dwLastError) ;
 		  ret = OFC_FALSE ;
 		}
 	      else
@@ -1240,10 +1240,10 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
         
 		  if (rename_file == OFC_INVALID_HANDLE_VALUE)
 		    {
-		      BlueCprintf ("Failed to create rename file %S, "
+		      ofc_printf ("Failed to create rename file %S, "
 				   "Error Code %d\n",
-                           filename,
-                           OfcGetLastError ()) ;
+                          filename,
+                          OfcGetLastError ()) ;
 		      ret = OFC_FALSE ;
 		    }
 		  else
@@ -1253,30 +1253,30 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 		       */
 		      OfcDeleteFile (fulltofilename) ;
 
-		      newlen = BlueCtstrlen (tofilename) ;
+		      newlen = ofc_tstrlen (tofilename) ;
 		      rename_info_len = sizeof (OFC_FILE_RENAME_INFO) +
                                 (newlen * sizeof (BLUE_WCHAR)) ;
 
-		      rename_info = BlueHeapMalloc (rename_info_len) ;
+		      rename_info = ofc_malloc (rename_info_len) ;
 		  
 		      rename_info->ReplaceIfExists = OFC_FALSE ;
 		      rename_info->RootDirectory = OFC_HANDLE_NULL ;
 		      rename_info->FileNameLength =
                       (OFC_DWORD) newlen * sizeof (BLUE_WCHAR) ;
-		      BlueCtstrncpy (rename_info->FileName,
-				     tofilename, newlen) ;
+		      ofc_tstrncpy (rename_info->FileName,
+                            tofilename, newlen) ;
 		      status = 
 			OfcSetFileInformationByHandle(rename_file,
                                           OfcFileRenameInfo,
                                           rename_info,
                                           (OFC_DWORD) rename_info_len) ;
-		      BlueHeapFree (rename_info) ;
+		      ofc_free (rename_info) ;
 		      if (status != OFC_TRUE)
 			{
 			  dwLastError = OfcGetLastError () ;
-			  BlueCprintf ("Set File Info on rename File "
+			  ofc_printf ("Set File Info on rename File "
 				       "Failed with Error %d\n",
-				       dwLastError) ;
+                          dwLastError) ;
 			  ret = OFC_FALSE ;
 			}
 
@@ -1284,9 +1284,9 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 		      if (status != OFC_TRUE)
 			{
 			  dwLastError = OfcGetLastError () ;
-			  BlueCprintf ("Close of rename File after Rename"
+			  ofc_printf ("Close of rename File after Rename"
 				       "Failed with Error %d\n",
-				       dwLastError) ;
+                          dwLastError) ;
 			  ret = OFC_FALSE ;
 			}
 		      /*
@@ -1294,21 +1294,21 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 		       */
 		      status = OfcDeleteFile (fulltofilename) ;
 		      if (status == OFC_TRUE)
-			BlueCprintf ("Rename Test Succeeded\n") ;
+			ofc_printf ("Rename Test Succeeded\n") ;
 		      else
 			{
 			  dwLastError = OfcGetLastError () ;
-			  BlueCprintf ("Delete Rename File Failed with Error %d\n",
-				       dwLastError) ;
+			  ofc_printf ("Delete Rename File Failed with Error %d\n",
+                          dwLastError) ;
 			  ret = OFC_FALSE ;
 			}
 		    }
 		}
 	    }
 	}
-      BlueHeapFree (filename) ;
-      BlueHeapFree (tofilename) ;
-      BlueHeapFree (fulltofilename) ;
+      ofc_free (filename) ;
+      ofc_free (tofilename) ;
+      ofc_free (fulltofilename) ;
 
       dirHandle = OfcCreateFile (dirname,
                                  OFC_FILE_DELETE,
@@ -1321,10 +1321,10 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
         
       if (dirHandle == OFC_INVALID_HANDLE_VALUE)
 	{
-	  BlueCprintf ("Failed to create delete on close dir %A, "
+	  ofc_printf ("Failed to create delete on close dir %A, "
 		       "Error Code %d\n",
-                   dirname,
-                   OfcGetLastError ()) ;
+                  dirname,
+                  OfcGetLastError ()) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -1335,9 +1335,9 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Close of Delete on close dir "
+	      ofc_printf ("Close of Delete on close dir "
 			   "Failed with Error %d\n",
-			   dwLastError) ;
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	}
@@ -1345,11 +1345,11 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
   else
     {
       dwLastError = OfcGetLastError() ;
-      BlueCprintf ("Create of Directory Failed with Error %d\n",
-		   dwLastError) ;
+      ofc_printf ("Create of Directory Failed with Error %d\n",
+                  dwLastError) ;
       ret = OFC_FALSE ;
     }
-  BlueHeapFree (dirname) ;
+  ofc_free (dirname) ;
   return (ret) ;
 }
 
@@ -1385,8 +1385,8 @@ static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
         
   if (flush_file == OFC_INVALID_HANDLE_VALUE)
     {
-      BlueCprintf ("Failed to create flush file %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to create flush file %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
   else
@@ -1394,13 +1394,13 @@ static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
       /*
        * Let's write some stuff to the file
        */
-      buffer = BlueHeapMalloc (BUFFER_SIZE) ;
+      buffer = ofc_malloc (BUFFER_SIZE) ;
 
       status = OFC_TRUE ;
       for (i = 0 ; i < 10 && status == OFC_TRUE ; i++)
 	{
-	  len = BlueCsnprintf (buffer, BUFFER_SIZE,
-			       "This is the Text for line %d\n", i) ;
+	  len = ofc_snprintf (buffer, BUFFER_SIZE,
+                          "This is the Text for line %d\n", i) ;
 
 	  status = OfcWriteFile (flush_file, buffer, (OFC_DWORD) len, &dwBytesWritten,
                              OFC_HANDLE_NULL) ;
@@ -1408,8 +1408,8 @@ static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Write to Flush File Failed with Error %d\n",
-			   dwLastError) ;
+	      ofc_printf ("Write to Flush File Failed with Error %d\n",
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	  else
@@ -1421,23 +1421,23 @@ static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
 	      if (status != OFC_TRUE)
 		{
 		  dwLastError = OfcGetLastError() ;
-		  BlueCprintf ("Flush to Flush File Failed with Error %d\n",
-			       dwLastError) ;
+		  ofc_printf ("Flush to Flush File Failed with Error %d\n",
+                      dwLastError) ;
 		  ret = OFC_FALSE ;
 		}
 	    }
 
 	}
 
-      BlueHeapFree (buffer) ;
+      ofc_free (buffer) ;
       /* Close file
        */
       status = OfcCloseHandle (flush_file) ;
       if (status != OFC_TRUE)
 	{
 	  dwLastError = OfcGetLastError () ;
-	  BlueCprintf ("Close of Flush File Failed with Error %d\n",
-		       dwLastError) ;
+	  ofc_printf ("Close of Flush File Failed with Error %d\n",
+                  dwLastError) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -1447,17 +1447,17 @@ static OFC_BOOL OfcFlushTest (OFC_CTCHAR *device)
 	   */
 	  status = OfcDeleteFile (filename) ;
 	  if (status == OFC_TRUE)
-	    BlueCprintf ("Flush Test Succeeded\n") ;
+	    ofc_printf ("Flush Test Succeeded\n") ;
 	  else
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Delete of Flush File Failed with Error %d\n",
-			   dwLastError) ;
+	      ofc_printf ("Delete of Flush File Failed with Error %d\n",
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	}
     }
-  BlueHeapFree (filename) ;
+  ofc_free (filename) ;
   return (ret) ;
 }
 
@@ -1475,15 +1475,15 @@ static OFC_BOOL OfcCreateDirectoryTest (OFC_CTCHAR *device)
   filename = MakeFilename (device, FS_TEST_DIRECTORY) ;
   status = OfcCreateDirectory (filename, OFC_NULL) ;
   if (status == OFC_TRUE)
-    BlueCprintf ("Create Directory Test Succeeded\n") ;
+    ofc_printf ("Create Directory Test Succeeded\n") ;
   else
     {
       dwLastError = OfcGetLastError() ;
-      BlueCprintf ("Create of Directory Failed with Error %d\n",
-		   dwLastError) ;
+      ofc_printf ("Create of Directory Failed with Error %d\n",
+                  dwLastError) ;
       ret = OFC_FALSE ;
     }
-  BlueHeapFree (filename) ;
+  ofc_free (filename) ;
   return (ret) ;
 }
 
@@ -1512,10 +1512,10 @@ static OFC_BOOL OfcDeleteDirectoryTest (OFC_CTCHAR *device)
         
   if (dirhandle == OFC_INVALID_HANDLE_VALUE)
     {
-      BlueCprintf ("Failed to create delete on close dir %A, "
+      ofc_printf ("Failed to create delete on close dir %A, "
 		   "Error Code %d\n",
-                   filename,
-                   OfcGetLastError ()) ;
+                  filename,
+                  OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
   else
@@ -1526,15 +1526,15 @@ static OFC_BOOL OfcDeleteDirectoryTest (OFC_CTCHAR *device)
       if (status != OFC_TRUE)
 	{
 	  dwLastError = OfcGetLastError () ;
-	  BlueCprintf ("Close of Delete on close dir "
+	  ofc_printf ("Close of Delete on close dir "
 		       "Failed with Error %d\n",
-		       dwLastError) ;
+                  dwLastError) ;
 	  ret = OFC_FALSE ;
 	}
       else
-	BlueCprintf ("Delete Directory Test Succeeded\n") ;
+	ofc_printf ("Delete Directory Test Succeeded\n") ;
     }
-  BlueHeapFree (filename) ;
+  ofc_free (filename) ;
   return (ret) ;
 }
 
@@ -1567,8 +1567,8 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
         
   if (seteof_file == OFC_INVALID_HANDLE_VALUE)
     {
-      BlueCprintf ("Failed to create seteof file %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to create seteof file %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
   else
@@ -1576,25 +1576,25 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
       /*
        * Let's write some stuff to the file
        */
-      buffer = BlueHeapMalloc (BUFFER_SIZE) ;
+      buffer = ofc_malloc (BUFFER_SIZE) ;
       len = BUFFER_SIZE ;
 
       while (len > 0)
  	{
-	  len -= BlueCsnprintf (buffer + (BUFFER_SIZE-len), len,
-				"This Text begins at offset %d\n", 
+	  len -= ofc_snprintf (buffer + (BUFFER_SIZE - len), len,
+                           "This Text begins at offset %d\n",
 				BUFFER_SIZE - len) ;
 	}
 
       status = OfcWriteFile (seteof_file, buffer, BUFFER_SIZE, &dwBytesWritten,
                              OFC_HANDLE_NULL) ;
     
-      BlueHeapFree (buffer) ;
+      ofc_free (buffer) ;
       if (status != OFC_TRUE)
 	{
 	  dwLastError = OfcGetLastError () ;
-	  BlueCprintf ("Write to SetEOF File Failed with Error %d\n",
-		       dwLastError) ;
+	  ofc_printf ("Write to SetEOF File Failed with Error %d\n",
+                  dwLastError) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -1605,8 +1605,8 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Close of SetEOF File Failed with Error %d\n",
-			   dwLastError) ;
+	      ofc_printf ("Close of SetEOF File Failed with Error %d\n",
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	  else
@@ -1625,9 +1625,9 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
         
 	      if (seteof_file == OFC_INVALID_HANDLE_VALUE)
 		{
-		  BlueCprintf ("Failed to open seteof file %A, "
+		  ofc_printf ("Failed to open seteof file %A, "
 			       "Error Code %d\n",
-                       filename, OfcGetLastError ()) ;
+                      filename, OfcGetLastError ()) ;
 		  ret = OFC_FALSE ;
 		}
 	      else
@@ -1643,8 +1643,8 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 		  if (pos == OFC_INVALID_SET_FILE_POINTER &&
 		      dwLastError != OFC_ERROR_SUCCESS)
 		    {
-		      BlueCprintf ("SetFilePosition Failed with Error %d\n",
-				   dwLastError) ;
+		      ofc_printf ("SetFilePosition Failed with Error %d\n",
+                          dwLastError) ;
 		      ret = OFC_FALSE ;
 		    }
 		  else
@@ -1656,8 +1656,8 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 		      if (status != OFC_TRUE)
 			{
 			  dwLastError = OfcGetLastError () ;
-			  BlueCprintf ("Set End Of File Failed with %d\n",
-				       dwLastError) ;
+			  ofc_printf ("Set End Of File Failed with %d\n",
+                          dwLastError) ;
 			  ret = OFC_FALSE ;
 			}
 #if 0
@@ -1674,7 +1674,7 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 			  if (status != OFC_TRUE)
 			    {
 			      dwLastError = OfcGetLastError () ;
-			      BlueCprintf ("Cannot get end of file position %d\n",
+			      ofc_printf ("Cannot get end of file position %d\n",
 					   dwLastError) ;
 			      ret = OFC_FALSE ;
 			    }
@@ -1682,7 +1682,7 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 			    {
 			      if (standard_info.EndOfFile != BUFFER_SIZE / 2)
 				{
-				  BlueCprintf 
+				  ofc_printf 
 				    ("End Of File Doesn't Match.  Expected %d, Got %d\n",
 				     BUFFER_SIZE / 2,
 				     (BLUE_INT) standard_info.EndOfFile) ;
@@ -1696,9 +1696,9 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 		  if (status != OFC_TRUE)
 		    {
 		      dwLastError = OfcGetLastError () ;
-		      BlueCprintf ("Close of SetEOF File "
+		      ofc_printf ("Close of SetEOF File "
 				   "after pos Failed with Error %d\n",
-				   dwLastError) ;
+                          dwLastError) ;
 		      ret = OFC_FALSE ;
 		    }
 		}
@@ -1707,18 +1707,18 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 	       */
 	      status = OfcDeleteFile (filename) ;
 	      if (status == OFC_TRUE)
-		BlueCprintf ("SetEOF Test Succeeded\n") ;
+		ofc_printf ("SetEOF Test Succeeded\n") ;
 	      else
 		{
 		  dwLastError = OfcGetLastError () ;
-		  BlueCprintf ("SetEOF Delete File Failed with Error %d\n",
-			       dwLastError) ;
+		  ofc_printf ("SetEOF Delete File Failed with Error %d\n",
+                      dwLastError) ;
 		  ret = OFC_FALSE ;
 		}
 	    }
 	}
     }
-  BlueHeapFree (filename) ;
+  ofc_free (filename) ;
   return (ret) ;
 }
 
@@ -1762,9 +1762,9 @@ static OFC_VOID OfcFSPrintFindData (OFC_WIN32_FIND_DATA *find_data)
   OFC_UINT16 min ;
   OFC_UINT16 sec ;
 
-  BlueCprintf ("File: %A\n", find_data->cFileName) ;
-  BlueCprintf ("Alternate Name: %.14A\n", find_data->cAlternateFileName) ;
-  BlueCprintf ("Attributes: 0x%08x\n", find_data->dwFileAttributes) ;
+  ofc_printf ("File: %A\n", find_data->cFileName) ;
+  ofc_printf ("Alternate Name: %.14A\n", find_data->cAlternateFileName) ;
+  ofc_printf ("Attributes: 0x%08x\n", find_data->dwFileAttributes) ;
 
   mask = 0x0001 ;
   str[0] = '\0' ;
@@ -1778,41 +1778,41 @@ static OFC_VOID OfcFSPrintFindData (OFC_WIN32_FIND_DATA *find_data)
 	    first = OFC_FALSE ;
 	  else
 	    {
-	      BlueCstrcpy (p, ", ") ;
+	      ofc_strcpy (p, ", ") ;
 	      p += 2 ;
 	    }
-	  BlueCstrcpy (p, Attr2Str[i]) ;
-	  p += BlueCstrlen (Attr2Str[i]) ;
+	  ofc_strcpy (p, Attr2Str[i]) ;
+	  p += ofc_strlen (Attr2Str[i]) ;
 	}
     }
   *p = '\0' ;
   
-  BlueCprintf ("    %s\n", str) ;
+  ofc_printf ("    %s\n", str) ;
 
   BlueFileTimeToDosDateTime (&find_data->ftCreateTime,
 			     &fat_date, &fat_time) ;
 
   BlueTimeDosDateTimeToElements (fat_date, fat_time,
 				 &month, &day, &year, &hour, &min, &sec) ;
-  BlueCprintf ("Create Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
-	       month, day, year, hour, min, sec) ;
+  ofc_printf ("Create Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
+              month, day, year, hour, min, sec) ;
   BlueFileTimeToDosDateTime (&find_data->ftLastAccessTime,
 			     &fat_date, &fat_time) ;
 
   BlueTimeDosDateTimeToElements (fat_date, fat_time,
 				 &month, &day, &year, &hour, &min, &sec) ;
-  BlueCprintf ("Last Access Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
-	       month, day, year, hour, min, sec) ;
+  ofc_printf ("Last Access Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
+              month, day, year, hour, min, sec) ;
   BlueFileTimeToDosDateTime (&find_data->ftLastWriteTime,
 			     &fat_date, &fat_time) ;
   BlueTimeDosDateTimeToElements (fat_date, fat_time,
 				 &month, &day, &year, &hour, &min, &sec) ;
-  BlueCprintf ("Last Write Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
-	       month, day, year, hour, min, sec) ;
+  ofc_printf ("Last Write Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
+              month, day, year, hour, min, sec) ;
 
-  BlueCprintf ("File Size High: 0x%08x, Low: 0x%08x\n",
-	       find_data->nFileSizeHigh, find_data->nFileSizeLow) ;
-  BlueCprintf ("\n") ;
+  ofc_printf ("File Size High: 0x%08x, Low: 0x%08x\n",
+              find_data->nFileSizeHigh, find_data->nFileSizeLow) ;
+  ofc_printf ("\n") ;
 }
 
 static OFC_VOID
@@ -1832,7 +1832,7 @@ OfcFSPrintFileAttributeData (OFC_WIN32_FILE_ATTRIBUTE_DATA *file_data)
   OFC_UINT16 min ;
   OFC_UINT16 sec ;
 
-  BlueCprintf ("    Attributes: 0x%08x\n", file_data->dwFileAttributes) ;
+  ofc_printf ("    Attributes: 0x%08x\n", file_data->dwFileAttributes) ;
 
   mask = 0x0001 ;
   str[0] = '\0' ;
@@ -1846,40 +1846,40 @@ OfcFSPrintFileAttributeData (OFC_WIN32_FILE_ATTRIBUTE_DATA *file_data)
 	    first = OFC_FALSE ;
 	  else
 	    {
-	      BlueCstrcpy (p, ", ") ;
+	      ofc_strcpy (p, ", ") ;
 	      p += 2 ;
 	    }
-	  BlueCstrcpy (p, Attr2Str[i]) ;
-	  p += BlueCstrlen (Attr2Str[i]) ;
+	  ofc_strcpy (p, Attr2Str[i]) ;
+	  p += ofc_strlen (Attr2Str[i]) ;
 	}
     }
   *p = '\0' ;
   
-  BlueCprintf ("    %s\n", str) ;
+  ofc_printf ("    %s\n", str) ;
 
   BlueFileTimeToDosDateTime (&file_data->ftCreateTime,
 			     &fat_date, &fat_time) ;
 
   BlueTimeDosDateTimeToElements (fat_date, fat_time,
 				 &month, &day, &year, &hour, &min, &sec) ;
-  BlueCprintf ("Create Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
-	       month, day, year, hour, min, sec) ;
+  ofc_printf ("Create Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
+              month, day, year, hour, min, sec) ;
   BlueFileTimeToDosDateTime (&file_data->ftLastAccessTime,
 			     &fat_date, &fat_time) ;
 
   BlueTimeDosDateTimeToElements (fat_date, fat_time,
 				 &month, &day, &year, &hour, &min, &sec) ;
-  BlueCprintf ("Last Access Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
-	       month, day, year, hour, min, sec) ;
+  ofc_printf ("Last Access Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
+              month, day, year, hour, min, sec) ;
   BlueFileTimeToDosDateTime (&file_data->ftLastWriteTime,
 			     &fat_date, &fat_time) ;
   BlueTimeDosDateTimeToElements (fat_date, fat_time,
 				 &month, &day, &year, &hour, &min, &sec) ;
-  BlueCprintf ("Last Write Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
-	       month, day, year, hour, min, sec) ;
+  ofc_printf ("Last Write Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
+              month, day, year, hour, min, sec) ;
 
-  BlueCprintf ("File Size High: 0x%08x, Low: 0x%08x\n",
-	       file_data->nFileSizeHigh, file_data->nFileSizeLow) ;
+  ofc_printf ("File Size High: 0x%08x, Low: 0x%08x\n",
+              file_data->nFileSizeHigh, file_data->nFileSizeLow) ;
 }
 
 static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
@@ -1920,8 +1920,8 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
       else
 	{
 	  last_error = OfcGetLastError () ;
-	  BlueCprintf ("Failed to list dir %A, Error Code %d\n",
-		       filename, last_error) ;
+	  ofc_printf ("Failed to list dir %A, Error Code %d\n",
+                  filename, last_error) ;
 	  /*
 	   * LOGON_FAILURE can be returned if authentication failed
 	   * ACCESS_DENIED if authentication succeeded but no access to share
@@ -1931,28 +1931,28 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
 	      last_error == OFC_ERROR_ACCESS_DENIED ||
 	      last_error == OFC_ERROR_INVALID_PASSWORD)
 	    {
-	      BlueCprintf ("Please Authenticate\n") ;
-	      BlueCprintf ("Username: ") ;
+	      ofc_printf ("Please Authenticate\n") ;
+	      ofc_printf ("Username: ") ;
 	      ofc_read_line (username, 80) ;
-	      if (BlueCstrlen (username) == 0)
+	      if (ofc_strlen (username) == 0)
 		retry = OFC_FALSE ;
 	      else
 		{
-		  tusername = BlueCcstr2tastr (username) ;
-		  BlueCprintf ("Domain: ") ;
+		  tusername = ofc_cstr2tastr (username) ;
+		  ofc_printf ("Domain: ") ;
 		  ofc_read_line (domain, 80) ;
-		  tdomain = BlueCcstr2tastr (domain) ;
-		  BlueCprintf ("Password: ") ;
+		  tdomain = ofc_cstr2tastr (domain) ;
+		  ofc_printf ("Password: ") ;
 		  ofc_read_password (password, 80) ;
-		  tpassword = BlueCcstr2tastr (password) ;
+		  tpassword = ofc_cstr2tastr (password) ;
 		  /*
 		   * Now remap the device
 		   */
-		  BluePathUpdateCredentials (filename, tusername,
-					     tpassword, tdomain) ;
-		  BlueHeapFree (tusername) ;
-		  BlueHeapFree (tpassword) ;
-		  BlueHeapFree (tdomain) ;
+		  ofc_path_update_credentials (filename, tusername,
+                                       tpassword, tdomain) ;
+		  ofc_free (tusername) ;
+		  ofc_free (tpassword) ;
+		  ofc_free (tdomain) ;
 		}
 	    }
 	  else
@@ -1961,7 +1961,7 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
 	      ret = OFC_FALSE ;
 	    }
 	}
-      BlueHeapFree (filename) ;
+      ofc_free (filename) ;
     }
 
   if (list_handle != OFC_INVALID_HANDLE_VALUE)
@@ -1985,15 +1985,15 @@ static OFC_BOOL OfcListDirTest (OFC_CTCHAR *device)
 	      last_error = OfcGetLastError () ;
 	      if (last_error != OFC_ERROR_NO_MORE_FILES)
 		{
-		  BlueCprintf ("Failed to Find Next, Error Code %d\n",
-			       last_error) ;
+		  ofc_printf ("Failed to Find Next, Error Code %d\n",
+                      last_error) ;
 		  ret = OFC_FALSE ;
 		}
 	    }
 	}
       OfcFindClose (list_handle) ;
     }
-  BlueCprintf ("Total Number of Files in Directory %d\n", count) ;
+  ofc_printf ("Total Number of Files in Directory %d\n", count) ;
   return (ret) ;
 }
 
@@ -2024,8 +2024,8 @@ static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
         
   if (getex_file == OFC_INVALID_HANDLE_VALUE)
     {
-      BlueCprintf ("Failed to create getex file %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to create getex file %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
   else
@@ -2033,25 +2033,25 @@ static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
       /*
        * Let's write some stuff to the file
        */
-      buffer = BlueHeapMalloc (BUFFER_SIZE) ;
+      buffer = ofc_malloc (BUFFER_SIZE) ;
       len = BUFFER_SIZE ;
 
       while (len > 0)
  	{
-	  len -= BlueCsnprintf (buffer + (BUFFER_SIZE-len), len,
-				"This Text begins at offset %d\n", 
+	  len -= ofc_snprintf (buffer + (BUFFER_SIZE - len), len,
+                           "This Text begins at offset %d\n",
 				BUFFER_SIZE - len) ;
 	}
 
       status = OfcWriteFile (getex_file, buffer, BUFFER_SIZE, &dwBytesWritten,
                              OFC_HANDLE_NULL) ;
     
-      BlueHeapFree (buffer) ;
+      ofc_free (buffer) ;
       if (status != OFC_TRUE)
 	{
 	  dwLastError = OfcGetLastError () ;
-	  BlueCprintf ("Write to GetEX File Failed with Error %d\n",
-		       dwLastError) ;
+	  ofc_printf ("Write to GetEX File Failed with Error %d\n",
+                  dwLastError) ;
 	  ret = OFC_FALSE ;
 	}
       else
@@ -2062,8 +2062,8 @@ static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
 	  if (status != OFC_TRUE)
 	    {
 	      dwLastError = OfcGetLastError () ;
-	      BlueCprintf ("Close of GetEX File Failed with Error %d\n",
-			   dwLastError) ;
+	      ofc_printf ("Close of GetEX File Failed with Error %d\n",
+                      dwLastError) ;
 	      ret = OFC_FALSE ;
 	    }
 	  else
@@ -2074,13 +2074,13 @@ static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
 	      if (status != OFC_TRUE)
 		{
 		  dwLastError = OfcGetLastError () ;
-		  BlueCprintf ("GetEx Get File Info Failed with Error %d\n",
-			       dwLastError) ;
+		  ofc_printf ("GetEx Get File Info Failed with Error %d\n",
+                      dwLastError) ;
 		  ret = OFC_FALSE ;
 		}
 	      else
 		{
-		  BlueCprintf ("Get File Info for %A\n", filename) ;
+		  ofc_printf ("Get File Info for %A\n", filename) ;
 		  OfcFSPrintFileAttributeData (&fInfo) ;
 		}
 	      /*
@@ -2090,14 +2090,14 @@ static OFC_BOOL OfcGetFileAttributesTest (OFC_CTCHAR *device)
 	      if (status != OFC_TRUE)
 		{
 		  dwLastError = OfcGetLastError () ;
-		  BlueCprintf ("GetEx Delete File Failed with Error %d\n",
-			       dwLastError) ;
+		  ofc_printf ("GetEx Delete File Failed with Error %d\n",
+                      dwLastError) ;
 		  ret = OFC_FALSE ;
 		}
 	    }
 	}
     }
-  BlueHeapFree (filename) ;
+  ofc_free (filename) ;
   return (ret) ;
 }
 
@@ -2119,8 +2119,8 @@ static OFC_BOOL OfcGetDiskFreeSpaceTest (OFC_CTCHAR *device)
                                 &TotalNumberOfClusters) ;
   if (result == OFC_FALSE)
     {
-      BlueCprintf ("Failed to get disk free space on %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to get disk free space on %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
       /*
        * Disk Free Space and Volume Information only works on Shares.
        * (ie. there is no file name).  No, reverse connections are tricky.
@@ -2135,19 +2135,19 @@ static OFC_BOOL OfcGetDiskFreeSpaceTest (OFC_CTCHAR *device)
        * pretty useless since we could not proxy multiple servers through the
        * same proxy.  I think this is the only limitation.  
        */
-      BlueCprintf ("Not supported on reverse connections, "
+      ofc_printf ("Not supported on reverse connections, "
 		   "see code comment\n") ;
       ret = OFC_TRUE ;
     }
   else
     {
-      BlueCprintf ("Free Space On %A\n", filename) ; 
-      BlueCprintf ("  Sectors Per Cluster: %d\n", SectorsPerCluster) ;
-      BlueCprintf ("  Bytes Per Sector: %d\n", BytesPerSector) ;
-      BlueCprintf ("  Number of Free Clusters: %d\n", NumberOfFreeClusters) ;
-      BlueCprintf ("  Total Number of Clusters: %d\n", TotalNumberOfClusters) ;
+      ofc_printf ("Free Space On %A\n", filename) ;
+      ofc_printf ("  Sectors Per Cluster: %d\n", SectorsPerCluster) ;
+      ofc_printf ("  Bytes Per Sector: %d\n", BytesPerSector) ;
+      ofc_printf ("  Number of Free Clusters: %d\n", NumberOfFreeClusters) ;
+      ofc_printf ("  Total Number of Clusters: %d\n", TotalNumberOfClusters) ;
     }
-  BlueHeapFree (filename) ;
+  ofc_free (filename) ;
   return (ret) ;
 }
 
@@ -2165,7 +2165,7 @@ static OFC_BOOL OfcGetVolumeInformationTest (OFC_CTCHAR *device)
 
   ret = OFC_TRUE ;
   filename = MakeFilename (device, TSTR(":")) ;
-  BluePathGetRoot (filename, &root, OFC_NULL) ;
+  ofc_path_get_root (filename, &root, OFC_NULL) ;
 
   result = OfcGetVolumeInformation (root,
                                     VolumeNameBuffer,
@@ -2177,8 +2177,8 @@ static OFC_BOOL OfcGetVolumeInformationTest (OFC_CTCHAR *device)
                                      OFC_MAX_PATH + 1) ;
   if (result == OFC_FALSE)
     {
-      BlueCprintf ("Failed to get volume info on %A, Error Code %d\n",
-                   filename, OfcGetLastError ()) ;
+      ofc_printf ("Failed to get volume info on %A, Error Code %d\n",
+                  filename, OfcGetLastError ()) ;
       /*
        * Disk Free Space and Volume Information only works on Shares.
        * (ie. there is no file name).  No, reverse connections are tricky.
@@ -2193,21 +2193,21 @@ static OFC_BOOL OfcGetVolumeInformationTest (OFC_CTCHAR *device)
        * pretty useless since we could not proxy multiple servers through the
        * same proxy.  I think this is the only limitation.  
        */
-      BlueCprintf ("Not supported on reverse connections, "
+      ofc_printf ("Not supported on reverse connections, "
 		   "see code comment\n") ;
       ret = OFC_TRUE ;
     }
   else
     {
-      BlueCprintf ("Volume Info for %A\n", filename) ;
-      BlueCprintf ("  Volume Name: %A\n", VolumeNameBuffer) ;
-      BlueCprintf ("  Volume Serial Number: 0x%08x\n", VolumeSerialNumber) ;
-      BlueCprintf ("  Max Component Length: %d\n", MaximumComponentLength) ;
-      BlueCprintf ("  File System Flags: 0x%08x\n", FileSystemFlags) ;
-      BlueCprintf ("  File System Name: %A\n", FileSystemName) ;
+      ofc_printf ("Volume Info for %A\n", filename) ;
+      ofc_printf ("  Volume Name: %A\n", VolumeNameBuffer) ;
+      ofc_printf ("  Volume Serial Number: 0x%08x\n", VolumeSerialNumber) ;
+      ofc_printf ("  Max Component Length: %d\n", MaximumComponentLength) ;
+      ofc_printf ("  File System Flags: 0x%08x\n", FileSystemFlags) ;
+      ofc_printf ("  File System Name: %A\n", FileSystemName) ;
     }
-  BlueHeapFree (filename) ;
-  BlueHeapFree (root) ;
+  ofc_free (filename) ;
+  ofc_free (root) ;
   return (ret) ;
 }
 
@@ -2301,24 +2301,24 @@ static OFC_BOOL OfcBadFileNamesTest (OFC_CTCHAR *device)
 
   for (i = 0 ; test_paths[i].description != OFC_NULL ; i++)
     {
-      BlueCprintf ("\n") ;
-      BlueCprintf ("Test %d, %s\n", i, test_paths[i].description) ;
+      ofc_printf ("\n") ;
+      ofc_printf ("Test %d, %s\n", i, test_paths[i].description) ;
       /*
        * method A, Opening Directory 
        */
       filelen = OFC_MAX_PATH ;
       tmpfilename = &uncfilename[0];
-      BluePathMakeURLA(&tmpfilename, &filelen,
-                       test_paths[i].username,
-                       test_paths[i].password,
-                       test_paths[i].domain,
-                       test_paths[i].smbserver,
-                       test_paths[i].sharefolder,
-                       test_paths[i].subdirectory,
-                       OFC_NULL) ;
+      ofc_path_make_urlA(&tmpfilename, &filelen,
+                         test_paths[i].username,
+                         test_paths[i].password,
+                         test_paths[i].domain,
+                         test_paths[i].smbserver,
+                         test_paths[i].sharefolder,
+                         test_paths[i].subdirectory,
+                         OFC_NULL) ;
 
-      BlueCprintf ("Writeable Directory Mode\n") ;
-      BlueCprintf ("Testing Write Access to %s\n", uncfilename) ;
+      ofc_printf ("Writeable Directory Mode\n") ;
+      ofc_printf ("Testing Write Access to %s\n", uncfilename) ;
 
       hFile = OfcCreateFileA (uncfilename,
                               OFC_GENERIC_WRITE,
@@ -2346,26 +2346,26 @@ static OFC_BOOL OfcBadFileNamesTest (OFC_CTCHAR *device)
 	  ret = OFC_FALSE ;
 	}
 	  
-      BlueCprintf ("%s: last error %d, expected error %d or %d\n",
+      ofc_printf ("%s: last error %d, expected error %d or %d\n",
                    test_status == OFC_TRUE ? "SUCCESS" : "FAILURE",
-		   lasterror, test_paths[i].expected_error1,
-		   test_paths[i].expected_error2) ;
+                  lasterror, test_paths[i].expected_error1,
+                  test_paths[i].expected_error2) ;
       OfcDismountA (uncfilename);
       /*
        * method B, Temporary File
        */
       filelen = OFC_MAX_PATH ;
       tmpfilename = &uncfilename[0];
-      BluePathMakeURLA(&tmpfilename, &filelen, 
-		       test_paths[i].username, 
-		       test_paths[i].password, 
-		       test_paths[i].domain,
-		       test_paths[i].smbserver,
-		       test_paths[i].sharefolder,
-		       test_paths[i].subdirectory,
-		       "uniquefile") ;
-      BlueCprintf ("Writeable Temporary File Mode\n") ;
-      BlueCprintf ("Testing Write Access to %s\n", uncfilename) ;
+      ofc_path_make_urlA(&tmpfilename, &filelen,
+                         test_paths[i].username,
+                         test_paths[i].password,
+                         test_paths[i].domain,
+                         test_paths[i].smbserver,
+                         test_paths[i].sharefolder,
+                         test_paths[i].subdirectory,
+                         "uniquefile") ;
+      ofc_printf ("Writeable Temporary File Mode\n") ;
+      ofc_printf ("Testing Write Access to %s\n", uncfilename) ;
 
       hFile = OfcCreateFileA (uncfilename,
                                OFC_GENERIC_READ | OFC_GENERIC_WRITE |
@@ -2394,10 +2394,10 @@ static OFC_BOOL OfcBadFileNamesTest (OFC_CTCHAR *device)
 	  ret = OFC_FALSE ;
 	}
 	  
-      BlueCprintf ("%s: last error %d, expected error %d or %d\n",
+      ofc_printf ("%s: last error %d, expected error %d or %d\n",
                    test_status == OFC_TRUE ? "SUCCESS" : "FAILURE",
-		   lasterror, test_paths[i].expected_error1,
-		   test_paths[i].expected_error2) ;
+                  lasterror, test_paths[i].expected_error1,
+                  test_paths[i].expected_error2) ;
       OfcDismountA (uncfilename);
     }
   return (ret) ;
@@ -2421,14 +2421,14 @@ OFC_INT test_file (OFC_LPCSTR test_root)
    * Map the test device to the test path.  Determine what
    * File System Handler we should test.
    */
-  BlueCprintf ("Starting File Test with %s\n", test_root);
+  ofc_printf ("Starting File Test with %s\n", test_root);
 
   BlueSleep (3000) ;
   BlueThreadCreateLocalStorage() ;
 
   count = 0;
 
-  device = BlueCcstr2tstr(test_root);
+  device = ofc_cstr2tstr(test_root);
 
   while (count != OFC_FILE_TEST_COUNT)
     {
@@ -2437,16 +2437,16 @@ OFC_INT test_file (OFC_LPCSTR test_root)
       /*
        * First, create a random file
        */
-      BlueCprintf ("  Create File Test\n") ;
+      ofc_printf ("  Create File Test\n") ;
       if (OfcCreateFileTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Create File Test Failed *** \n") ;
+	  ofc_printf ("  *** Create File Test Failed *** \n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Dismount Test\n") ;
+      ofc_printf ("  Dismount Test\n") ;
       if (OfcDismountTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Dismount Test Failed ***\n") ;
+	  ofc_printf ("  *** Dismount Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
       /* This may or may not fail.  It is posible for the previous test
@@ -2456,27 +2456,27 @@ OFC_INT test_file (OFC_LPCSTR test_root)
        * fail.
        * Either case is good 
        */
-      BlueCprintf ("  Dismount Test with No connection\n") ;
+      ofc_printf ("  Dismount Test with No connection\n") ;
       OfcDismountTest (device) ;
       /*
        * Then see if we can copy files
        */
-      BlueCprintf ("  Copy File Test\n") ;
+      ofc_printf ("  Copy File Test\n") ;
       if (OfcCopyFileTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Copy File Test Failed *** \n") ;
+	  ofc_printf ("  *** Copy File Test Failed *** \n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  List Directory Test\n") ;
+      ofc_printf ("  List Directory Test\n") ;
       if (OfcListDirTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** List Directory Test Failed *** \n") ;
+	  ofc_printf ("  *** List Directory Test Failed *** \n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Delete File Test\n") ;
+      ofc_printf ("  Delete File Test\n") ;
       if (OfcDeleteTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Delete File Test Failed ***\n") ;
+	  ofc_printf ("  *** Delete File Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
       /* This one only works in SMBv2, we can update SMBv1 to support
@@ -2485,74 +2485,74 @@ OFC_INT test_file (OFC_LPCSTR test_root)
        * move API instead.  So, don't enable this approach yet.
        */
 #if 0
-      BlueCprintf ("  Rename File Test\n") ;
+      ofc_printf ("  Rename File Test\n") ;
       if (OfcRenameTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Rename File Test Failed ***\n") ;
-	  BlueCprintf ("  Failures expected on SMBv1 Systems\n") ;
+	  ofc_printf ("  *** Rename File Test Failed ***\n") ;
+	  ofc_printf ("  Failures expected on SMBv1 Systems\n") ;
 	  test_result = OFC_FALSE ;
 	}
 #endif
-      BlueCprintf ("  Move File Test\n") ;
+      ofc_printf ("  Move File Test\n") ;
       if (OfcMoveTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Move File Test Failed ***\n") ;
+	  ofc_printf ("  *** Move File Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Flush File Test\n") ;
+      ofc_printf ("  Flush File Test\n") ;
       if (OfcFlushTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Flush File Test Failed ***\n") ;
+	  ofc_printf ("  *** Flush File Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Create Directory Test\n") ;
+      ofc_printf ("  Create Directory Test\n") ;
       if (OfcCreateDirectoryTest(device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Create Directory Test Failed ***\n") ;
+	  ofc_printf ("  *** Create Directory Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Delete Directory Test\n") ;
+      ofc_printf ("  Delete Directory Test\n") ;
       if (OfcDeleteDirectoryTest(device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Delete Directory Test Failed ***\n") ;
+	  ofc_printf ("  *** Delete Directory Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Set File Pointer and Set EOF Test\n") ;
+      ofc_printf ("  Set File Pointer and Set EOF Test\n") ;
       if (OfcSetEOFTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Set EOF Test Failed ***\n") ;
+	  ofc_printf ("  *** Set EOF Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Get File Attributes Test\n") ;
+      ofc_printf ("  Get File Attributes Test\n") ;
       if (OfcGetFileAttributesTest(device) == OFC_FALSE)
 	{
-	  BlueCprintf (" *** Get File Attributes Test Failed ***\n") ;
+	  ofc_printf (" *** Get File Attributes Test Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Get Disk Free Space Test\n") ;
+      ofc_printf ("  Get Disk Free Space Test\n") ;
       if (OfcGetDiskFreeSpaceTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Get Disk Free Space Failed ***\n") ;
+	  ofc_printf ("  *** Get Disk Free Space Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
-      BlueCprintf ("  Get Volume Information Test\n") ;
+      ofc_printf ("  Get Volume Information Test\n") ;
       if (OfcGetVolumeInformationTest (device) == OFC_FALSE)
 	{
-	  BlueCprintf ("  *** Get Volume Information Failed ***\n") ;
+	  ofc_printf ("  *** Get Volume Information Failed ***\n") ;
 	  test_result = OFC_FALSE ;
 	}
 
       if (test_result == OFC_FALSE)
-	BlueCprintf ("*** File Test Failed ***\n") ;
+	ofc_printf ("*** File Test Failed ***\n") ;
       else
-	BlueCprintf ("File Test Succeeded\n") ;
+	ofc_printf ("File Test Succeeded\n") ;
       count++ ;
 
       if (count != OFC_FILE_TEST_COUNT)
 	BlueSleep (OFC_FS_TEST_INTERVAL) ;
     }
 
-  BlueHeapFree (device);
+  ofc_free (device);
   return (0) ;
 }
 

@@ -11,35 +11,35 @@
 #include "ofc/impl/lockimpl.h"
 
 OFC_CORE_LIB OFC_VOID
-BlueLockDestroy (BLUE_LOCK lock) 
+ofc_lock_destroy (OFC_LOCK lock)
 {
   BlueLockDestroyImpl (lock) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueLockTry (BLUE_LOCK lock) 
+ofc_lock_try (OFC_LOCK lock)
 {
   return (BlueLockTryImpl (lock)) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueLock (BLUE_LOCK pLock) 
+ofc_lock (OFC_LOCK pLock)
 {
   if (pLock != OFC_NULL)
     BlueLockImpl (pLock) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueUnlock (BLUE_LOCK pLock) 
+ofc_unlock (OFC_LOCK pLock)
 {
   if (pLock != OFC_NULL)
     BlueUnlockImpl (pLock) ;
 }
 
-OFC_CORE_LIB BLUE_LOCK
-BlueLockInit (OFC_VOID)
+OFC_CORE_LIB OFC_LOCK
+ofc_lock_init (OFC_VOID)
 {
-  BLUE_LOCK plock;
+  OFC_LOCK plock;
   plock = BlueLockInitImpl () ;
   return (plock);
 }

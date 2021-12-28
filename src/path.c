@@ -33,59 +33,59 @@ typedef struct
 				   First is the share */
   OFC_BOOL absolute ;		/**< If the path is absolute */
   OFC_BOOL remote ;		/**< If the path is remote */
-} _BLUE_PATH ;
+} _OFC_PATH ;
 
 typedef struct 
 {
   OFC_LPTSTR lpDevice ;
   OFC_LPTSTR lpDesc ;
-  _BLUE_PATH *map ;
+  _OFC_PATH *map ;
   OFC_BOOL thumbnail ;
 } PATH_MAP_ENTRY ;
 
-static PATH_MAP_ENTRY BluePathMaps[OFC_MAX_MAPS] ;
-static BLUE_LOCK lockPath ;
+static PATH_MAP_ENTRY OfcPathMaps[OFC_MAX_MAPS] ;
+static OFC_LOCK lockPath ;
 
-OFC_BOOL BluePathIsWild (OFC_LPCTSTR dir)
+OFC_BOOL ofc_path_is_wild (OFC_LPCTSTR dir)
 {
   OFC_LPCTSTR p ;
   OFC_BOOL wild ;
 
   wild = OFC_FALSE ;
-  p = BlueCtstrtok (dir, TSTR("*?")) ;
+  p = ofc_tstrtok (dir, TSTR("*?")) ;
   if (p != OFC_NULL && *p != TCHAR_EOS)
     wild = OFC_TRUE ;
   return (wild) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathUpdate (BLUE_PATH *_path, BLUE_PATH *_map) 
+ofc_path_update (OFC_PATH *_path, OFC_PATH *_map)
 {
   OFC_UINT i ;
 
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
-  _BLUE_PATH *map = (_BLUE_PATH *) _map ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
+  _OFC_PATH *map = (_OFC_PATH *) _map ;
 
   path->type = map->type ;
-  BlueHeapFree (path->device) ;
-  path->device = BlueCtstrdup (map->device) ;
+  ofc_free (path->device) ;
+  path->device = ofc_tstrdup (map->device) ;
 
   if (map->username != OFC_NULL)
     {
-      BlueHeapFree (path->username) ;
-      path->username = BlueCtstrdup (map->username) ;
+      ofc_free (path->username) ;
+      path->username = ofc_tstrdup (map->username) ;
     }
 
   if (map->password != OFC_NULL)
     {
-      BlueHeapFree (path->password) ;
-      path->password = BlueCtstrdup (map->password) ;
+      ofc_free (path->password) ;
+      path->password = ofc_tstrdup (map->password) ;
     }
 
   if (map->domain != OFC_NULL)
     {
-      BlueHeapFree (path->domain) ;
-      path->domain = BlueCtstrdup (map->domain) ;
+      ofc_free (path->domain) ;
+      path->domain = ofc_tstrdup (map->domain) ;
     }
 
   /*
@@ -93,7 +93,7 @@ BluePathUpdate (BLUE_PATH *_path, BLUE_PATH *_map)
    */
   if (path->remote && path->num_dirs > 0)
     {
-      BlueHeapFree (path->dir[0]) ;
+      ofc_free (path->dir[0]) ;
       for (i = 1 ; i < path->num_dirs ; i++)
 	{
 	  path->dir[i-1] = path->dir[i] ;
@@ -106,7 +106,7 @@ BluePathUpdate (BLUE_PATH *_path, BLUE_PATH *_map)
   if (path->remote)
     path->port = map->port ;
 
-  path->dir = BlueHeapRealloc (path->dir, 
+  path->dir = ofc_realloc (path->dir,
 			       (map->num_dirs + path->num_dirs) * 
 			       sizeof (OFC_TCHAR *)) ;
   /*
@@ -120,7 +120,7 @@ BluePathUpdate (BLUE_PATH *_path, BLUE_PATH *_map)
       
   for (i = 0 ; i < map->num_dirs ; i++)
     {
-      path->dir[i] = BlueCtstrdup (map->dir[i]) ;
+      path->dir[i] = ofc_tstrdup (map->dir[i]) ;
     }
   path->num_dirs += map->num_dirs ;
   /*
@@ -129,14 +129,14 @@ BluePathUpdate (BLUE_PATH *_path, BLUE_PATH *_map)
    * and the second directory is not wild, then we want to squelch the
    * workgroup
    */
-  if (path->num_dirs > 1 && !BluePathIsWild(path->dir[1]) &&
-      LookupWorkgroup (path->dir[0]))
+  if (path->num_dirs > 1 && !ofc_path_is_wild(path->dir[1]) &&
+      lookup_workgroup (path->dir[0]))
     {
-      BlueHeapFree (path->dir[0]) ;
+      ofc_free (path->dir[0]) ;
       for (i = 1 ; i < path->num_dirs ; i++)
 	path->dir[i-1] = path->dir[i] ;
       path->num_dirs-- ;
-      path->dir = BlueHeapRealloc (path->dir, 
+      path->dir = ofc_realloc (path->dir,
 				   path->num_dirs * sizeof (OFC_TCHAR *)) ;
     }
 }
@@ -188,7 +188,7 @@ static OFC_BOOL terminator (OFC_CTCHAR c, OFC_CTCHAR *terms)
     hit = OFC_TRUE ;
   else
     {
-      for (i = 0, hit = OFC_FALSE ; i < BlueCtstrlen(terms) && !hit ; i++)
+      for (i = 0, hit = OFC_FALSE ; i < ofc_tstrlen(terms) && !hit ; i++)
 	{
 	  if (c == terms[i])
 	    hit = OFC_TRUE ;
@@ -253,7 +253,7 @@ static OFC_TCHAR *ParseEscaped (OFC_CTCHAR *cursor, OFC_CTCHAR **outcursor,
 
       if (len > 0)
 	{
-	  outstr = BlueHeapMalloc (sizeof (OFC_TCHAR) * (len + 1)) ;
+	  outstr = ofc_malloc (sizeof (OFC_TCHAR) * (len + 1)) ;
 	  p = outstr ;
 
 	  for (peek = cursor, hit = OFC_FALSE ; !hit ;)
@@ -288,12 +288,12 @@ static OFC_TCHAR *ParseEscaped (OFC_CTCHAR *cursor, OFC_CTCHAR **outcursor,
   return (ret) ;
 }
 
-OFC_CORE_LIB BLUE_PATH *
-BluePathInitPath (OFC_VOID)
+OFC_CORE_LIB OFC_PATH *
+ofc_path_init_path (OFC_VOID)
 {
-  _BLUE_PATH *path ;
+  _OFC_PATH *path ;
 
-  path = BlueHeapMalloc (sizeof (_BLUE_PATH)) ;
+  path = ofc_malloc (sizeof (_OFC_PATH)) ;
   path->type = OFC_FST_FILE ;
   path->device = OFC_NULL ;
   path->username = OFC_NULL ;
@@ -308,37 +308,37 @@ BluePathInitPath (OFC_VOID)
   return (path) ;
 }
 
-static OFC_VOID BluePathUpdateType (BLUE_PATH *path)
+static OFC_VOID ofc_path_update_type(OFC_PATH *path)
 {
-#if defined(OFC_FS_CIFS)
-  if ((BluePathType(path) == BLUE_FS_UNKNOWN ||
-       BluePathType(path) == BLUE_FS_FILE) && BluePathRemote(path))
-    BluePathSetType (path, BLUE_FS_CIFS) ;
+#if defined(OFC_FS_SMB)
+  if ((ofc_path_type(path) == OFC_FST_UNKNOWN ||
+       ofc_path_type(path) == OFC_FST_FILE) && ofc_path_remote(path))
+    ofc_path_set_type (path, OFC_FST_SMB) ;
 #endif
 
-  if (BluePathType(path) == OFC_FST_UNKNOWN ||
-      BluePathType(path) == OFC_FST_FILE)
+  if (ofc_path_type(path) == OFC_FST_UNKNOWN ||
+      ofc_path_type(path) == OFC_FST_FILE)
     {
 #if defined(OFC_FS_WIN32)
-      BluePathSetType (path, BLUE_FS_WIN32) ;
+      ofc_path_set_type(path, OFC_FST_WIN32);
 #elif defined(OFC_FS_WINCE)
-      BluePathSetType (path, BLUE_FS_WINCE) ;
+      ofc_path_set_type(path, OFC_FST_WINCE);
 #elif defined(OFC_FS_DARWIN)
-      BluePathSetType (path, OFC_FST_DARWIN) ;
+      ofc_path_set_type (path, OFC_FST_DARWIN) ;
 #elif defined(OFC_FS_LINUX)
-      BluePathSetType (path, BLUE_FS_LINUX) ;
+      ofc_path_set_type(path, OFC_FST_LINUX);
 #elif defined(OFC_FS_ANDROID)
-      BluePathSetType (path, BLUE_FS_ANDROID) ;
+      ofc_path_set_type(path, OFC_FST_ANDROID);
 #elif defined(OFC_FS_FILEX)
-      BluePathSetType (path, BLUE_FS_FILEX) ;
+      ofc_path_set_type(path, OFC_FST_FILEX);
 #endif
     }
 }
 
-OFC_CORE_LIB BLUE_PATH *
-BluePathCreateW (OFC_LPCTSTR lpFileName)
+OFC_CORE_LIB OFC_PATH *
+ofc_path_createW (OFC_LPCTSTR lpFileName)
 {
-  _BLUE_PATH *path ;
+  _OFC_PATH *path ;
   OFC_LPCTSTR cursor ;
   OFC_LPCTSTR p ;
   OFC_TCHAR *portw ;
@@ -347,7 +347,7 @@ BluePathCreateW (OFC_LPCTSTR lpFileName)
   OFC_TCHAR *credentials ;
   OFC_BOOL wild ;
 
-  path = BluePathInitPath () ;
+  path = ofc_path_init_path () ;
   cursor = lpFileName ;
   /*
    * path_parse - Parse a path into it's requisite parts.
@@ -364,14 +364,14 @@ BluePathCreateW (OFC_LPCTSTR lpFileName)
    * See if it's a network path that begins with a network terminator 
    * (\\ or //)
    */
-  p = BlueCtstrtok (cursor, TSTR("\\/:")) ;
+  p = ofc_tstrtok (cursor, TSTR("\\/:")) ;
   if (*p == TCHAR_COLON)
     {
       path->device = ParseEscaped (cursor, &cursor, TSTR(":")) ;
       cursor++ ;
-      if ((BlueCtstrcmp (path->device, TSTR("cifs")) == 0) ||
-	  (BlueCtstrcmp (path->device, TSTR("smb")) == 0) ||
-	  (BlueCtstrcmp (path->device, TSTR("proxy")) == 0))
+      if ((ofc_tstrcmp (path->device, TSTR("cifs")) == 0) ||
+          (ofc_tstrcmp (path->device, TSTR("smb")) == 0) ||
+          (ofc_tstrcmp (path->device, TSTR("proxy")) == 0))
 	path->remote = OFC_TRUE ;
       /*
        * We expect a device, colon and two separators for a uri
@@ -412,7 +412,7 @@ BluePathCreateW (OFC_LPCTSTR lpFileName)
        * Find out if there's a credential.  There will be an unescapedd "@"
        */
       credentials = ParseEscaped (cursor, &p, TSTR("@")) ;
-      BlueHeapFree (credentials) ;
+      ofc_free (credentials) ;
 
       if (*p == TCHAR_AMP)
 	{
@@ -447,24 +447,24 @@ BluePathCreateW (OFC_LPCTSTR lpFileName)
 
       if (dir != OFC_NULL)
 	{
-	  wild = BluePathIsWild (dir) ;
+	  wild = ofc_path_is_wild (dir) ;
 
-	  if (BlueCtstrcmp (dir, TSTR("..")) == 0)
+	  if (ofc_tstrcmp (dir, TSTR("..")) == 0)
 	    {
 	      if (path->num_dirs > 0)
 		{
 		  path->num_dirs-- ;
-		  BlueHeapFree (path->dir[path->num_dirs]) ;
-		  path->dir = BlueHeapRealloc (path->dir,
+		  ofc_free (path->dir[path->num_dirs]) ;
+		  path->dir = ofc_realloc (path->dir,
                                        sizeof (OFC_LPCTSTR *) *
                                        (path->num_dirs)) ;
 		}
-	      BlueHeapFree (dir) ;
+	      ofc_free (dir) ;
 	    }
-	  else if (BlueCtstrcmp (dir, TSTR(".")) == 0)
+	  else if (ofc_tstrcmp (dir, TSTR(".")) == 0)
 	    {
 	      /* Skip it */
-	      BlueHeapFree (dir) ;
+	      ofc_free (dir) ;
 	    }
 	  /*
 	   * if we're remote and if dir index is 1 we're looking at a share or
@@ -473,18 +473,18 @@ BluePathCreateW (OFC_LPCTSTR lpFileName)
 	   * workgroup. 
 	   */
 	  else if (path->remote && path->num_dirs == 1 && !wild &&
-		   LookupWorkgroup (path->dir[0]))
+               lookup_workgroup (path->dir[0]))
 	    {
 	      /* 
 	       * Strip the workgroup. 
 	       * Free the old one, and replace it with this one.
 	       */
-	      BlueHeapFree (path->dir[0]) ;
+	      ofc_free (path->dir[0]) ;
 	      path->dir[0] = dir ;
 	    }
 	  else
 	    {
-	      path->dir = BlueHeapRealloc (path->dir,
+	      path->dir = ofc_realloc (path->dir,
                                        sizeof (OFC_LPCTSTR *) *
                                        (path->num_dirs + 1)) ;
 	      path->dir[path->num_dirs] = dir ;
@@ -495,53 +495,53 @@ BluePathCreateW (OFC_LPCTSTR lpFileName)
 	    {
 	      cursor++ ;
 	      portw = ParseEscaped (cursor, &cursor, TSTR("\\/")) ;
-	      porta = BlueCtstr2cstr (portw) ;
-	      path->port = (OFC_INT) BlueCstrtoul (porta, OFC_NULL, 10) ;
-	      BlueHeapFree (portw) ;
-	      BlueHeapFree (porta) ;
+	      porta = ofc_tstr2cstr (portw) ;
+	      path->port = (OFC_INT) ofc_strtoul (porta, OFC_NULL, 10) ;
+	      ofc_free (portw) ;
+	      ofc_free (porta) ;
 	    }
 	}
       if (*cursor != TCHAR_EOS)
 	cursor++ ;
     }
        
-  BluePathUpdateType ((BLUE_PATH *) path) ;
+  ofc_path_update_type((OFC_PATH *) path) ;
 
-  return ((BLUE_PATH *) path) ;
+  return ((OFC_PATH *) path) ;
 }
 
-OFC_CORE_LIB BLUE_PATH *
-BluePathCreateA (OFC_LPCSTR lpFileName)
+OFC_CORE_LIB OFC_PATH *
+ofc_path_createA (OFC_LPCSTR lpFileName)
 {
-  _BLUE_PATH *ret ;
+  _OFC_PATH *ret ;
   OFC_TCHAR *lptFileName ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
-  ret = BluePathCreateW (lptFileName) ;
-  BlueHeapFree (lptFileName) ;
-  return ((BLUE_PATH *) ret) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
+  ret = ofc_path_createW (lptFileName) ;
+  ofc_free (lptFileName) ;
+  return ((OFC_PATH *) ret) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathDelete (BLUE_PATH *_path)
+ofc_path_delete (OFC_PATH *_path)
 {
   OFC_UINT i ;
-  _BLUE_PATH *path = (_BLUE_PATH *) _path;
+  _OFC_PATH *path = (_OFC_PATH *) _path;
 
-  BlueHeapFree (path->device) ;
-  BlueHeapFree (path->username) ;
-  BlueHeapFree (path->password) ;
-  BlueHeapFree (path->domain) ;
+  ofc_free (path->device) ;
+  ofc_free (path->username) ;
+  ofc_free (path->password) ;
+  ofc_free (path->domain) ;
   for (i = 0 ; i < path->num_dirs ; i++)
     {
-      BlueHeapFree (path->dir[i]) ;
+      ofc_free (path->dir[i]) ;
     }
-  BlueHeapFree (path->dir) ;
-  BlueHeapFree (path) ;
+  ofc_free (path->dir) ;
+  ofc_free (path) ;
 }
 
 static OFC_SIZET
-BluePathOutChar (OFC_TCHAR c, OFC_LPTSTR *dest, OFC_SIZET *rem)
+ofc_path_out_char(OFC_TCHAR c, OFC_LPTSTR *dest, OFC_SIZET *rem)
 {
   if (*rem > 0)
     {
@@ -553,7 +553,7 @@ BluePathOutChar (OFC_TCHAR c, OFC_LPTSTR *dest, OFC_SIZET *rem)
 
 
 static OFC_SIZET
-BluePathOutEscaped (OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
+ofc_path_out_escaped(OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
 {
   OFC_LPCTSTR p ;
   OFC_SIZET len ;
@@ -565,21 +565,21 @@ BluePathOutEscaped (OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
 	{
 	  OFC_TCHAR c ;
 	  
-	  len += BluePathOutChar (TCHAR('%'), filename, rem) ;
+	  len += ofc_path_out_char (TCHAR('%'), filename, rem) ;
 	  c = *p >> 4 ;
-	  len += BluePathOutChar (HEX2T(c), filename, rem) ;
+	  len += ofc_path_out_char (HEX2T(c), filename, rem) ;
 	  c = *p & 0x0F ;
-	  len += BluePathOutChar (HEX2T(c), filename, rem) ;
+	  len += ofc_path_out_char (HEX2T(c), filename, rem) ;
 	}
       else
-	len += BluePathOutChar (*p, filename, rem) ;
+	len += ofc_path_out_char (*p, filename, rem) ;
     }
     
   return (len) ;
 }
 
 static OFC_SIZET
-BluePathOutEscapedLC (OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
+ofc_path_out_escaped_lc(OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
 {
   OFC_LPCTSTR p ;
   OFC_SIZET len ;
@@ -591,21 +591,21 @@ BluePathOutEscapedLC (OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
 	{
 	  OFC_TCHAR c ;
 	  
-	  len += BluePathOutChar (TCHAR('%'), filename, rem) ;
+	  len += ofc_path_out_char (TCHAR('%'), filename, rem) ;
 	  c = *p >> 4 ;
-	  len += BluePathOutChar (HEX2T(c), filename, rem) ;
+	  len += ofc_path_out_char (HEX2T(c), filename, rem) ;
 	  c = *p & 0x0F ;
-	  len += BluePathOutChar (HEX2T(c), filename, rem) ;
+	  len += ofc_path_out_char (HEX2T(c), filename, rem) ;
 	}
       else
-	len += BluePathOutChar (BLUE_C_TOLOWER(*p), filename, rem) ;
+	len += ofc_path_out_char (OFC_TOLOWER(*p), filename, rem) ;
     }
     
   return (len) ;
 }
 
 static OFC_SIZET
-BluePathOutStr (OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
+ofc_path_out_str (OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
 {
   OFC_LPCTSTR p ;
   OFC_SIZET len ;
@@ -613,16 +613,16 @@ BluePathOutStr (OFC_LPCTSTR str, OFC_LPTSTR *filename, OFC_SIZET *rem)
   len = 0 ;
   for (p = str ; *p != TCHAR_EOS ; p++)
     {
-      len += BluePathOutChar (*p, filename, rem) ;
+      len += ofc_path_out_char (*p, filename, rem) ;
     }
     
   return (len) ;
 }
 
 OFC_CORE_LIB OFC_SIZET
-BluePathPrintW (BLUE_PATH *_path, OFC_LPTSTR *filename, OFC_SIZET *rem)
+ofc_path_printW (OFC_PATH *_path, OFC_LPTSTR *filename, OFC_SIZET *rem)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_TCHAR delimeter ;
   OFC_SIZET len ;
   OFC_UINT i ;
@@ -664,61 +664,61 @@ BluePathPrintW (BLUE_PATH *_path, OFC_LPTSTR *filename, OFC_SIZET *rem)
 
   if (path->device != OFC_NULL)
     {
-      len += BluePathOutEscapedLC (path->device, filename, rem) ;
-      len += BluePathOutChar (TCHAR_COLON, filename, rem) ;
+      len += ofc_path_out_escaped_lc (path->device, filename, rem) ;
+      len += ofc_path_out_char (TCHAR_COLON, filename, rem) ;
       if (path->absolute)
 	{
-	  len += BluePathOutChar (delimeter, filename, rem) ;
-	  len += BluePathOutChar (delimeter, filename, rem) ;
+	  len += ofc_path_out_char (delimeter, filename, rem) ;
+	  len += ofc_path_out_char (delimeter, filename, rem) ;
 	}
     }
   else if (path->remote)
     {
-      len += BluePathOutChar (delimeter, filename, rem) ;
-      len += BluePathOutChar (delimeter, filename, rem) ;
+      len += ofc_path_out_char (delimeter, filename, rem) ;
+      len += ofc_path_out_char (delimeter, filename, rem) ;
     }
   else if (path->absolute)
     {
       if (path->num_dirs > 0)
-	len += BluePathOutChar (delimeter, filename, rem) ;
+	len += ofc_path_out_char (delimeter, filename, rem) ;
     }      
 
   if (path->remote)
     {
       if (path->username != OFC_NULL)
 	{
-	  len += BluePathOutEscaped (path->username, filename, rem) ;
+	  len += ofc_path_out_escaped (path->username, filename, rem) ;
 
 	  if (path->password != OFC_NULL || path->domain != OFC_NULL)
 	    {
-	      len += BluePathOutChar (TCHAR_COLON, filename, rem) ;
+	      len += ofc_path_out_char (TCHAR_COLON, filename, rem) ;
 
 	      if (path->password != OFC_NULL &&
 		  path->password[0] != TCHAR_EOS)
 		{
-		  len += BluePathOutEscaped (path->password, filename, rem) ;
+		  len += ofc_path_out_escaped (path->password, filename, rem) ;
 		  
 		  if (path->domain != OFC_NULL)
 		    {
-		      len += BluePathOutChar (TCHAR_COLON, filename, rem) ;
+		      len += ofc_path_out_char (TCHAR_COLON, filename, rem) ;
 		    }
 		}
 
 	      if (path->domain != OFC_NULL)
 		{
-		  len += BluePathOutEscaped (path->domain, filename, rem) ;
+		  len += ofc_path_out_escaped (path->domain, filename, rem) ;
 		}
 	    }
-	  len += BluePathOutChar (TCHAR_AMP, filename, rem) ;
+	  len += ofc_path_out_char (TCHAR_AMP, filename, rem) ;
 	}
     }
 
   for (i = 0 ; i < path->num_dirs ; i++)
     {
       if (path->dir[i] != OFC_NULL &&
-	  BlueCtstrcmp(path->dir[i], TSTR("")) != 0)
+          ofc_tstrcmp(path->dir[i], TSTR("")) != 0)
 	{
-	  len += BluePathOutStr (path->dir[i], filename, rem) ;
+	  len += ofc_path_out_str (path->dir[i], filename, rem) ;
 
 	  if (path->remote && (i == 0) && (path->port != 0))
 	    {
@@ -727,29 +727,29 @@ BluePathPrintW (BLUE_PATH *_path, OFC_LPTSTR *filename, OFC_SIZET *rem)
 	      OFC_TCHAR *portw ;
 
 	      count = 0 ;
-	      count = BlueCsnprintf (OFC_NULL, count, "%d", path->port) ;
-	      porta = BlueHeapMalloc ((count+1)*sizeof(OFC_CHAR)) ;
-	      BlueCsnprintf (porta, count+1, "%d", path->port) ;
-	      portw = BlueCcstr2tstr (porta) ;
-	      len += BluePathOutChar (TCHAR(':'), filename, rem) ;
-	      len += BluePathOutStr (portw, filename, rem) ;
-	      BlueHeapFree (porta) ;
-	      BlueHeapFree (portw) ;
+	      count = ofc_snprintf (OFC_NULL, count, "%d", path->port) ;
+	      porta = ofc_malloc ((count + 1) * sizeof(OFC_CHAR)) ;
+	      ofc_snprintf (porta, count + 1, "%d", path->port) ;
+	      portw = ofc_cstr2tstr (porta) ;
+	      len += ofc_path_out_char (TCHAR(':'), filename, rem) ;
+	      len += ofc_path_out_str (portw, filename, rem) ;
+	      ofc_free (porta) ;
+	      ofc_free (portw) ;
 	    }
 
 	  if ((i + 1) < path->num_dirs)
-	    len += BluePathOutChar (delimeter, filename, rem) ;
+	    len += ofc_path_out_char (delimeter, filename, rem) ;
 	}
     }
 
-  BluePathOutChar (TCHAR_EOS, filename, rem) ;
+  ofc_path_out_char (TCHAR_EOS, filename, rem) ;
   return (len) ;
 }
 
 OFC_CORE_LIB OFC_SIZET
-BluePathPrintA (BLUE_PATH *_path, OFC_LPSTR *filename, OFC_SIZET *rem)
+ofc_path_printA (OFC_PATH *_path, OFC_LPSTR *filename, OFC_SIZET *rem)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_SIZET ret ;
   OFC_SIZET orig_rem ;
   OFC_TCHAR *tfilename ;
@@ -758,35 +758,35 @@ BluePathPrintA (BLUE_PATH *_path, OFC_LPSTR *filename, OFC_SIZET *rem)
   OFC_INT i ;
 
   orig_rem = *rem ;
-  tfilename = BlueHeapMalloc (*rem * sizeof (OFC_TCHAR)) ;
+  tfilename = ofc_malloc (*rem * sizeof (OFC_TCHAR)) ;
   ptfilename = tfilename ;
-  ret = BluePathPrintW (path, &ptfilename, rem) ;
+  ret = ofc_path_printW (path, &ptfilename, rem) ;
   if (filename != OFC_NULL)
     {
       pfilename = *filename ;
-      for (i = 0 ; i < BLUE_C_MIN (orig_rem, ret + 1) ; i++)
+      for (i = 0 ; i < OFC_MIN (orig_rem, ret + 1) ; i++)
 	*pfilename++ = (OFC_CHAR) tfilename[i] ;
     }
-  BlueHeapFree (tfilename) ;
+  ofc_free (tfilename) ;
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_FST_TYPE BluePathType (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_FST_TYPE ofc_path_type (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   return (path->type) ;
 }
 
 /*
- * Inner workings of BluePathMapW.  Returns the resulting path
+ * Inner workings of ofc_path_mapW.  Returns the resulting path
  * A map is a device (gen:/temp) or a server name (//gen/temp)
  */
-OFC_CORE_LIB BLUE_PATH *BlueMapPath (OFC_LPCTSTR lpFileName,
+OFC_CORE_LIB OFC_PATH *ofc_map_path (OFC_LPCTSTR lpFileName,
                                      OFC_LPTSTR *lppMappedName)
 {
-  BLUE_PATH *path ;
-  BLUE_PATH *map ;
+  OFC_PATH *path ;
+  OFC_PATH *map ;
   OFC_SIZET len ;
   OFC_LPTSTR cursor ;
 #if defined(AUTHENTICATE)
@@ -795,17 +795,17 @@ OFC_CORE_LIB BLUE_PATH *BlueMapPath (OFC_LPCTSTR lpFileName,
   OFC_LPCTSTR previous_server ;
 #endif
   
-  path = BluePathCreateW (lpFileName) ;
+  path = ofc_path_createW (lpFileName) ;
 
 #if defined(AUTHENTICATE)
   previous_server = OFC_NULL ;
   do
     {
       updated = OFC_FALSE ;
-      server = BluePathDevice(path) ;
+      server = ofc_path_device(path) ;
 
       if (server == OFC_NULL)
-	server = BluePathServer(path) ;
+	server = ofc_path_server(path) ;
 
       if (server != OFC_NULL)
 	{
@@ -820,14 +820,14 @@ OFC_CORE_LIB BLUE_PATH *BlueMapPath (OFC_LPCTSTR lpFileName,
 	   * can still happen
 	   */
 	  if (previous_server == OFC_NULL ||
-	      BlueCtstrcmp (server, previous_server) != 0)
+          ofc_tstrcmp (server, previous_server) != 0)
 	    {
 	      previous_server = server ;
-	      map = BluePathMapDeviceW (server) ;
+	      map = ofc_path_map_deviceW (server) ;
 
 	      if (map != OFC_NULL)
 		{
-		  BluePathUpdate (path, map) ;
+		  ofc_path_update (path, map) ;
 		  updated = OFC_TRUE ;
 		}
 	    }
@@ -835,25 +835,25 @@ OFC_CORE_LIB BLUE_PATH *BlueMapPath (OFC_LPCTSTR lpFileName,
     }
   while (updated) ;
 #else
-  for (map = BluePathMapDeviceW (BluePathDevice(path)) ;
-       map != BLUE_NULL ;
-       map = BluePathMapDeviceW (BluePathDevice(map)))
+  for (map = ofc_path_map_deviceW (ofc_path_device(path)) ;
+       map != OFC_NULL ;
+       map = ofc_path_map_deviceW (ofc_path_device(map)))
     {
-      BluePathUpdate (path, map) ;
+      ofc_path_update (path, map) ;
     } ;
 #endif
 
-  BluePathUpdateType (path) ;
+  ofc_path_update_type (path) ;
 
   if (lppMappedName != OFC_NULL)
     {
       len = 0 ;
-      len = BluePathPrintW (path, OFC_NULL, &len) + 1 ;
+      len = ofc_path_printW (path, OFC_NULL, &len) + 1 ;
 
-      *lppMappedName = BlueHeapMalloc (len * sizeof(OFC_TCHAR)) ;
+      *lppMappedName = ofc_malloc (len * sizeof(OFC_TCHAR)) ;
 
       cursor = *lppMappedName ;
-      BluePathPrintW (path, &cursor, &len) ;
+      ofc_path_printW (path, &cursor, &len) ;
     }
 
   return (path) ;
@@ -863,62 +863,62 @@ OFC_CORE_LIB BLUE_PATH *BlueMapPath (OFC_LPCTSTR lpFileName,
  * A map is a device (i.e. gen:/temp) or a server name: (i.e. //gen/temp
  */
 OFC_CORE_LIB OFC_VOID
-BluePathMapW (OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
-              OFC_FST_TYPE *filesystem)
+ofc_path_mapW (OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
+               OFC_FST_TYPE *filesystem)
 {
-  BLUE_PATH *path ;
+  OFC_PATH *path ;
   
-  path = BlueMapPath (lpFileName, lppMappedName) ;
+  path = ofc_map_path (lpFileName, lppMappedName) ;
 
   if (filesystem != OFC_NULL)
-    *filesystem = BluePathType(path) ;
-  BluePathDelete (path) ;
+    *filesystem = ofc_path_type(path) ;
+  ofc_path_delete (path) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathMapA (OFC_LPCSTR lpFileName, OFC_LPSTR *lppMappedName,
-              OFC_FST_TYPE *filesystem)
+ofc_path_mapA (OFC_LPCSTR lpFileName, OFC_LPSTR *lppMappedName,
+               OFC_FST_TYPE *filesystem)
 {
   OFC_TCHAR *lptFileName ;
   OFC_TCHAR *lptMappedName ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
   lptMappedName = OFC_NULL ;
-  BluePathMapW (lptFileName, &lptMappedName, filesystem) ;
+  ofc_path_mapW (lptFileName, &lptMappedName, filesystem) ;
   if (lppMappedName != OFC_NULL)
-    *lppMappedName = BlueCtstr2cstr (lptMappedName) ;
-  BlueHeapFree (lptFileName) ;
-  BlueHeapFree (lptMappedName) ;
+    *lppMappedName = ofc_tstr2cstr (lptMappedName) ;
+  ofc_free (lptFileName) ;
+  ofc_free (lptMappedName) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathInit (OFC_VOID)
+ofc_path_init (OFC_VOID)
 {
   OFC_INT i ;
 
-  lockPath = BlueLockInit () ;
+  lockPath = ofc_lock_init () ;
 
   for (i = 0 ; i < OFC_MAX_MAPS ; i++)
     {
-      BluePathMaps[i].lpDevice = OFC_NULL ;
-      BluePathMaps[i].lpDesc = OFC_NULL ;
-      BluePathMaps[i].map = OFC_NULL ;
-      BluePathMaps[i].thumbnail = OFC_FALSE ;
+      OfcPathMaps[i].lpDevice = OFC_NULL ;
+      OfcPathMaps[i].lpDesc = OFC_NULL ;
+      OfcPathMaps[i].map = OFC_NULL ;
+      OfcPathMaps[i].thumbnail = OFC_FALSE ;
     }
 }      
 
 OFC_CORE_LIB OFC_VOID
-BluePathDestroy (OFC_VOID)
+ofc_path_destroy (OFC_VOID)
 {
   OFC_INT i ;
 
   for (i = 0 ; i < OFC_MAX_MAPS ; i++)
     {
-      if (BluePathMaps[i].lpDevice != OFC_NULL)
-	BluePathDeleteMapW (BluePathMaps[i].lpDevice);
+      if (OfcPathMaps[i].lpDevice != OFC_NULL)
+	ofc_path_delete_mapW (OfcPathMaps[i].lpDevice);
     }
 
-  BlueLockDestroy (lockPath) ;
+  ofc_lock_destroy (lockPath) ;
 }      
 
 /**
@@ -931,10 +931,10 @@ BluePathDestroy (OFC_VOID)
  * path to use for translating virtual path
  */
 OFC_CORE_LIB OFC_BOOL
-BluePathAddMapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
-                 BLUE_PATH *_map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail)
+ofc_path_add_mapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
+                   OFC_PATH *_map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail)
 {
-  _BLUE_PATH *map = (_BLUE_PATH *) _map ;
+  _OFC_PATH *map = (_OFC_PATH *) _map ;
   OFC_INT i ;
   OFC_BOOL ret ;
   PATH_MAP_ENTRY *free ;
@@ -945,18 +945,18 @@ BluePathAddMapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
   ret = OFC_TRUE ;
   free = OFC_NULL ;
 
-  BlueLock (lockPath) ;
+  ofc_lock (lockPath) ;
 
   for (i = 0 ; i < OFC_MAX_MAPS && ret == OFC_TRUE ; i++)
     {
-      if (BluePathMaps[i].lpDevice == OFC_NULL)
+      if (OfcPathMaps[i].lpDevice == OFC_NULL)
         {
           if (free == OFC_NULL)
-            free = &BluePathMaps[i] ;
+            free = &OfcPathMaps[i] ;
         }
       else
         {
-          if (BlueCtstrcasecmp (BluePathMaps[i].lpDevice, lpDevice) == 0)
+          if (ofc_tstrcasecmp (OfcPathMaps[i].lpDevice, lpDevice) == 0)
             {
               ret = OFC_FALSE ;
             }
@@ -976,32 +976,32 @@ BluePathAddMapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
 	  else
 	    {
 	      map->type = fsType ;
-	      free->lpDevice = BlueCtstrdup (lpDevice) ;
+	      free->lpDevice = ofc_tstrdup (lpDevice) ;
 	      for (lc = free->lpDevice ; *lc != TCHAR_EOS ; lc++)
-		*lc = BLUE_C_TOLOWER(*lc) ;
-	      free->lpDesc = BlueCtstrdup (lpDesc) ;
+		*lc = OFC_TOLOWER(*lc) ;
+	      free->lpDesc = ofc_tstrdup (lpDesc) ;
 	      free->map = map ;
 	      free->thumbnail = thumbnail ;
 	    }
 	}
     }
-  BlueUnlock (lockPath) ;
+  ofc_unlock (lockPath) ;
   return (ret) ;
 }
   
 OFC_CORE_LIB OFC_BOOL
-BluePathAddMapA (OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
-                 BLUE_PATH *_map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail)
+ofc_path_add_mapA (OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
+                   OFC_PATH *_map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail)
 {
   OFC_BOOL ret ;
   OFC_TCHAR *lptDevice ;
   OFC_TCHAR *lptDesc ;
 
-  lptDevice = BlueCcstr2tstr (lpDevice) ;
-  lptDesc = BlueCcstr2tstr (lpDesc) ;
-  ret = BluePathAddMapW (lptDevice, lptDesc, _map, fsType, thumbnail) ;
-  BlueHeapFree (lptDevice) ;
-  BlueHeapFree (lptDesc) ;
+  lptDevice = ofc_cstr2tstr (lpDevice) ;
+  lptDesc = ofc_cstr2tstr (lpDesc) ;
+  ret = ofc_path_add_mapW (lptDevice, lptDesc, _map, fsType, thumbnail) ;
+  ofc_free (lptDevice) ;
+  ofc_free (lptDesc) ;
   return (ret) ;
 }
 
@@ -1012,7 +1012,7 @@ BluePathAddMapA (OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
  * Virtual path of map to delete
  */
 OFC_CORE_LIB OFC_VOID
-BluePathDeleteMapW (OFC_LPCTSTR lpDevice)
+ofc_path_delete_mapW (OFC_LPCTSTR lpDevice)
 {
   OFC_INT i ;
   PATH_MAP_ENTRY *pathEntry ;
@@ -1022,57 +1022,57 @@ BluePathDeleteMapW (OFC_LPCTSTR lpDevice)
    */
   pathEntry = OFC_NULL ;
 
-  BlueLock (lockPath) ;
+  ofc_lock (lockPath) ;
 
   for (i = 0 ; i < OFC_MAX_MAPS && pathEntry == OFC_NULL ; i++)
     {
-      if (BluePathMaps[i].lpDevice != OFC_NULL &&
-          BlueCtstrcasecmp (BluePathMaps[i].lpDevice, lpDevice) == 0)
-        pathEntry = &BluePathMaps[i] ;
+      if (OfcPathMaps[i].lpDevice != OFC_NULL &&
+          ofc_tstrcasecmp (OfcPathMaps[i].lpDevice, lpDevice) == 0)
+        pathEntry = &OfcPathMaps[i] ;
     }
 
   if (pathEntry != OFC_NULL)
     {
-      BlueHeapFree (pathEntry->lpDevice) ;
-      BlueHeapFree (pathEntry->lpDesc) ;
-      BluePathDelete (pathEntry->map) ;
+      ofc_free (pathEntry->lpDevice) ;
+      ofc_free (pathEntry->lpDesc) ;
+      ofc_path_delete (pathEntry->map) ;
       pathEntry->lpDevice = OFC_NULL ;
       pathEntry->map = OFC_NULL ;
     }
 
-  BlueUnlock (lockPath) ;
+  ofc_unlock (lockPath) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathDeleteMapA (OFC_LPCSTR lpDevice)
+ofc_path_delete_mapA (OFC_LPCSTR lpDevice)
 {
   OFC_TCHAR *lptDevice ;
 
-  lptDevice = BlueCcstr2tstr (lpDevice) ;
-  BluePathDeleteMapW (lptDevice) ;
-  BlueHeapFree (lptDevice) ;
+  lptDevice = ofc_cstr2tstr (lpDevice) ;
+  ofc_path_delete_mapW (lptDevice) ;
+  ofc_free (lptDevice) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathGetMapW (OFC_INT idx, OFC_LPCTSTR *lpDevice,
-                 OFC_LPCTSTR *lpDesc, BLUE_PATH **map,
-                 OFC_BOOL *thumbnail)
+ofc_path_get_mapW (OFC_INT idx, OFC_LPCTSTR *lpDevice,
+                   OFC_LPCTSTR *lpDesc, OFC_PATH **map,
+                   OFC_BOOL *thumbnail)
 {
-  BlueLock (lockPath) ;
+  ofc_lock (lockPath) ;
 
-  *lpDevice = BluePathMaps[idx].lpDevice ;
-  *lpDesc = BluePathMaps[idx].lpDesc ;
-  *map = BluePathMaps[idx].map ;
-  *thumbnail = BluePathMaps[idx].thumbnail ;
-  BlueUnlock (lockPath) ;
+  *lpDevice = OfcPathMaps[idx].lpDevice ;
+  *lpDesc = OfcPathMaps[idx].lpDesc ;
+  *map = OfcPathMaps[idx].map ;
+  *thumbnail = OfcPathMaps[idx].thumbnail ;
+  ofc_unlock (lockPath) ;
 }
   
-OFC_CORE_LIB BLUE_PATH *
-BluePathMapDeviceW (OFC_LPCTSTR lpDevice)
+OFC_CORE_LIB OFC_PATH *
+ofc_path_map_deviceW (OFC_LPCTSTR lpDevice)
 {
   OFC_INT i ;
   PATH_MAP_ENTRY *pathEntry ;
-  BLUE_PATH *map ;
+  OFC_PATH *map ;
   OFC_CTCHAR *p ;
   OFC_TCHAR *lc ;
   OFC_SIZET len ;
@@ -1090,56 +1090,56 @@ BluePathMapDeviceW (OFC_LPCTSTR lpDevice)
        * We prefer sending in a full path when determining if the path
        * is served by one of our maps
        */
-      p = BlueCtstrtok (lpDevice, TSTR(":")) ;
+      p = ofc_tstrtok (lpDevice, TSTR(":")) ;
       len = ((OFC_ULONG_PTR) p - (OFC_ULONG_PTR) lpDevice) /
             sizeof (OFC_TCHAR) ;
-      tstrDevice = BlueHeapMalloc ((len + 1) * sizeof (OFC_TCHAR)) ;
+      tstrDevice = ofc_malloc ((len + 1) * sizeof (OFC_TCHAR)) ;
 
-      BlueCtstrncpy (tstrDevice, lpDevice, len) ;
+      ofc_tstrncpy (tstrDevice, lpDevice, len) ;
       tstrDevice[len] = TCHAR_EOS ;
 	
       for (lc = tstrDevice ; *lc != TCHAR_EOS ; lc++)
-	*lc = BLUE_C_TOLOWER(*lc) ;
+	*lc = OFC_TOLOWER(*lc) ;
 
       pathEntry = OFC_NULL ;
 
       for (i = 0 ; i < OFC_MAX_MAPS && pathEntry == OFC_NULL ; i++)
 	{
-	  if (BluePathMaps[i].lpDevice != OFC_NULL &&
-	      BlueCtstrcasecmp (BluePathMaps[i].lpDevice, tstrDevice) == 0)
+	  if (OfcPathMaps[i].lpDevice != OFC_NULL &&
+          ofc_tstrcasecmp (OfcPathMaps[i].lpDevice, tstrDevice) == 0)
 	    {
-	      pathEntry = &BluePathMaps[i] ;
+	      pathEntry = &OfcPathMaps[i] ;
 	    }
 	}
 
-      BlueHeapFree (tstrDevice) ;
+      ofc_free (tstrDevice) ;
       if (pathEntry != OFC_NULL)
 	map = pathEntry->map ;	
     }
   return (map) ;
 }
 
-OFC_CORE_LIB BLUE_PATH *
-BluePathMapDeviceA (OFC_LPCSTR lpDevice)
+OFC_CORE_LIB OFC_PATH *
+ofc_path_map_deviceA (OFC_LPCSTR lpDevice)
 {
-  _BLUE_PATH *ret ;
+  _OFC_PATH *ret ;
   OFC_TCHAR *lptDevice ;
 
-  lptDevice = BlueCcstr2tstr (lpDevice) ;
-  ret = BluePathMapDeviceW (lptDevice) ;
-  BlueHeapFree (lptDevice) ;
-  return ((BLUE_PATH *) ret) ;
+  lptDevice = ofc_cstr2tstr (lpDevice) ;
+  ret = ofc_path_map_deviceW (lptDevice) ;
+  ofc_free (lptDevice) ;
+  return ((OFC_PATH *) ret) ;
 }
 
-OFC_CORE_LIB OFC_SIZET BluePathMakeURLW (OFC_LPTSTR *filename,
-                                         OFC_SIZET *rem,
-                                         OFC_LPCTSTR username,
-                                         OFC_LPCTSTR password,
-                                         OFC_LPCTSTR domain,
-                                         OFC_LPCTSTR server,
-                                         OFC_LPCTSTR share,
-                                         OFC_LPCTSTR path,
-                                         OFC_LPCTSTR file)
+OFC_CORE_LIB OFC_SIZET ofc_path_make_urlW (OFC_LPTSTR *filename,
+                                           OFC_SIZET *rem,
+                                           OFC_LPCTSTR username,
+                                           OFC_LPCTSTR password,
+                                           OFC_LPCTSTR domain,
+                                           OFC_LPCTSTR server,
+                                           OFC_LPCTSTR share,
+                                           OFC_LPCTSTR path,
+                                           OFC_LPCTSTR file)
   
 {
   OFC_TCHAR delimeter ;
@@ -1151,71 +1151,71 @@ OFC_CORE_LIB OFC_SIZET BluePathMakeURLW (OFC_LPTSTR *filename,
    */
   len = 0 ;
 
-  len += BluePathOutChar (delimeter, filename, rem) ;
-  len += BluePathOutChar (delimeter, filename, rem) ;
+  len += ofc_path_out_char (delimeter, filename, rem) ;
+  len += ofc_path_out_char (delimeter, filename, rem) ;
 
   if (username != OFC_NULL)
     {
-      len += BluePathOutEscaped (username, filename, rem) ;
+      len += ofc_path_out_escaped (username, filename, rem) ;
 
       if (password != OFC_NULL || domain != OFC_NULL)
 	{
-	  len += BluePathOutChar (TCHAR_COLON, filename, rem) ;
+	  len += ofc_path_out_char (TCHAR_COLON, filename, rem) ;
 
 	  if (password != OFC_NULL && password[0] != TCHAR_EOS)
 	    {
-	      len += BluePathOutEscaped (password, filename, rem) ;
+	      len += ofc_path_out_escaped (password, filename, rem) ;
 		  
 	      if (domain != OFC_NULL)
 		{
-		  len += BluePathOutChar (TCHAR_COLON, filename, rem) ;
+		  len += ofc_path_out_char (TCHAR_COLON, filename, rem) ;
 		}
 	    }
 
 	  if (domain != OFC_NULL)
 	    {
-	      len += BluePathOutEscaped (domain, filename, rem) ;
+	      len += ofc_path_out_escaped (domain, filename, rem) ;
 	    }
 	}
-      len += BluePathOutChar (TCHAR_AMP, filename, rem) ;
+      len += ofc_path_out_char (TCHAR_AMP, filename, rem) ;
     }
 
   if (server != OFC_NULL)
     {
-      len += BluePathOutStr (server, filename, rem) ;
-      len += BluePathOutChar (delimeter, filename, rem) ;
+      len += ofc_path_out_str (server, filename, rem) ;
+      len += ofc_path_out_char (delimeter, filename, rem) ;
     }
 
   if (share != OFC_NULL)
     {
-      len += BluePathOutStr (share, filename, rem) ;
-      len += BluePathOutChar (delimeter, filename, rem) ;
+      len += ofc_path_out_str (share, filename, rem) ;
+      len += ofc_path_out_char (delimeter, filename, rem) ;
     }
 
   if (path != OFC_NULL)
     {
-      len += BluePathOutStr (path, filename, rem) ;
-      len += BluePathOutChar (delimeter, filename, rem) ;
+      len += ofc_path_out_str (path, filename, rem) ;
+      len += ofc_path_out_char (delimeter, filename, rem) ;
     }
 
   if (file != OFC_NULL)
     {
-      len += BluePathOutStr (file, filename, rem) ;
+      len += ofc_path_out_str (file, filename, rem) ;
     }
 
-  BluePathOutChar (TCHAR_EOS, filename, rem) ;
+  ofc_path_out_char (TCHAR_EOS, filename, rem) ;
   return (len) ;
 }
 
-OFC_CORE_LIB OFC_SIZET BluePathMakeURLA (OFC_LPSTR *filename,
-                                         OFC_SIZET *rem,
-                                         OFC_LPCSTR username,
-                                         OFC_LPCSTR password,
-                                         OFC_LPCSTR domain,
-                                         OFC_LPCSTR server,
-                                         OFC_LPCSTR share,
-                                         OFC_LPCSTR path,
-                                         OFC_LPCSTR file)
+OFC_CORE_LIB OFC_SIZET ofc_path_make_urlA (OFC_LPSTR *filename,
+                                           OFC_SIZET *rem,
+                                           OFC_LPCSTR username,
+                                           OFC_LPCSTR password,
+                                           OFC_LPCSTR domain,
+                                           OFC_LPCSTR server,
+                                           OFC_LPCSTR share,
+                                           OFC_LPCSTR path,
+                                           OFC_LPCSTR file)
 {
   OFC_LPTSTR tfilename ;
   OFC_LPTSTR tcursor ;
@@ -1231,231 +1231,231 @@ OFC_CORE_LIB OFC_SIZET BluePathMakeURLA (OFC_LPSTR *filename,
   OFC_LPSTR pfilename ;
   OFC_INT i ;
 
-  tusername = BlueCcstr2tstr (username) ;
-  tpassword = BlueCcstr2tstr (password) ;
-  tdomain = BlueCcstr2tstr (domain) ;
-  tserver = BlueCcstr2tstr (server) ;
-  tshare = BlueCcstr2tstr (share) ;
-  tpath = BlueCcstr2tstr (path) ;
-  tfile = BlueCcstr2tstr (file) ;
+  tusername = ofc_cstr2tstr (username) ;
+  tpassword = ofc_cstr2tstr (password) ;
+  tdomain = ofc_cstr2tstr (domain) ;
+  tserver = ofc_cstr2tstr (server) ;
+  tshare = ofc_cstr2tstr (share) ;
+  tpath = ofc_cstr2tstr (path) ;
+  tfile = ofc_cstr2tstr (file) ;
 
   orig_rem = *rem ;
-  tfilename = BlueHeapMalloc ((*rem+1) * sizeof (OFC_TCHAR)) ;
+  tfilename = ofc_malloc ((*rem + 1) * sizeof (OFC_TCHAR)) ;
   tcursor = tfilename ;
 
-  len = BluePathMakeURLW (&tcursor, rem, tusername, tpassword, tdomain,
-			  tserver, tshare, tpath, tfile) ;
+  len = ofc_path_make_urlW (&tcursor, rem, tusername, tpassword, tdomain,
+                            tserver, tshare, tpath, tfile) ;
 
   pfilename = *filename ;
-  for (i = 0 ; i < BLUE_C_MIN (orig_rem, len + 1) ; i++)
+  for (i = 0 ; i < OFC_MIN (orig_rem, len + 1) ; i++)
     *pfilename++ = (OFC_CHAR) tfilename[i] ;
 
-  BlueHeapFree (tusername) ;
-  BlueHeapFree (tpassword) ;
-  BlueHeapFree (tdomain) ;
-  BlueHeapFree (tserver) ;
-  BlueHeapFree (tshare) ;
-  BlueHeapFree (tpath) ;
-  BlueHeapFree (tfile) ;
-  BlueHeapFree (tfilename) ;
+  ofc_free (tusername) ;
+  ofc_free (tpassword) ;
+  ofc_free (tdomain) ;
+  ofc_free (tserver) ;
+  ofc_free (tshare) ;
+  ofc_free (tpath) ;
+  ofc_free (tfile) ;
+  ofc_free (tfilename) ;
 
   return (len) ;
 }
 
 #if defined(AUTHENTICATE)
 OFC_CORE_LIB OFC_VOID
-BluePathUpdateCredentialsW (OFC_LPCTSTR filename, OFC_LPCTSTR username,
-                            OFC_LPCTSTR password, OFC_LPCTSTR domain)
+ofc_path_update_credentialsW (OFC_LPCTSTR filename, OFC_LPCTSTR username,
+                              OFC_LPCTSTR password, OFC_LPCTSTR domain)
 {
-  BLUE_PATH *path ;
-  BLUE_PATH *map ;
-  _BLUE_PATH *_map ;
+  OFC_PATH *path ;
+  OFC_PATH *map ;
+  _OFC_PATH *_map ;
   OFC_LPCTSTR server ;
 
-  path = BluePathCreateW (filename) ;
+  path = ofc_path_createW (filename) ;
 
-  server = BluePathServer(path) ;
+  server = ofc_path_server(path) ;
 
   if (server != OFC_NULL)
     {
-      map = BluePathMapDeviceW (BluePathServer(path)) ;
+      map = ofc_path_map_deviceW (ofc_path_server(path)) ;
 
       if (map == OFC_NULL)
 	{
 	  /*
 	   * We just want the path to contain a server (and authentication)
 	   */
-	  BluePathFreeDirs(path) ;
+	  ofc_path_free_dirs(path) ;
 	  /*
 	   * Add server to data base
 	   */
-	  BluePathAddMapW (BluePathServer(path), TSTR("Server"),
-                       path, OFC_FST_SMB, OFC_TRUE) ;
+	  ofc_path_add_mapW (ofc_path_server(path), TSTR("Server"),
+                         path, OFC_FST_SMB, OFC_TRUE) ;
 	  map = path ;
 	}
 
-      BlueLock (lockPath) ;
+      ofc_lock (lockPath) ;
 
-      _map = (_BLUE_PATH *) map ;
+      _map = (_OFC_PATH *) map ;
 
       if (_map->username != OFC_NULL)
-	BlueHeapFree (_map->username) ;
-      _map->username = BlueCtstrdup (username) ;
+	ofc_free (_map->username) ;
+      _map->username = ofc_tstrdup (username) ;
       if (_map->password != OFC_NULL)
 	{
-	  BlueCmemset (_map->password, '\0', 
-		       BlueCtstrlen (_map->password) * sizeof (OFC_TCHAR)) ;
-	  BlueHeapFree (_map->password) ;
+	  ofc_memset (_map->password, '\0',
+                   ofc_tstrlen (_map->password) * sizeof (OFC_TCHAR)) ;
+	  ofc_free (_map->password) ;
 	}
-      _map->password = BlueCtstrdup (password) ;
+      _map->password = ofc_tstrdup (password) ;
       if (_map->domain != OFC_NULL)
-	BlueHeapFree (_map->domain) ;
-      _map->domain = BlueCtstrdup (domain) ;
+	ofc_free (_map->domain) ;
+      _map->domain = ofc_tstrdup (domain) ;
 
-      BlueUnlock (lockPath) ;
+      ofc_unlock (lockPath) ;
     }
 }
 #else  
-BLUE_CORE_LIB BLUE_VOID 
-BluePathUpdateCredentialsW (BLUE_PATH *_path, BLUE_LPCTSTR username,
- 			    BLUE_LPCTSTR password, BLUE_LPCTSTR domain) 
+OFC_CORE_LIB OFC_VOID 
+ofc_path_update_credentialsW(OFC_PATH *_path, OFC_LPCTSTR username,
+ 			    OFC_LPCTSTR password, OFC_LPCTSTR domain) 
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
-   BlueLock (lockPath) ;
+  ofc_lock(lockPath) ;
  
-  if (path->username != BLUE_NULL)
-    BlueHeapFree (path->username) ;
-  path->username = BlueCtstrdup (username) ;
-  if (path->password != BLUE_NULL)
+  if (path->username != OFC_NULL)
+    ofc_free(path->username) ;
+  path->username = ofc_tstrdup (username) ;
+  if (path->password != OFC_NULL)
      {
-      BlueCmemset (path->password, '\0', 
-		   BlueCtstrlen (path->password) * sizeof (BLUE_TCHAR)) ;
-      BlueHeapFree (path->password) ;
+       ofc_memset (path->password, '\0', 
+		   ofc_tstrlen (path->password) * sizeof (OFC_TCHAR)) ;
+       ofc_free(path->password) ;
      }
-  path->password = BlueCtstrdup (password) ;
-  if (path->domain != BLUE_NULL)
-    BlueHeapFree (path->domain) ;
-  path->domain = BlueCtstrdup (domain) ;
+  path->password = ofc_tstrdup (password) ;
+  if (path->domain != OFC_NULL)
+    ofc_free(path->domain) ;
+  path->domain = ofc_tstrdup (domain) ;
 
-  BlueUnlock (lockPath) ;
+  ofc_unlock (lockPath) ;
 }
 #endif
 
 
 #if defined(AUTHENTICATE)
 OFC_CORE_LIB OFC_VOID
-BluePathUpdateCredentialsA (OFC_LPCSTR filename, OFC_LPCSTR username,
-                            OFC_LPCSTR password, OFC_LPCSTR domain)
+ofc_path_update_credentialsA (OFC_LPCSTR filename, OFC_LPCSTR username,
+                              OFC_LPCSTR password, OFC_LPCSTR domain)
 {
   OFC_TCHAR *tusername ;
   OFC_TCHAR *tpassword ;
   OFC_TCHAR *tdomain ;
   OFC_TCHAR *tfilename ;
 
-  tfilename = BlueCcstr2tstr (filename) ;
-  tusername = BlueCcstr2tstr (username) ;
-  tpassword = BlueCcstr2tstr (password) ;
-  tdomain = BlueCcstr2tstr (domain) ;
-  BluePathUpdateCredentialsW (tfilename, tusername, tpassword, tdomain) ;
-  BlueHeapFree (tfilename) ;
-  BlueHeapFree (tusername) ;
-  BlueHeapFree (tpassword) ;
-  BlueHeapFree (tdomain) ;
+  tfilename = ofc_cstr2tstr (filename) ;
+  tusername = ofc_cstr2tstr (username) ;
+  tpassword = ofc_cstr2tstr (password) ;
+  tdomain = ofc_cstr2tstr (domain) ;
+  ofc_path_update_credentialsW (tfilename, tusername, tpassword, tdomain) ;
+  ofc_free (tfilename) ;
+  ofc_free (tusername) ;
+  ofc_free (tpassword) ;
+  ofc_free (tdomain) ;
 }
 #else
-BLUE_CORE_LIB BLUE_VOID 
-BluePathUpdateCredentialsA (BLUE_PATH *path, BLUE_LPCSTR username,
-			    BLUE_LPCSTR password, BLUE_LPCSTR domain) 
+OFC_CORE_LIB OFC_VOID 
+ofc_path_update_credentialsA(OFC_PATH *path, OFC_LPCSTR username,
+			    OFC_LPCSTR password, OFC_LPCSTR domain) 
 {
-  BLUE_TCHAR *tusername ;
-  BLUE_TCHAR *tpassword ;
-  BLUE_TCHAR *tdomain ;
+  OFC_TCHAR *tusername ;
+  OFC_TCHAR *tpassword ;
+  OFC_TCHAR *tdomain ;
  
-  tusername = BlueCcstr2tstr (username) ;
-  tpassword = BlueCcstr2tstr (password) ;
-  tdomain = BlueCcstr2tstr (domain) ;
-  BluePathUpdateCredentialsW (path, tusername, tpassword, tdomain) ;
-  BlueHeapFree (tusername) ;
-  BlueHeapFree (tpassword) ;
-  BlueHeapFree (tdomain) ;
+  tusername = ofc_cstr2tstr (username) ;
+  tpassword = ofc_cstr2tstr (password) ;
+  tdomain = ofc_cstr2tstr (domain) ;
+  ofc_path_update_credentialsW(path, tusername, tpassword, tdomain) ;
+  ofc_free(tusername) ;
+  ofc_free(tpassword) ;
+  ofc_free(tdomain) ;
 }
 #endif
 
 OFC_CORE_LIB OFC_VOID
-BluePathGetRootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
-                  OFC_FST_TYPE *filesystem)
+ofc_path_get_rootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
+                    OFC_FST_TYPE *filesystem)
 {
   OFC_TCHAR *lpMappedPath ;
   OFC_TCHAR *lpMappedName ;
-  _BLUE_PATH *rootpath ;
-  _BLUE_PATH *path ;
+  _OFC_PATH *rootpath ;
+  _OFC_PATH *path ;
   OFC_SIZET len ;
 
-  BluePathMapW (lpFileName, &lpMappedName, filesystem) ;
-  path = BluePathCreateW (lpMappedName) ;
+  ofc_path_mapW (lpFileName, &lpMappedName, filesystem) ;
+  path = ofc_path_createW (lpMappedName) ;
 
   if (path->remote)
     {
-      rootpath = BluePathCreateW (TSTR("\\")) ;
+      rootpath = ofc_path_createW (TSTR("\\")) ;
       rootpath->absolute = OFC_TRUE ;
-      rootpath->device = BlueCtstrdup (path->device) ;
+      rootpath->device = ofc_tstrdup (path->device) ;
       /*
        * Then the share is part of the root
        */
       rootpath->remote = OFC_TRUE ;
       rootpath->port = path->port ;
-      rootpath->username = BlueCtstrdup (path->username) ;
-      rootpath->password = BlueCtstrdup (path->password) ;
-      rootpath->domain = BlueCtstrdup (path->domain) ;
+      rootpath->username = ofc_tstrdup (path->username) ;
+      rootpath->password = ofc_tstrdup (path->password) ;
+      rootpath->domain = ofc_tstrdup (path->domain) ;
       if (path->num_dirs > 1)
 	{
 	  rootpath->num_dirs = 2 ;
-	  rootpath->dir = BlueHeapMalloc (sizeof (OFC_LPCTSTR *) *
-                                      rootpath->num_dirs) ;
-	  rootpath->dir[0] = BlueCtstrdup (path->dir[0]) ;
-	  rootpath->dir[1] = BlueCtstrdup (path->dir[1]) ;
+	  rootpath->dir = ofc_malloc (sizeof (OFC_LPCTSTR *) *
+                                  rootpath->num_dirs) ;
+	  rootpath->dir[0] = ofc_tstrdup (path->dir[0]) ;
+	  rootpath->dir[1] = ofc_tstrdup (path->dir[1]) ;
 	}
     }
   else
-    rootpath = BluePathCreateW (lpMappedName) ;
+    rootpath = ofc_path_createW (lpMappedName) ;
 
   len = 0 ;
-  len = BluePathPrintW (rootpath, OFC_NULL, &len) ;
+  len = ofc_path_printW (rootpath, OFC_NULL, &len) ;
 
   if (rootpath->type == OFC_FST_WIN32)
     /* Terminating slash */
     len++ ;
   /* EOS */
   len++ ;
-  *lpRootName = BlueHeapMalloc (len * sizeof (OFC_TCHAR)) ;
+  *lpRootName = ofc_malloc (len * sizeof (OFC_TCHAR)) ;
   lpMappedPath = *lpRootName ;
-  len = BluePathPrintW (rootpath, &lpMappedPath, &len) ;
+  len = ofc_path_printW (rootpath, &lpMappedPath, &len) ;
   if (rootpath->type == OFC_FST_WIN32)
     (*lpRootName)[len++] = TCHAR_BACKSLASH ;
   (*lpRootName)[len] = TCHAR_EOS ;
-  BluePathDelete (rootpath) ;
-  BluePathDelete (path) ;
-  BlueHeapFree (lpMappedName) ;
+  ofc_path_delete (rootpath) ;
+  ofc_path_delete (path) ;
+  ofc_free (lpMappedName) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathGetRootA (OFC_CCHAR *lpFileName, OFC_CHAR **lpRoot,
-                  OFC_FST_TYPE *filesystem)
+ofc_path_get_rootA (OFC_CCHAR *lpFileName, OFC_CHAR **lpRoot,
+                    OFC_FST_TYPE *filesystem)
 {
   OFC_TCHAR *lptFileName ;
   OFC_TCHAR *lptRoot ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
-  BluePathGetRootW (lptFileName, &lptRoot, filesystem) ;
-  *lpRoot = BlueCtstr2cstr (lptRoot) ;
-  BlueHeapFree (lptFileName) ;
-  BlueHeapFree (lptRoot) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
+  ofc_path_get_rootW (lptFileName, &lptRoot, filesystem) ;
+  *lpRoot = ofc_tstr2cstr (lptRoot) ;
+  ofc_free (lptFileName) ;
+  ofc_free (lptRoot) ;
 }
 
-OFC_CORE_LIB OFC_BOOL BluePathRemote (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_BOOL ofc_path_remote (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
@@ -1464,9 +1464,9 @@ OFC_CORE_LIB OFC_BOOL BluePathRemote (BLUE_PATH *_path)
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_INT BluePathPort (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_INT ofc_path_port (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_INT port ;
 
   port = path->port ;
@@ -1474,16 +1474,16 @@ OFC_CORE_LIB OFC_INT BluePathPort (BLUE_PATH *_path)
   return (port) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetPort (BLUE_PATH *_path, OFC_INT port)
+OFC_CORE_LIB OFC_VOID ofc_path_set_port (OFC_PATH *_path, OFC_INT port)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   path->port = port ;
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathServer (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_server (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_LPCTSTR server ;
 
   server = OFC_NULL ;
@@ -1494,65 +1494,65 @@ OFC_CORE_LIB OFC_LPCTSTR BluePathServer (BLUE_PATH *_path)
   return (server) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathFreeServer (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_free_server (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   if (path->remote && path->num_dirs > 0)
     {
-      BlueHeapFree (path->dir[0]) ;
+      ofc_free (path->dir[0]) ;
       path->dir[0] = OFC_NULL ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathSetServer (BLUE_PATH *_path, OFC_LPTSTR server)
+ofc_path_set_server (OFC_PATH *_path, OFC_LPTSTR server)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   if (path->remote)
     {
       if (path->num_dirs > 0)
 	{
-	  BlueHeapFree (path->dir[0]) ;
+	  ofc_free (path->dir[0]) ;
 	}
       else
 	{
 	  path->num_dirs++ ;
-	  path->dir = BlueHeapRealloc (path->dir, (path->num_dirs *
-						   sizeof (OFC_LPCSTR))) ;
+	  path->dir = ofc_realloc (path->dir, (path->num_dirs *
+                                           sizeof (OFC_LPCSTR))) ;
 	}
       path->dir[0] = (OFC_LPTSTR) server ;
     }
   else
-    BlueHeapFree (server) ;
+    ofc_free (server) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathSetShare (BLUE_PATH *_path, OFC_LPCTSTR share)
+ofc_path_set_share (OFC_PATH *_path, OFC_LPCTSTR share)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   if (path->remote)
     {
       if (path->num_dirs > 1)
 	{
-	  BlueHeapFree (path->dir[1]) ;
+	  ofc_free (path->dir[1]) ;
 	}
       else
 	{
 	  path->num_dirs++ ;
-	  path->dir = BlueHeapRealloc (path->dir, (path->num_dirs *
-						   sizeof (OFC_LPCSTR))) ;
+	  path->dir = ofc_realloc (path->dir, (path->num_dirs *
+                                           sizeof (OFC_LPCSTR))) ;
 	}
-      path->dir[1] = BlueCtstrdup (share) ;
+      path->dir[1] = ofc_tstrdup (share) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathSetFilename (BLUE_PATH *_path, OFC_LPCTSTR filename)
+ofc_path_set_filename (OFC_PATH *_path, OFC_LPCTSTR filename)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_UINT prefix ;
 
   if (path->remote)
@@ -1562,36 +1562,36 @@ BluePathSetFilename (BLUE_PATH *_path, OFC_LPCTSTR filename)
 
   if (path->num_dirs > prefix)
     {
-      BlueHeapFree (path->dir[path->num_dirs - 1]) ;
+      ofc_free (path->dir[path->num_dirs - 1]) ;
     }
   else
     {
       path->num_dirs++ ;
-      path->dir = BlueHeapRealloc (path->dir, (path->num_dirs *
-					       sizeof (OFC_LPCSTR))) ;
+      path->dir = ofc_realloc (path->dir, (path->num_dirs *
+                                           sizeof (OFC_LPCSTR))) ;
     }
-  path->dir[path->num_dirs - 1] = BlueCtstrdup (filename) ;
+  path->dir[path->num_dirs - 1] = ofc_tstrdup (filename) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BluePathServerCmp (BLUE_PATH *_path, OFC_LPCTSTR server)
+ofc_path_server_cmp (OFC_PATH *_path, OFC_LPCTSTR server)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
   if (path->remote && path->num_dirs > 0 && path->dir[0] != OFC_NULL)
     {
-      if (BlueCtstrcmp (path->dir[0], server) == 0)
+      if (ofc_tstrcmp (path->dir[0], server) == 0)
 	ret = OFC_TRUE ;
     }
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BluePathPortCmp (BLUE_PATH *_path, OFC_UINT16 port)
+ofc_path_port_cmp (OFC_PATH *_path, OFC_UINT16 port)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
@@ -1600,9 +1600,9 @@ BluePathPortCmp (BLUE_PATH *_path, OFC_UINT16 port)
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathShare (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_share (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_LPCTSTR share ;
 
   share = OFC_NULL ;
@@ -1614,23 +1614,23 @@ OFC_CORE_LIB OFC_LPCTSTR BluePathShare (BLUE_PATH *_path)
 }
 
 OFC_CORE_LIB OFC_BOOL
-BluePathShareCmp (BLUE_PATH *_path, OFC_LPCTSTR share)
+ofc_path_share_cmp (OFC_PATH *_path, OFC_LPCTSTR share)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
   if (path->remote && path->num_dirs > 1 && path->dir[1] != OFC_NULL)
     {
-      if (BlueCtstrcmp (path->dir[1], share) == 0)
+      if (ofc_tstrcmp (path->dir[1], share) == 0)
 	ret = OFC_TRUE ;
     }
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathUsername (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_username (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_LPCTSTR username ;
 
   username = OFC_NULL ;
@@ -1641,23 +1641,23 @@ OFC_CORE_LIB OFC_LPCTSTR BluePathUsername (BLUE_PATH *_path)
   return (username) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetUsername (BLUE_PATH *_path,
-                                           OFC_LPCTSTR username)
+OFC_CORE_LIB OFC_VOID ofc_path_set_username (OFC_PATH *_path,
+                                             OFC_LPCTSTR username)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   if (path->remote)
     {
       if (path->username != OFC_NULL)
-	BlueHeapFree (path->username) ;
-      path->username = BlueCtstrdup (username) ;
+	ofc_free (path->username) ;
+      path->username = ofc_tstrdup (username) ;
     }
 }
 
 OFC_CORE_LIB OFC_BOOL
-BluePathUsernameCmp (BLUE_PATH *_path, OFC_LPCTSTR username)
+ofc_path_username_cmp (OFC_PATH *_path, OFC_LPCTSTR username)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
@@ -1667,16 +1667,16 @@ BluePathUsernameCmp (BLUE_PATH *_path, OFC_LPCTSTR username)
 	ret = OFC_TRUE ;
       else 
 	{
-	  if (BlueCtstrcmp (path->username, username) == 0)
+	  if (ofc_tstrcmp (path->username, username) == 0)
 	    ret = OFC_TRUE ;
 	}
     }
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathPassword (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_password (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_LPCTSTR password ;
 
   password = OFC_NULL ;
@@ -1687,23 +1687,23 @@ OFC_CORE_LIB OFC_LPCTSTR BluePathPassword (BLUE_PATH *_path)
   return (password) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetPassword (BLUE_PATH *_path,
-                                           OFC_LPCTSTR password)
+OFC_CORE_LIB OFC_VOID ofc_path_set_password (OFC_PATH *_path,
+                                             OFC_LPCTSTR password)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   if (path->remote)
     {
       if (path->password != OFC_NULL)
-	BlueHeapFree (path->password) ;
-      path->password = BlueCtstrdup (password) ;
+	ofc_free (path->password) ;
+      path->password = ofc_tstrdup (password) ;
     }
 }
 
 OFC_CORE_LIB OFC_BOOL
-BluePathPasswordCmp (BLUE_PATH *_path, OFC_LPCTSTR password)
+ofc_path_password_cmp (OFC_PATH *_path, OFC_LPCTSTR password)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
@@ -1713,16 +1713,16 @@ BluePathPasswordCmp (BLUE_PATH *_path, OFC_LPCTSTR password)
 	ret = OFC_TRUE ;
       else if (path->password != OFC_NULL && password != OFC_NULL)
 	{
-	  if (BlueCtstrcmp (path->password, password) == 0)
+	  if (ofc_tstrcmp (path->password, password) == 0)
 	    ret = OFC_TRUE ;
 	}
     }
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathDomain (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_domain (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_LPCTSTR domain ;
 
   domain = OFC_NULL ;
@@ -1733,64 +1733,64 @@ OFC_CORE_LIB OFC_LPCTSTR BluePathDomain (BLUE_PATH *_path)
   return (domain) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetDomain (BLUE_PATH *_path,
-                                         OFC_LPCTSTR domain)
+OFC_CORE_LIB OFC_VOID ofc_path_set_domain (OFC_PATH *_path,
+                                           OFC_LPCTSTR domain)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
 
   if (path->remote)
     {
       if (path->domain != OFC_NULL)
-	BlueHeapFree (path->domain) ;
-      path->domain = BlueCtstrdup (domain) ;
+	ofc_free (path->domain) ;
+      path->domain = ofc_tstrdup (domain) ;
     }
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathDevice (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_device (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   return (path->device) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathFreeDevice (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_free_device (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
-  BlueHeapFree (path->device) ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
+  ofc_free (path->device) ;
   path->device = OFC_NULL ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathFreeUsername (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_free_usernane (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
-  BlueHeapFree (path->username) ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
+  ofc_free (path->username) ;
   path->username = OFC_NULL ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathFreePassword (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_free_password (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
-  BlueHeapFree (path->password) ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
+  ofc_free (path->password) ;
   path->password = OFC_NULL ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathFreeDomain (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_free_domain (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
-  BlueHeapFree (path->domain) ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
+  ofc_free (path->domain) ;
   path->domain = OFC_NULL ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BluePathPromoteDirs (BLUE_PATH *_path, OFC_UINT num_dirs)
+ofc_path_promote_dirs (OFC_PATH *_path, OFC_UINT num_dirs)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_UINT i ;
 
-  num_dirs = BLUE_C_MIN (num_dirs, path->num_dirs) ;
+  num_dirs = OFC_MIN (num_dirs, path->num_dirs) ;
 
   for (i = 0 ; i < num_dirs ; i++)
     {
-      BlueHeapFree (path->dir[i]) ;
+      ofc_free (path->dir[i]) ;
       path->dir[i] = OFC_NULL ;
     }
 
@@ -1803,45 +1803,45 @@ BluePathPromoteDirs (BLUE_PATH *_path, OFC_UINT num_dirs)
   path->num_dirs -= num_dirs ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetLocal (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_set_local (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   path->remote = OFC_FALSE ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetRemote (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_set_remote (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   path->remote = OFC_TRUE ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetRelative (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_set_relative (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   path->absolute = OFC_FALSE ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetAbsolute (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_set_absolute (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   path->absolute = OFC_TRUE ;
 }
 
-OFC_CORE_LIB OFC_BOOL BluePathAbsolute (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_BOOL ofc_path_absolute (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   return (path->absolute) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathSetType (BLUE_PATH *_path, OFC_FST_TYPE fstype)
+OFC_CORE_LIB OFC_VOID ofc_path_set_type (OFC_PATH *_path, OFC_FST_TYPE fstype)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   path->type = fstype ;
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathFilename (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_filename (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_LPCTSTR filename ;
 
   filename = OFC_NULL ;
@@ -1859,14 +1859,14 @@ OFC_CORE_LIB OFC_LPCTSTR BluePathFilename (BLUE_PATH *_path)
   return (filename) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathFreeFilename (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_free_filename (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   if (path->remote)
     {
       if (path->num_dirs > 2)
 	{
-	  BlueHeapFree (path->dir[path->num_dirs-1]) ;
+	  ofc_free (path->dir[path->num_dirs - 1]) ;
 	  path->dir[path->num_dirs-1] = OFC_NULL ;
 	  path->num_dirs-- ;
 	}
@@ -1875,16 +1875,16 @@ OFC_CORE_LIB OFC_VOID BluePathFreeFilename (BLUE_PATH *_path)
     {
       if (path->num_dirs > 0)
 	{
-	  BlueHeapFree (path->dir[path->num_dirs-1]) ;
+	  ofc_free (path->dir[path->num_dirs - 1]) ;
 	  path->dir[path->num_dirs-1] = OFC_NULL ;
 	  path->num_dirs-- ;
 	}
     }
 }
 
-OFC_CORE_LIB OFC_INT BluePathNumDirs (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_INT ofc_path_num_dirs (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_INT ret ;
 
   ret = 0 ;
@@ -1899,9 +1899,9 @@ OFC_CORE_LIB OFC_INT BluePathNumDirs (BLUE_PATH *_path)
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_LPCTSTR BluePathDir (BLUE_PATH *_path, OFC_UINT ix)
+OFC_CORE_LIB OFC_LPCTSTR ofc_path_dir (OFC_PATH *_path, OFC_UINT ix)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_LPCTSTR ret ;
   OFC_UINT jx ;
 
@@ -1920,9 +1920,9 @@ OFC_CORE_LIB OFC_LPCTSTR BluePathDir (BLUE_PATH *_path, OFC_UINT ix)
   return (ret) ;
 }
 
-OFC_CORE_LIB OFC_VOID BluePathFreeDirs (BLUE_PATH *_path)
+OFC_CORE_LIB OFC_VOID ofc_path_free_dirs (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_UINT jx ;
   OFC_UINT ix ;
 
@@ -1937,7 +1937,7 @@ OFC_CORE_LIB OFC_VOID BluePathFreeDirs (BLUE_PATH *_path)
 
   for (ix = jx ; ix < path->num_dirs ; ix++)
     {
-      BlueHeapFree (path->dir[ix]) ;
+      ofc_free (path->dir[ix]) ;
       path->dir[ix] = OFC_NULL ;
     }
 
@@ -1946,55 +1946,55 @@ OFC_CORE_LIB OFC_VOID BluePathFreeDirs (BLUE_PATH *_path)
 
   if (path->num_dirs == 0)
     {
-      BlueHeapFree (path->dir) ;
+      ofc_free (path->dir) ;
       path->dir = OFC_NULL ;
     }
 }
 
-OFC_VOID BluePathDebug (BLUE_PATH *_path)
+OFC_VOID ofc_path_debug (OFC_PATH *_path)
 {
-  _BLUE_PATH *path = (_BLUE_PATH *) _path ;
+  _OFC_PATH *path = (_OFC_PATH *) _path ;
   OFC_UINT i ;
   OFC_CHAR *test ;
 
   test = (OFC_CHAR *) TSTR("NULL") ;
 
   for (i = 0 ; i < (5 * sizeof(OFC_TCHAR)) ; i++)
-    BlueCprintf ("Test[%d]: 0x%02x\n", i, test[i]) ;
+    ofc_printf ("Test[%d]: 0x%02x\n", i, test[i]) ;
 
-  BlueCprintf ("Path:\n") ;
-  BlueCprintf ("  Type: %d\n", path->type) ;
-  BlueCprintf ("  Device: %S\n",
+  ofc_printf ("Path:\n") ;
+  ofc_printf ("  Type: %d\n", path->type) ;
+  ofc_printf ("  Device: %S\n",
                path->device == OFC_NULL ? TSTR("NULL") : path->device) ;
-  BlueCprintf ("  Username: %S\n",
+  ofc_printf ("  Username: %S\n",
                path->username == OFC_NULL ? TSTR("NULL") : path->username) ;
-  BlueCprintf ("  Password: %S\n",
+  ofc_printf ("  Password: %S\n",
                path->password == OFC_NULL ? TSTR("NULL") : path->password) ;
-  BlueCprintf ("  Domain: %S\n",
+  ofc_printf ("  Domain: %S\n",
                path->domain == OFC_NULL ? TSTR("NULL") : path->domain) ;
-  BlueCprintf ("  Num Dirs: %d\n", path->num_dirs) ;
+  ofc_printf ("  Num Dirs: %d\n", path->num_dirs) ;
   for (i = 0 ; i < path->num_dirs ; i++)
-    BlueCprintf ("    %d: %S\n", i, path->dir[i]) ;
+    ofc_printf ("    %d: %S\n", i, path->dir[i]) ;
       
-  BlueCprintf ("  Absolute: %s\n", path->absolute ? "yes" : "no") ;
-  BlueCprintf ("  Remote: %s\n", path->remote ? "yes" : "no") ;
+  ofc_printf ("  Absolute: %s\n", path->absolute ? "yes" : "no") ;
+  ofc_printf ("  Remote: %s\n", path->remote ? "yes" : "no") ;
 }  
 
 static OFC_HANDLE hWorkgroups ;
 
-OFC_CORE_LIB OFC_VOID InitWorkgroups (OFC_VOID)
+OFC_CORE_LIB OFC_VOID init_workgroups (OFC_VOID)
 {
   hWorkgroups = BlueQcreate() ;
 }
 
-OFC_CORE_LIB OFC_VOID DestroyWorkgroups (OFC_VOID)
+OFC_CORE_LIB OFC_VOID destroy_workgroups (OFC_VOID)
 {
   OFC_LPTSTR pWorkgroup ;
 
   for (pWorkgroup = BlueQfirst (hWorkgroups) ;
        pWorkgroup != OFC_NULL ;
        pWorkgroup = BlueQfirst (hWorkgroups))
-    RemoveWorkgroup (pWorkgroup);
+    remove_workgroup (pWorkgroup);
 
   BlueQdestroy(hWorkgroups);
 
@@ -2006,55 +2006,55 @@ static OFC_LPTSTR FindWorkgroup (OFC_LPCTSTR workgroup)
   OFC_LPTSTR pWorkgroup ;
 
   for (pWorkgroup = BlueQfirst (hWorkgroups) ;
-       pWorkgroup != OFC_NULL && BlueCtstrcmp (pWorkgroup, workgroup) != 0 ;
+       pWorkgroup != OFC_NULL && ofc_tstrcmp (pWorkgroup, workgroup) != 0 ;
        pWorkgroup = BlueQnext (hWorkgroups, pWorkgroup)) ;
 
   return (pWorkgroup) ;
 }
 
-OFC_CORE_LIB OFC_VOID UpdateWorkgroup (OFC_LPCTSTR workgroup)
+OFC_CORE_LIB OFC_VOID update_workgroup (OFC_LPCTSTR workgroup)
 {
   OFC_LPTSTR pWorkgroup ;
 
-  BlueLock (lockPath) ;
+  ofc_lock (lockPath) ;
   pWorkgroup = FindWorkgroup (workgroup) ;
 
   if (pWorkgroup == OFC_NULL)
     {
-      pWorkgroup = BlueCtstrndup (workgroup, OFC_MAX_PATH) ;
+      pWorkgroup = ofc_tstrndup (workgroup, OFC_MAX_PATH) ;
       BlueQenqueue (hWorkgroups, pWorkgroup) ;
     }
-  BlueUnlock (lockPath) ;
+  ofc_unlock (lockPath) ;
 }
 
-OFC_CORE_LIB OFC_VOID RemoveWorkgroup (OFC_LPCTSTR workgroup)
+OFC_CORE_LIB OFC_VOID remove_workgroup (OFC_LPCTSTR workgroup)
 {
   OFC_LPTSTR pWorkgroup ;
 
-  BlueLock (lockPath) ;
+  ofc_lock (lockPath) ;
   pWorkgroup = FindWorkgroup (workgroup) ;
 
   if (pWorkgroup != OFC_NULL)
     {
       BlueQunlink (hWorkgroups, pWorkgroup) ;
-      BlueHeapFree (pWorkgroup) ;
+      ofc_free (pWorkgroup) ;
     }
-  BlueUnlock (lockPath) ;
+  ofc_unlock (lockPath) ;
 }
 
-OFC_CORE_LIB OFC_BOOL LookupWorkgroup (OFC_LPCTSTR workgroup)
+OFC_CORE_LIB OFC_BOOL lookup_workgroup (OFC_LPCTSTR workgroup)
 {
   OFC_BOOL ret ;
   OFC_LPTSTR pWorkgroup ;
 
-  BlueLock (lockPath) ;
+  ofc_lock (lockPath) ;
   pWorkgroup = FindWorkgroup (workgroup) ;
 
   ret = OFC_FALSE ;
   if (pWorkgroup != OFC_NULL)
     ret = OFC_TRUE ;
 
-  BlueUnlock (lockPath) ;
+  ofc_unlock (lockPath) ;
   return (ret) ;
 }
 

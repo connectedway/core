@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_PATH_H__)
-#define __BLUE_PATH_H__
+#if !defined(__OFC_PATH_H__)
+#define __OFC_PATH_H__
 
 #define AUTHENTICATE
 
@@ -14,13 +14,13 @@
 #include "ofc/fs.h"
 
 /**
- * \defgroup BluePath Path Handling Facility
+ * \defgroup Open Files Path Handling Facility
  * \ingroup BlueUtil
  *
- * The Blue Path facility provides parsing of local and network paths as well
+ * The Open Files Path facility provides parsing of local and network paths as well
  * as providing maps of arbitrary paths to a specified destination.
  *
- * This is a key component of Blue Share.  The CIFS client uses the mapping so
+ * This is a key component of Open Files.  The SMB client uses the mapping so
  * that applications don't always have to use either UNC formatted names or
  * SMB URLs.  Administrators can map drive letters to particular network paths
  * as is typical in a Win32 environment, or they can map local filesystem
@@ -32,7 +32,7 @@
  * server to translate a share path to a particular file system API and target
  * path.
  *
- * The Blue Path facility will parse file names in UNC or SMB URL format.
+ * The Open Files Path facility will parse file names in UNC or SMB URL format.
  * The follwing syntax is accepted:
  *
  * Universal Naming Convention:
@@ -51,7 +51,7 @@
 smb://[username[:passowrd[:domain]]@]/server/share/path/file
 \endverbatim
  *
- * The IPC device allows file I/O through the Blue Share Pipe file handlers.
+ * The IPC device allows file I/O through the Open Files Pipe file handlers.
  *
 \verbatim
 IPC:\pipename
@@ -64,7 +64,7 @@ WORKGROUPS:[\\lmb]
 \endverbatim
  *
  * where lmb is the node name of the local master browser.  If not specified
- * Blue Share will query for local master browser on each interface.
+ * Open Files will query for local master browser on each interface.
  *
  * The SERVERS device allows browsing of servers in a workgroup
  *
@@ -89,10 +89,10 @@ SHARES:\\server
 /**
  * The Internal Represenation of a Path
  *
- * This is exposed to users of the Blue Path API.  It may be preferable to
+ * This is exposed to users of the Open Files Path API.  It may be preferable to
  * hide this structure behind additional APIs
  */
-typedef OFC_VOID BLUE_PATH ;
+typedef OFC_VOID OFC_PATH ;
 
 
 #if defined(__cplusplus)
@@ -100,14 +100,14 @@ extern "C"
 {
 #endif
   /**
-   * Initialize the Blue Path Mapping
+   * Initialize the Open Files Path Mapping
    *
-   * This should only be called by BlueInit
+   * This should only be called by framework_init
    */
   OFC_CORE_LIB OFC_VOID
-  BluePathInit (OFC_VOID) ;
+  ofc_path_init (OFC_VOID) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathDestroy (OFC_VOID);
+  ofc_path_destroy (OFC_VOID);
   /**
    * Add a map for a virtual path
    *
@@ -124,11 +124,11 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BluePathAddMapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
-                   BLUE_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail) ;
+  ofc_path_add_mapW (OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
+                     OFC_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail) ;
   OFC_CORE_LIB OFC_BOOL
-  BluePathAddMapA (OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
-                   BLUE_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail) ;
+  ofc_path_add_mapA (OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
+                     OFC_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail) ;
   /**
    * Create a path structure for a path string
    *
@@ -138,13 +138,13 @@ extern "C"
    * \returns
    * path structure
    */
-  OFC_CORE_LIB BLUE_PATH *
-  BluePathCreateW (OFC_LPCTSTR lpFileName) ;
-  OFC_CORE_LIB BLUE_PATH *
-  BluePathCreateA (OFC_LPCSTR lpFileName) ;
+  OFC_CORE_LIB OFC_PATH *
+  ofc_path_createW (OFC_LPCTSTR lpFileName) ;
+  OFC_CORE_LIB OFC_PATH *
+  ofc_path_createA (OFC_LPCSTR lpFileName) ;
 
-  OFC_CORE_LIB BLUE_PATH *
-  BluePathInitPath (OFC_VOID) ;
+  OFC_CORE_LIB OFC_PATH *
+  ofc_path_init_path (OFC_VOID) ;
   /**
    * Apply a map to a path
    *
@@ -160,7 +160,7 @@ extern "C"
    * map to update the path with
    */
   OFC_CORE_LIB OFC_VOID
-  BluePathUpdate (BLUE_PATH *path, BLUE_PATH *map) ;
+  ofc_path_update (OFC_PATH *path, OFC_PATH *map) ;
   /**
    * Print a path structure to a string
    *
@@ -178,12 +178,12 @@ extern "C"
    * Number of bytes printed
    */
   OFC_CORE_LIB OFC_SIZET
-  BluePathPrintW (BLUE_PATH *path, OFC_LPTSTR *filename, OFC_SIZET *rem) ;
+  ofc_path_printW (OFC_PATH *path, OFC_LPTSTR *filename, OFC_SIZET *rem) ;
   OFC_CORE_LIB OFC_SIZET
-  BluePathPrintA (BLUE_PATH *path, OFC_LPSTR *filename, OFC_SIZET *rem) ;
+  ofc_path_printA (OFC_PATH *path, OFC_LPSTR *filename, OFC_SIZET *rem) ;
 
   /**
-   * Construct a URL suitable for passing into Blue File APIs as the 
+   * Construct a URL suitable for passing into Open File APIs as the 
    * remote escaped file name.
    *
    * This routine will fill in a buffer provided by the application with the
@@ -243,26 +243,26 @@ extern "C"
    * characters remaining in the buffer is also returned.
    */
   OFC_CORE_LIB OFC_SIZET
-  BluePathMakeURLW (OFC_LPTSTR *filename,
-                    OFC_SIZET *rem,
-                    OFC_LPCTSTR username,
-                    OFC_LPCTSTR password,
-                    OFC_LPCTSTR domain,
-                    OFC_LPCTSTR server,
-                    OFC_LPCTSTR share,
-                    OFC_LPCTSTR path,
-                    OFC_LPCTSTR file) ;
+  ofc_path_make_urlW (OFC_LPTSTR *filename,
+                      OFC_SIZET *rem,
+                      OFC_LPCTSTR username,
+                      OFC_LPCTSTR password,
+                      OFC_LPCTSTR domain,
+                      OFC_LPCTSTR server,
+                      OFC_LPCTSTR share,
+                      OFC_LPCTSTR path,
+                      OFC_LPCTSTR file) ;
   
   OFC_CORE_LIB OFC_SIZET
-  BluePathMakeURLA (OFC_LPSTR *filename,
-                    OFC_SIZET *rem,
-                    OFC_LPCSTR username,
-                    OFC_LPCSTR password,
-                    OFC_LPCSTR domain,
-                    OFC_LPCSTR server,
-                    OFC_LPCSTR share,
-                    OFC_LPCSTR path,
-                    OFC_LPCSTR file) ;
+  ofc_path_make_urlA (OFC_LPSTR *filename,
+                      OFC_SIZET *rem,
+                      OFC_LPCSTR username,
+                      OFC_LPCSTR password,
+                      OFC_LPCSTR domain,
+                      OFC_LPCSTR server,
+                      OFC_LPCSTR share,
+                      OFC_LPCSTR path,
+                      OFC_LPCSTR file) ;
 
   /**
    * Delete a path structure
@@ -271,7 +271,7 @@ extern "C"
    * The path structure to delete
    */
   OFC_CORE_LIB OFC_VOID
-  BluePathDelete (BLUE_PATH *path) ;
+  ofc_path_delete (OFC_PATH *path) ;
   /**
    * Map a local path to a target path
    *
@@ -285,11 +285,11 @@ extern "C"
    * file system type
    */
   OFC_CORE_LIB OFC_VOID
-  BluePathMapW (OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
-                OFC_FST_TYPE *filesystem) ;
+  ofc_path_mapW (OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
+                 OFC_FST_TYPE *filesystem) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathMapA (OFC_LPCSTR lpFileName, OFC_LPSTR *lppMappedName,
-                OFC_FST_TYPE *filesystem) ;
+  ofc_path_mapA (OFC_LPCSTR lpFileName, OFC_LPSTR *lppMappedName,
+                 OFC_FST_TYPE *filesystem) ;
 #if 0
   /**
    * Map a local root path to a target root path
@@ -306,12 +306,12 @@ extern "C"
    * \param filesystem
    * file system type
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueRootPathMapW (BLUE_LPCTSTR lpRootPath, BLUE_LPTSTR *lppMappedPath,
-		    BLUE_FS_TYPE *filesystem) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueRootPathMapA (BLUE_LPCSTR lpRootPath, OFC_LPSTR *lppMappedPath,
-		    BLUE_FS_TYPE *filesystem) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_root_path_mapW(OFC_LPCTSTR lpRootPath, OFC_LPTSTR *lppMappedPath,
+		    OFC_FS_TYPE *filesystem) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_root_path_mapA(OFC_LPCSTR lpRootPath, OFC_LPSTR *lppMappedPath,
+		    OFC_FS_TYPE *filesystem) ;
 #endif
   /**
    * Delete a map
@@ -320,9 +320,9 @@ extern "C"
    * Virtual path of map to delete
    */
   OFC_CORE_LIB OFC_VOID
-  BluePathDeleteMapW (OFC_LPCTSTR lpVirtual) ;
+  ofc_path_delete_mapW (OFC_LPCTSTR lpVirtual) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathDeleteMapA (OFC_LPCSTR lpVirtual) ;
+  ofc_path_delete_mapA (OFC_LPCSTR lpVirtual) ;
   /**
    * Find a map for a path
    *
@@ -332,126 +332,126 @@ extern "C"
    * \returns
    * The map for the path
    */
-  OFC_CORE_LIB BLUE_PATH *
-  BluePathMapDeviceW (OFC_LPCTSTR lpDevice) ;
-  OFC_CORE_LIB BLUE_PATH *
-  BluePathMapDeviceA (OFC_LPCSTR lpDevice) ;
+  OFC_CORE_LIB OFC_PATH *
+  ofc_path_map_deviceW (OFC_LPCTSTR lpDevice) ;
+  OFC_CORE_LIB OFC_PATH *
+  ofc_path_map_deviceA (OFC_LPCSTR lpDevice) ;
 
 
 #if defined(AUTHENTICATE)
   OFC_CORE_LIB OFC_VOID
-  BluePathUpdateCredentialsW (OFC_LPCTSTR filename, OFC_LPCTSTR username,
-                              OFC_LPCTSTR password, OFC_LPCTSTR domain) ;
+  ofc_path_update_credentialsW (OFC_LPCTSTR filename, OFC_LPCTSTR username,
+                                OFC_LPCTSTR password, OFC_LPCTSTR domain) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathUpdateCredentialsA (OFC_LPCSTR filename, OFC_LPCSTR username,
-                              OFC_LPCSTR password, OFC_LPCSTR domain) ;
+  ofc_path_update_credentialsA (OFC_LPCSTR filename, OFC_LPCSTR username,
+                                OFC_LPCSTR password, OFC_LPCSTR domain) ;
 #else
-  BLUE_CORE_LIB BLUE_VOID 
-  BluePathUpdateCredentialsW (BLUE_PATH *path, BLUE_LPCTSTR username,
-			      BLUE_LPCTSTR password, BLUE_LPCTSTR domain) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BluePathUpdateCredentialsA (BLUE_PATH *path, BLUE_LPCSTR username,
-			      BLUE_LPCSTR password, BLUE_LPCSTR domain) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_path_update_credentialsW(OFC_PATH *path, OFC_LPCTSTR username,
+			      OFC_LPCTSTR password, OFC_LPCTSTR domain) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_path_update_credentialsA(OFC_PATH *path, OFC_LPCSTR username,
+			      OFC_LPCSTR password, OFC_LPCSTR domain) ;
 #endif
 
-  OFC_BOOL BluePathIsWild (OFC_LPCTSTR dir) ;
+  OFC_BOOL ofc_path_is_wild (OFC_LPCTSTR dir) ;
 
   OFC_CORE_LIB OFC_VOID
-  BluePathGetRootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
-                    OFC_FST_TYPE *filesystem) ;
+  ofc_path_get_rootW (OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
+                      OFC_FST_TYPE *filesystem) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathGetRootA (OFC_CCHAR *lpFileName, OFC_CHAR **lpRootName,
-                    OFC_FST_TYPE *filesystem) ;
+  ofc_path_get_rootA (OFC_CCHAR *lpFileName, OFC_CHAR **lpRootName,
+                      OFC_FST_TYPE *filesystem) ;
 
   OFC_CORE_LIB OFC_VOID
-  BluePathGetMapW (OFC_INT idx, OFC_LPCTSTR *lpDevice,
-                   OFC_LPCTSTR *lpDesc, BLUE_PATH **map,
-                   OFC_BOOL *thumbnail) ;
+  ofc_path_get_mapW (OFC_INT idx, OFC_LPCTSTR *lpDevice,
+                     OFC_LPCTSTR *lpDesc, OFC_PATH **map,
+                     OFC_BOOL *thumbnail) ;
 
-  OFC_CORE_LIB BLUE_PATH *BlueMapPath (OFC_LPCTSTR lpFileName,
+  OFC_CORE_LIB OFC_PATH *ofc_map_path (OFC_LPCTSTR lpFileName,
                                        OFC_LPTSTR *lppMappedName) ;
-  OFC_CORE_LIB OFC_BOOL BluePathRemote (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathFreeServer (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathServer (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_INT BluePathPort (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetPort (BLUE_PATH *_path, OFC_INT port) ;
+  OFC_CORE_LIB OFC_BOOL ofc_path_remote (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_free_server (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_server (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_INT ofc_path_port (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_port (OFC_PATH *_path, OFC_INT port) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathSetServer (BLUE_PATH *path, OFC_LPTSTR server) ;
+  ofc_path_set_server (OFC_PATH *path, OFC_LPTSTR server) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathSetShare (BLUE_PATH *_path, OFC_LPCTSTR share) ;
+  ofc_path_set_share (OFC_PATH *_path, OFC_LPCTSTR share) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathSetFilename (BLUE_PATH *_path, OFC_LPCTSTR filename) ;
+  ofc_path_set_filename (OFC_PATH *_path, OFC_LPCTSTR filename) ;
   OFC_CORE_LIB OFC_BOOL
-  BluePathServerCmp (BLUE_PATH *path, OFC_LPCTSTR server) ;
+  ofc_path_server_cmp (OFC_PATH *path, OFC_LPCTSTR server) ;
   OFC_CORE_LIB OFC_BOOL
-  BluePathPortCmp (BLUE_PATH *_path, OFC_UINT16 port) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathShare (BLUE_PATH *path) ;
+  ofc_path_port_cmp (OFC_PATH *_path, OFC_UINT16 port) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_share (OFC_PATH *path) ;
   OFC_CORE_LIB OFC_BOOL
-  BluePathShareCmp (BLUE_PATH *path, OFC_LPCTSTR share) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathUsername (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetUsername (BLUE_PATH *_path,
-                                             OFC_LPCTSTR username) ;
+  ofc_path_share_cmp (OFC_PATH *path, OFC_LPCTSTR share) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_username (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_username (OFC_PATH *_path,
+                                               OFC_LPCTSTR username) ;
   OFC_CORE_LIB OFC_BOOL
-  BluePathUsernameCmp (BLUE_PATH *path, OFC_LPCTSTR username) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathPassword (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetPassword (BLUE_PATH *_path,
-                                             OFC_LPCTSTR password) ;
+  ofc_path_username_cmp (OFC_PATH *path, OFC_LPCTSTR username) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_password (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_password (OFC_PATH *_path,
+                                               OFC_LPCTSTR password) ;
   OFC_CORE_LIB OFC_BOOL
-  BluePathPasswordCmp (BLUE_PATH *path, OFC_LPCTSTR password) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathDomain (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetDomain (BLUE_PATH *_path,
-                                           OFC_LPCTSTR domain) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathDevice (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathFreeDevice (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathFreeUsername (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathFreePassword (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathFreeDomain (BLUE_PATH *path) ;
+  ofc_path_password_cmp (OFC_PATH *path, OFC_LPCTSTR password) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_domain (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_domain (OFC_PATH *_path,
+                                             OFC_LPCTSTR domain) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_device (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_free_device (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_free_usernane (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_free_password (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_free_domain (OFC_PATH *path) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathPromoteDirs (BLUE_PATH *path, OFC_UINT num_dirs) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetLocal (BLUE_PATH *_path) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetRemote (BLUE_PATH *_path) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetRelative (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathSetAbsolute (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_BOOL BluePathAbsolute (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_FST_TYPE BluePathType (BLUE_PATH *path) ;
+  ofc_path_promote_dirs (OFC_PATH *path, OFC_UINT num_dirs) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_local (OFC_PATH *_path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_remote (OFC_PATH *_path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_relative (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_set_absolute (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_BOOL ofc_path_absolute (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_FST_TYPE ofc_path_type (OFC_PATH *path) ;
   OFC_CORE_LIB OFC_VOID
-  BluePathSetType (BLUE_PATH *path, OFC_FST_TYPE fstype) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathFilename (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathFreeFilename (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_INT BluePathNumDirs (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_LPCTSTR BluePathDir (BLUE_PATH *path, OFC_UINT ix) ;
-  OFC_CORE_LIB OFC_VOID BluePathFreeDirs (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID BluePathDebug (BLUE_PATH *path) ;
-  OFC_CORE_LIB OFC_VOID InitWorkgroups (OFC_VOID) ;
-  OFC_CORE_LIB OFC_VOID DestroyWorkgroups (OFC_VOID);
-  OFC_CORE_LIB OFC_VOID UpdateWorkgroup (OFC_LPCTSTR workgroup) ;
-  OFC_CORE_LIB OFC_VOID RemoveWorkgroup (OFC_LPCTSTR workgroup) ;
-  OFC_CORE_LIB OFC_BOOL LookupWorkgroup (OFC_LPCTSTR workgroup) ;
+  ofc_path_set_type (OFC_PATH *path, OFC_FST_TYPE fstype) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_filename (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_free_filename (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_INT ofc_path_num_dirs (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_LPCTSTR ofc_path_dir (OFC_PATH *path, OFC_UINT ix) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_free_dirs (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID ofc_path_debug (OFC_PATH *path) ;
+  OFC_CORE_LIB OFC_VOID init_workgroups (OFC_VOID) ;
+  OFC_CORE_LIB OFC_VOID destroy_workgroups (OFC_VOID);
+  OFC_CORE_LIB OFC_VOID update_workgroup (OFC_LPCTSTR workgroup) ;
+  OFC_CORE_LIB OFC_VOID remove_workgroup (OFC_LPCTSTR workgroup) ;
+  OFC_CORE_LIB OFC_BOOL lookup_workgroup (OFC_LPCTSTR workgroup) ;
 
 #if defined(__cplusplus)
 }
 #endif
 
 #if defined(OFC_UNICODE_API)
-#define BluePathAddMap BluePathAddMapW
-#define BluePathCreate BluePathCreateW
-#define BluePathPrint BluePathPrintW
-#define BluePathMakeURL BluePathMakeURLW
-#define BluePathMap BluePathMapW
-#define BluePathDeleteMap BluePathDeleteMapW
-#define BluePathMapDevice BluePathMapDeviceW
-#define BluePathUpdateCredentials BluePathUpdateCredentialsW
-#define BluePathGetRoot BluePathGetRootW
+#define ofc_path_add_map ofc_path_add_mapW
+#define ofc_path_create ofc_path_createW
+#define ofc_path_print ofc_path_printW
+#define ofc_path_make_url ofc_path_make_urlW
+#define ofc_path_map ofc_path_mapW
+#define ofc_path_delete_map ofc_path_delete_mapW
+#define ofc_path_map_device ofc_path_map_deviceW
+#define ofc_path_update_credentials ofc_path_update_credentialsW
+#define ofc_path_get_root ofc_path_get_rootW
 #else
-#define BluePathAddMap BluePathAddMapA
-#define BluePathCreate BluePathCreateA
-#define BluePathPrint BluePathPrintA
-#define BluePathMakeURL BluePathMakeURLA
-#define BluePathMap BluePathMapA
-#define BluePathDeleteMap BluePathDeleteMapA
-#define BluePathMapDevice BluePathMapDeviceA
-#define BluePathUpdateCredentials BluePathUpdateCredentialsA
-#define BluePathGetRoot BluePathGetRootA
+#define ofc_path_add_map ofc_path_add_mapA
+#define ofc_path_create ofc_path_createA
+#define ofc_path_print ofc_path_printA
+#define ofc_path_make_url ofc_path_make_urlA
+#define ofc_path_map ofc_path_mapA
+#define ofc_path_delete_map ofc_path_delete_mapA
+#define ofc_path_map_device ofc_path_map_deviceA
+#define ofc_path_update_credentials ofc_path_update_credentialsA
+#define ofc_path_get_root ofc_path_get_rootA
 #endif
 
 /** \} */

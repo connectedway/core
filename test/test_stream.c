@@ -101,7 +101,7 @@ typedef struct
   /**
    * The IP Address of the Interface
    */
-  BLUE_IPADDR ip ;
+  OFC_IPADDR ip ;
   /**
    * The Handle of the Socket that is listening on the interface
    */
@@ -139,7 +139,7 @@ typedef struct
    * Number of runs through the test
    */
   OFC_INT count ;
-  BLUE_FAMILY_TYPE family ;
+  OFC_FAMILY_TYPE family ;
 } BLUE_STREAM_TEST ;
 
 static OFC_VOID StreamTestPreSelect (OFC_HANDLE app) ;
@@ -206,7 +206,7 @@ typedef struct
   /**
    * The message that is being received
    */
-  BLUE_MESSAGE *recv_msg ;
+  OFC_MESSAGE *recv_msg ;
   /**
    * The header of the received message (contains the message length)
    */
@@ -267,9 +267,9 @@ typedef struct
   /**
    * The message that the application is sending
    */
-  BLUE_MESSAGE *write_msg ;
+  OFC_MESSAGE *write_msg ;
   OFC_HANDLE app ;
-  BLUE_IPADDR ip ;
+  OFC_IPADDR ip ;
 } BLUE_CLIENT_TEST ;
 
 static OFC_VOID ClientTestPreSelect (OFC_HANDLE app) ;
@@ -320,8 +320,8 @@ static OFC_APP_TEMPLATE ClientTestAppDef =
  * \returns
  * A pointer to a BLUE_STREAM_INTERFACE structure
  */
-static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
-						BLUE_IPADDR *ip)
+static BLUE_STREAM_INTERFACE *StartupInterface (OFC_FAMILY_TYPE family,
+                                                OFC_IPADDR *ip)
 {
   BLUE_STREAM_INTERFACE *interface ;
   OFC_CHAR ip_addr[IP6STR_LEN] ;
@@ -329,11 +329,11 @@ static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
   /*
    * Allocate a context for this interface
    */
-  interface = BlueHeapMalloc (sizeof (BLUE_STREAM_INTERFACE)) ;
+  interface = ofc_malloc (sizeof (BLUE_STREAM_INTERFACE)) ;
   /*
    * Initialize the IP address of the interface
    */
-  BlueCmemcpy (&interface->ip, ip, sizeof (BLUE_IPADDR)) ;
+  ofc_memcpy (&interface->ip, ip, sizeof (OFC_IPADDR)) ;
   /*
    * Create a Listen Socket for this interface
    */
@@ -344,7 +344,7 @@ static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
        * If we had trouble issueing a listen, free up the interface and
        * return an error indication (OFC_NULL)
        */
-      BlueHeapFree (interface) ;
+      ofc_free (interface) ;
       interface = OFC_NULL ;
     }
   else
@@ -353,9 +353,9 @@ static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
        * We have a listening socket, let's notify the user that the
        * interface is started
        */
-      BlueCprintf ("Started Interface for %s on %s\n", 
-		   (family == BLUE_FAMILY_IP) ? "IPV4" : "IPV6", 
-		   BlueNETntop (&interface->ip, ip_addr, IP6STR_LEN)) ;
+      ofc_printf ("Started Interface for %s on %s\n",
+                  (family == OFC_FAMILY_IP) ? "IPV4" : "IPV6",
+                  ofc_ntop (&interface->ip, ip_addr, IP6STR_LEN)) ;
     }
 	      
   return (interface) ;
@@ -380,7 +380,7 @@ static OFC_VOID ShutdownInterface (BLUE_STREAM_INTERFACE *interface)
   /*
    * And free the interface context
    */
-  BlueHeapFree (interface) ;
+  ofc_free (interface) ;
 }
 
 /**
@@ -396,7 +396,7 @@ static OFC_VOID ShutdownInterface (BLUE_STREAM_INTERFACE *interface)
 static OFC_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
 {
 #if !defined(OFC_MULTI_TCP)
-  BLUE_IPADDR ip ;
+  OFC_IPADDR ip ;
   BLUE_STREAM_INTERFACE *interface ;
 #endif
 
@@ -414,15 +414,15 @@ static OFC_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
   /*
    * Get it's IP address
    */
-  if (streamTest->family == BLUE_FAMILY_IP)
+  if (streamTest->family == OFC_FAMILY_IP)
     {
-      ip.ip_version = BLUE_FAMILY_IP ;
-      ip.u.ipv4.addr = BLUE_INADDR_ANY ;
+      ip.ip_version = OFC_FAMILY_IP ;
+      ip.u.ipv4.addr = OFC_INADDR_ANY ;
     }
   else
     {
-      ip.ip_version = BLUE_FAMILY_IPV6 ;
-      ip.u.ipv6 = blue_in6addr_any ;
+      ip.ip_version = OFC_FAMILY_IPV6 ;
+      ip.u.ipv6 = ofc_in6addr_any ;
     }
 
   /*
@@ -702,7 +702,7 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		       *
 		       * Let's create an app to accept the listen
 		       */
-		      serverTest = BlueHeapMalloc (sizeof (BLUE_SERVER_TEST)) ;
+		      serverTest = ofc_malloc (sizeof (BLUE_SERVER_TEST)) ;
 		      /*
 		       * Initialize it's state to idle and set up the info
 		       * we know about
@@ -720,7 +720,7 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 			BlueSocketAccept (serverTest->masterSocket) ;
 		      if (serverTest->hSocket == OFC_HANDLE_NULL)
 			{
-			  BlueHeapFree (serverTest) ;
+			  ofc_free (serverTest) ;
 			}
 		      else
 			{
@@ -755,7 +755,7 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 			   * Let's create an app to send a message
 			   */
 			  clientTest = 
-			    BlueHeapMalloc (sizeof (BLUE_CLIENT_TEST)) ;
+			    ofc_malloc (sizeof (BLUE_CLIENT_TEST)) ;
 			  /*
 			   * Set it's state and the info we know
 			   */
@@ -763,12 +763,12 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 			  clientTest->scheduler = streamTest->scheduler ;
 			  clientTest->ip = interface->ip ;
 
-			  BlueCprintf ("Creating Stream Client for %s "
+			  ofc_printf ("Creating Stream Client for %s "
 				       "Application on %s\n",
-				       streamTest->family == BLUE_FAMILY_IP ?
-				       "IPv4" : "IPv6", 
-				       BlueNETntop (&interface->ip,
-						    ip_str, IP6STR_LEN)) ;
+                          streamTest->family == OFC_FAMILY_IP ?
+				       "IPv4" : "IPv6",
+                          ofc_ntop (&interface->ip,
+                                    ip_str, IP6STR_LEN)) ;
 			  /*
 			   * Create the application
 			   */
@@ -809,7 +809,7 @@ static OFC_VOID StreamTestDestroy (OFC_HANDLE app)
   BLUE_STREAM_TEST *streamTest ;
   BLUE_STREAM_INTERFACE *interface ;
 
-  BlueCprintf ("Destroying Stream Test Application\n") ;
+  ofc_printf ("Destroying Stream Test Application\n") ;
 
   /*
    * Get the application's data
@@ -856,7 +856,7 @@ static OFC_VOID StreamTestDestroy (OFC_HANDLE app)
       /*
        * Destroy our context
        */
-      BlueHeapFree (streamTest) ;
+      ofc_free (streamTest) ;
     }
 }
 
@@ -943,8 +943,8 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
   BLUE_SERVER_TEST *serverTest ;
   OFC_SIZET count ;
   OFC_BOOL progress ;
-  BLUE_SOCKADDR sockaddr_local ;
-  BLUE_SOCKADDR sockaddr_remote ;
+  OFC_SOCKADDR sockaddr_local ;
+  OFC_SOCKADDR sockaddr_remote ;
   OFC_CHAR local_ip_str[IP6STR_LEN] ;
   OFC_CHAR remote_ip_str[IP6STR_LEN] ;
 
@@ -992,9 +992,9 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		       * it to stay in scope.
 		       */
 		      serverTest->recv_msg = 
-			BlueMessageCreate (MSG_ALLOC_AUTO, 
-					   CLIENT_MSG_HEADER_LEN,
-					   (OFC_CHAR *) &serverTest->header) ;
+			ofc_message_create (MSG_ALLOC_AUTO,
+                                CLIENT_MSG_HEADER_LEN,
+                                (OFC_CHAR *) &serverTest->header) ;
 		    }
 		  /*
 		   * Now Service the read using recv_msg
@@ -1005,18 +1005,18 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		   * Check if we've received the entire message (or expected
 		   * portion)
 		   */
-		  if (BlueMessageDone (serverTest->recv_msg))
+		  if (ofc_message_done (serverTest->recv_msg))
 		    {
 		      /*
 		       * In this case, we were only expecting the header, and
 		       * we've received the entire header, so let's figure out
 		       * how many bytes are in the message.
 		       */
-		      count = BLUE_NET_NTOL (&serverTest->header, 0) ;
+		      count = OFC_NET_NTOL (&serverTest->header, 0) ;
 		      /*
 		       * Destroy the message context
 		       */
-		      BlueMessageDestroy (serverTest->recv_msg) ;
+		      ofc_message_destroy (serverTest->recv_msg) ;
 		      /*
 		       * And create a new one to read the body.  This one is
 		       * created using MSG_ALLOC_HEAP which directs the
@@ -1024,7 +1024,7 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		       * the heap.  
 		       */
 		      serverTest->recv_msg = 
-			BlueMessageCreate (MSG_ALLOC_HEAP, count, OFC_NULL) ;
+			ofc_message_create (MSG_ALLOC_HEAP, count, OFC_NULL) ;
 		      /*
 		       * And switch our state to body
 		       */
@@ -1048,7 +1048,7 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		  /*
 		   * Have we read in the entire message body?
 		   */
-		  if (BlueMessageDone (serverTest->recv_msg))
+		  if (ofc_message_done (serverTest->recv_msg))
 		    {
 		      /*
 		       * Entire message read in
@@ -1056,16 +1056,16 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		      BlueSocketGetAddresses (serverTest->hSocket,
 					      &sockaddr_local,
 					      &sockaddr_remote) ;
-		      BlueNETntop(&sockaddr_local.sin_addr,
-				  local_ip_str, IP6STR_LEN) ;
-		      BlueNETntop(&sockaddr_remote.sin_addr,
-				  remote_ip_str, IP6STR_LEN) ;
-		      BlueCprintf ("Read %d Bytes on %s(%d) from %s(%d)\n",
-				   BlueMessageOffset(serverTest->recv_msg),
-				   local_ip_str,
-				   sockaddr_local.sin_port,
-				   remote_ip_str,
-				   sockaddr_remote.sin_port) ;
+		      ofc_ntop(&sockaddr_local.sin_addr,
+                       local_ip_str, IP6STR_LEN) ;
+		      ofc_ntop(&sockaddr_remote.sin_addr,
+                       remote_ip_str, IP6STR_LEN) ;
+		      ofc_printf ("Read %d Bytes on %s(%d) from %s(%d)\n",
+                          ofc_message_offset(serverTest->recv_msg),
+                          local_ip_str,
+                          sockaddr_local.sin_port,
+                          remote_ip_str,
+                          sockaddr_remote.sin_port) ;
 		      /*
 		       * We persist only for receipt of one message.  So
 		       * start to tear down the application
@@ -1093,7 +1093,7 @@ static OFC_VOID ServerTestDestroy (OFC_HANDLE app)
 {
   BLUE_SERVER_TEST *serverTest ;
 
-  BlueCprintf ("Destroying Stream Server Application\n") ;
+  ofc_printf ("Destroying Stream Server Application\n") ;
   /*
    * Get our context
    */
@@ -1123,13 +1123,13 @@ static OFC_VOID ServerTestDestroy (OFC_HANDLE app)
 	   * If we have a message allocated, destroy it
 	   */
 	  if (serverTest->recv_msg != OFC_NULL)
-	    BlueMessageDestroy (serverTest->recv_msg) ;
+	    ofc_message_destroy (serverTest->recv_msg) ;
 	  break ;
 	}
       /*
        * And free the server application's context
        */
-      BlueHeapFree (serverTest) ;
+      ofc_free (serverTest) ;
     }
 }
 
@@ -1138,8 +1138,8 @@ OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
   OFC_BOOL progress ;
   OFC_SIZET size ;
   OFC_CHAR *buffer ;
-  BLUE_SOCKADDR sockaddr_local ;
-  BLUE_SOCKADDR sockaddr_remote ;
+  OFC_SOCKADDR sockaddr_local ;
+  OFC_SOCKADDR sockaddr_remote ;
   OFC_CHAR local_ip_str[IP6STR_LEN] ;
   OFC_CHAR remote_ip_str[IP6STR_LEN] ;
 
@@ -1150,39 +1150,39 @@ OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
    */
   if (clientTest->write_msg == OFC_HANDLE_NULL)
     {
-      size = BlueCstrlen (CLIENT_MSG_DATA) ;
-      clientTest->write_msg = BlueMessageCreate (MSG_ALLOC_HEAP,
+      size = ofc_strlen (CLIENT_MSG_DATA) ;
+      clientTest->write_msg = ofc_message_create (MSG_ALLOC_HEAP,
 						 CLIENT_MSG_HEADER_LEN + size,
-                                                 OFC_NULL) ;
+                                                  OFC_NULL) ;
       /*
        * Since it's allocated from the heap, let's get the
        * address of the buffer to fill with the message, then
        * let's construct the message
        */
-      buffer = BlueMessageData(clientTest->write_msg) ;
+      buffer = ofc_message_data(clientTest->write_msg) ;
 
-      BLUE_NET_LTON(buffer, OFFSET_CLIENT_MSG_SIZE, size) ;
-      BlueCstrncpy (&buffer[OFFSET_CLIENT_MSG_DATA],
-		    CLIENT_MSG_DATA, 
-		    BlueCstrlen (CLIENT_MSG_DATA)) ;
+      OFC_NET_LTON(buffer, OFFSET_CLIENT_MSG_SIZE, size) ;
+      ofc_strncpy (&buffer[OFFSET_CLIENT_MSG_DATA],
+                   CLIENT_MSG_DATA,
+                   ofc_strlen (CLIENT_MSG_DATA)) ;
     }
   /*
    * Now write it to the server
    */
   progress = BlueSocketWrite (clientTest->hSocket, clientTest->write_msg) ;
 
-  if (BlueMessageDone (clientTest->write_msg))
+  if (ofc_message_done (clientTest->write_msg))
     {
       BlueSocketGetAddresses (clientTest->hSocket,
 			      &sockaddr_local,
 			      &sockaddr_remote) ;
-      BlueNETntop(&sockaddr_local.sin_addr, local_ip_str, IP6STR_LEN) ;
-      BlueNETntop(&sockaddr_remote.sin_addr, remote_ip_str, IP6STR_LEN) ;
-      BlueCprintf ("Wrote Message on %s(%d) to %s(%d)\n",
-		   local_ip_str,
-		   sockaddr_local.sin_port,
-		   remote_ip_str,
-		   sockaddr_remote.sin_port) ;
+      ofc_ntop(&sockaddr_local.sin_addr, local_ip_str, IP6STR_LEN) ;
+      ofc_ntop(&sockaddr_remote.sin_addr, remote_ip_str, IP6STR_LEN) ;
+      ofc_printf ("Wrote Message on %s(%d) to %s(%d)\n",
+                  local_ip_str,
+                  sockaddr_local.sin_port,
+                  remote_ip_str,
+                  sockaddr_remote.sin_port) ;
       /*
        * We've written the entire message, so since 
        * we're not persistent, let's clean up the 
@@ -1364,7 +1364,7 @@ static OFC_VOID ClientTestDestroy (OFC_HANDLE app)
 {
   BLUE_CLIENT_TEST *clientTest ;
 
-  BlueCprintf ("Destroying Stream Client Application\n") ;
+  ofc_printf ("Destroying Stream Client Application\n") ;
 
   /*
    * Get the app's context
@@ -1395,13 +1395,13 @@ static OFC_VOID ClientTestDestroy (OFC_HANDLE app)
 	   * And free the message if we have one
 	   */
 	  if (clientTest->write_msg != OFC_NULL)
-	    BlueMessageDestroy (clientTest->write_msg) ;
+	    ofc_message_destroy (clientTest->write_msg) ;
 	  break ;
 	}
       /*
        * And free the application's context.
        */
-      BlueHeapFree (clientTest) ;
+      ofc_free (clientTest) ;
     }
 }
 
@@ -1425,16 +1425,16 @@ TEST(stream, test_stream)
   /*
    * Allocate a management context for the socket server application
    */
-  streamTest = BlueHeapMalloc (sizeof (BLUE_STREAM_TEST)) ;
+  streamTest = ofc_malloc (sizeof (BLUE_STREAM_TEST)) ;
   /*
    * Initialize the state and note the scheduler the app is part of
    */
-  streamTest->family = BLUE_FAMILY_IP ;
+  streamTest->family = OFC_FAMILY_IP ;
   streamTest->count = 0 ;
   streamTest->state = STREAM_TEST_STATE_IDLE ;
   streamTest->scheduler = hScheduler ;
 
-  BlueCprintf ("Creating Stream Test Application for IPv4\n") ;
+  ofc_printf ("Creating Stream Test Application for IPv4\n") ;
   /*
    * Create the Application using the scheduler definition and the
    * management context
@@ -1451,16 +1451,16 @@ TEST(stream, test_stream)
   /*
    * Now IPv6. Allocate a management context for the socket server application
    */
-  streamTest = BlueHeapMalloc (sizeof (BLUE_STREAM_TEST)) ;
+  streamTest = ofc_malloc (sizeof (BLUE_STREAM_TEST)) ;
   /*
    * Initialize the state and note the scheduler the app is part of
    */
-  streamTest->family = BLUE_FAMILY_IPV6 ;
+  streamTest->family = OFC_FAMILY_IPV6 ;
   streamTest->count = 0 ;
   streamTest->state = STREAM_TEST_STATE_IDLE ;
   streamTest->scheduler = hScheduler ;
 
-  BlueCprintf ("Creating Stream Test Application for IPv6\n") ;
+  ofc_printf ("Creating Stream Test Application for IPv6\n") ;
   /*
    * Create the Application using the scheduler definition and the
    * management context

@@ -193,7 +193,7 @@ static OFC_HANDLE EventTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 	    case EVENT_TEST_STATE_RUNNING:
 	      if (hEvent == eventTest->hEvent)
 		{
-		  BlueCprintf ("Event Triggered\n") ;
+		  ofc_printf ("Event Triggered\n") ;
 		  eventTest->count++ ;
 
 		  if (eventTest->count >= 10)
@@ -203,7 +203,7 @@ static OFC_HANDLE EventTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 		{
 		  ofc_event_set (eventTest->hEvent) ;
 		  BlueTimerSet (eventTest->hTimer, EVENT_TEST_INTERVAL) ;
-		  BlueCprintf ("Timer Triggered\n") ;
+		  ofc_printf ("Timer Triggered\n") ;
 		}
 	      break ;
 	    }
@@ -231,7 +231,7 @@ static OFC_VOID EventTestDestroy (OFC_HANDLE app)
 	  break ;
 	}
 
-      BlueHeapFree (eventTest) ;
+      ofc_free (eventTest) ;
     }
 }
 
@@ -252,7 +252,7 @@ TEST(event, test_event)
   BLUE_EVENT_TEST *eventTest ;
   OFC_HANDLE hApp ;
 
-  eventTest = BlueHeapMalloc (sizeof (BLUE_EVENT_TEST)) ;
+  eventTest = ofc_malloc (sizeof (BLUE_EVENT_TEST)) ;
   eventTest->count = 0 ;
   eventTest->state = EVENT_TEST_STATE_IDLE ;
   eventTest->scheduler = hScheduler ;

@@ -25,7 +25,7 @@ typedef struct
   OFC_HANDLE impl ;
   OFC_BOOL connected ;
   BLUE_SOCKET_TYPE type ;
-  BLUE_IPADDR ip ;		/* For input stream sockets */
+  OFC_IPADDR ip ;		/* For input stream sockets */
   OFC_UINT16 port ;		/* ... */
   OFC_SIZET write_count ;
   OFC_INT write_offset ;
@@ -51,7 +51,7 @@ BlueSocketAlloc (OFC_VOID)
 {
   BLUE_SOCKET *sock ;
 
-  sock = BlueHeapMalloc (sizeof (BLUE_SOCKET)) ;
+  sock = ofc_malloc (sizeof (BLUE_SOCKET)) ;
   sock->impl = OFC_HANDLE_NULL ;
   sock->type = SOCKET_TYPE_NONE;
 
@@ -61,7 +61,7 @@ BlueSocketAlloc (OFC_VOID)
 static OFC_VOID
 BlueSocketFree (BLUE_SOCKET *sock) 
 {
-  BlueHeapFree (sock) ;
+  ofc_free (sock) ;
 }
 
 /*
@@ -90,17 +90,17 @@ BlueSocketDestroy (OFC_HANDLE hSock)
     }
 }
 
-static OFC_INT BlueIPv6GetScope (const BLUE_IPADDR *ip)
+static OFC_INT BlueIPv6GetScope (const OFC_IPADDR *ip)
 {
   OFC_INT scope ;
 
-  if (BLUE_IN6_IS_ADDR_LOOPBACK (ip->u.ipv6.blue_s6_addr))
+  if (OFC_IN6_IS_ADDR_LOOPBACK (ip->u.ipv6._s6_addr))
     scope = 0x01 ;
-  else if ((BLUE_IN6_IS_ADDR_LINKLOCAL (ip->u.ipv6.blue_s6_addr)) ||
-	   (BLUE_IN6_IS_ADDR_MC_LINKLOCAL (ip->u.ipv6.blue_s6_addr)))
+  else if ((OFC_IN6_IS_ADDR_LINKLOCAL (ip->u.ipv6._s6_addr)) ||
+	   (OFC_IN6_IS_ADDR_MC_LINKLOCAL (ip->u.ipv6._s6_addr)))
     scope = 0x02 ;
-  else if ((BLUE_IN6_IS_ADDR_SITELOCAL (ip->u.ipv6.blue_s6_addr)) ||
-	   (BLUE_IN6_IS_ADDR_MC_SITELOCAL (ip->u.ipv6.blue_s6_addr)))
+  else if ((OFC_IN6_IS_ADDR_SITELOCAL (ip->u.ipv6._s6_addr)) ||
+	   (OFC_IN6_IS_ADDR_MC_SITELOCAL (ip->u.ipv6._s6_addr)))
     scope = 0x05 ;
   else
     scope = 0x0e ;
@@ -109,28 +109,28 @@ static OFC_INT BlueIPv6GetScope (const BLUE_IPADDR *ip)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSocketSourceAddress (const BLUE_IPADDR *dest, 
-			 BLUE_IPADDR *source)
+BlueSocketSourceAddress (const OFC_IPADDR *dest,
+                         OFC_IPADDR *source)
 {
   OFC_INT count ;
   OFC_INT i ;
-  BLUE_IPADDR ifip ;
-  BLUE_IPADDR ifmask ;
+  OFC_IPADDR ifip ;
+  OFC_IPADDR ifmask ;
 
-  count = BlueNetInterfaceCount () ;
+  count = ofc_net_interface_count () ;
   /*
    * Start with a default
    */
   source->ip_version = dest->ip_version ;
-  if (dest->ip_version == BLUE_FAMILY_IP)
+  if (dest->ip_version == OFC_FAMILY_IP)
     {
-      source->u.ipv4.addr = BLUE_INADDR_ANY ;
+      source->u.ipv4.addr = OFC_INADDR_ANY ;
       /* try to match by subnet */
 
-      for (i = 0 ; i < count && source->u.ipv4.addr == BLUE_INADDR_ANY ; i++)
+      for (i = 0 ; i < count && source->u.ipv4.addr == OFC_INADDR_ANY ; i++)
 	{
-	  BlueNetInterfaceAddr (i, &ifip, OFC_NULL, &ifmask) ;
-	  if (ifip.ip_version == BLUE_FAMILY_IP)
+	  ofc_net_interface_addr (i, &ifip, OFC_NULL, &ifmask) ;
+	  if (ifip.ip_version == OFC_FAMILY_IP)
 	    {
 	      if ((ifip.u.ipv4.addr & ifmask.u.ipv4.addr) ==
 		  (dest->u.ipv4.addr & ifmask.u.ipv4.addr))
@@ -148,8 +148,8 @@ BlueSocketSourceAddress (const BLUE_IPADDR *dest,
 	  /*
 	   * Rule 1, prefer same address
 	   */
-	  if (BLUE_IN6_ARE_ADDR_EQUAL (ifip.u.ipv6.blue_s6_addr,
-				       dest->u.ipv6.blue_s6_addr))
+	  if (OFC_IN6_ARE_ADDR_EQUAL (ifip.u.ipv6.s6_addr,
+				       dest->u.ipv6.s6_addr))
 	    *source = ifip ;
 	  /*
 	   * Rule 2, Prefer scope
@@ -171,12 +171,12 @@ BlueSocketSourceAddress (const BLUE_IPADDR *dest,
       OFC_INT sscope ;
 
       dscope = BlueIPv6GetScope(dest) ;
-      source->u.ipv6 = blue_in6addr_any ;
+      source->u.ipv6 = ofc_in6addr_any ;
       sscope = BlueIPv6GetScope (source) ;
       for (i = 0 ; i < count ; i++)
 	{
-	  BlueNetInterfaceAddr (i, &ifip, OFC_NULL, OFC_NULL) ;
-	  if (ifip.ip_version == BLUE_FAMILY_IPV6)
+	  ofc_net_interface_addr (i, &ifip, OFC_NULL, OFC_NULL) ;
+	  if (ifip.ip_version == OFC_FAMILY_IPV6)
 	    {
 	      ifscope = BlueIPv6GetScope(&ifip) ;
 	      if (dscope <= ifscope && ifscope <= sscope)
@@ -201,12 +201,12 @@ BlueSocketSourceAddress (const BLUE_IPADDR *dest,
  *    socket structure for connection
  */
 OFC_CORE_LIB OFC_HANDLE
-BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port)
+BlueSocketConnect (const OFC_IPADDR *ip, OFC_UINT16 port)
 {
   OFC_HANDLE hSocket ;
   BLUE_SOCKET *pSock ;
-  BLUE_IPADDR myinaddr ;
-  BLUE_IPADDR dip ;
+  OFC_IPADDR myinaddr ;
+  OFC_IPADDR dip ;
 
   /*
    * Create a socket
@@ -228,8 +228,8 @@ BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port)
       if (BlueSocketImplBind (pSock->impl, &myinaddr, 0))
 	{
 	  BlueSocketImplNoBlock (pSock->impl, OFC_TRUE) ;
-	  if (dip.ip_version == BLUE_FAMILY_IPV6)
-	    dip.u.ipv6.blue_scope = myinaddr.u.ipv6.blue_scope ;
+	  if (dip.ip_version == OFC_FAMILY_IPV6)
+	    dip.u.ipv6.scope = myinaddr.u.ipv6.scope ;
 
 	  if (BlueSocketImplConnect (pSock->impl, &dip, port))
 	    {
@@ -274,7 +274,7 @@ BlueSocketConnected (OFC_HANDLE hSocket)
  *    listening socket
  */
 OFC_CORE_LIB OFC_HANDLE
-BlueSocketListen (const BLUE_IPADDR *ip, OFC_UINT16 port)
+BlueSocketListen (const OFC_IPADDR *ip, OFC_UINT16 port)
 {
   OFC_HANDLE hSocket ;
   BLUE_SOCKET *pSock ;
@@ -321,7 +321,7 @@ BlueSocketListen (const BLUE_IPADDR *ip, OFC_UINT16 port)
 *    datagram socket
 */
 OFC_CORE_LIB OFC_HANDLE
-BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port)
+BlueSocketDatagram (const OFC_IPADDR *ip, OFC_UINT16 port)
 {
   BLUE_SOCKET *sock ;
   OFC_HANDLE hSocket ;
@@ -374,7 +374,7 @@ BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port)
 *    datagram socket
 */
 OFC_CORE_LIB OFC_HANDLE
-BlueSocketRaw (const BLUE_IPADDR *ip, BLUE_SOCKET_TYPE socktype)
+BlueSocketRaw (const OFC_IPADDR *ip, BLUE_SOCKET_TYPE socktype)
 {
   BLUE_SOCKET *sock ;
   OFC_HANDLE hSocket ;
@@ -466,7 +466,7 @@ BlueSocketAccept (OFC_HANDLE hMasterSocket)
  *   True if we wrote something, false otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-BlueSocketWrite (OFC_HANDLE hSocket, BLUE_MESSAGE *msg)
+BlueSocketWrite (OFC_HANDLE hSocket, OFC_MESSAGE *msg)
 {
   OFC_SIZET nbytes ;
   BLUE_SOCKET *socket ;
@@ -508,8 +508,8 @@ BlueSocketWrite (OFC_HANDLE hSocket, BLUE_MESSAGE *msg)
 	{
 	  if (nbytes > msg->count)
 	    {
-	      BlueCprintf ("nbytes %d is greater then count %d\n",
-			   nbytes, msg->count) ;
+	      ofc_printf ("nbytes %d is greater then count %d\n",
+                      nbytes, msg->count) ;
 	      nbytes = msg->count ;
 	    }
 	  msg->count -= nbytes ;
@@ -523,8 +523,8 @@ BlueSocketWrite (OFC_HANDLE hSocket, BLUE_MESSAGE *msg)
 
 	  handle = ofc_handle_lock (socket->impl) ;
 
-	  BlueCprintf ("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
-		       socket->type, socket->impl, handle, msg->count) ;
+	  ofc_printf ("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
+                  socket->type, socket->impl, handle, msg->count) ;
 	  /*
 	   * Force message to retire
 	   */
@@ -550,7 +550,7 @@ BlueSocketWrite (OFC_HANDLE hSocket, BLUE_MESSAGE *msg)
  *
  */
 OFC_CORE_LIB OFC_BOOL
-BlueSocketRead (OFC_HANDLE hSocket, BLUE_MESSAGE *msg)
+BlueSocketRead (OFC_HANDLE hSocket, OFC_MESSAGE *msg)
 {
   BLUE_SOCKET *socket ;
   OFC_SIZET len ;
@@ -675,8 +675,8 @@ BlueSocketSetRecvSize (OFC_HANDLE hSocket, OFC_INT size)
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueSocketGetAddresses (OFC_HANDLE hSock, BLUE_SOCKADDR *local,
-                        BLUE_SOCKADDR *remote)
+BlueSocketGetAddresses (OFC_HANDLE hSock, OFC_SOCKADDR *local,
+                        OFC_SOCKADDR *remote)
 {
   BLUE_SOCKET *sock ;
   OFC_BOOL ret ;

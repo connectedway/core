@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_HEAP_H__)
-#define __BLUE_HEAP_H__
+#if !defined(__OFC_HEAP_H__)
+#define __OFC_HEAP_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -44,12 +44,12 @@ extern "C"
    * heap for use.  This may be a noop on many platforms
    */
   OFC_CORE_LIB OFC_VOID
-  BlueHeapLoad (OFC_VOID) ;
+  ofc_heap_load (OFC_VOID) ;
   /**
    * Unload the heap
    */
   OFC_CORE_LIB OFC_VOID
-  BlueHeapUnload (OFC_VOID) ;
+  ofc_heap_unload (OFC_VOID) ;
   /**
    * Deallocate a chunk of memory
    *
@@ -60,11 +60,11 @@ extern "C"
    *
    */
   OFC_CORE_LIB OFC_VOID
-  BlueHeapFree (OFC_LPVOID mem) ;
+  ofc_free (OFC_LPVOID mem) ;
   OFC_CORE_LIB OFC_VOID
-  BlueHeapCheckAlloc (OFC_LPCVOID mem) ;
+  ofc_heap_check_alloc (OFC_LPCVOID mem) ;
   OFC_CORE_LIB OFC_VOID
-  BlueHeapDumpChunk (OFC_LPVOID mem) ;
+  ofc_heap_dump_chunk (OFC_LPVOID mem) ;
   /**
    * Allocate a chunk of memory
    *
@@ -77,10 +77,10 @@ extern "C"
    * Nothing
    */
   OFC_CORE_LIB OFC_LPVOID
-  BlueHeapMalloc (OFC_SIZET size) ;
+  ofc_malloc (OFC_SIZET size) ;
 
   OFC_CORE_LIB OFC_LPVOID
-  BlueHeapCalloc (OFC_SIZET nmemb, OFC_SIZET size) ;
+  ofc_calloc (OFC_SIZET nmemb, OFC_SIZET size) ;
   /**
    * Change the size (reallocate) a chunk of memory
    *
@@ -100,7 +100,7 @@ extern "C"
    * 2^x to the 2^(x+1) will return the pointer passed in.
    */
   OFC_CORE_LIB OFC_LPVOID
-  BlueHeapRealloc (OFC_LPVOID ptr, OFC_SIZET size) ;
+  ofc_realloc (OFC_LPVOID ptr, OFC_SIZET size) ;
   /**
    * Dump Blue Heap Stats Usuage
    * 
@@ -108,7 +108,7 @@ extern "C"
    * maximum number of bytes that had been used 
    */
   OFC_CORE_LIB OFC_VOID
-  BlueHeapDumpStats (OFC_VOID) ;
+  ofc_heap_dump_stats (OFC_VOID) ;
   /**
    * Dump Blue Heap Trace
    *
@@ -117,7 +117,7 @@ extern "C"
    * chunk and the size of the chunk.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueHeapDump (OFC_VOID) ;
+  ofc_heap_dump (OFC_VOID) ;
   /**
    * Snap the Blue Heap
    * 
@@ -125,7 +125,7 @@ extern "C"
    * those chunks that are 'not snapped' will be printed upon a dump
    */
   OFC_CORE_LIB OFC_VOID
-  BlueHeapSnap (OFC_VOID) ;
+  ofc_heap_snap (OFC_VOID) ;
 #if defined(__cplusplus)
 }
 #endif

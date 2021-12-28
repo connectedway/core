@@ -59,7 +59,7 @@ BlueSchedCreate(OFC_VOID)
   /*
    * Try to allocate room for the scheduler
    */
-  scheduler = BlueHeapMalloc (sizeof (SCHEDULER)) ;
+  scheduler = ofc_malloc (sizeof (SCHEDULER)) ;
 
   scheduler->quit = OFC_FALSE ;
   scheduler->significant_event = OFC_FALSE ;
@@ -399,7 +399,7 @@ BlueSchedDestroy (OFC_HANDLE hScheduler)
        * And get rid of the scheduler
        */
       BlueWaitSetDestroy (scheduler->hEventSet) ;
-      BlueHeapFree (scheduler) ;
+      ofc_free (scheduler) ;
       ofc_handle_destroy (hScheduler) ;
       ofc_handle_unlock (hScheduler) ;
     }

@@ -36,20 +36,20 @@ typedef enum
     /**
      * IP family.  All RAW TCP/UDP/IP traffic is part of this family
      */
-    BLUE_FAMILY_IP,
+    OFC_FAMILY_IP,
     /**
      * IPv6 Family
      */
-    BLUE_FAMILY_IPV6,
+    OFC_FAMILY_IPV6,
     /**
      * NetBIOS Family.  Currently not supported
      */
-    BLUE_FAMILY_NETBIOS,
+    OFC_FAMILY_NETBIOS,
     /**
      * Number of supported socket families
      */
-    BLUE_FAMILY_NUM
-  } BLUE_FAMILY_TYPE ;
+    OFC_FAMILY_NUM
+  } OFC_FAMILY_TYPE ;
 
 /**
  * A IPv4 IP Address
@@ -57,65 +57,65 @@ typedef enum
 typedef struct
   {
     OFC_UINT32 addr;
-  } BLUE_INADDR ;
+  } OFC_INADDR ;
 /**
  * An IPv6 address
  */
 typedef struct
 {
-  OFC_UINT8 blue_s6_addr[16] ;
-  OFC_INT blue_scope ;
-} BLUE_IN6ADDR ;
+  OFC_UINT8 _s6_addr[16];
+  OFC_INT scope ;
+} OFC_IN6ADDR ;
 
 typedef struct
 {
-  BLUE_FAMILY_TYPE ip_version ;
+  OFC_FAMILY_TYPE ip_version ;
   union 
   {
-    BLUE_INADDR ipv4 ;
-    BLUE_IN6ADDR ipv6 ;
+    OFC_INADDR ipv4 ;
+    OFC_IN6ADDR ipv6 ;
   } u ;
-} BLUE_IPADDR ;
+} OFC_IPADDR ;
 
 /**
  * Representation of a WildCard IP Address
  */
-#define BLUE_INADDR_ANY ((OFC_UINT32) 0x00000000)
+#define OFC_INADDR_ANY ((OFC_UINT32) 0x00000000)
 
-#define BLUE_IN6ADDR_ANY_INIT {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-extern BLUE_IN6ADDR blue_in6addr_any ;
+#define OFC_IN6ADDR_ANY_INIT {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+extern OFC_IN6ADDR ofc_in6addr_any ;
 
 /**
  * Representation of the loopback IP Address
  */
-#define BLUE_INADDR_LOOPBACK ((OFC_UINT32) 0x7f000001)
+#define OFC_INADDR_LOOPBACK ((OFC_UINT32) 0x7f000001)
 
-#define BLUE_IN6ADDR_LOOPBACK_INIT { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 }
-extern BLUE_IN6ADDR blue_in6addr_loopback ;
+#define OFCIN6ADDR_LOOPBACK_INIT { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 }
+extern OFC_IN6ADDR ofc_in6addr_loopback ;
 /**
  * Representation of the Interface Generic Broadcast Address
  */
-#define BLUE_INADDR_BROADCAST ((OFC_UINT32) 0xffffffff)
-#define BLUE_IN6ADDR_BCAST_INIT { 0xFF,0x02,0,0,0,0,0,0,0,0,0,0,0,0,0,1 }
-extern BLUE_IN6ADDR blue_in6addr_bcast ;
+#define OFC_INADDR_BROADCAST ((OFC_UINT32) 0xffffffff)
+#define OFC_IN6ADDR_BCAST_INIT { 0xFF,0x02,0,0,0,0,0,0,0,0,0,0,0,0,0,1 }
+extern OFC_IN6ADDR ofc_in6addr_bcast ;
 /**
  * Representation of an unspecified IP Address
  */
-#define BLUE_INADDR_NONE ((OFC_UINT32) 0xffffffff)
-#define BLUE_IN6ADDR_NONE_INIT { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF }
-extern BLUE_IN6ADDR blue_in6addr_none ;
+#define OFC_INADDR_NONE ((OFC_UINT32) 0xffffffff)
+#define OFC_IN6ADDR_NONE_INIT { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF }
+extern OFC_IN6ADDR ofc_in6addr_none ;
 
 /**
  * Definition of a socket address.  
  *
  * Used by the Socket APIs
  */
-typedef struct _BLUE_SOCKADDR
+typedef struct _OFC_SOCKADDR
 {
   OFC_UINT16 sin_family ;	/* The Address Family */
   OFC_UINT16 sin_port ;	/* The TCP/UDP Port Number */
-  BLUE_IPADDR sin_addr ;	/* The IP Address */
-} BLUE_SOCKADDR ;
+  OFC_IPADDR sin_addr ;	/* The IP Address */
+} OFC_SOCKADDR ;
 
 /**
  * \latexonly
@@ -183,7 +183,7 @@ typedef struct _BLUE_SOCKADDR
 #endif
 
 /**
- * BLUE_NET_NTOS - dereference a smb short value
+ * OFC_NET_NTOS - dereference a smb short value
  *
  * Accepts:
  *    a - reference to smb short value
@@ -191,9 +191,9 @@ typedef struct _BLUE_SOCKADDR
  * For Example:
  *    myshort = smbtos(smb.word) - Return the smb short value
  */
-#define BLUE_NET_NTOS(a,o) (u8tou16((OFC_UINT8*)a+o,0)|u8tou16((OFC_UINT8*)a+o,1))
+#define OFC_NET_NTOS(a,o) (u8tou16((OFC_UINT8*)a+o,0)|u8tou16((OFC_UINT8*)a+o,1))
 /**
- * BLUE_NET_NTOS - dereference a smb short value
+ * OFC_NET_NTOS - dereference a smb short value
  *
  * Accepts:
  *    a - reference to smb short value
@@ -202,20 +202,20 @@ typedef struct _BLUE_SOCKADDR
  *    myshort = smbtos(smb.word) - Return the smb short value
  */
 
-#define BLUE_NET_NTOL(a,o) (u8tou32((OFC_UINT8*)a+o,0)|u8tou32((OFC_UINT8*)a+o,1)|u8tou32((OFC_UINT8*)a+o,2)|u8tou32((OFC_UINT8*)a+o,3))
+#define OFC_NET_NTOL(a,o) (u8tou32((OFC_UINT8*)a+o,0)|u8tou32((OFC_UINT8*)a+o,1)|u8tou32((OFC_UINT8*)a+o,2)|u8tou32((OFC_UINT8*)a+o,3))
 #if defined(OFC_64BIT_INTEGER)
-#define BLUE_NET_NTOLL(a,o) (u8tou64((OFC_UINT8*)a+o,0)|u8tou64((OFC_UINT8*)a+o,1)|u8tou64((OFC_UINT8*)a+o,2)|u8tou64((OFC_UINT8*)a+o,3)|u8tou64((OFC_UINT8*)a+o,4)|u8tou64((OFC_UINT8*)a+o,5)|u8tou64((OFC_UINT8*)a+o,6)|u8tou64((OFC_UINT8*)a+o,7))
+#define OFC_NET_NTOLL(a,o) (u8tou64((OFC_UINT8*)a+o,0)|u8tou64((OFC_UINT8*)a+o,1)|u8tou64((OFC_UINT8*)a+o,2)|u8tou64((OFC_UINT8*)a+o,3)|u8tou64((OFC_UINT8*)a+o,4)|u8tou64((OFC_UINT8*)a+o,5)|u8tou64((OFC_UINT8*)a+o,6)|u8tou64((OFC_UINT8*)a+o,7))
 #endif
-#define BLUE_NET_NTOC(a,o) (u8((OFC_UINT8*)a+o,0))
-#define BLUE_NET_SMBTOS(a,o) (u8toxu16((OFC_UINT8*)a+o,0)|u8toxu16((OFC_UINT8*)a+o,1))
-#define BLUE_NET_SMBTOL(a,o) (u8toxu32((OFC_UINT8*)a+o,0)|u8toxu32((OFC_UINT8*)a+o,1)|u8toxu32((OFC_UINT8*)a+o,2)|u8toxu32((OFC_UINT8*)a+o,3))
+#define OFC_NET_NTOC(a,o) (u8((OFC_UINT8*)a+o,0))
+#define OFC_NET_SMBTOS(a,o) (u8toxu16((OFC_UINT8*)a+o,0)|u8toxu16((OFC_UINT8*)a+o,1))
+#define OFC_NET_SMBTOL(a,o) (u8toxu32((OFC_UINT8*)a+o,0)|u8toxu32((OFC_UINT8*)a+o,1)|u8toxu32((OFC_UINT8*)a+o,2)|u8toxu32((OFC_UINT8*)a+o,3))
 #if defined(OFC_64BIT_INTEGER)
-#define BLUE_NET_SMBTOLL(a,o) (u8toxu64((OFC_UINT8*)a+o,0)|u8toxu64((OFC_UINT8*)a+o,1)|u8toxu64((OFC_UINT8*)a+o,2)|u8toxu64((OFC_UINT8*)a+o,3)|u8toxu64((OFC_UINT8*)a+o,4)|u8toxu64((OFC_UINT8*)a+o,5)|u8toxu64((OFC_UINT8*)a+o,6)|u8toxu64((OFC_UINT8*)a+o,7))
+#define OFC_NET_SMBTOLL(a,o) (u8toxu64((OFC_UINT8*)a+o,0)|u8toxu64((OFC_UINT8*)a+o,1)|u8toxu64((OFC_UINT8*)a+o,2)|u8toxu64((OFC_UINT8*)a+o,3)|u8toxu64((OFC_UINT8*)a+o,4)|u8toxu64((OFC_UINT8*)a+o,5)|u8toxu64((OFC_UINT8*)a+o,6)|u8toxu64((OFC_UINT8*)a+o,7))
 #endif
-#define BLUE_NET_SMBTOC(a,o) (u8((OFC_UINT8*)a+o,0))
+#define OFC_NET_SMBTOC(a,o) (u8((OFC_UINT8*)a+o,0))
 /*
- * BLUE_NET_STON - Store an smb short value
- * BLUE_NET_LTON - Store an smb long value
+ * OFC_NET_STON - Store an smb short value
+ * OFC_NET_LTON - Store an smb long value
  *
  * Accepts:
  *    d - destination smb value
@@ -225,28 +225,28 @@ typedef struct _BLUE_SOCKADDR
  *    stosmb (smb.word, myword) ;
  *    ltosmb (smb.long, mylong) ;
  */
-#define BLUE_NET_STON(d,o,a) {u16tou8(((OFC_UINT8*)d+o),(a),0);u16tou8(((OFC_UINT8*)d+o),(a),1);}
-#define BLUE_NET_LTON(d,o,a) {u32tou8(((OFC_UINT8*)d+o),(a),0);u32tou8(((OFC_UINT8*)d+o),(a),1);u32tou8(((OFC_UINT8*)d+o),(a),2);u32tou8(((OFC_UINT8*)d+o),(a),3);}
-#define BLUE_NET_LLTON(d,o,a) {u64tou8(((OFC_UINT8*)d+o),(a),0);u64tou8(((OFC_UINT8*)d+o),(a),1);u64tou8(((OFC_UINT8*)d+o),(a),2);u64tou8(((OFC_UINT8*)d+o),(a),3);u64tou8(((OFC_UINT8*)d+o),(a),4);u64tou8(((OFC_UINT8*)d+o),(a),5);u64tou8(((OFC_UINT8*)d+o),(a),6);u64tou8(((OFC_UINT8*)d+o),(a),7);}
-#define BLUE_NET_CTON(d,o,a) (u8((OFC_UINT8*)d+o,0)=((OFC_UINT8)(a)&0xFF))
-#define BLUE_NET_STOSMB(d,o,a) {u16toxu8(((OFC_UINT8*)d+o),(a),0);u16toxu8(((OFC_UINT8*)d+o),(a),1);}
-#define BLUE_NET_LTOSMB(d,o,a) {u32toxu8(((OFC_UINT8*)d+o),(a),0);u32toxu8(((OFC_UINT8*)d+o),(a),1);u32toxu8(((OFC_UINT8*)d+o),(a),2);u32toxu8(((OFC_UINT8*)d+o),(a),3);}
-#define BLUE_NET_LLTOSMB(d,o,a) {u64toxu8(((OFC_UINT8*)d+o),(a),0);u64toxu8(((OFC_UINT8*)d+o),(a),1);u64toxu8(((OFC_UINT8*)d+o),(a),2);u64toxu8(((OFC_UINT8*)d+o),(a),3);u64toxu8(((OFC_UINT8*)d+o),(a),4);u64toxu8(((OFC_UINT8*)d+o),(a),5);u64toxu8(((OFC_UINT8*)d+o),(a),6);u64toxu8(((OFC_UINT8*)d+o),(a),7);}
-#define BLUE_NET_CTOSMB(d,o,a) (u8((OFC_UINT8*)d+o,0)=((OFC_UINT8)(a)&0xFF))
+#define OFC_NET_STON(d,o,a) {u16tou8(((OFC_UINT8*)d+o),(a),0);u16tou8(((OFC_UINT8*)d+o),(a),1);}
+#define OFC_NET_LTON(d,o,a) {u32tou8(((OFC_UINT8*)d+o),(a),0);u32tou8(((OFC_UINT8*)d+o),(a),1);u32tou8(((OFC_UINT8*)d+o),(a),2);u32tou8(((OFC_UINT8*)d+o),(a),3);}
+#define OFC_NET_LLTON(d,o,a) {u64tou8(((OFC_UINT8*)d+o),(a),0);u64tou8(((OFC_UINT8*)d+o),(a),1);u64tou8(((OFC_UINT8*)d+o),(a),2);u64tou8(((OFC_UINT8*)d+o),(a),3);u64tou8(((OFC_UINT8*)d+o),(a),4);u64tou8(((OFC_UINT8*)d+o),(a),5);u64tou8(((OFC_UINT8*)d+o),(a),6);u64tou8(((OFC_UINT8*)d+o),(a),7);}
+#define OFC_NET_CTON(d,o,a) (u8((OFC_UINT8*)d+o,0)=((OFC_UINT8)(a)&0xFF))
+#define OFC_NET_STOSMB(d,o,a) {u16toxu8(((OFC_UINT8*)d+o),(a),0);u16toxu8(((OFC_UINT8*)d+o),(a),1);}
+#define OFC_NET_LTOSMB(d,o,a) {u32toxu8(((OFC_UINT8*)d+o),(a),0);u32toxu8(((OFC_UINT8*)d+o),(a),1);u32toxu8(((OFC_UINT8*)d+o),(a),2);u32toxu8(((OFC_UINT8*)d+o),(a),3);}
+#define OFC_NET_LLTOSMB(d,o,a) {u64toxu8(((OFC_UINT8*)d+o),(a),0);u64toxu8(((OFC_UINT8*)d+o),(a),1);u64toxu8(((OFC_UINT8*)d+o),(a),2);u64toxu8(((OFC_UINT8*)d+o),(a),3);u64toxu8(((OFC_UINT8*)d+o),(a),4);u64toxu8(((OFC_UINT8*)d+o),(a),5);u64toxu8(((OFC_UINT8*)d+o),(a),6);u64toxu8(((OFC_UINT8*)d+o),(a),7);}
+#define OFC_NET_CTOSMB(d,o,a) (u8((OFC_UINT8*)d+o,0)=((OFC_UINT8)(a)&0xFF))
 
-#define BLUE_IN6_ARE_ADDR_EQUAL(a, b) \
+#define OFC_IN6_ARE_ADDR_EQUAL(a, b) \
 	(((OFC_UINT32 *)(a))[0] == ((OFC_UINT32 *)(b))[0] \
 	 && ((OFC_UINT32 *)(a))[1] == ((OFC_UINT32 *)(b))[1] \
 	 && ((OFC_UINT32 *)(a))[2] == ((OFC_UINT32 *)(b))[2] \
 	 && ((OFC_UINT32 *)(a))[3] == ((OFC_UINT32 *)(b))[3])
 
-#define BLUE_IN6_IS_ADDR_UNSPECIFIED(addr) \
+#define OFC_IN6_IS_ADDR_UNSPECIFIED(addr) \
 	(((OFC_UINT32 *)(addr))[0] == 0 \
 	 && ((OFC_UINT32 *)(addr))[1] == 0 \
 	 && ((OFC_UINT32 *)(addr))[2] == 0 \
 	 && ((OFC_UINT32 *)(addr))[3] == 0)
 
-#define BLUE_IN6_IS_ADDR_LOOPBACK(addr) \
+#define OFC_IN6_IS_ADDR_LOOPBACK(addr) \
 	(((OFC_UINT32 *)(addr))[0] == 0 \
 	 && ((OFC_UINT32 *)(addr))[1] == 0 \
 	 && ((OFC_UINT32 *)(addr))[2] == 0 \
@@ -262,43 +262,43 @@ typedef struct _BLUE_SOCKADDR
  * If the 11th and 12th bytes are 00:00, then it is dynamic (DHCPv6)
  * If the 11th and 12th bytes are not 00:00 nor FF:FE then it is temporary
  */
-#define BLUE_IN6_IS_ADDR_DYNAMIC(addr) \
+#define OFC_IN6_IS_ADDR_DYNAMIC(addr) \
   (((OFC_UINT8*)(addr))[11] == 0x00 \
    && ((OFC_UINT8*)(addr))[12] == 0x00)
 
-#define BLUE_IN6_IS_ADDR_TEMPORARY(addr) \
+#define OFC_IN6_IS_ADDR_TEMPORARY(addr) \
   (((OFC_UINT8*)(addr))[11] != 0xFF \
    && ((OFC_UINT8*)(addr))[12] != 0xFE \
-   && !BLUE_IN6_IS_ADDR_DYNAMIC(addr))
+   && !OFC_IN6_IS_ADDR_DYNAMIC(addr))
 
-#define BLUE_IN6_IS_ADDR_MULTICAST(addr) (((OFC_UINT8 *) (addr))[0] == 0xff)
+#define OFC_IN6_IS_ADDR_MULTICAST(addr) (((OFC_UINT8 *) (addr))[0] == 0xff)
 
-#define BLUE_IN6_IS_ADDR_LINKLOCAL(addr) \
+#define OFC_IN6_IS_ADDR_LINKLOCAL(addr) \
   (((OFC_UINT8*)(addr))[0] == 0xFE \
    && (((OFC_UINT8*)(addr))[1] & 0xC0) == 0x80)
 
-#define BLUE_IN6_IS_ADDR_SITELOCAL(addr) \
+#define OFC_IN6_IS_ADDR_SITELOCAL(addr) \
   (((OFC_UINT8*)(addr))[0] == 0xFE \
    && (((OFC_UINT8*)(addr))[1] & 0xC0) == 0xC0)
 
-#define BLUE_IN6_IS_ADDR_MC_NODELOCAL(addr) \
-	(BLUE_IN6_IS_ADDR_MULTICAST(addr) \
+#define OFC_IN6_IS_ADDR_MC_NODELOCAL(addr) \
+	(OFC_IN6_IS_ADDR_MULTICAST(addr) \
 	 && (((OFC_UINT8 *)(addr))[1] & 0xf) == 0x1)
 
-#define BLUE_IN6_IS_ADDR_MC_LINKLOCAL(addr) \
-	(BLUE_IN6_IS_ADDR_MULTICAST (addr) \
+#define OFC_IN6_IS_ADDR_MC_LINKLOCAL(addr) \
+	(OFC_IN6_IS_ADDR_MULTICAST (addr) \
 	 && (((OFC_UINT8 *)(addr))[1] & 0xf) == 0x2)
 
-#define BLUE_IN6_IS_ADDR_MC_SITELOCAL(addr) \
-	(BLUE_IN6_IS_ADDR_MULTICAST(addr) \
+#define OFC_IN6_IS_ADDR_MC_SITELOCAL(addr) \
+	(OFC_IN6_IS_ADDR_MULTICAST(addr) \
 	 && (((OFC_UINT8 *)(addr))[1] & 0xf) == 0x5)
 
-#define BLUE_IN6_IS_ADDR_MC_ORGLOCAL(addr) \
-	(BLUE_IN6_IS_ADDR_MULTICAST(addr) \
+#define OFC_IN6_IS_ADDR_MC_ORGLOCAL(addr) \
+	(OFC_IN6_IS_ADDR_MULTICAST(addr) \
 	 && (((OFC_UINT8 *)(addr))[1] & 0xf) == 0x8)
 
-#define BLUE_IN6_IS_ADDR_MC_GLOBAL(addr) \
-	(BLUE_IN6_IS_ADDR_MULTICAST(addr) \
+#define OFC_IN6_IS_ADDR_MC_GLOBAL(addr) \
+	(OFC_IN6_IS_ADDR_MULTICAST(addr) \
 	 && (((OFC_UINT8 *)(addr))[1] & 0xf) == 0xe)
 
 #define ICMP_TYPE_PING 0x08
@@ -321,43 +321,16 @@ extern "C"
   /**
    * Initialize the Network Facility
    *
-   * This should only be called by the BlueInit routine
+   * This should only be called by the net_init routine
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetInit (OFC_VOID) ;
+  ofc_net_init (OFC_VOID) ;
   OFC_CORE_LIB OFC_VOID
-  BlueNetDestroy (OFC_VOID) ;
-#if 0
-  /**
-   * Convert a IP Address to a string
-   *
-   * \param inaddr
-   * The ip address
-   *
-   * \returns
-   * Pointer to a statically allocated string.  No other calls can be made
-   * to BlueNETntoa before completely using the output of this call.
-   */
-  OFC_CORE_LIB OFC_CHAR *
-  BlueNETntoa (BLUE_INADDR inaddr) ;
-  OFC_CORE_LIB OFC_CHAR *
-  BlueNETntoa_t (BLUE_INADDR ip_addr) ;
-  /**
-   * Convert a string in dot notation to an IP address
-   *
-   * \param str
-   * String to convert
-   *
-   * \param pinaddr Pointer to an IP address to store result
-   * \returns Nothing
-   */
-  OFC_CORE_LIB OFC_VOID 
-  BlueNETaton (OFC_CCHAR *str, BLUE_INADDR *pinaddr) ;
-#endif
+  ofc_net_destroy (OFC_VOID) ;
   const OFC_CHAR *
-  BlueNETntop (const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size) ;
+  ofc_ntop (const OFC_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size) ;
   OFC_INT
-  BlueNETpton (const OFC_CHAR *src, BLUE_IPADDR *dst) ;
+  ofc_pton (const OFC_CHAR *src, OFC_IPADDR *dst) ;
 
   /**
    * Return the count of interfaces on the platform
@@ -365,7 +338,7 @@ extern "C"
    * \returns Count of interfaces
    */
   OFC_CORE_LIB OFC_INT
-  BlueNetInterfaceCount (OFC_VOID) ;
+  ofc_net_interface_count (OFC_VOID) ;
   /**
    * Return ip address info for an interface
    *
@@ -377,8 +350,8 @@ extern "C"
    * \param pmask Pointer to where to store the interface mask
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetInterfaceAddr (OFC_INT index, BLUE_IPADDR *pinaddr,
-                        BLUE_IPADDR *pbcast, BLUE_IPADDR *pmask) ;
+  ofc_net_interface_addr (OFC_INT index, OFC_IPADDR *pinaddr,
+                          OFC_IPADDR *pbcast, OFC_IPADDR *pmask) ;
   /**
    * Return the wins configuration for an interface
    *
@@ -390,11 +363,11 @@ extern "C"
    *
    * \param winslist
    * Pointer to where to return the wins ip address list.  This list should
-   * be freed with BlueHeapFree when no longer needed.
+   * be freed with ofc_free when no longer needed.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetInterfaceWins (OFC_INT index, OFC_INT *num_wins,
-                        BLUE_IPADDR **winslist) ;
+  ofc_net_interface_wins (OFC_INT index, OFC_INT *num_wins,
+                          OFC_IPADDR **winslist) ;
   /**
    * Test whether an ip address is on the same subnet as another address
    *
@@ -404,18 +377,18 @@ extern "C"
    * \returns OFC_TRUE if ip addresses are on same subnet
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueNetSubnetMatch (BLUE_IPADDR *fromip, BLUE_IPADDR *intip,
-		      BLUE_IPADDR *mask) ;
+  ofc_net_subnet_match (OFC_IPADDR *fromip, OFC_IPADDR *intip,
+                        OFC_IPADDR *mask) ;
   /**
    * Register a Config Event
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetRegisterConfig (OFC_HANDLE hEvent) ;
+  ofc_net_register_config (OFC_HANDLE hEvent) ;
   /**
    * Unregister a Config Event
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetUnregisterConfig (OFC_HANDLE hEvent) ;
+  ofc_net_unregister_config (OFC_HANDLE hEvent) ;
   /**
    * Resolve a name to an IP address
    *
@@ -429,8 +402,8 @@ extern "C"
    * Pointer to IP structure to return IP address in
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetResolveName (OFC_LPCSTR name, OFC_UINT16 *num_addrs,
-                      BLUE_IPADDR *ip) ;
+  ofc_net_resolve_name (OFC_LPCSTR name, OFC_UINT16 *num_addrs,
+                        OFC_IPADDR *ip) ;
   /**
    * Resolve a name to an IP address
    *
@@ -444,16 +417,16 @@ extern "C"
    * Pointer to IP structure to return IP address in
    */
   OFC_CORE_LIB OFC_VOID
-  BlueNetResolveDNSName (OFC_LPCSTR name, OFC_UINT16 *num_addrs,
-                         BLUE_IPADDR *ip) ;
+  ofc_net_resolve_dns_name (OFC_LPCSTR name, OFC_UINT16 *num_addrs,
+                            OFC_IPADDR *ip) ;
 
-  OFC_CORE_LIB OFC_BOOL BlueNETIsAddrAny (BLUE_IPADDR *ip) ;
-  OFC_CORE_LIB OFC_BOOL BlueNETIsAddrLoopback (BLUE_IPADDR *ip) ;
-  OFC_CORE_LIB OFC_BOOL BlueNETIsAddrBcast (BLUE_IPADDR *ip) ;
-  OFC_CORE_LIB OFC_BOOL BlueNETIsAddrNone (BLUE_IPADDR *ip) ;
-  OFC_CORE_LIB OFC_BOOL BlueNETIsAddrEqual (BLUE_IPADDR *ip1,
-                                            BLUE_IPADDR *ip2) ;
-  OFC_CORE_LIB OFC_BOOL BlueNETIsAddrLinkLocal (BLUE_IPADDR *ip) ;
+  OFC_CORE_LIB OFC_BOOL ofc_net_is_addr_any (OFC_IPADDR *ip) ;
+  OFC_CORE_LIB OFC_BOOL ofc_net_is_addr_loopback (OFC_IPADDR *ip) ;
+  OFC_CORE_LIB OFC_BOOL ofc_net_is_addr_bcast (OFC_IPADDR *ip) ;
+  OFC_CORE_LIB OFC_BOOL ofc_net_is_addr_none (OFC_IPADDR *ip) ;
+  OFC_CORE_LIB OFC_BOOL ofc_net_is_addr_equal (OFC_IPADDR *ip1,
+                                               OFC_IPADDR *ip2) ;
+  OFC_CORE_LIB OFC_BOOL ofc_net_is_addr_link_local (OFC_IPADDR *ip) ;
 
 #if defined(__cplusplus)
 }

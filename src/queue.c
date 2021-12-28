@@ -49,7 +49,7 @@ BlueQcreate (OFC_VOID)
   /*
    * Allocate space for the queue head
    */
-  qHead = BlueHeapMalloc (sizeof (QUEUE_LINK)) ;
+  qHead = ofc_malloc (sizeof (QUEUE_LINK)) ;
   /*
    * Did we get a head
    */
@@ -101,7 +101,7 @@ BlueQdestroy (OFC_HANDLE qHandle)
 	  /*
 	   * Yes, so deallocate it
 	   */
-	  BlueHeapFree (qHead) ;
+	  ofc_free (qHead) ;
 	  ofc_handle_destroy (qHandle) ;
 	}
       ofc_handle_unlock (qHandle) ;
@@ -133,7 +133,7 @@ BlueQenqueue (OFC_HANDLE qHandle, OFC_VOID *qElement)
       /*
        * Allocate a new list element
        */
-      qLink = BlueHeapMalloc (sizeof (QUEUE_LINK)) ;
+      qLink = ofc_malloc (sizeof (QUEUE_LINK)) ;
 
       qLink->u.qElement = qElement ;
       qLink->qPrev = qHead->qPrev ;
@@ -196,7 +196,7 @@ BlueQdequeue (OFC_HANDLE qHandle)
 	  /*
 	   * And get rid of the link
 	   */
-	  BlueHeapFree (qLink) ;
+	  ofc_free (qLink) ;
 	}
       if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
@@ -387,7 +387,7 @@ BlueQunlink (OFC_HANDLE qHandle, OFC_VOID *qElement)
 	  /*
 	   * And get rid of the link
 	   */
-	  BlueHeapFree (qLink) ;
+	  ofc_free (qLink) ;
 	}
       if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;

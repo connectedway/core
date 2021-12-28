@@ -37,7 +37,7 @@ struct blueheap_chunk
 
 typedef struct
 {
-  BLUE_LOCK lock ;
+  OFC_LOCK lock ;
   OFC_UINT32 Max ;
   OFC_UINT32 Total ;
 #if defined(OFC_HEAP_DEBUG)
@@ -54,23 +54,23 @@ BlueHeapMallocAcct (OFC_SIZET size, struct blueheap_chunk *chunk)
    * Put on the allocation queue
    */
   chunk->alloc_size = size ;
-  BlueLock (BlueHeapStats.lock) ;
+  ofc_lock (BlueHeapStats.lock) ;
   BlueHeapStats.Total += size ;
   if (BlueHeapStats.Total >= BlueHeapStats.Max)
     BlueHeapStats.Max = BlueHeapStats.Total ;
-  BlueUnlock (BlueHeapStats.lock) ;
+  ofc_unlock (BlueHeapStats.lock) ;
 }
 
 static OFC_VOID
 BlueHeapFreeAcct (struct blueheap_chunk *chunk)
 {
-  BlueLock (BlueHeapStats.lock) ;
+  ofc_lock (BlueHeapStats.lock) ;
   BlueHeapStats.Total -= chunk->alloc_size ;
-  BlueUnlock (BlueHeapStats.lock) ;
+  ofc_unlock (BlueHeapStats.lock) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueHeapLoad (OFC_VOID)
+ofc_heap_load (OFC_VOID)
 {
   BlueHeapStats.Max = 0 ;
   BlueHeapStats.Total = 0 ;
@@ -78,16 +78,16 @@ BlueHeapLoad (OFC_VOID)
   BlueHeapStats.Allocated = OFC_NULL ;
 #endif
   BlueHeapInitImpl () ;
-  BlueHeapStats.lock = BlueLockInit () ;
+  BlueHeapStats.lock = ofc_lock_init () ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueHeapUnload (OFC_VOID)
+ofc_heap_unload (OFC_VOID)
 {
-  BlueLockDestroy (BlueHeapStats.lock) ;
+  ofc_lock_destroy (BlueHeapStats.lock) ;
   BlueHeapStats.lock = OFC_NULL;
   BlueHeapUnloadImpl() ;
-  BlueHeapDump();
+  ofc_heap_dump();
 }
 
 #if defined(OFC_HEAP_DEBUG)
@@ -95,7 +95,7 @@ static OFC_VOID
 BlueHeapDebugAlloc (OFC_SIZET size, struct blueheap_chunk *chunk,
                     OFC_VOID *ret)
 {
-  BlueLock (BlueHeapStats.lock) ;
+  ofc_lock (BlueHeapStats.lock) ;
   chunk->dbgnext = BlueHeapStats.Allocated ;
   if (BlueHeapStats.Allocated != OFC_NULL)
     BlueHeapStats.Allocated->dbgprev = chunk ;
@@ -119,7 +119,7 @@ BlueHeapDebugAlloc (OFC_SIZET size, struct blueheap_chunk *chunk,
 #endif
   chunk->snap = OFC_FALSE ;
 
-  BlueUnlock (BlueHeapStats.lock) ;
+  ofc_unlock (BlueHeapStats.lock) ;
 }
 #endif
 
@@ -130,7 +130,7 @@ BlueHeapDebugFree (struct blueheap_chunk *chunk)
   /*
    * Pull off the allocation queue
    */
-  BlueLock (BlueHeapStats.lock) ;
+  ofc_lock (BlueHeapStats.lock) ;
   if (chunk->dbgprev != OFC_NULL)
     chunk->dbgprev->dbgnext = chunk->dbgnext ;
   else
@@ -150,25 +150,25 @@ BlueHeapDebugFree (struct blueheap_chunk *chunk)
   chunk->caller4 = __builtin_return_address(4) ;
 #endif
 #endif
-  BlueUnlock (BlueHeapStats.lock) ;
+  ofc_unlock (BlueHeapStats.lock) ;
 }
 #endif
 
 #define OBUF_SIZE 200
 OFC_CORE_LIB OFC_VOID
-BlueHeapDumpStats (OFC_VOID)
+ofc_heap_dump_stats (OFC_VOID)
 {
   OFC_CHAR obuf[OBUF_SIZE] ;
   OFC_SIZET len ;
   
-  len = BlueCsnprintf (obuf, OBUF_SIZE,
-		       "Total Allocated Memory %d, Max Allocated Memory %d\n",
-		       BlueHeapStats.Total, BlueHeapStats.Max) ;
+  len = ofc_snprintf (obuf, OBUF_SIZE,
+                      "Total Allocated Memory %d, Max Allocated Memory %d\n",
+                      BlueHeapStats.Total, BlueHeapStats.Max) ;
   ofc_write_console (obuf) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueHeapDump (OFC_VOID)
+ofc_heap_dump (OFC_VOID)
 {
 #if defined(OFC_HEAP_DEBUG)
   struct blueheap_chunk *chunk ;
@@ -176,25 +176,25 @@ BlueHeapDump (OFC_VOID)
   OFC_SIZET len ;
 #endif
 
-  BlueHeapDumpStats() ;
+  ofc_heap_dump_stats() ;
 #if defined(OFC_HEAP_DEBUG)
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
   if (BlueHeapStats.Allocated == OFC_NULL)
     {
-      len = BlueCsnprintf (obuf, OBUF_SIZE,
-			   "\nHeap is Empty, No leaks detected\n");
+      len = ofc_snprintf (obuf, OBUF_SIZE,
+                          "\nHeap is Empty, No leaks detected\n");
       ofc_write_console (obuf) ;
     }
   else
     {
-      len = BlueCsnprintf (obuf, OBUF_SIZE,
-			   "%-10s %-10s %-10s %-10s %-10s %-10s\n",
-			   "Address", "Size", "Caller1", "Caller2", "Caller3", 
-			   "Caller4") ;
+      len = ofc_snprintf (obuf, OBUF_SIZE,
+                          "%-10s %-10s %-10s %-10s %-10s %-10s\n",
+                          "Address", "Size", "Caller1", "Caller2", "Caller3",
+                          "Caller4") ;
       ofc_write_console (obuf) ;
     }
 
-  BlueLock (BlueHeapStats.lock) ;
+  ofc_lock (BlueHeapStats.lock) ;
   for (chunk = BlueHeapStats.Allocated ;
        chunk != OFC_NULL ;
        chunk = chunk->dbgnext)
@@ -210,16 +210,16 @@ BlueHeapDump (OFC_VOID)
 			       __cyg_profile_addr2sym(chunk->caller3), 
 			       __cyg_profile_addr2sym(chunk->caller4)) ;
 #else
-	  len = BlueCsnprintf (obuf, OBUF_SIZE, 
-			       "%-10p %-10d %-10p %-10p %-10p %-10p\n",
+	  len = ofc_snprintf (obuf, OBUF_SIZE,
+                          "%-10p %-10d %-10p %-10p %-10p %-10p\n",
 			       chunk+1, (OFC_INT) chunk->alloc_size,
-			       chunk->caller1, chunk->caller2, chunk->caller3, 
-			       chunk->caller4) ;
+                          chunk->caller1, chunk->caller2, chunk->caller3,
+                          chunk->caller4) ;
 #endif
 	  ofc_write_console (obuf) ;
 	}
     }
-  BlueUnlock (BlueHeapStats.lock) ;
+  ofc_unlock (BlueHeapStats.lock) ;
 #else
   len = BlueCsnprintf (obuf, OBUF_SIZE, "%-20s %-10s %-20s\n",
 		       "Address", "Size", "Caller") ;
@@ -235,13 +235,13 @@ BlueHeapDump (OFC_VOID)
     }
   BlueUnlock (BlueHeapStats.lock) ;
 #endif
-  len = BlueCsnprintf (obuf, OBUF_SIZE, "\n") ;
+  len = ofc_snprintf (obuf, OBUF_SIZE, "\n") ;
   ofc_write_console (obuf) ;
 #endif
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueHeapCheckAlloc (OFC_LPCVOID mem)
+ofc_heap_check_alloc (OFC_LPCVOID mem)
 {
   const struct blueheap_chunk * chunk ;
 
@@ -255,12 +255,12 @@ BlueHeapCheckAlloc (OFC_LPCVOID mem)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueHeapSnap (OFC_VOID)
+ofc_heap_snap (OFC_VOID)
 {
 #if defined(OFC_HEAP_DEBUG)
   struct blueheap_chunk *chunk ;
 
-  BlueLock (BlueHeapStats.lock) ;
+  ofc_lock (BlueHeapStats.lock) ;
   for (chunk = BlueHeapStats.Allocated ;
        chunk != OFC_NULL ;
        chunk = chunk->dbgnext)
@@ -268,12 +268,12 @@ BlueHeapSnap (OFC_VOID)
       chunk->snap = OFC_TRUE ;
     }
 
-  BlueUnlock (BlueHeapStats.lock) ;
+  ofc_unlock (BlueHeapStats.lock) ;
 #endif
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueHeapDumpChunk (OFC_LPVOID mem)
+ofc_heap_dump_chunk (OFC_LPVOID mem)
 {
 #if defined(OFC_HEAP_DEBUG)
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
@@ -284,17 +284,17 @@ BlueHeapDumpChunk (OFC_LPVOID mem)
       chunk = mem ;
       chunk-- ;
 
-      BlueCprintf ("%-10p %-10d %-10p %-10p %-10p %-10p\n",
+      ofc_printf ("%-10p %-10d %-10p %-10p %-10p %-10p\n",
 		   chunk+1, (OFC_INT) chunk->alloc_size,
-		   chunk->caller1, chunk->caller2, chunk->caller3, 
-		   chunk->caller4) ;
+                  chunk->caller1, chunk->caller2, chunk->caller3,
+                  chunk->caller4) ;
     }
 #endif
 #endif
 }
 
 OFC_CORE_LIB OFC_LPVOID
-BlueHeapMalloc (OFC_SIZET size)
+ofc_malloc (OFC_SIZET size)
 {
   OFC_LPVOID mem ;
   struct blueheap_chunk * chunk ;
@@ -311,19 +311,19 @@ BlueHeapMalloc (OFC_SIZET size)
     }
   else
     {
-      BlueProcessCrash ("BlueHeapMalloc Allocation Failed\n") ;
+      BlueProcessCrash ("ofc_malloc Allocation Failed\n") ;
     }
   return (mem) ;
 }
 
 OFC_CORE_LIB OFC_LPVOID
-BlueHeapCalloc (OFC_SIZET nmemb, OFC_SIZET size)
+ofc_calloc (OFC_SIZET nmemb, OFC_SIZET size)
 {
-  return (BlueHeapMalloc (nmemb * size)) ;
+  return (ofc_malloc (nmemb * size)) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueHeapFree (OFC_LPVOID mem)
+ofc_free (OFC_LPVOID mem)
 {
   struct blueheap_chunk * chunk ;
 
@@ -341,7 +341,7 @@ BlueHeapFree (OFC_LPVOID mem)
 }
 
 OFC_CORE_LIB OFC_LPVOID
-BlueHeapRealloc (OFC_LPVOID ptr, OFC_SIZET size)
+ofc_realloc (OFC_LPVOID ptr, OFC_SIZET size)
 {
   struct blueheap_chunk * chunk ;
   struct blueheap_chunk * newchunk ;
@@ -373,11 +373,11 @@ BlueHeapRealloc (OFC_LPVOID ptr, OFC_SIZET size)
 	}
       else
 	{
-	  BlueProcessCrash ("BlueHeapRealloc Allocation Failed\n") ;
+	  BlueProcessCrash ("ofc_realloc Allocation Failed\n") ;
 	}
     }
   else
-    mem = BlueHeapMalloc (size) ;
+    mem = ofc_malloc (size) ;
 
   return (mem) ;
 }

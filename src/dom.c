@@ -21,7 +21,7 @@ ofc_dom_create_node(OFC_VOID)
 {
   OFC_DOMNode *node ;
 
-  node = (OFC_DOMNode *) BlueHeapMalloc (sizeof (OFC_DOMNode)) ;
+  node = (OFC_DOMNode *) ofc_malloc (sizeof (OFC_DOMNode)) ;
   if (node != OFC_NULL)
     {
       node->nodeName = OFC_NULL ;
@@ -51,7 +51,7 @@ ofc_dom_create_document (OFC_DOMString *namespaceURI,
       doc->nodeType = DOCUMENT_NODE ;
       doc->ownerDocument = doc ;
       doc->ns = OFC_NULL ;
-      doc->nodeName = BlueCstrdup("ROOT") ;
+      doc->nodeName = ofc_strdup("ROOT") ;
     }
   return (doc) ;
 }
@@ -66,16 +66,16 @@ parseName (OFC_CCHAR *name, OFC_DOMNode *elem)
 
   if (*p == ':')
     {
-      elem->ns = BlueHeapMalloc (i+1) ;
-      BlueCmemcpy (elem->ns, (const OFC_LPVOID) name, i) ;
+      elem->ns = ofc_malloc (i + 1) ;
+      ofc_memcpy (elem->ns, (const OFC_LPVOID) name, i) ;
       elem->ns[i] = '\0' ;
       p++ ;
-      elem->nodeName = BlueCstrdup (p) ;
+      elem->nodeName = ofc_strdup (p) ;
     }
   else
     {
       elem->ns = OFC_NULL ;
-      elem->nodeName = BlueCstrdup (name) ;
+      elem->nodeName = ofc_strdup (name) ;
     }
 }
 
@@ -105,7 +105,7 @@ ofc_dom_create_cdata_section (OFC_DOMNode *document,
     {
       cdata->nodeType = CDATA_SECTION_NODE ;
       cdata->ownerDocument = document ;
-      cdata->nodeValue = (OFC_DOMString *) BlueCstrdup (data) ;
+      cdata->nodeValue = (OFC_DOMString *) ofc_strdup (data) ;
     }
   return (cdata) ;
 }
@@ -123,8 +123,8 @@ ofc_dom_create_processing_instruction (OFC_DOMNode *document,
       pi->nodeType = PROCESSING_INSTRUCTION_NODE ;
       pi->ownerDocument = document ;
       pi->ns = OFC_NULL ;
-      pi->nodeName = (OFC_DOMString *) BlueCstrdup (target) ;
-      pi->nodeValue = (OFC_DOMString *) BlueCstrdup (data) ;
+      pi->nodeName = (OFC_DOMString *) ofc_strdup (target) ;
+      pi->nodeValue = (OFC_DOMString *) ofc_strdup (data) ;
     }
   return (pi) ;
 }
@@ -137,8 +137,8 @@ ofc_dom_get_attribute (OFC_DOMNode *elem, const OFC_DOMString *name)
 
   attr = elem->attributes ;
 
-  while ((attr != OFC_NULL) && (BlueCstrcmp (attr->nodeName,
-                                             (OFC_CHAR *) name) != 0))
+  while ((attr != OFC_NULL) && (ofc_strcmp (attr->nodeName,
+                                            (OFC_CHAR *) name) != 0))
     {
       attr = attr->nextSibling ;
     }
@@ -159,7 +159,7 @@ ofc_dom_set_attribute (OFC_DOMNode *elem, const OFC_DOMString *name,
 
   attr = elem->attributes ;
 
-  while ((attr != OFC_NULL) && (BlueCstrcmp (attr->nodeName, name) != 0))
+  while ((attr != OFC_NULL) && (ofc_strcmp (attr->nodeName, name) != 0))
     {
       attr = attr->nextSibling ;
     }
@@ -185,8 +185,8 @@ ofc_dom_set_attribute (OFC_DOMNode *elem, const OFC_DOMString *name,
   if (attr != OFC_NULL)
     {
       if (attr->nodeValue != OFC_NULL)
-	BlueHeapFree (attr->nodeValue) ;
-      attr->nodeValue = (OFC_DOMString *) BlueCstrdup (value) ;
+	ofc_free (attr->nodeValue) ;
+      attr->nodeValue = (OFC_DOMString *) ofc_strdup (value) ;
     }
 }
 
@@ -252,7 +252,7 @@ ofc_dom_get_elements_by_tag_name (OFC_DOMNode *node,
   OFC_INT nodecount ;
 
   nodecount = 0 ;
-  nodelist = (OFC_DOMNodelist *) BlueHeapMalloc (1 * sizeof (OFC_DOMNode *)) ;
+  nodelist = (OFC_DOMNodelist *) ofc_malloc (1 * sizeof (OFC_DOMNode *)) ;
   nodelist[0] = OFC_NULL ;
   root = node ;
 
@@ -260,10 +260,10 @@ ofc_dom_get_elements_by_tag_name (OFC_DOMNode *node,
     {
       if (node->nodeType == ELEMENT_NODE)
 	{
-	  if (BlueCstrcmp (node->nodeName, (OFC_CHAR *) name) == 0)
+	  if (ofc_strcmp (node->nodeName, (OFC_CHAR *) name) == 0)
 	    {
 	      nodecount++ ;
-	      nodelist = BlueHeapRealloc (nodelist, 
+	      nodelist = ofc_realloc (nodelist,
 					  (nodecount+1) * 
 					  sizeof (OFC_DOMNode *)) ;
 	      nodelist[nodecount-1] = node ;
@@ -289,7 +289,7 @@ ofc_dom_get_elements_by_tag_name (OFC_DOMNode *node,
 OFC_CORE_LIB OFC_VOID
 ofc_dom_destroy_node_list (OFC_DOMNodelist *nodelist)
 {
-  BlueHeapFree (nodelist) ;
+  ofc_free (nodelist) ;
 }
 
 static OFC_VOID
@@ -319,17 +319,17 @@ BlueDOMsprintAttributes (OFC_CHAR *buf, OFC_SIZET len, OFC_DOMNode *attr)
 
   while (attr != OFC_NULL)
     {
-      count = BlueCsnprintf (p, rem, " ") ;
+      count = ofc_snprintf (p, rem, " ") ;
       update_remainder (count, &p, &total, &rem) ;
 
       if (attr->ns == OFC_NULL)
-	count = BlueCsnprintf(p, rem, "%s=\"%s\"", attr->nodeName, 
-			      attr->nodeValue) ;
+	count = ofc_snprintf(p, rem, "%s=\"%s\"", attr->nodeName,
+                         attr->nodeValue) ;
       else
-	count = BlueCsnprintf(p, rem, "%s:%s=\"%s\"", 
-			      attr->ns,
-			      attr->nodeName, 
-			      attr->nodeValue) ;
+	count = ofc_snprintf(p, rem, "%s:%s=\"%s\"",
+                         attr->ns,
+                         attr->nodeName,
+                         attr->nodeValue) ;
       update_remainder (count, &p, &total, &rem) ;
       attr = attr->nextSibling ;
     }
@@ -353,7 +353,7 @@ ofc_dom_sprint_document (OFC_CHAR *buf, OFC_SIZET len, OFC_DOMNode *node)
 
   if (total > 0)
     {
-      count = BlueCsnprintf (p, rem, "\n") ;
+      count = ofc_snprintf (p, rem, "\n") ;
       update_remainder (count, &p, &total, &rem) ;
     }
   
@@ -389,11 +389,11 @@ ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
 
 	case PROCESSING_INSTRUCTION_NODE:
 	  if (node->ns == OFC_NULL)
-	    count = BlueCsnprintf (p, rem, "<?%s %s?>\n", 
-				   node->nodeName, node->nodeValue) ;
+	    count = ofc_snprintf (p, rem, "<?%s %s?>\n",
+                              node->nodeName, node->nodeValue) ;
 	  else
-	    count = BlueCsnprintf (p, rem, "<?%s:%s %s?>\n", 
-				   node->ns, node->nodeName, node->nodeValue) ;
+	    count = ofc_snprintf (p, rem, "<?%s:%s %s?>\n",
+                              node->ns, node->nodeName, node->nodeValue) ;
 
 	  update_remainder (count, &p, &total, &rem) ;
 
@@ -402,16 +402,16 @@ ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
 	case ELEMENT_NODE:
 	  for (i = 0 ; i < level ; i ++)
 	    {
-	      count = BlueCsnprintf (p, rem, "  ") ;
+	      count = ofc_snprintf (p, rem, "  ") ;
 	      update_remainder (count, &p, &total, &rem) ;
 	    }
 	      
 	  if (node->ns == OFC_NULL)
-	    count = BlueCsnprintf (p, rem, "<%s", node->nodeName) ;
+	    count = ofc_snprintf (p, rem, "<%s", node->nodeName) ;
 	  else
-	    count = BlueCsnprintf (p, rem, "<%s:%s", 
-				   node->ns,
-				   node->nodeName) ;
+	    count = ofc_snprintf (p, rem, "<%s:%s",
+                              node->ns,
+                              node->nodeName) ;
 	  update_remainder (count, &p, &total, &rem) ;
 
 	  if (node->attributes != OFC_NULL)
@@ -420,7 +420,7 @@ ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
 	      update_remainder (count, &p, &total, &rem) ;
 	    }
 	      
-	  count = BlueCsnprintf(p, rem, ">") ;
+	  count = ofc_snprintf(p, rem, ">") ;
 	  update_remainder (count, &p, &total, &rem) ;
 
 	  if (node->firstChild)
@@ -433,7 +433,7 @@ ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
 		}
 	      else
 		{
-		  count = BlueCsnprintf (p, rem, "\n") ;
+		  count = ofc_snprintf (p, rem, "\n") ;
 		  update_remainder (count, &p, &total, &rem) ;
 
 		  count = ofc_dom_sprint_node(p, rem, node->firstChild,
@@ -442,24 +442,24 @@ ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
 
 		  for (i = 0 ; i < level ; i ++)
 		    {
-		      count = BlueCsnprintf (p, rem, "  ") ;
+		      count = ofc_snprintf (p, rem, "  ") ;
 		      update_remainder (count, &p, &total, &rem) ;
 		    }
 		}
 	    }
 
 	  if (node->ns == OFC_NULL)
-	    count = BlueCsnprintf (p, rem, "</%s>\n", node->nodeName) ;
+	    count = ofc_snprintf (p, rem, "</%s>\n", node->nodeName) ;
 	  else
-	    count = BlueCsnprintf (p, rem, "</%s:%s>\n", 
-				   node->ns, node->nodeName) ;
+	    count = ofc_snprintf (p, rem, "</%s:%s>\n",
+                              node->ns, node->nodeName) ;
 	  update_remainder (count, &p, &total, &rem) ;
 
 	  break ;
 
 	case CDATA_SECTION_NODE:
 
-	  count = BlueCsnprintf (p, rem, "%s", node->nodeValue) ;
+	  count = ofc_snprintf (p, rem, "%s", node->nodeValue) ;
 	  update_remainder (count, &p, &total, &rem) ;
 
 	  break ;
@@ -516,7 +516,7 @@ ofc_dom_get_element (OFC_DOMNode *doc, const OFC_CHAR *name)
   while ((child != OFC_NULL) && !found)
     {
       if ((child->nodeType == ELEMENT_NODE) &&
-	  (BlueCstrcmp (child->nodeName, name) == 0))
+	  (ofc_strcmp (child->nodeName, name) == 0))
 	found = 1 ;
       else
 	child = child->nextSibling ;
@@ -582,7 +582,7 @@ ofc_dom_get_element_cdata_unescape (OFC_DOMNode *doc, OFC_CHAR *name)
 OFC_CORE_LIB OFC_SIZET
 ofc_dom_unescape (OFC_CHAR* data)
 {
-  OFC_CHAR *end = data + BlueCstrlen(data);
+  OFC_CHAR *end = data + ofc_strlen(data);
   OFC_CHAR *i = data;
   OFC_CHAR *j = data;
 
@@ -647,7 +647,7 @@ ofc_dom_get_element_cdata_long (OFC_DOMNode *doc, OFC_CHAR *name)
   cdata = ofc_dom_get_element_cdata(doc, name) ;
 
   if (cdata != OFC_NULL)
-    val = BlueCstrtoul (cdata, OFC_NULL, 0) ;
+    val = ofc_strtoul (cdata, OFC_NULL, 0) ;
   else
     val = 0 ;
 
@@ -658,12 +658,12 @@ OFC_CORE_LIB OFC_VOID
 ofc_dom_destroy_node (OFC_DOMNode *node)
 {
   if (node->ns != OFC_NULL)
-    BlueHeapFree (node->ns) ;
+    ofc_free (node->ns) ;
   if (node->nodeName != OFC_NULL)
-    BlueHeapFree (node->nodeName) ;
+    ofc_free (node->nodeName) ;
   if (node->nodeValue != OFC_NULL)
-    BlueHeapFree (node->nodeValue) ;
-  BlueHeapFree (node) ;
+    ofc_free (node->nodeValue) ;
+  ofc_free (node) ;
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -728,7 +728,7 @@ startElement(OFC_VOID *userData, OFC_CCHAR *name, OFC_CCHAR **atts)
 
   if (dom_state->value != OFC_NULL)
     {
-      BlueHeapFree (dom_state->value) ;
+      ofc_free (dom_state->value) ;
       dom_state->value = OFC_NULL ;
     }
   dom_state->valuelen = 0 ;
@@ -752,7 +752,7 @@ endElement(OFC_VOID *userData, OFC_CCHAR *name)
                                            dom_state->value) ;
         ofc_dom_append_child(elem, cdata) ;
 
-      BlueHeapFree (dom_state->value) ;
+      ofc_free (dom_state->value) ;
       dom_state->valuelen = 0 ;
       dom_state->value = OFC_NULL ;
     }
@@ -784,9 +784,9 @@ characterData(OFC_VOID *userData, OFC_CCHAR *str, OFC_INT len)
   if (len > 0)
     {
       dom_state->value = 
-	(OFC_CHAR *) BlueHeapRealloc (dom_state->value,
+	(OFC_CHAR *) ofc_realloc (dom_state->value,
 				       dom_state->valuelen+len+1) ;
-      BlueCstrncpy (dom_state->value + dom_state->valuelen, str, len) ;
+      ofc_strncpy (dom_state->value + dom_state->valuelen, str, len) ;
       dom_state->valuelen += len ;
       dom_state->value[dom_state->valuelen] = '\0' ;
     }
@@ -816,24 +816,24 @@ xmlDeclaration(OFC_VOID *userData, OFC_CCHAR *version,
 	}
       else
 	{
-	  data = (OFC_CHAR *) BlueHeapMalloc (total + 1) ;
+	  data = (OFC_CHAR *) ofc_malloc (total + 1) ;
 	  p = data ;
 	  rem = total + 1 ;
 	}
 
       if (version != OFC_NULL)
 	{
-	  count = BlueCsnprintf (p, rem, "version=\"%s\" ", version) ;
+	  count = ofc_snprintf (p, rem, "version=\"%s\" ", version) ;
 	  update_remainder (count, &p, &total, &rem) ;
 	}
 
       if (encoding != OFC_NULL)
 	{
-	  count = BlueCsnprintf (p, rem, "encoding=\"%s\" ", encoding) ;
+	  count = ofc_snprintf (p, rem, "encoding=\"%s\" ", encoding) ;
 	  update_remainder (count, &p, &total, &rem) ;
 	}
 
-      count = BlueCsnprintf (p, rem, "standalone = \"%s\"", 
+      count = ofc_snprintf (p, rem, "standalone = \"%s\"",
 			     standalone == 0 ? "no" : 
 			     standalone == 1 ? "yes" : 
 			     "") ;
@@ -844,7 +844,7 @@ xmlDeclaration(OFC_VOID *userData, OFC_CCHAR *version,
     {
       pi = ofc_dom_create_processing_instruction(dom_state->document,
                                                  "xml", data) ;
-      BlueHeapFree (data) ;
+      ofc_free (data) ;
 
       if (pi != OFC_NULL)
 	{
@@ -864,7 +864,7 @@ ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID, OFC_DWORD),
   OFC_BOOL done ;
 
   doc = OFC_NULL ;
-  dom_state = (DOMState *) BlueHeapMalloc (sizeof (DOMState)) ;
+  dom_state = (DOMState *) ofc_malloc (sizeof (DOMState)) ;
   if (dom_state != OFC_NULL)
     {
       dom_state->value = OFC_NULL ;
@@ -888,7 +888,7 @@ ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID, OFC_DWORD),
 					      characterData) ;
 	      BlueXMLsetXmlDeclHandler (dom_state->parser, xmlDeclaration) ;
 
-	      buf = (OFC_CHAR *) BlueHeapMalloc (1024) ;
+	      buf = (OFC_CHAR *) ofc_malloc (1024) ;
 
 	      done = 0 ;
 	      while (done == OFC_FALSE)
@@ -911,16 +911,16 @@ ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID, OFC_DWORD),
 		    done = 1 ;
 		}
 
-	      BlueHeapFree (buf) ;
+	      ofc_free (buf) ;
 	      BlueXMLparserFree(dom_state->parser);
 	    }
 	}
 
       if (dom_state->value != OFC_NULL)
-	BlueHeapFree (dom_state->value) ;
+	ofc_free (dom_state->value) ;
       dom_state->value = OFC_NULL ;
 
-      BlueHeapFree (dom_state) ;
+      ofc_free (dom_state) ;
     }
   return (doc) ;
 }

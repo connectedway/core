@@ -196,13 +196,13 @@ static OFC_DWORD ThreadTestApp (OFC_HANDLE hThread, OFC_VOID *context)
    */
   while (!BlueThreadIsDeleting (hThread))
     {
-      BlueCprintf ("Test Thread is Running\n") ;
+      ofc_printf ("Test Thread is Running\n") ;
       /*
        * Wait for a second
        */
       BlueSleep (1000) ;
     }
-  BlueCprintf ("Test Thread is Exiting\n") ;
+  ofc_printf ("Test Thread is Exiting\n") ;
   return (0) ;
 }
 
@@ -402,7 +402,7 @@ TEST(thread, test_thread)
                               OFC_NULL,
                               BLUE_THREAD_JOIN, OFC_HANDLE_NULL) ;
   if (hThread == OFC_HANDLE_NULL)
-    BlueCprintf ("Could not create ThreadTestApp\n") ;
+    ofc_printf ("Could not create ThreadTestApp\n") ;
   else
     {
       /*
@@ -410,7 +410,7 @@ TEST(thread, test_thread)
        *
        * Allocate the deamon's context
        */
-      ThreadApp = BlueHeapMalloc (sizeof (THREAD_TEST_APP)) ;
+      ThreadApp = ofc_malloc (sizeof (THREAD_TEST_APP)) ;
       ThreadApp->hScheduler = hScheduler ;
       /*
        * Create a timer that the thread will wait on
@@ -428,7 +428,7 @@ TEST(thread, test_thread)
 	  ofc_app_set_wait (hApp, hDone) ;
 	  ofc_event_wait(hDone);
 
-	  BlueCprintf ("Deleting Thread\n") ;
+	  ofc_printf ("Deleting Thread\n") ;
 	  /*
 	   * Delete the thread
 	   */
@@ -437,7 +437,7 @@ TEST(thread, test_thread)
 	  /*
 	   * And delete our deamon's context
 	   */
-	  BlueHeapFree (ThreadApp) ;
+	  ofc_free (ThreadApp) ;
 	}
     }
 }	  

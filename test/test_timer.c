@@ -164,7 +164,7 @@ static OFC_HANDLE TimerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 	    case TIMER_TEST_STATE_RUNNING:
 	      if (hEvent == timerTest->hTimer)
 		{
-		  BlueCprintf ("Timer Expired %d\n", timerTest->count) ;
+		  ofc_printf ("Timer Expired %d\n", timerTest->count) ;
 		  timerTest->count++ ;
 		  if (timerTest->count >= TIMER_TEST_COUNT)
 		    {
@@ -198,7 +198,7 @@ static OFC_VOID TimerTestDestroy (OFC_HANDLE app)
 	  break ;
 	}
 
-      BlueHeapFree (timerTest) ;
+      ofc_free (timerTest) ;
     }
 }
 
@@ -219,7 +219,7 @@ TEST(timer, test_timer)
   BLUE_TIMER_TEST *timerTest ;
   OFC_HANDLE hApp ;
 
-  timerTest = BlueHeapMalloc (sizeof (BLUE_TIMER_TEST)) ;
+  timerTest = ofc_malloc (sizeof (BLUE_TIMER_TEST)) ;
   timerTest->count = 0 ;
   timerTest->state = TIMER_TEST_STATE_IDLE ;
   timerTest->scheduler = hScheduler ;

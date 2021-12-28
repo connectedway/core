@@ -130,7 +130,7 @@ BlueFileDebugDump (BLUE_VOID)
 }
 #endif
 
-static OFC_FST_TYPE MapType (BLUE_PATH *path)
+static OFC_FST_TYPE MapType (OFC_PATH *path)
 {
   OFC_FST_TYPE fstype ;
   OFC_LPCTSTR server ;
@@ -139,9 +139,9 @@ static OFC_FST_TYPE MapType (BLUE_PATH *path)
   OFC_BOOL share_wild ;
   OFC_CTCHAR *p ;
 
-  fstype = BluePathType(path) ;
+  fstype = ofc_path_type(path) ;
 
-  if (BluePathRemote(path))
+  if (ofc_path_remote(path))
     {
       /*
        * It's a remote path.  What we want to know is if it's for
@@ -155,30 +155,30 @@ static OFC_FST_TYPE MapType (BLUE_PATH *path)
       server_wild = OFC_FALSE ;
       share_wild = OFC_FALSE ;
 
-      server = BluePathServer(path) ;
+      server = ofc_path_server(path) ;
       if (server == OFC_NULL)
 	server_wild = OFC_TRUE ;
       else
 	{
-	  p = BlueCtstrtok (server, TSTR("*?")) ;
+	  p = ofc_tstrtok (server, TSTR("*?")) ;
 	  if (p != OFC_NULL && *p != TCHAR_EOS)
 	    {
 	      server_wild = OFC_TRUE ;
 	    }
 	}
 
-      share = BluePathShare (path) ;
+      share = ofc_path_share (path) ;
       if (share == OFC_NULL)
 	share_wild = OFC_TRUE ;
       else
 	{
-	  p = BlueCtstrtok (share, TSTR("*?")) ;
+	  p = ofc_tstrtok (share, TSTR("*?")) ;
 	  if (p != OFC_NULL && *p != TCHAR_EOS)
 	    {
 	      share_wild = OFC_TRUE ;
 	    }
-	  else if (BluePathDir (path, 0) == OFC_NULL &&
-               BluePathFilename (path) == OFC_NULL)
+	  else if (ofc_path_dir (path, 0) == OFC_NULL &&
+               ofc_path_filename (path) == OFC_NULL)
 	    {
 	      share_wild = OFC_TRUE ;
 	    }
@@ -190,7 +190,7 @@ static OFC_FST_TYPE MapType (BLUE_PATH *path)
 	  fstype = BLUE_FS_BROWSE_WORKGROUPS ;
 #endif
 	}
-      else if (share_wild && LookupWorkgroup (server) == OFC_TRUE)
+      else if (share_wild && lookup_workgroup (server) == OFC_TRUE)
 	{
 #if defined(OFC_FS_BROWSER)
 	  fstype = BLUE_FS_BROWSE_SERVERS ;
@@ -226,14 +226,14 @@ OfcCreateFileW (OFC_LPCTSTR lpFileName,
   OFC_HANDLE retHandle ;
   OFC_HANDLE hMappedTemplateHandle ;
 
-  fileContext = BlueHeapMalloc (sizeof (BLUE_FILE_CONTEXT)) ;
+  fileContext = ofc_malloc (sizeof (BLUE_FILE_CONTEXT)) ;
 
   fileContext->overlappedList = BlueQcreate () ;
 
 #if defined(OFC_FILE_DEBUG)
   BlueFileDebugAlloc (fileContext, RETURN_ADDRESS()) ;
 #endif
-  BluePathMapW (lpFileName, &lpMappedFileName, &fileContext->fsType) ;
+  ofc_path_mapW (lpFileName, &lpMappedFileName, &fileContext->fsType) ;
 
   hMappedTemplateHandle = OFC_HANDLE_NULL ;
   if (hTemplateFile != OFC_HANDLE_NULL)
@@ -265,12 +265,12 @@ OfcCreateFileW (OFC_LPCTSTR lpFileName,
 #if defined(OFC_FILE_DEBUG)
       BlueFileDebugFree (fileContext) ;
 #endif
-      BlueHeapFree (fileContext) ;
+      ofc_free (fileContext) ;
     }
   else
     retHandle = ofc_handle_create (OFC_HANDLE_FILE, fileContext) ;
 
-  BlueHeapFree (lpMappedFileName) ;
+  ofc_free (lpMappedFileName) ;
 
   return (retHandle) ;
 } 
@@ -287,11 +287,11 @@ OfcCreateFileA (OFC_LPCSTR lpFileName,
   OFC_TCHAR *lptFileName ;
   OFC_HANDLE ret ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
   ret = OfcCreateFileW (lptFileName, dwDesiredAccess, dwShareMode,
                         lpSecurityAttributes, dwCreationDisposition,
                         dwFlagsAndAttributes, hTemplateFile) ;
-  BlueHeapFree (lptFileName) ;
+  ofc_free (lptFileName) ;
   return (ret) ;
 }
 
@@ -303,11 +303,11 @@ OfcCreateDirectoryW (OFC_LPCTSTR lpPathName,
   OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
-  BluePathMapW (lpPathName, &lpMappedPathName, &type) ;
+  ofc_path_mapW (lpPathName, &lpMappedPathName, &type) ;
 
   ret = OfcFSCreateDirectory (type, lpMappedPathName, lpSecurityAttr) ;
 
-  BlueHeapFree (lpMappedPathName) ;
+  ofc_free (lpMappedPathName) ;
 
   return (ret) ;
 }  
@@ -319,9 +319,9 @@ OfcCreateDirectoryA (OFC_LPCSTR lpPathName,
   OFC_BOOL ret ;
   OFC_TCHAR *lptPathName ;
 
-  lptPathName = BlueCcstr2tstr (lpPathName) ;
+  lptPathName = ofc_cstr2tstr (lpPathName) ;
   ret = OfcCreateDirectoryW (lptPathName, lpSecurityAttr) ;
-  BlueHeapFree (lptPathName) ;
+  ofc_free (lptPathName) ;
   return (ret) ;
 }
 
@@ -413,7 +413,7 @@ OfcCloseHandle (OFC_HANDLE hObject)
 #if defined(OFC_FILE_DEBUG)
       BlueFileDebugFree (fileContext) ;
 #endif
-      BlueHeapFree (fileContext) ;
+      ofc_free (fileContext) ;
     }
   else
     ret = OFC_FALSE ;
@@ -528,11 +528,11 @@ OfcDeleteFileW (OFC_LPCTSTR lpFileName)
   OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
-  BluePathMapW (lpFileName, &lpMappedFileName, &type) ;
+  ofc_path_mapW (lpFileName, &lpMappedFileName, &type) ;
 
   ret = OfcFSDeleteFile (type, lpMappedFileName) ;
 
-  BlueHeapFree (lpMappedFileName) ;
+  ofc_free (lpMappedFileName) ;
 
   return (ret) ;
 }
@@ -543,9 +543,9 @@ OfcDeleteFileA (OFC_LPCSTR lpFileName)
   OFC_BOOL ret ;
   OFC_TCHAR *lptFileName ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
   ret = OfcDeleteFileW (lptFileName) ;
-  BlueHeapFree (lptFileName) ;
+  ofc_free (lptFileName) ;
   return (ret) ;
 }
 
@@ -556,11 +556,11 @@ OfcRemoveDirectoryW (OFC_LPCTSTR lpPathName)
   OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
-  BluePathMapW (lpPathName, &lpMappedPathName, &type) ;
+  ofc_path_mapW (lpPathName, &lpMappedPathName, &type) ;
 
   ret = OfcFSRemoveDirectory (type, lpMappedPathName) ;
 
-  BlueHeapFree (lpMappedPathName) ;
+  ofc_free (lpMappedPathName) ;
 
   return (ret) ;
 }
@@ -571,9 +571,9 @@ OfcRemoveDirectoryA (OFC_LPCSTR lpPathName)
   OFC_BOOL ret ;
   OFC_TCHAR *lptPathName ;
 
-  lptPathName = BlueCcstr2tstr (lpPathName) ;
+  lptPathName = ofc_cstr2tstr (lpPathName) ;
   ret = OfcRemoveDirectoryW(lptPathName) ;
-  BlueHeapFree (lptPathName) ;
+  ofc_free (lptPathName) ;
   return (ret) ;
 }
 
@@ -585,17 +585,17 @@ OfcFindFirstFileW (OFC_LPCTSTR lpFileName,
   OFC_LPTSTR lpMappedFileName ;
   BLUE_FILE_CONTEXT *fileContext ;
   OFC_HANDLE retHandle ;
-  BLUE_PATH *path ;
+  OFC_PATH *path ;
 
 
   retHandle = OFC_INVALID_HANDLE_VALUE ;
-  fileContext = BlueHeapMalloc (sizeof (BLUE_FILE_CONTEXT)) ;
+  fileContext = ofc_malloc (sizeof (BLUE_FILE_CONTEXT)) ;
   if (fileContext != OFC_NULL)
     {
 #if defined(OFC_FILE_DEBUG)
       BlueFileDebugAlloc (fileContext, RETURN_ADDRESS()) ;
 #endif
-      path = BlueMapPath (lpFileName, &lpMappedFileName) ;
+      path = ofc_map_path (lpFileName, &lpMappedFileName) ;
 
       fileContext->fsType = MapType (path) ;
 
@@ -607,23 +607,23 @@ OfcFindFirstFileW (OFC_LPCTSTR lpFileName,
           fileContext->fsHandle == OFC_INVALID_HANDLE_VALUE)
         {
 	  if (fileContext->fsType == OFC_FST_BROWSE_SERVERS &&
-          BluePathServer(path) != OFC_NULL)
-	    RemoveWorkgroup (BluePathServer(path)) ;
+          ofc_path_server(path) != OFC_NULL)
+	    remove_workgroup (ofc_path_server(path)) ;
 
           retHandle = fileContext->fsHandle ;
 #if defined(OFC_FILE_DEBUG)
 	  BlueFileDebugFree (fileContext) ;
 #endif
-          BlueHeapFree (fileContext) ;
+          ofc_free (fileContext) ;
         }
       else
 	{
 	  retHandle = ofc_handle_create (OFC_HANDLE_FILE, fileContext) ;
 	  if (fileContext->fsType == OFC_FST_BROWSE_WORKGROUPS)
-	    UpdateWorkgroup (lpFindFileData->cFileName) ;
+	    update_workgroup (lpFindFileData->cFileName) ;
 	}
-      BlueHeapFree (lpMappedFileName) ;
-      BluePathDelete (path) ;
+      ofc_free (lpMappedFileName) ;
+      ofc_path_delete (path) ;
     }
   return (retHandle) ;
 }
@@ -668,9 +668,9 @@ OfcFindFirstFileA (OFC_LPCSTR lpFileName,
   OFC_TCHAR *lptFileName ;
   OFC_WIN32_FIND_DATAW tFindFileData ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
   ret = OfcFindFirstFileW (lptFileName, &tFindFileData, more) ;
-  BlueHeapFree (lptFileName) ;
+  ofc_free (lptFileName) ;
   if (ret != OFC_INVALID_HANDLE_VALUE)
     BlueFileFindDataW2FindDataA (lpFindFileData, &tFindFileData) ;
   return (ret) ;
@@ -694,7 +694,7 @@ OfcFindNextFileW (OFC_HANDLE hFindFile,
                                more) ;
 
       if (ret == OFC_TRUE && fileContext->fsType == OFC_FST_BROWSE_WORKGROUPS)
-	UpdateWorkgroup (lpFindFileData->cFileName) ;
+	update_workgroup (lpFindFileData->cFileName) ;
 
       ofc_handle_unlock (hFindFile) ;
     }
@@ -733,7 +733,7 @@ OfcFindClose (OFC_HANDLE hFindFile)
 #if defined(OFC_FILE_DEBUG)
       BlueFileDebugFree (fileContext) ;
 #endif
-      BlueHeapFree (fileContext) ;
+      ofc_free (fileContext) ;
     }
 
   return (ret) ;
@@ -765,7 +765,7 @@ OfcGetFileAttributesExW (OFC_LPCTSTR lpFileName,
   OFC_LPTSTR lpMappedFileName ;
   OFC_FST_TYPE type ;
   OFC_BOOL ret ;
-  BLUE_PATH *path ;
+  OFC_PATH *path ;
 
   if (lpFileInformation == OFC_NULL)
     {
@@ -775,13 +775,13 @@ OfcGetFileAttributesExW (OFC_LPCTSTR lpFileName,
     }
   else
     {
-      path = BlueMapPath (lpFileName, &lpMappedFileName) ;
+      path = ofc_map_path (lpFileName, &lpMappedFileName) ;
       type = MapType (path) ;
 
       ret = OfcFSGetFileAttributesEx (type, lpMappedFileName,
                                       fInfoLevelId, lpFileInformation) ;
-      BluePathDelete (path) ;
-      BlueHeapFree (lpMappedFileName) ;
+      ofc_path_delete (path) ;
+      ofc_free (lpMappedFileName) ;
     }
   return (ret) ;
 }
@@ -794,10 +794,10 @@ OfcGetFileAttributesExA (OFC_LPCSTR lpFileName,
   OFC_BOOL ret ;
   OFC_TCHAR *lptFileName ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
   ret = OfcGetFileAttributesExW (lptFileName, fInfoLevelId,
                                  lpFileInformation) ;
-  BlueHeapFree (lptFileName) ;
+  ofc_free (lptFileName) ;
   return (ret) ;
 }
 
@@ -836,20 +836,20 @@ OfcMoveFileW (OFC_LPCTSTR lpExistingFileName,
   OFC_FST_TYPE newType ;
   OFC_BOOL ret ;
 
-  BluePathMapW (lpExistingFileName, &lpExistingMappedFileName, &existingType) ;
+  ofc_path_mapW (lpExistingFileName, &lpExistingMappedFileName, &existingType) ;
   /*
    * Map the new path.  We'll through away the type.  
    * We'll leave it to the target filesystem to determine if it can move
    * to the new name
    */
-  BluePathMapW (lpNewFileName, &lpNewMappedFileName, &newType) ;
+  ofc_path_mapW (lpNewFileName, &lpNewMappedFileName, &newType) ;
   
   ret = OfcFSMoveFile (existingType,
                        lpExistingMappedFileName,
                        lpNewMappedFileName) ;
 
-  BlueHeapFree (lpExistingMappedFileName) ;
-  BlueHeapFree (lpNewMappedFileName) ;
+  ofc_free (lpExistingMappedFileName) ;
+  ofc_free (lpNewMappedFileName) ;
   return (ret) ;
 }
 
@@ -861,11 +861,11 @@ OfcMoveFileA (OFC_LPCSTR lpExistingFileName,
   OFC_TCHAR *lptExistingFileName ;
   OFC_TCHAR *lptNewFileName ;
 
-  lptExistingFileName = BlueCcstr2tstr (lpExistingFileName) ;
-  lptNewFileName = BlueCcstr2tstr (lpNewFileName) ;
+  lptExistingFileName = ofc_cstr2tstr (lpExistingFileName) ;
+  lptNewFileName = ofc_cstr2tstr (lpNewFileName) ;
   ret = OfcMoveFileW (lptExistingFileName, lptNewFileName) ;
-  BlueHeapFree (lptExistingFileName) ;
-  BlueHeapFree (lptNewFileName) ;
+  ofc_free (lptExistingFileName) ;
+  ofc_free (lptNewFileName) ;
   return (ret) ;
 }
 
@@ -894,11 +894,11 @@ OfcSetFileAttributesW (OFC_LPCTSTR lpFileName,
   OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
-  BluePathMapW (lpFileName, &lpMappedFileName, &type) ;
+  ofc_path_mapW (lpFileName, &lpMappedFileName, &type) ;
 
   ret = OfcFSSetFileAttributes (type, lpMappedFileName, dwFileAttributes) ;
 
-  BlueHeapFree (lpMappedFileName) ;
+  ofc_free (lpMappedFileName) ;
   return (ret) ;
 }
 
@@ -909,9 +909,9 @@ OfcSetFileAttributesA (OFC_LPCSTR lpFileName,
   OFC_BOOL ret ;
   OFC_TCHAR *lptFileName ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
   ret = OfcSetFileAttributesW (lptFileName, dwFileAttributes) ;
-  BlueHeapFree (lptFileName) ;
+  ofc_free (lptFileName) ;
   return (ret) ;
 }
 
@@ -1137,12 +1137,12 @@ OfcGetDiskFreeSpaceW (OFC_LPCTSTR lpRootPathName,
   OFC_LPTSTR lpMappedPathName ;
   OFC_FST_TYPE type ;
   OFC_BOOL ret ;
-  BLUE_PATH *path ;
+  OFC_PATH *path ;
 
 #if 0
   BluePathGetRootW (lpRootPathName, &lpMappedPathName, &type) ;
 #else
-  path = BlueMapPath (lpRootPathName, &lpMappedPathName) ;
+  path = ofc_map_path (lpRootPathName, &lpMappedPathName) ;
   type = MapType (path) ;
 #endif
 
@@ -1153,9 +1153,9 @@ OfcGetDiskFreeSpaceW (OFC_LPCTSTR lpRootPathName,
                                lpNumberOfFreeClusters,
                                lpTotalNumberOfClusters) ;
 
-  BlueHeapFree (lpMappedPathName) ;
+  ofc_free (lpMappedPathName) ;
 #if 1
-  BluePathDelete (path) ;
+  ofc_path_delete (path) ;
 #endif
 
   return (ret) ;
@@ -1171,11 +1171,11 @@ OfcGetDiskFreeSpaceA (OFC_LPCSTR lpRootPathName,
   OFC_BOOL ret ;
   OFC_TCHAR *lptRootPathName ;
 
-  lptRootPathName = BlueCcstr2tstr (lpRootPathName) ;
+  lptRootPathName = ofc_cstr2tstr (lpRootPathName) ;
   ret = OfcGetDiskFreeSpaceW (lptRootPathName, lpSectorsPerCluster,
                               lpBytesPerSector, lpNumberOfFreeClusters,
                               lpTotalNumberOfClusters) ;
-  BlueHeapFree (lptRootPathName) ;
+  ofc_free (lptRootPathName) ;
   return (ret) ;
 }
 
@@ -1193,7 +1193,7 @@ OfcGetVolumeInformationW (OFC_LPCTSTR lpRootPathName,
   OFC_FST_TYPE type ;
   OFC_BOOL ret ;
 
-  BluePathGetRootW (lpRootPathName, &lpMappedPathName, &type) ;
+  ofc_path_get_rootW (lpRootPathName, &lpMappedPathName, &type) ;
 
   ret = OfcFSGetVolumeInformation (type,
                                    lpMappedPathName,
@@ -1205,7 +1205,7 @@ OfcGetVolumeInformationW (OFC_LPCTSTR lpRootPathName,
                                    lpFileSystemName,
                                    nFileSystemName)  ;
 
-  BlueHeapFree (lpMappedPathName) ;
+  ofc_free (lpMappedPathName) ;
 
   return (ret) ;
 }
@@ -1226,16 +1226,16 @@ OfcGetVolumeInformationA (OFC_LPCSTR lpRootPathName,
   OFC_TCHAR *lptFileSystemName ;
   OFC_DWORD i ;
 
-  lptRootPathName = BlueCcstr2tstr (lpRootPathName) ;
+  lptRootPathName = ofc_cstr2tstr (lpRootPathName) ;
   lptVolumeNameBuffer = OFC_NULL ;
   lptFileSystemName = OFC_NULL ;
 
   if (lpVolumeNameBuffer != OFC_NULL)
     lptVolumeNameBuffer = 
-      BlueHeapMalloc (nVolumeNameSize * sizeof (OFC_TCHAR)) ;
+      ofc_malloc (nVolumeNameSize * sizeof (OFC_TCHAR)) ;
   if (lpFileSystemName != OFC_NULL)
     lptFileSystemName = 
-      BlueHeapMalloc (nFileSystemName * sizeof (OFC_TCHAR)) ;
+      ofc_malloc (nFileSystemName * sizeof (OFC_TCHAR)) ;
 
   ret = OfcGetVolumeInformationW (lptRootPathName,
                                   lptVolumeNameBuffer, nVolumeNameSize,
@@ -1254,10 +1254,10 @@ OfcGetVolumeInformationA (OFC_LPCSTR lpRootPathName,
     }
 
   if (lptVolumeNameBuffer != OFC_NULL)
-    BlueHeapFree (lptVolumeNameBuffer) ;
+    ofc_free (lptVolumeNameBuffer) ;
   if (lptFileSystemName != OFC_NULL)
-    BlueHeapFree (lptFileSystemName) ;
-  BlueHeapFree (lptRootPathName) ;
+    ofc_free (lptFileSystemName) ;
+  ofc_free (lptRootPathName) ;
   return (ret) ;
 }
 
@@ -1349,11 +1349,11 @@ OfcDismountW (OFC_LPCTSTR lpFileName)
   OFC_FST_TYPE fsType ;
   OFC_BOOL ret ;
 
-  BluePathMapW (lpFileName, &lpMappedFileName, &fsType) ;
+  ofc_path_mapW (lpFileName, &lpMappedFileName, &fsType) ;
 
   ret = OfcFSDismount (fsType, lpMappedFileName) ;
 
-  BlueHeapFree (lpMappedFileName) ;
+  ofc_free (lpMappedFileName) ;
 
   return (ret) ;
 } 
@@ -1364,10 +1364,10 @@ OfcDismountA (OFC_LPCSTR lpFileName)
   OFC_TCHAR *lptFileName ;
   OFC_BOOL ret ;
 
-  lptFileName = BlueCcstr2tstr (lpFileName) ;
+  lptFileName = ofc_cstr2tstr (lpFileName) ;
   ret = OfcDismountW (lptFileName) ;
 
-  BlueHeapFree (lptFileName) ;
+  ofc_free (lptFileName) ;
   return (ret) ;
 }
 
@@ -1474,7 +1474,7 @@ OfcFileInit (OFC_VOID)
 {
     OfcLastError = BlueThreadCreateVariable () ;
   BlueThreadSetVariable (OfcLastError, (OFC_DWORD_PTR) OFC_ERROR_SUCCESS) ;
-  InitWorkgroups () ;
+  init_workgroups () ;
 #if defined(OFC_FILE_DEBUG)
   BlueFileDebug.Max = 0 ;
   BlueFileDebug.Total = 0 ;
@@ -1489,6 +1489,6 @@ OfcFileDestroy (OFC_VOID)
 #if defined(OFC_FILE_DEBUG)
   BlueLockDestroy (BlueFileLock) ;
 #endif
-  DestroyWorkgroups() ;
+  destroy_workgroups() ;
   BlueThreadDestroyVariable(OfcLastError);
 }

@@ -99,7 +99,7 @@ BlueWaitSetCreate (OFC_VOID)
   WAIT_SET *pWaitSet ;
   OFC_HANDLE handle ;
 
-  pWaitSet = BlueHeapMalloc (sizeof (WAIT_SET)) ;
+  pWaitSet = ofc_malloc (sizeof (WAIT_SET)) ;
   pWaitSet->hHandleQueue = BlueQcreate() ;
   BlueWaitSetCreateImpl (pWaitSet) ;
   handle = ofc_handle_create (OFC_HANDLE_WAIT_SET, pWaitSet) ;
@@ -181,7 +181,7 @@ BlueWaitSetDestroy (OFC_HANDLE handle)
       ofc_handle_destroy (handle) ;
       ofc_handle_unlock (handle) ;
       BlueWaitSetDestroyImpl (pWaitSet) ;
-      BlueHeapFree (pWaitSet) ;
+      ofc_free (pWaitSet) ;
       /* second unlock to balance extra on create */
       ofc_handle_unlock (handle) ;
     }

@@ -50,7 +50,7 @@ static OFC_HANDLE event_queue ;
 typedef struct 
 {
   OFC_UINT16 num_dns ;
-  BLUE_IPADDR *dns;		/* This structure can be allocated */
+  OFC_IPADDR *dns;		/* This structure can be allocated */
 				/* dynamically with a larger array bound */
 } DNSLIST ;
 
@@ -62,19 +62,19 @@ typedef struct
 typedef struct
 {
   BLUE_CONFIG_MODE bp_netbios_mode ;
-  BLUE_IPADDR ipaddress ;
-  BLUE_IPADDR bcast ;
-  BLUE_IPADDR mask ;
+  OFC_IPADDR ipaddress ;
+  OFC_IPADDR bcast ;
+  OFC_IPADDR mask ;
   OFC_VOID *private ;
   OFC_UINT16 num_wins ;
-  BLUE_IPADDR *winslist ;	/* This structure can be allocated */
+  OFC_IPADDR *winslist ;	/* This structure can be allocated */
 				/* dynamically with a larger array bound */
   OFC_CHAR *master ;
 } BLUE_CONFIG_ICONFIG ;
 
 typedef struct
 {
-  BLUE_LOCK *config_lock ;
+  OFC_LOCK *config_lock ;
   OFC_TCHAR *bp_workstation_name ;
   OFC_TCHAR *bp_workstation_domain ;
   OFC_TCHAR *bp_workstation_desc ;
@@ -131,7 +131,7 @@ BlueConfigMakeDOM (OFC_VOID)
   OFC_BOOL error_state ;
   OFC_CHAR *cstr ;
   BLUE_CONFIG_ICONFIG *bp_interface_config ;
-  BLUE_IPADDR *iparray ;
+  OFC_IPADDR *iparray ;
   OFC_INT i ;
   OFC_INT j ;
   BLUE_CONFIG *BlueConfig ;
@@ -171,9 +171,9 @@ BlueConfigMakeDOM (OFC_VOID)
       if (!error_state)
 	{
 	  cstr = 
-	    BlueCtstr2cstr (BlueConfig->bp_workstation_name) ;
+	    ofc_tstr2cstr (BlueConfig->bp_workstation_name) ;
 	  node = ofc_dom_create_element_cdata (doc, "devicename", cstr) ;
-	  BlueHeapFree (cstr) ;
+	  ofc_free (cstr) ;
 	  if (node != OFC_NULL)
           ofc_dom_append_child(bpconfig_node, node) ;
 	  else
@@ -182,10 +182,10 @@ BlueConfigMakeDOM (OFC_VOID)
 
       if (!error_state)
 	{
-	  cstr = BlueHeapMalloc (UUID_STR_LEN + 1) ;
-	  BlueCuuidtoa (BlueConfig->uuid, cstr) ;
+	  cstr = ofc_malloc (UUID_STR_LEN + 1) ;
+	  ofc_uuidtoa (BlueConfig->uuid, cstr) ;
 	  node = ofc_dom_create_element_cdata (doc, "uuid", cstr) ;
-	  BlueHeapFree (cstr) ;
+	  ofc_free (cstr) ;
 	  if (node != OFC_NULL)
           ofc_dom_append_child(bpconfig_node, node) ;
 	  else
@@ -195,10 +195,10 @@ BlueConfigMakeDOM (OFC_VOID)
       if (!error_state)
 	{
 	  cstr = 
-	    BlueCtstr2cstr (BlueConfig->bp_workstation_desc) ;
+	    ofc_tstr2cstr (BlueConfig->bp_workstation_desc) ;
 	  node = 
 	    ofc_dom_create_element_cdata (doc, "description", cstr) ;
-	  BlueHeapFree (cstr) ;
+	  ofc_free (cstr) ;
 	  if (node != OFC_NULL)
           ofc_dom_append_child(bpconfig_node, node) ;
 	  else
@@ -275,9 +275,9 @@ BlueConfigMakeDOM (OFC_VOID)
 		  bp_interface_config = BlueConfig->bp_interface_config ;
 
 		  node = ofc_dom_create_element_cdata
-		    (doc, "ipaddress", 
-		     BlueNETntop (&bp_interface_config[i].ipaddress,
-				  ip_addr, IP6STR_LEN)) ;
+		    (doc, "ipaddress",
+             ofc_ntop (&bp_interface_config[i].ipaddress,
+                       ip_addr, IP6STR_LEN)) ;
 
 		  if (node != OFC_NULL)
               ofc_dom_append_child(interface_node, node) ;
@@ -287,9 +287,9 @@ BlueConfigMakeDOM (OFC_VOID)
 		  if (!error_state)
 		    {
 		      node = ofc_dom_create_element_cdata
-			(doc, "bcast", 
-			 BlueNETntop (&bp_interface_config[i].bcast,
-				      ip_addr, IP6STR_LEN)) ;
+			(doc, "bcast",
+             ofc_ntop (&bp_interface_config[i].bcast,
+                       ip_addr, IP6STR_LEN)) ;
 
 		      if (node != OFC_NULL)
                   ofc_dom_append_child(interface_node, node) ;
@@ -300,9 +300,9 @@ BlueConfigMakeDOM (OFC_VOID)
 		  if (!error_state)
 		    {
 		      node = ofc_dom_create_element_cdata
-			(doc, "mask", 
-			 BlueNETntop (&bp_interface_config[i].mask,
-				      ip_addr, IP6STR_LEN)) ;
+			(doc, "mask",
+             ofc_ntop (&bp_interface_config[i].mask,
+                       ip_addr, IP6STR_LEN)) ;
 
 		      if (node != OFC_NULL)
                   ofc_dom_append_child(interface_node, node) ;
@@ -338,8 +338,8 @@ BlueConfigMakeDOM (OFC_VOID)
 			   j++)
 			{
 			  node = ofc_dom_create_element_cdata
-			    (doc, "wins", 
-			 BlueNETntop (&iparray[j], ip_addr, IP6STR_LEN)) ;
+			    (doc, "wins",
+                 ofc_ntop (&iparray[j], ip_addr, IP6STR_LEN)) ;
 
 			  if (node != OFC_NULL)
                   ofc_dom_append_child(wins_node, node) ;
@@ -378,7 +378,7 @@ BlueConfigMakeDOM (OFC_VOID)
 	{
 	  iparray = BlueConfig->bp_netbios_dns.dns ;
 	  node = ofc_dom_create_element_cdata
-	    (doc, "dns", BlueNETntop (&iparray[i], ip_addr, IP6STR_LEN)) ;
+	    (doc, "dns", ofc_ntop (&iparray[i], ip_addr, IP6STR_LEN)) ;
 	  if (node != OFC_NULL)
           ofc_dom_append_child(dns_node, node) ;
 	  else
@@ -389,7 +389,7 @@ BlueConfigMakeDOM (OFC_VOID)
 	{
 	  OFC_CTCHAR *prefix ;
 	  OFC_CTCHAR *desc ;
-	  BLUE_PATH *path ;
+	  OFC_PATH *path ;
 	  OFC_BOOL thumbnail ;
 
 	  drives_node = ofc_dom_create_element(doc, "drives") ;
@@ -400,8 +400,8 @@ BlueConfigMakeDOM (OFC_VOID)
       
 	  for (i = 0 ; i < OFC_MAX_MAPS && !error_state; i++)
 	    {
-	      BluePathGetMapW (i, &prefix, &desc, &path, &thumbnail) ;
-	      if (prefix != OFC_NULL && BluePathRemote(path))
+	      ofc_path_get_mapW (i, &prefix, &desc, &path, &thumbnail) ;
+	      if (prefix != OFC_NULL && ofc_path_remote(path))
 		{
 		  map_node = ofc_dom_create_element(doc, "map") ;
 		  if (map_node != OFC_NULL)
@@ -412,27 +412,27 @@ BlueConfigMakeDOM (OFC_VOID)
 		  if (!error_state)
 		    {
 		      OFC_CHAR *cprefix ;
-		      cprefix = BlueCtstr2cstr (prefix) ;
+		      cprefix = ofc_tstr2cstr (prefix) ;
 		      node = ofc_dom_create_element_cdata
 			(doc, "drive", cprefix) ;
 		      if (node != OFC_NULL)
                   ofc_dom_append_child(map_node, node) ;
 		      else
 			error_state = OFC_TRUE ;
-		      BlueHeapFree (cprefix) ;
+		      ofc_free (cprefix) ;
 		    }
       
 		  if (!error_state)
 		    {
 		      OFC_CHAR *cdesc ;
-		      cdesc = BlueCtstr2cstr (desc) ;
+		      cdesc = ofc_tstr2cstr (desc) ;
 		      node = ofc_dom_create_element_cdata
 			(doc, "description", cdesc) ;
 		      if (node != OFC_NULL)
                   ofc_dom_append_child(map_node, node) ;
 		      else
 			error_state = OFC_TRUE ;
-		      BlueHeapFree (cdesc) ;
+		      ofc_free (cdesc) ;
 		    }
       
 		  if (!error_state)
@@ -442,13 +442,13 @@ BlueConfigMakeDOM (OFC_VOID)
 		      OFC_CHAR *filename ;
 
 		      rem = 0 ;
-		      size = BluePathPrintA (path, OFC_NULL, &rem) ;
-		      filename = BlueHeapMalloc (size+1) ;
+		      size = ofc_path_printA (path, OFC_NULL, &rem) ;
+		      filename = ofc_malloc (size + 1) ;
 
 		      rem = size+1 ;
-		      BluePathPrintA (path, &filename, &rem) ;
+		      ofc_path_printA (path, &filename, &rem) ;
 		      node = ofc_dom_create_element_cdata (doc, "path", filename) ;
-		      BlueHeapFree (filename) ;
+		      ofc_free (filename) ;
 
 		      if (node != OFC_NULL)
                   ofc_dom_append_child(map_node, node) ;
@@ -499,14 +499,14 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
   OFC_INT i ;
   OFC_INT j ;
   OFC_INT num_wins ;
-  BLUE_IPADDR ipaddress ;
-  BLUE_IPADDR bcast ;
-  BLUE_IPADDR mask ;
+  OFC_IPADDR ipaddress ;
+  OFC_IPADDR bcast ;
+  OFC_IPADDR mask ;
   BLUE_CONFIG_MODE netbios_mode ;
   BLUE_CONFIG_ICONFIG_TYPE itype ;
   OFC_TCHAR *tstr ;
   OFC_CCHAR *cstr ;
-  BLUE_IPADDR *iparray ;
+  OFC_IPADDR *iparray ;
   BLUE_CONFIG *BlueConfig ;
 
   BlueConfig = BlueGetConfig() ;
@@ -524,7 +524,7 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 	  version = ofc_dom_get_attribute(bpconfig_node, "version") ;
 	  if (version != OFC_NULL)
 	    {
-	      if (BlueCstrcmp (version, "0.0") != 0)
+	      if (ofc_strcmp (version, "0.0") != 0)
 		error_state = OFC_TRUE ;
 	    }
 	  else
@@ -536,21 +536,21 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 	  value = ofc_dom_get_element_cdata(bpconfig_dom, "devicename") ;
 	  if (value != OFC_NULL)
 	    {
-	      BlueCprintf ("Device Name: %s\n", value) ;
-	      tstr = BlueCcstr2tstr (value) ;
+	      ofc_printf ("Device Name: %s\n", value) ;
+	      tstr = ofc_cstr2tstr (value) ;
 	      BlueConfig->bp_workstation_name = tstr ;
 	    }
 
 	  value = ofc_dom_get_element_cdata(bpconfig_dom, "uuid") ;
 	  if (value != OFC_NULL)
 	    {
-	      BlueCatouuid (value, BlueConfig->uuid) ;
+	      ofc_atouuid (value, BlueConfig->uuid) ;
 	    }
 
 	  value = ofc_dom_get_element_cdata(bpconfig_dom, "description") ;
 	  if (value != OFC_NULL)
 	    {
-	      tstr = BlueCcstr2tstr (value) ;
+	      tstr = ofc_cstr2tstr (value) ;
 	      BlueConfig->bp_workstation_desc = tstr ;
 	    }
 	  ip_node = ofc_dom_get_element (bpconfig_dom, "ip") ;
@@ -559,7 +559,7 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 	      value = ofc_dom_get_element_cdata(ip_node, "autoip") ;
 	      if (value != OFC_NULL)
 		{
-		  if (BlueCstrcmp (value, "yes") == 0)
+		  if (ofc_strcmp (value, "yes") == 0)
 		    BlueConfig->enableAutoIP = OFC_TRUE ;
 		  else
 		    BlueConfig->enableAutoIP = OFC_FALSE ;
@@ -573,7 +573,7 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 		  value = ofc_dom_get_element_cdata(interfaces_node, "config") ;
 		  if (value != OFC_NULL)
 		    {
-		      if (BlueCstrcmp (value, "auto") == 0)
+		      if (ofc_strcmp (value, "auto") == 0)
 			itype = BLUE_CONFIG_ICONFIG_AUTO ;
 		    }
 
@@ -597,31 +597,31 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
                           ofc_dom_get_element_cdata(interface_nodelist[i],
                                                     "ipaddress") ;
 			      if (value != OFC_NULL)
-				BlueNETpton (value, &ipaddress) ;
+				ofc_pton (value, &ipaddress) ;
 			      else
 				{
-				  ipaddress.ip_version = BLUE_FAMILY_IP ;
-				  ipaddress.u.ipv4.addr = BLUE_INADDR_NONE ;
+				  ipaddress.ip_version = OFC_FAMILY_IP ;
+				  ipaddress.u.ipv4.addr = OFC_INADDR_NONE ;
 				}
 			      value =
                           ofc_dom_get_element_cdata(interface_nodelist[i],
                                                     "bcast") ;
 			      if (value != OFC_NULL)
-				BlueNETpton (value, &bcast) ;
+				ofc_pton (value, &bcast) ;
 			      else
 				{
-				  bcast.ip_version = BLUE_FAMILY_IP ;
-				  bcast.u.ipv4.addr = BLUE_INADDR_BROADCAST ;
+				  bcast.ip_version = OFC_FAMILY_IP ;
+				  bcast.u.ipv4.addr = OFC_INADDR_BROADCAST ;
 				}
 			      value =
                           ofc_dom_get_element_cdata(interface_nodelist[i],
                                                     "mask") ;
 			      if (value != OFC_NULL)
-				BlueNETpton (value, &mask) ;
+				ofc_pton (value, &mask) ;
 			      else
 				{
-				  mask.ip_version = BLUE_FAMILY_IP ;
-				  mask.u.ipv4.addr = BLUE_INADDR_ANY ;
+				  mask.ip_version = OFC_FAMILY_IP ;
+				  mask.u.ipv4.addr = OFC_INADDR_ANY ;
 				}
 
 			      netbios_mode = OFC_DEFAULT_NETBIOS_MODE ;
@@ -631,9 +631,9 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 			      if (value != OFC_NULL)
 				{
 				  for (j = 0 ; 
-				       j < 4 && 
-					 BlueCstrcmp (value, 
-						      strmode[j]) != 0 ; 
+				       j < 4 &&
+                               ofc_strcmp (value,
+                                           strmode[j]) != 0 ;
 				       j++) ;
 				  if (j < 4)
 				    netbios_mode = j ;
@@ -656,13 +656,13 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
                            OFC_NULL ;
 					   num_wins++) ;
 				      iparray = 
-					BlueHeapMalloc (sizeof (BLUE_IPADDR) *
-							num_wins) ;
+					ofc_malloc (sizeof (OFC_IPADDR) *
+                                num_wins) ;
 				      for (j = 0 ; j < num_wins ; j++)
 					{
 					  value =
                               ofc_dom_get_cdata(wins_nodelist[j]) ;
-					  BlueNETpton (value, &iparray[j]) ;
+					  ofc_pton (value, &iparray[j]) ;
 					}
 				      ofc_dom_destroy_node_list (wins_nodelist) ;
 				    }
@@ -679,7 +679,7 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 							    value,
 							    num_wins,
 							    iparray) ;
-			      BlueHeapFree (iparray) ;
+			      ofc_free (iparray) ;
 			    }
 			  ofc_dom_destroy_node_list (interface_nodelist) ;
 			}
@@ -697,14 +697,14 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 		      BlueConfig->bp_netbios_dns.num_dns = i ;
 		      if (BlueConfig->bp_netbios_dns.dns !=
                   OFC_NULL)
-			BlueHeapFree (BlueConfig->bp_netbios_dns.dns);
-		      iparray = BlueHeapMalloc (sizeof (BLUE_IPADDR) * i) ;
+			ofc_free (BlueConfig->bp_netbios_dns.dns);
+		      iparray = ofc_malloc (sizeof (OFC_IPADDR) * i) ;
 		      BlueConfig->bp_netbios_dns.dns = iparray;
 		      for (i = 0 ; i < BlueConfig->bp_netbios_dns.num_dns ; 
 			   i++)
 			{
 			  value = ofc_dom_get_cdata(dns_nodelist[i]) ;
-			  BlueNETpton (value, &iparray[i]) ;
+			  ofc_pton (value, &iparray[i]) ;
 			}
 		      ofc_dom_destroy_node_list (dns_nodelist) ;
 		    }
@@ -723,7 +723,7 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 		      OFC_LPCSTR lpBookmark ;
 		      OFC_LPCSTR lpDesc ;
 		      OFC_LPCSTR lpFile ;
-		      BLUE_PATH *path ;
+		      OFC_PATH *path ;
 		      OFC_BOOL thumbnail = OFC_FALSE ;
 
 		      map_node = drives_nodelist[i] ;
@@ -736,7 +736,7 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
                       ofc_dom_get_element_cdata(map_node, "thumbnail") ;
 		      if (value != OFC_NULL)
 			{
-			  if (BlueCstrcmp (value, "yes") == 0)
+			  if (ofc_strcmp (value, "yes") == 0)
 			    thumbnail = OFC_TRUE ;
 			  else
 			    thumbnail = OFC_FALSE ;
@@ -747,17 +747,17 @@ BlueConfigParseDOM (OFC_DOMNode *bpconfig_dom)
 		      lpFile = ofc_dom_get_element_cdata(map_node, "path") ;
 		      if (lpBookmark != OFC_NULL && lpFile != OFC_NULL)
 			{
-			  path = BluePathCreateA (lpFile) ;
-			  if (BluePathRemote(path))
+			  path = ofc_path_createA (lpFile) ;
+			  if (ofc_path_remote(path))
 			    {
-			      if (!BluePathAddMapA (lpBookmark, lpDesc,
-                                        path, OFC_FST_SMB,
-                                        thumbnail))
-				BluePathDelete (path) ;
+			      if (!ofc_path_add_mapA (lpBookmark, lpDesc,
+                                          path, OFC_FST_SMB,
+                                          thumbnail))
+				ofc_path_delete (path) ;
 			    }
 			  else
 			    {
-			      BluePathDelete (path) ;
+			      ofc_path_delete (path) ;
 			    }
 			}
 		    }
@@ -777,7 +777,7 @@ BlueConfigLock(OFC_VOID)
 
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
-    BlueLock (BlueConfig->config_lock) ;
+    ofc_lock (BlueConfig->config_lock) ;
 }
 
 static OFC_VOID
@@ -787,7 +787,7 @@ BlueConfigUnlock(OFC_VOID)
 
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
-    BlueUnlock (BlueConfig->config_lock) ;
+    ofc_unlock (BlueConfig->config_lock) ;
 }
 
 #if defined(OFC_PERSIST)
@@ -810,7 +810,7 @@ BlueConfigPrint (OFC_LPVOID *buf, OFC_SIZET *len)
       if (bpconfig_dom != OFC_NULL)
 	{
 	  *len = ofc_dom_sprint_document (OFC_NULL, 0, bpconfig_dom) ;
-	  *buf = (OFC_LPVOID) BlueHeapMalloc (*len + 1) ;
+	  *buf = (OFC_LPVOID) ofc_malloc (*len + 1) ;
 	  ofc_dom_sprint_document (*buf, *len + 1, bpconfig_dom) ;
 	  ofc_dom_destroy_document(bpconfig_dom);
 	}
@@ -845,7 +845,7 @@ BlueConfigSave (OFC_LPCTSTR lpFileName)
 	  OfcCloseHandle (xml) ;
 	}
 
-      BlueHeapFree (buf) ;
+      ofc_free (buf) ;
     }
 }
 
@@ -885,7 +885,7 @@ BlueConfigLoad (OFC_LPCTSTR lpFileName)
     {
       BlueConfigLock() ;
 
-      fileContext = (FILE_CONTEXT *) BlueHeapMalloc (sizeof (FILE_CONTEXT)) ;
+      fileContext = (FILE_CONTEXT *) ofc_malloc (sizeof (FILE_CONTEXT)) ;
   
       fileContext->handle = OfcCreateFileW (lpFileName,
                                             OFC_GENERIC_READ,
@@ -906,9 +906,9 @@ BlueConfigLoad (OFC_LPCTSTR lpFileName)
 	  OfcCloseHandle (fileContext->handle) ;
 	}
       else
-	BlueCprintf ("Could not load config file %S\n", lpFileName) ;
+	ofc_printf ("Could not load config file %S\n", lpFileName) ;
 
-      BlueHeapFree (fileContext) ;
+      ofc_free (fileContext) ;
   
       if (bpconfig_dom != OFC_NULL)
 	{
@@ -934,17 +934,17 @@ BlueConfigFree (OFC_VOID)
     {
       if (BlueConfig->bp_workstation_name != OFC_NULL)
 	{
-	  BlueHeapFree (BlueConfig->bp_workstation_name) ;
+	  ofc_free (BlueConfig->bp_workstation_name) ;
 	  BlueConfig->bp_workstation_name = OFC_NULL ;
 	}
       if (BlueConfig->bp_workstation_domain != OFC_NULL)
 	{
-	  BlueHeapFree (BlueConfig->bp_workstation_domain) ;
+	  ofc_free (BlueConfig->bp_workstation_domain) ;
 	  BlueConfig->bp_workstation_domain = OFC_NULL ;
 	}
       if (BlueConfig->bp_workstation_desc != OFC_NULL)
 	{
-	  BlueHeapFree (BlueConfig->bp_workstation_desc) ;
+	  ofc_free (BlueConfig->bp_workstation_desc) ;
 	  BlueConfig->bp_workstation_desc = OFC_NULL ;
 	}
       if (BlueConfig->bp_interface_config != OFC_NULL)
@@ -955,20 +955,20 @@ BlueConfigFree (OFC_VOID)
 	    {
 	      if (bp_interface_config[i].winslist != OFC_NULL)
 		{
-		  BlueHeapFree (bp_interface_config[i].winslist) ;
+		  ofc_free (bp_interface_config[i].winslist) ;
 		  bp_interface_config[i].winslist = OFC_NULL ;
 		}
 	      bp_interface_config[i].num_wins = 0 ;
-	      BlueHeapFree (bp_interface_config[i].master) ;
+	      ofc_free (bp_interface_config[i].master) ;
 	    }
-	  BlueHeapFree (BlueConfig->bp_interface_config) ;
+	  ofc_free (BlueConfig->bp_interface_config) ;
 	  BlueConfig->bp_interface_config = OFC_NULL ;
 	  BlueConfig->bp_interface_count = 0 ;
 	}
 
       if (BlueConfig->bp_netbios_dns.dns != OFC_NULL)
 	{
-	  BlueHeapFree (BlueConfig->bp_netbios_dns.dns) ;
+	  ofc_free (BlueConfig->bp_netbios_dns.dns) ;
 	  BlueConfig->bp_netbios_dns.num_dns = 0 ;
 	  BlueConfig->bp_netbios_dns.dns = OFC_NULL ;
 	}
@@ -989,18 +989,18 @@ BlueConfigDefault (OFC_VOID)
 
       BlueConfigFree() ;
 
-      tstr = BlueCcstr2tstr (OFC_DEFAULT_NAME) ;
+      tstr = ofc_cstr2tstr (OFC_DEFAULT_NAME) ;
 
       BlueConfig->bp_workstation_name = tstr;
 
-      tstr = BlueCcstr2tstr (OFC_DEFAULT_DESCR) ;
+      tstr = ofc_cstr2tstr (OFC_DEFAULT_DESCR) ;
       BlueConfig->bp_workstation_desc = tstr;
   
       BlueConfig->bp_interface_count = 0 ;
 
       BlueConfigSetInterfaceType (BLUE_CONFIG_ICONFIG_AUTO) ;
 
-      tstr = BlueCcstr2tstr (OFC_DEFAULT_DOMAIN) ;
+      tstr = ofc_cstr2tstr (OFC_DEFAULT_DOMAIN) ;
       BlueConfig->bp_workstation_domain = tstr;
     
       BlueConfigUnlock() ;
@@ -1016,16 +1016,16 @@ BlueConfigInit(OFC_VOID)
 
   if (BlueConfig == OFC_NULL)
     {
-      BlueConfig = BlueHeapMalloc (sizeof (BLUE_CONFIG)) ;
+      BlueConfig = ofc_malloc (sizeof (BLUE_CONFIG)) ;
       if (BlueConfig != OFC_NULL)
 	{
 	  /*
 	   * Clear the configuration structure
 	   */
-	  BlueCmemset (BlueConfig, '\0', sizeof (BLUE_CONFIG)) ;
+	  ofc_memset (BlueConfig, '\0', sizeof (BLUE_CONFIG)) ;
 
 	  BlueConfig->update_count = 0 ;
-	  BlueConfig->config_lock = BlueLockInit() ;
+	  BlueConfig->config_lock = ofc_lock_init() ;
 	  BlueConfig->loaded = OFC_FALSE ;
 	  BlueConfig->bp_workstation_name = OFC_NULL ;
 	  BlueConfig->bp_workstation_domain = OFC_NULL ;
@@ -1060,9 +1060,9 @@ BlueConfigUnload (OFC_VOID)
 
       BlueConfigFree() ;
 
-      BlueLockDestroy(BlueConfig->config_lock);
+      ofc_lock_destroy(BlueConfig->config_lock);
 
-      BlueHeapFree (BlueConfig) ;
+      ofc_free (BlueConfig) ;
       BlueSetConfig (OFC_NULL) ;
     }
 }
@@ -1100,13 +1100,13 @@ BlueConfigResetInterfaceConfig (OFC_VOID)
 	    {
 	      if (bp_interface_config[i].winslist != OFC_NULL)
 		{
-		  BlueHeapFree (bp_interface_config[i].winslist) ;
+		  ofc_free (bp_interface_config[i].winslist) ;
 		  bp_interface_config[i].winslist = OFC_NULL ;
 		}
 	      bp_interface_config[i].num_wins = 0 ;
-	      BlueHeapFree (bp_interface_config[i].master) ;
+	      ofc_free (bp_interface_config[i].master) ;
 	    }
-	  BlueHeapFree (bp_interface_config) ;
+	  ofc_free (bp_interface_config) ;
 	}
       BlueConfig->bp_interface_count = 0 ;
       BlueConfig->bp_interface_config = OFC_NULL ;
@@ -1118,13 +1118,13 @@ BlueConfigSetInterfaceType (BLUE_CONFIG_ICONFIG_TYPE itype)
 {
   BLUE_CONFIG_MODE netbios_mode ;
   OFC_INT i ;
-  BLUE_IPADDR ipaddress ;
-  BLUE_IPADDR bcast ;
-  BLUE_IPADDR mask ;
+  OFC_IPADDR ipaddress ;
+  OFC_IPADDR bcast ;
+  OFC_IPADDR mask ;
 
   BLUE_CONFIG *BlueConfig ;
   OFC_INT num_wins ;
-  BLUE_IPADDR *winslist ;
+  OFC_IPADDR *winslist ;
 
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
@@ -1135,17 +1135,17 @@ BlueConfigSetInterfaceType (BLUE_CONFIG_ICONFIG_TYPE itype)
   
       if (BlueConfig->bp_iconfig_type == BLUE_CONFIG_ICONFIG_AUTO)
 	{
-	  BlueConfigSetInterfaceCount (BlueNetInterfaceCount()) ;
+	  BlueConfigSetInterfaceCount (ofc_net_interface_count()) ;
 	  for (i = 0 ; i < BlueConfig->bp_interface_count ; i++)
 	    {
 	      netbios_mode = OFC_DEFAULT_NETBIOS_MODE ;
-	      BlueNetInterfaceAddr (i, &ipaddress, &bcast, &mask) ;
-	      BlueNetInterfaceWins (i, &num_wins, &winslist) ;
+	      ofc_net_interface_addr (i, &ipaddress, &bcast, &mask) ;
+	      ofc_net_interface_wins (i, &num_wins, &winslist) ;
 	      BlueConfigSetInterfaceConfig (i, netbios_mode,
                                         &ipaddress, &bcast, &mask,
                                         OFC_NULL,
                                         num_wins, winslist) ;
-	      BlueHeapFree (winslist) ;
+	      ofc_free (winslist) ;
 	    }
 	}
     }
@@ -1186,14 +1186,14 @@ BlueConfigWINSCount(OFC_INT index)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueConfigWINSAddr(OFC_INT xface, OFC_INT index, BLUE_IPADDR *addr)
+BlueConfigWINSAddr(OFC_INT xface, OFC_INT index, OFC_IPADDR *addr)
 {
-  BLUE_IPADDR *iparray ;
+  OFC_IPADDR *iparray ;
   BLUE_CONFIG *BlueConfig ;
   BLUE_CONFIG_ICONFIG *bp_interface_config ;
 
-  addr->ip_version = BLUE_FAMILY_IP ;
-  addr->u.ipv4.addr = BLUE_INADDR_NONE ;
+  addr->ip_version = OFC_FAMILY_IP ;
+  addr->u.ipv4.addr = OFC_INADDR_NONE ;
 
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
@@ -1205,7 +1205,7 @@ BlueConfigWINSAddr(OFC_INT xface, OFC_INT index, BLUE_IPADDR *addr)
 	  if (index < bp_interface_config[xface].num_wins)
 	    {
 	      iparray = bp_interface_config[xface].winslist ;
-	      BlueCmemcpy (addr, &iparray[index], sizeof (BLUE_IPADDR)) ;
+	      ofc_memcpy (addr, &iparray[index], sizeof (OFC_IPADDR)) ;
 	    }
 	}
     }
@@ -1231,16 +1231,16 @@ BlueConfigSetInterfaceCount (OFC_INT count)
       for (i = count ; i < old_count ; i++)
 	{
 	  if (bp_interface_config[i].winslist != OFC_NULL)
-	    BlueHeapFree (bp_interface_config[i].winslist) ;
+	    ofc_free (bp_interface_config[i].winslist) ;
 	  bp_interface_config[i].num_wins = 0 ;
 	  bp_interface_config[i].winslist = OFC_NULL ;
 	  if (bp_interface_config[i].master != OFC_NULL)
-	    BlueHeapFree (bp_interface_config[i].master) ;
+	    ofc_free (bp_interface_config[i].master) ;
 	  bp_interface_config[i].master = OFC_NULL ;
 	}
 
       bp_interface_config = 
-	BlueHeapRealloc (BlueConfig->bp_interface_config, 
+	ofc_realloc (BlueConfig->bp_interface_config,
 			sizeof (BLUE_CONFIG_ICONFIG) * count) ;
       BlueConfig->bp_interface_config = bp_interface_config ;
 
@@ -1254,7 +1254,7 @@ BlueConfigSetInterfaceCount (OFC_INT count)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueConfigRemoveInterfaceConfig (BLUE_IPADDR *ip)
+BlueConfigRemoveInterfaceConfig (OFC_IPADDR *ip)
 {
   OFC_INT i ;
   BLUE_CONFIG_ICONFIG *bp_interface_config ;
@@ -1267,17 +1267,17 @@ BlueConfigRemoveInterfaceConfig (BLUE_IPADDR *ip)
       bp_interface_config = BlueConfig->bp_interface_config ;
 
       for (idx = 0 ; idx < BlueConfig->bp_interface_count &&
-	     !BlueNETIsAddrEqual (&bp_interface_config[idx].ipaddress, ip) ;
+	     !ofc_net_is_addr_equal (&bp_interface_config[idx].ipaddress, ip) ;
 	   idx++) ;
 	  
       if (idx < BlueConfig->bp_interface_count)
 	{
 	  if (bp_interface_config[idx].winslist != OFC_NULL)
-	    BlueHeapFree (bp_interface_config[idx].winslist) ;
+	    ofc_free (bp_interface_config[idx].winslist) ;
 	  bp_interface_config[idx].num_wins = 0 ;
 	  bp_interface_config[idx].winslist = OFC_NULL ;
 	  if (bp_interface_config[idx].master != OFC_NULL)
-	    BlueHeapFree (bp_interface_config[idx].master) ;
+	    ofc_free (bp_interface_config[idx].master) ;
 	  bp_interface_config[idx].master = OFC_NULL ;
 
 	  BlueConfig->bp_interface_count-- ;
@@ -1301,7 +1301,7 @@ BlueConfigRemoveInterfaceConfig (BLUE_IPADDR *ip)
 	    }
 
 	  bp_interface_config = 
-	    BlueHeapRealloc (BlueConfig->bp_interface_config, 
+	    ofc_realloc (BlueConfig->bp_interface_config,
 			    sizeof (BLUE_CONFIG_ICONFIG) * 
 			    BlueConfig->bp_interface_count) ;
 	  BlueConfig->bp_interface_config = bp_interface_config;
@@ -1312,18 +1312,18 @@ BlueConfigRemoveInterfaceConfig (BLUE_IPADDR *ip)
 OFC_CORE_LIB OFC_VOID
 BlueConfigSetInterfaceConfig (OFC_INT i,
                               BLUE_CONFIG_MODE netbios_mode,
-                              BLUE_IPADDR *ipaddress,
-                              BLUE_IPADDR *bcast,
-                              BLUE_IPADDR *mask,
+                              OFC_IPADDR *ipaddress,
+                              OFC_IPADDR *bcast,
+                              OFC_IPADDR *mask,
                               OFC_CHAR *master,
                               OFC_INT num_wins,
-                              BLUE_IPADDR *winslist)
+                              OFC_IPADDR *winslist)
 {
   BLUE_CONFIG_ICONFIG *bp_interface_config ;
   OFC_CHAR *cstr ;
   BLUE_CONFIG *BlueConfig ;
   OFC_INT j ;
-  BLUE_IPADDR *iwinslist ;
+  OFC_IPADDR *iwinslist ;
 
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
@@ -1343,13 +1343,13 @@ BlueConfigSetInterfaceConfig (OFC_INT i,
 	    bp_interface_config[i].mask = *mask ;
 
 	  if (bp_interface_config[i].winslist != OFC_NULL)
-	    BlueHeapFree (bp_interface_config[i].winslist) ;
+	    ofc_free (bp_interface_config[i].winslist) ;
 	  bp_interface_config[i].num_wins = 0 ;
 	  bp_interface_config[i].winslist = OFC_NULL ;
 	  if (num_wins != 0 && winslist != OFC_NULL)
 	    {
 	      bp_interface_config[i].num_wins = num_wins ;
-	      iwinslist = BlueHeapMalloc (sizeof (BLUE_IPADDR) * num_wins) ;
+	      iwinslist = ofc_malloc (sizeof (OFC_IPADDR) * num_wins) ;
 	      bp_interface_config[i].winslist = iwinslist ;
 	      for (j = 0 ; j < num_wins ; j++)
 		iwinslist[j] = winslist[j] ;
@@ -1358,9 +1358,9 @@ BlueConfigSetInterfaceConfig (OFC_INT i,
 	  if (master != OFC_NULL)
 	    {
 	      if (bp_interface_config[i].master != OFC_NULL)
-		BlueHeapFree (bp_interface_config[i].master) ;
+		ofc_free (bp_interface_config[i].master) ;
 
-	      cstr = BlueCstrdup (master) ;
+	      cstr = ofc_strdup (master) ;
 	      bp_interface_config[i].master = cstr ;
 	    }
 	}
@@ -1417,11 +1417,11 @@ BlueConfigSetLocalMaster (OFC_INT index, OFC_LPCSTR local_master)
 	  bp_interface_config = BlueConfig->bp_interface_config ;
 
 	  if (bp_interface_config[index].master != OFC_NULL)
-	    BlueHeapFree (bp_interface_config[index].master) ;
+	    ofc_free (bp_interface_config[index].master) ;
 	  bp_interface_config[index].master = OFC_NULL ;
 	  if (local_master != OFC_NULL)
 	    {
-	      cstr = BlueCstrdup (local_master) ;
+	      cstr = ofc_strdup (local_master) ;
 	      bp_interface_config[index].master = cstr ;
 	    }
 	}
@@ -1462,14 +1462,14 @@ BlueConfigLocalMaster (OFC_INT index, OFC_LPCSTR *local_master)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueConfigInterfaceAddr (OFC_INT index, BLUE_IPADDR *addr,
-                         BLUE_IPADDR *pbcast, BLUE_IPADDR *pmask)
+BlueConfigInterfaceAddr (OFC_INT index, OFC_IPADDR *addr,
+                         OFC_IPADDR *pbcast, OFC_IPADDR *pmask)
 {
   BLUE_CONFIG_ICONFIG *bp_interface_config ;
   BLUE_CONFIG *BlueConfig ;
 
-  addr->ip_version = BLUE_FAMILY_IP ;
-  addr->u.ipv4.addr = BLUE_INADDR_NONE ;
+  addr->ip_version = OFC_FAMILY_IP ;
+  addr->u.ipv4.addr = OFC_INADDR_NONE ;
 
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
@@ -1479,26 +1479,26 @@ BlueConfigInterfaceAddr (OFC_INT index, BLUE_IPADDR *addr,
 	  bp_interface_config = BlueConfig->bp_interface_config ;
 
 	  if (addr != OFC_NULL)
-	    BlueCmemcpy (addr, &bp_interface_config[index].ipaddress,
-			 sizeof (BLUE_IPADDR)) ;
+	    ofc_memcpy (addr, &bp_interface_config[index].ipaddress,
+                    sizeof (OFC_IPADDR)) ;
 	  if (pbcast != OFC_NULL)
-	    BlueCmemcpy (pbcast, &bp_interface_config[index].bcast,
-			 sizeof (BLUE_IPADDR)) ;
+	    ofc_memcpy (pbcast, &bp_interface_config[index].bcast,
+                    sizeof (OFC_IPADDR)) ;
 	  if (pmask != OFC_NULL)
-	    BlueCmemcpy (pmask, &bp_interface_config[index].mask,
-			 sizeof (BLUE_IPADDR)) ;
+	    ofc_memcpy (pmask, &bp_interface_config[index].mask,
+                    sizeof (OFC_IPADDR)) ;
 	}
     }
 }
 
 OFC_CORE_LIB BLUE_CONFIG_MODE
 BlueConfigInterfaceMode (OFC_INT index, OFC_INT *num_wins,
-                         BLUE_IPADDR **winslist)
+                         OFC_IPADDR **winslist)
 {
   BLUE_CONFIG_MODE mode ;
   BLUE_CONFIG_ICONFIG *bp_interface_config ;
   BLUE_CONFIG *BlueConfig ;
-  BLUE_IPADDR *iwinslist ;
+  OFC_IPADDR *iwinslist ;
   OFC_INT i ;
 
   mode = OFC_DEFAULT_NETBIOS_MODE ;
@@ -1519,7 +1519,7 @@ BlueConfigInterfaceMode (OFC_INT index, OFC_INT *num_wins,
 		  if (*num_wins > 0)
 		    {
 		      *winslist = 
-			BlueHeapMalloc (sizeof (BLUE_IPADDR) * *num_wins) ;
+			ofc_malloc (sizeof (OFC_IPADDR) * *num_wins) ;
 		      iwinslist = bp_interface_config[index].winslist ;
 		      for (i = 0 ; i < *num_wins ; i++)
 			{
@@ -1565,16 +1565,16 @@ BlueConfigSetNodeName (OFC_LPCTSTR name,
   if (BlueConfig != OFC_NULL)
     {
       if (BlueConfig->bp_workstation_name != OFC_NULL)
-	BlueHeapFree (BlueConfig->bp_workstation_name) ;
-      tstr = BlueCtstrdup(name) ;
+	ofc_free (BlueConfig->bp_workstation_name) ;
+      tstr = ofc_tstrdup(name) ;
       BlueConfig->bp_workstation_name = tstr ;
       if (BlueConfig->bp_workstation_domain != OFC_NULL)
-	BlueHeapFree (BlueConfig->bp_workstation_domain) ;
-      tstr = BlueCtstrdup (workgroup) ;
+	ofc_free (BlueConfig->bp_workstation_domain) ;
+      tstr = ofc_tstrdup (workgroup) ;
       BlueConfig->bp_workstation_domain = tstr ;
       if (BlueConfig->bp_workstation_desc != OFC_NULL)
-	BlueHeapFree (BlueConfig->bp_workstation_desc) ;
-      tstr = BlueCtstrdup (desc) ;
+	ofc_free (BlueConfig->bp_workstation_desc) ;
+      tstr = ofc_tstrdup (desc) ;
       BlueConfig->bp_workstation_desc = tstr ;
     }
 }
@@ -1587,10 +1587,10 @@ BlueConfigUUID (OFC_UUID *uuid)
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
     {
-      BlueCmemcpy (uuid, BlueConfig->uuid, OFC_UUID_LEN) ;
+      ofc_memcpy (uuid, BlueConfig->uuid, OFC_UUID_LEN) ;
     }
   else
-    BlueCmemset (uuid, '\0', OFC_UUID_LEN) ;
+    ofc_memset (uuid, '\0', OFC_UUID_LEN) ;
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -1601,7 +1601,7 @@ BlueConfigSetUUID (OFC_UUID *uuid)
   BlueConfig = BlueGetConfig() ;
   if (BlueConfig != OFC_NULL)
     {
-      BlueCmemcpy (BlueConfig->uuid, uuid, OFC_UUID_LEN) ;
+      ofc_memcpy (BlueConfig->uuid, uuid, OFC_UUID_LEN) ;
     }
 }
 

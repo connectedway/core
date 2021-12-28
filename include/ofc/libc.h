@@ -3,16 +3,16 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_C_H__)
-#define __BLUE_C_H__
+#if !defined(__OFC_C_H__)
+#define __OFC_C_H__
 
 #include <stdarg.h>
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #if defined(DEBUG_FUNCTION_CALLS)
-#define DBG_ENTRY() BlueCprintf("Function %s Entry\n", __FUNCTION__)
-#define DBG_EXIT() BlueCprintf("Function %s Exit\n", __FUNCTION__)
+#define DBG_ENTRY() ofc_printf("Function %s Entry\n", __FUNCTION__)
+#define DBG_EXIT() ofc_printf("Function %s Exit\n", __FUNCTION__)
 #else
 #define DBG_ENTRY()
 #define DBG_EXIT() 
@@ -27,7 +27,7 @@
  * \returns
  * OFC_TRUE if whitespace, OFC_FALSE otherwise.
  */
-#define BLUE_C_ISSPACE(c) (c == ' ' || c == '\f' || c == '\n' || \
+#define OFC_ISSPACE(c) (c == ' ' || c == '\f' || c == '\n' || \
 			   c == '\r' || c == '\t' || c == '\v') 
 /**
  * Determine if a wide character is a whitespace
@@ -38,7 +38,7 @@
  * \returns
  * OFC_TRUE if whitespace, OFC_FALSE otherwise.
  */
-#define BLUE_C_TISSPACE(c) (c == TCHAR(' ') || c == TCHAR('\f') || \
+#define OFC_TISSPACE(c) (c == TCHAR(' ') || c == TCHAR('\f') || \
 			    c == TCHAR('\n') || c == TCHAR('\r') || \
 			    c == TCHAR('\t') || c == TCHAR('\v')) 
 /**
@@ -50,7 +50,7 @@
  * \returns
  * OFC_TRUE if a digit, OFC_FALSE otherwise
  */
-#define BLUE_C_ISDIGIT(c) (c >= '0' && c <= '9') 
+#define OFC_ISDIGIT(c) (c >= '0' && c <= '9') 
 /**
  * Determine if a wide character is a digit (0..9)
  *
@@ -60,7 +60,7 @@
  * \returns
  * OFC_TRUE if a digit, OFC_FALSE otherwise
  */
-#define BLUE_C_TISDIGIT(c) (c >= TCHAR('0') && c <= TCHAR('9')) 
+#define OFC_TISDIGIT(c) (c >= TCHAR('0') && c <= TCHAR('9')) 
 /**
  * Determine if a character is alphanumeric (upper or lower case)
  *
@@ -70,8 +70,8 @@
  * \returns
  * OFC_TRUE if alphanumeric, OFC_FALSE otherwise
  */
-#define BLUE_C_ISALPHA(c) {BLUE_C_ISUPPER((c)) || BLUE_C_ISLOWER((c)))
-#define BLUE_C_ISALNUM(c) (BLUE_C_ISUPPER(c)||BLUE_C_ISLOWER(c)||BLUE_C_ISDIGIT(c))
+#define OFC_ISALPHA(c) {OFC_ISUPPER((c)) || OFC_ISLOWER((c)))
+#define OFC_ISALNUM(c) (OFC_ISUPPER(c)||OFC_ISLOWER(c)||OFC_ISDIGIT(c))
 /**
  * Determine if a wide character is alphanumeric (upper or lower case)
  *
@@ -81,7 +81,7 @@
  * \returns
  * OFC_TRUE if alphanumeric, OFC_FALSE otherwise
  */
-#define BLUE_C_TISALPHA(c) {BLUE_C_TISUPPER(c) || BLUE_C_TISLOWER(c))
+#define OFC_TISALPHA(c) {OFC_TISUPPER(c) || OFC_TISLOWER(c))
 /**
  * Determine if character is upper case (A..Z)
  *
@@ -91,7 +91,7 @@
  * \returns
  * OFC_TRUE if upper case, OFC_FALSE otherwise
  */
-#define BLUE_C_ISUPPER(c) (c >=  'A' && c <= 'Z')
+#define OFC_ISUPPER(c) (c >=  'A' && c <= 'Z')
 /**
  * Determine if wide character is upper case (A..Z)
  *
@@ -101,7 +101,7 @@
  * \returns
  * OFC_TRUE if upper case, OFC_FALSE otherwise
  */
-#define BLUE_C_TISUPPER(c) (c >=  TCHAR('A') && c <= TCHAR('Z'))
+#define OFC_TISUPPER(c) (c >=  TCHAR('A') && c <= TCHAR('Z'))
 /**
  * Convert a lower case character to upper case
  *
@@ -113,7 +113,7 @@
  * \returns
  * converted character
  */
-#define BLUE_C_TOUPPER(c) (BLUE_C_ISLOWER(c)?c-('a'-'A'):c)
+#define OFC_TOUPPER(c) (OFC_ISLOWER(c)?c-('a'-'A'):c)
 /**
  * Convert an upper case character to lower case
  *
@@ -125,7 +125,7 @@
  * \returns
  * converted character
  */
-#define BLUE_C_TOLOWER(c) (BLUE_C_ISUPPER(c)?c+('a'-'A'):c)
+#define OFC_TOLOWER(c) (OFC_ISUPPER(c)?c+('a'-'A'):c)
 /**
  * Convert a lower case wide character to upper case wide character
  *
@@ -137,7 +137,7 @@
  * \returns
  * converted character
  */
-#define BLUE_C_TTOUPPER(c) (BLUE_C_TISLOWER(c)?c-(TCHAR('a')-TCHAR('A')):c)
+#define OFC_TTOUPPER(c) (OFC_TISLOWER(c)?c-(TCHAR('a')-TCHAR('A')):c)
 /**
  * Determine if character is lower case (a..z)
  *
@@ -147,7 +147,7 @@
  * \returns
  * OFC_TRUE if lower case, OFC_FALSE otherwise
  */
-#define BLUE_C_ISLOWER(c) (c >=  'a' && c <= 'z')
+#define OFC_ISLOWER(c) (c >=  'a' && c <= 'z')
 /**
  * Determine if wide character is lower case (a..z)
  *
@@ -157,7 +157,7 @@
  * \returns
  * OFC_TRUE if lower case, OFC_FALSE otherwise
  */
-#define BLUE_C_TISLOWER(c) (c >=  TCHAR('a') && c <= TCHAR('z'))
+#define OFC_TISLOWER(c) (c >=  TCHAR('a') && c <= TCHAR('z'))
 /**
  * Return the minimum of two values
  *
@@ -170,7 +170,7 @@
  * \returns
  * Minimum of a or b
  */
-#define BLUE_C_MIN(a, b) ((a) < (b) ? (a) : (b))
+#define OFC_MIN(a, b) ((a) < (b) ? (a) : (b))
 /**
  * Return the maximum of two values
  *
@@ -183,7 +183,7 @@
  * \returns
  * maximum of a or b
  */
-#define BLUE_C_MAX(a, b) ((a) > (b) ? (a) : (b))
+#define OFC_MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #define UUID_STR_LEN 36
 
@@ -207,7 +207,7 @@ extern "C"
    * result implies both strings are identical.
    */
   OFC_CORE_LIB OFC_INT
-  BlueCstrcmp (OFC_CCHAR *astr, OFC_CCHAR *bstr) ;
+  ofc_strcmp (OFC_CCHAR *astr, OFC_CCHAR *bstr) ;
   /**
    * Compare two NULL terminated strings ignoring the case of the characters
    *
@@ -224,7 +224,7 @@ extern "C"
    * result implies both strings are identical.
    */
   OFC_CORE_LIB OFC_INT
-  BlueCstrcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr) ;
+  ofc_strcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr) ;
   /**
    * Compare two NULL terminated strings, restricting the comparison to the
    * specified length
@@ -245,7 +245,7 @@ extern "C"
    * result implies both strings are identical.
    */
   OFC_CORE_LIB OFC_INT
-  BlueCstrncmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len) ;
+  ofc_strncmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len) ;
   /**
    * Compare two NULL terminated strings, restricting the comparison to the
    * specified length.  Ignore the case of the characters in the string.
@@ -266,7 +266,7 @@ extern "C"
    * result implies both strings are identical.
    */
   OFC_CORE_LIB OFC_INT
-  BlueCstrncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len) ;
+  ofc_strncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len) ;
   /**
    * Find the length of a string
    *
@@ -277,7 +277,7 @@ extern "C"
    * The size of the string not including the terminating NIL
    */
   OFC_CORE_LIB OFC_SIZET
-  BlueCstrlen (OFC_CCHAR *astr) ;
+  ofc_strlen (OFC_CCHAR *astr) ;
   /**
    * Find the length of a string, but restrict the scan to the specified 
    * length.  If no end of string has been found by the specified length, 
@@ -293,7 +293,7 @@ extern "C"
    * The size of the string not including the terminating NIL
    */
   OFC_CORE_LIB OFC_SIZET
-  BlueCstrnlen (OFC_CCHAR *astr, OFC_SIZET len) ;
+  ofc_strnlen (OFC_CCHAR *astr, OFC_SIZET len) ;
   /**
    * Duplicate a string
    *
@@ -306,7 +306,7 @@ extern "C"
    * application when it is no longer necessary.
    */
   OFC_CORE_LIB OFC_CHAR *
-  BlueCstrdup (OFC_CCHAR *astr) ;
+  ofc_strdup (OFC_CCHAR *astr) ;
   /**
    * Duplicate a string, but restrict by len
    *
@@ -322,9 +322,9 @@ extern "C"
    * application when it is no longer necessary.
    */
   OFC_CORE_LIB OFC_CHAR *
-  BlueCstrndup (OFC_CCHAR *astr, OFC_SIZET len) ;
+  ofc_strndup (OFC_CCHAR *astr, OFC_SIZET len) ;
   OFC_CORE_LIB OFC_TCHAR *
-  BlueCtstrndup (OFC_CTCHAR *astr, OFC_SIZET len) ;
+  ofc_tstrndup (OFC_CTCHAR *astr, OFC_SIZET len) ;
   /**
    * Copy a source string to a destination string
    *
@@ -343,11 +343,11 @@ extern "C"
    * including the terminating NIL.  If not, memory corruption will occur.
    */
   OFC_CORE_LIB OFC_CHAR *
-  BlueCstrcpy (OFC_CHAR *dst, OFC_CCHAR *src) ;
+  ofc_strcpy (OFC_CHAR *dst, OFC_CCHAR *src) ;
   OFC_CORE_LIB OFC_CHAR *
-  BlueCstrcat (OFC_CHAR *dst, OFC_CCHAR *src) ;
+  ofc_strcat (OFC_CHAR *dst, OFC_CCHAR *src) ;
   OFC_CORE_LIB OFC_CHAR *
-  BlueCstrncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size) ;
+  ofc_strncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size) ;
   /**
    * Copy a unicode source string to a destination string
    *
@@ -366,7 +366,7 @@ extern "C"
    * including the terminating NIL.  If not, memory corruption will occur.
    */
   OFC_CORE_LIB OFC_TCHAR *
-  BlueCtstrcpy (OFC_TCHAR *dst, OFC_CTCHAR *src) ;
+  ofc_tstrcpy (OFC_TCHAR *dst, OFC_CTCHAR *src) ;
   /**
    * Convert a string to upper case
    *
@@ -385,8 +385,8 @@ extern "C"
    * lower case alphabetic characters [a .. z] are converted.  Non-alphabetic 
    * characters will not be changed
    */
-  OFC_CHAR *BlueCstrnupr (OFC_CHAR *s, OFC_SIZET len) ;
-  OFC_TCHAR *BlueCtstrnupr (OFC_TCHAR *src, OFC_SIZET len) ;
+  OFC_CHAR *ofc_strnupr (OFC_CHAR *s, OFC_SIZET len) ;
+  OFC_TCHAR *ofc_tstrnupr (OFC_TCHAR *src, OFC_SIZET len) ;
   /**
    * Copy a source string to a destination string where the size of the
    * destination string is given.
@@ -410,7 +410,7 @@ extern "C"
    * source string and the source string is terminated by a NIL.
    */
   OFC_CORE_LIB OFC_CHAR *
-  BlueCstrncpy (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET len) ;
+  ofc_strncpy (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET len) ;
   /**
    * Copy a source unicode string to a destination unicode string where the 
    * size of the destination string is given.
@@ -434,7 +434,7 @@ extern "C"
    * source string and the source string is terminated by a NIL.
    */
   OFC_CORE_LIB OFC_TCHAR *
-  BlueCtstrncpy (OFC_TCHAR *dst, OFC_CTCHAR *src, OFC_SIZET len) ;
+  ofc_tstrncpy (OFC_TCHAR *dst, OFC_CTCHAR *src, OFC_SIZET len) ;
   /**
    * Return the length of a path
    *
@@ -445,7 +445,7 @@ extern "C"
    * size of string
    */
   OFC_CORE_LIB OFC_SIZET
-  BlueCtstrlen (OFC_LPCTSTR str) ;
+  ofc_tstrlen (OFC_LPCTSTR str) ;
   /**
    * Return the length of a path, restricting the scan to the specified length.
    * If no EOS is found by the specified length, the maximum length is 
@@ -461,7 +461,7 @@ extern "C"
    * size of string
    */
   OFC_CORE_LIB OFC_SIZET
-  BlueCtstrnlen (OFC_LPCTSTR str, OFC_SIZET len) ;
+  ofc_tstrnlen (OFC_LPCTSTR str, OFC_SIZET len) ;
   /**
    * Duplicate a path
    *
@@ -472,7 +472,7 @@ extern "C"
    * Duplicated string (UTF-16 or UTF-8)
    */
   OFC_CORE_LIB OFC_LPTSTR
-  BlueCtstrdup (OFC_LPCTSTR str) ;
+  ofc_tstrdup (OFC_LPCTSTR str) ;
   /**
    * Compare two path strings
    *
@@ -486,7 +486,7 @@ extern "C"
    * <0 if A < b, =0 if a == b, >0 if a > b
    */
   OFC_CORE_LIB OFC_INT
-  BlueCtstrcmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr) ;
+  ofc_tstrcmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr) ;
   /**
    * Compare two NULL terminated TSTRS, restricting the comparison to the
    * specified length
@@ -504,7 +504,7 @@ extern "C"
    * result implies both strings are identical.
    */
   OFC_CORE_LIB OFC_INT
-  BlueCtstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr) ;
+  ofc_tstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr) ;
   /**
    * Compare two NULL terminated TSTRs, restricting the comparison to the
    * specified length.  Ignore the case of the characters in the string.
@@ -525,7 +525,7 @@ extern "C"
    * result implies both strings are identical.
    */
   OFC_CORE_LIB OFC_INT
-  BlueCtstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len) ;
+  ofc_tstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len) ;
   /**
    * Scan a TSTR looking for a match on a character
    *
@@ -540,7 +540,7 @@ extern "C"
    * a pointer to the end of string is returned.
    */
   OFC_CORE_LIB OFC_LPCTSTR
-  BlueCtstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms) ;
+  ofc_tstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms) ;
 
   /**
    * Scan a ascii string looking for a match on a character
@@ -556,11 +556,11 @@ extern "C"
    * a pointer to the end of string is returned.
    */
   OFC_CORE_LIB OFC_LPSTR
-  BlueCstrtok (OFC_LPCSTR str, OFC_LPCSTR terms) ;
+  ofc_strtok (OFC_LPCSTR str, OFC_LPCSTR terms) ;
   OFC_CORE_LIB OFC_LPSTR
-  BlueCstrchr (OFC_LPCSTR str, OFC_CCHAR c) ;
+  ofc_strchr (OFC_LPCSTR str, OFC_CCHAR c) ;
   OFC_CORE_LIB OFC_LPSTR
-  BlueCmemchr (OFC_LPCSTR str, OFC_CCHAR c, OFC_SIZET size) ;
+  ofc_memchr (OFC_LPCSTR str, OFC_CCHAR c, OFC_SIZET size) ;
   /**
    * Scan a TSTR starting at the end and going to the beginning
    *
@@ -575,7 +575,7 @@ extern "C"
    * a pointer to the beginning of the string is returned.
    */
   OFC_CORE_LIB OFC_LPCTSTR
-  BlueCtstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms) ;
+  ofc_tstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms) ;
   /**
    * Scan a string starting at the end and going to the beginning
    *
@@ -590,7 +590,7 @@ extern "C"
    * a pointer to the beginning of the string is returned.
    */
   OFC_CORE_LIB OFC_LPCSTR
-  BlueCstrrtok (OFC_LPCSTR str, OFC_LPCSTR terms) ;
+  ofc_strrtok (OFC_LPCSTR str, OFC_LPCSTR terms) ;
   /**
    * Compare two NULL terminated TSTRs, restricting the comparison to the
    * specified length
@@ -611,7 +611,7 @@ extern "C"
    * result implies both strings are identical.
    */
   OFC_CORE_LIB OFC_INT
-  BlueCtstrncmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len) ;
+  ofc_tstrncmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len) ;
   /**
    * Convert a TSTR to a normal C string
    *
@@ -626,10 +626,10 @@ extern "C"
    *
    * \note
    * The character string returned has been allocated from the heap.  It must
-   * be freed by a call to BlueHeapFree
+   * be freed by a call to ofc_heap_free
    */
   OFC_CORE_LIB OFC_CHAR *
-  BlueCtstr2cstr (OFC_LPCTSTR str) ;
+  ofc_tstr2cstr (OFC_LPCTSTR str) ;
   /**
    * Convert a normal C string to a TSTR.
    *
@@ -644,10 +644,10 @@ extern "C"
    *
    * \note
    * The character string returned has been allocated from the heap.  It must
-   * be freed by a call to BlueHeapFree
+   * be freed by a call to ofc_heap_free
    */
   OFC_CORE_LIB OFC_LPTSTR
-  BlueCcstr2tstr (OFC_CCHAR *str)  ;
+  ofc_cstr2tstr (OFC_CCHAR *str)  ;
   /**
    * Copy a chunk of memory to a different location
    *
@@ -664,7 +664,7 @@ extern "C"
    * Nothing
    */
   OFC_CORE_LIB OFC_LPVOID
-  BlueCmemcpy (OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size) ;
+  ofc_memcpy (OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size) ;
   /**
    * Compare two strings
    *
@@ -681,7 +681,7 @@ extern "C"
    * < 0 if a < b, 0 if a = b, > 0 if a > b
    */
   OFC_CORE_LIB OFC_INT
-  BlueCmemcmp (OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size) ;
+  ofc_memcmp (OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size) ;
   /**
    * Set all bytes in a block of memory to a value
    *
@@ -698,7 +698,7 @@ extern "C"
    * Nothing
    */
   OFC_CORE_LIB OFC_LPVOID
-  BlueCmemset (OFC_LPVOID dst, OFC_INT c, OFC_SIZET size) ;
+  ofc_memset (OFC_LPVOID dst, OFC_INT c, OFC_SIZET size) ;
   /**
    * Convert an integer string to a long value
    *
@@ -717,7 +717,7 @@ extern "C"
    * The long integer value of the integer string
    */
   OFC_CORE_LIB OFC_LONG
-  BlueCstrtol (const OFC_CHAR *str, OFC_CHAR **upd, OFC_INT base) ;
+  ofc_strtol (const OFC_CHAR *str, OFC_CHAR **upd, OFC_INT base) ;
   /**
    * Convert an integer string to a unsigned long value
    *
@@ -736,7 +736,7 @@ extern "C"
    * The unsigned long integer value of the integer string
    */
   OFC_CORE_LIB OFC_ULONG
-  BlueCstrtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base) ;
+  ofc_strtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base) ;
   /**
    * Formatted string output
    *
@@ -760,15 +760,15 @@ extern "C"
    * \remarks
    * The return size represents the number of characters that either have been
    * output or would have been output if the destination string were large
-   * enough.  By calling BlueCvsnprintf with a 0 count and a NULL destination
+   * enough.  By calling ofc_vsnprintf with a 0 count and a NULL destination
    * string, the required size of the string will be returned (not including 
    * a terminating NIL.  This return value can be used to allocate a 
-   * destination string and the BlueCvsnprintf can be called again with the
+   * destination string and the ofc_vsnprintf can be called again with the
    * allocated memory block and size of that block.
    */
   OFC_CORE_LIB OFC_SIZET
-  BlueCvsnprintf (OFC_CHAR *str, OFC_SIZET count,
-                  OFC_CCHAR *fmt, va_list args) ;
+  ofc_vsnprintf (OFC_CHAR *str, OFC_SIZET count,
+                 OFC_CCHAR *fmt, va_list args) ;
   /**
    * Formatted output
    *
@@ -786,10 +786,10 @@ extern "C"
    *
    * \remark
    * This call takes any number of arguments each related to the respective
-   * format character in the format string. \see BlueCvsnprintf
+   * format character in the format string. \see ofc_vsnprintf
    */
   OFC_CORE_LIB OFC_SIZET
-  BlueCsnprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...) ;
+  ofc_snprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...) ;
   /**
    * Perform formated output to the system console
    *
@@ -798,13 +798,13 @@ extern "C"
    *
    * \remark
    * This call takes any number of arguments each related to the respective
-   * format character in the format string. \see BlueCvsnprintf
+   * format character in the format string. \see ofc_vsnprintf
    */
   OFC_CORE_LIB OFC_VOID
-  BlueCprintf(OFC_CCHAR *fmt, ...) ;
+  ofc_printf(OFC_CCHAR *fmt, ...) ;
 
   OFC_CORE_LIB OFC_CHAR *
-  BlueCsaprintf(OFC_CCHAR *fmt, ...) ;
+  ofc_saprintf(OFC_CCHAR *fmt, ...) ;
   /**
    * Perform formated output to a trace buffer
    *
@@ -813,8 +813,8 @@ extern "C"
    *
    * \remark
    * This call takes any number of arguments each related to the respective
-   * format character in the format string. \see BlueCvsnprintf.  This
-   * call is a lot like BlueCprintf but the output goes to a trace buffer
+   * format character in the format string. \see ofc_vsnprintf.  This
+   * call is a lot like ofc_printf but the output goes to a trace buffer
    * instead.
    */
 #if 0
@@ -822,59 +822,59 @@ extern "C"
    * Initialize the C Runtime Library
    *
    * The routine is called by the system startup code to initialize the 
-   * C runtime.  This should only be called from within BlueInit
+   * C runtime.  This should only be called from within ofc_init
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTraceInit (BLUE_VOID) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTraceDestroy (BLUE_VOID);
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueCTrace (BLUE_CCHAR *fmt,...) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueCDumpTrace(BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_trace_init (OFC_VOID) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_trace_destroy (OFC_VOID);
+  OFC_CORE_LIB OFC_VOID 
+  ofc_trace (OFC_CCHAR *fmt,...) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_dump_trace(OFC_VOID) ;
 #else
-#define BlueTraceInit()
-#define BlueTraceDestroy()
-#define BlueCTrace(fmt, ...)
-#define BlueCDumpTrace()
+#define ofc_trace_init()
+#define ofc_trace_destroy()
+#define ofc_trace(fmt, ...)
+#define ofc_dump_trace()
 #endif
 
-  OFC_VOID BlueCuuidtoa (OFC_UUID uuid, OFC_CHAR *out) ;
+  OFC_VOID ofc_uuidtoa (OFC_UUID uuid, OFC_CHAR *out) ;
 
-  OFC_VOID BlueCatouuid (const OFC_CHAR *in, OFC_UUID uuid) ;
+  OFC_VOID ofc_atouuid (const OFC_CHAR *in, OFC_UUID uuid) ;
 
 #if defined(__cplusplus)
 }
 #endif
 
 #if defined(OFC_UNICODE_API)
-#define BlueCtastrcpy(dst,src) BlueCtstrcpy(dst,src)
-#define BlueCtastrncpy(dst,src,len) BlueCtstrncpy(dst,src,len)
-#define BlueCtastrlen(str) BlueCtstrlen(str)
-#define BlueCtastrnlen(str,len) BlueCtstrnlen(str,len)
-#define BlueCtastrdup(str) (OFC_LPTASTR)BlueCtstrdup(str)
-#define BlueCtastrcmp(astr,bstr) BlueCtstrcmp(astr,bstr)
-#define BlueCtastrcasecmp(astr,bstr) BlueCtstrcasecmp(astr,bstr)
-#define BlueCtastrncasecmp(astr,bstr,len) BlueCtstrncasecmp(astr,bstr,len)
-#define BlueCtastrtok(str,terms) BlueCtstrtok(str,terms)
-#define BlueCtastrrtok(str,terms) BlueCtstrrtok(str,terms)
-#define BlueCtastrncmp(astr,bstr,len) BlueCtstrncmp(astr,bstr,len)
-#define BlueCtastr2cstr(str) BlueCtstr2cstr(str)
-#define BlueCcstr2tastr(str) BlueCcstr2tstr(str)
+#define ofc_tastrcpy(dst,src) ofc_tstrcpy(dst,src)
+#define ofc_tastrncpy(dst,src,len) ofc_tstrncpy(dst,src,len)
+#define ofc_tastrlen(str) ofc_tstrlen(str)
+#define ofc_tastrnlen(str,len) ofc_tstrnlen(str,len)
+#define ofc_tastrdup(str) (OFC_LPTASTR)ofc_tstrdup(str)
+#define ofc_tastrcmp(astr,bstr) ofc_tstrcmp(astr,bstr)
+#define ofc_tastrcasecmp(astr,bstr) ofc_tstrcasecmp(astr,bstr)
+#define ofc_tastrncasecmp(astr,bstr,len) ofc_tstrncasecmp(astr,bstr,len)
+#define ofc_tastrtok(str,terms) ofc_tstrtok(str,terms)
+#define ofc_tastrrtok(str,terms) ofc_tstrrtok(str,terms)
+#define ofc_tastrncmp(astr,bstr,len) ofc_tstrncmp(astr,bstr,len)
+#define ofc_tastr2cstr(str) ofc_tstr2cstr(str)
+#define ofc_cstr2tastr(str) ofc_cstr2tstr(str)
 #else
-#define BlueCtastrcpy(dst,src) BlueCstrcpy(dst,src)
-#define BlueCtastrncpy(dst,src,len) BlueCstrncpy(dst,src,len)
-#define BlueCtastrlen(str) BlueCstrlen(str)
-#define BlueCtastrnlen(str,len) BlueCstrnlen(str,len)
-#define BlueCtastrdup(str) BlueCstrdup(str)
-#define BlueCtastrcmp(astr,bstr) BlueCstrcmp(astr,bstr)
-#define BlueCtastrcasecmp(astr,bstr) BlueCstrcasecmp(astr,bstr)
-#define BlueCtastrncasecmp(astr,bstr,len) BlueCstrncasecmp(astr,bstr,len)
-#define BlueCtastrtok(str,terms) BlueCstrtok(str,terms)
-#define BlueCtastrrtok(str,terms) BlueCstrrtok(str,terms)
-#define BlueCtastrncmp(astr,bstr,len) BlueCstrncmp(astr,bstr,len)
-#define BlueCtastr2cstr(str) BlueCstrdup(str)
-#define BlueCcstr2tastr(str) BlueCstrdup(str)
+#define ofc_tastrcpy(dst,src) ofc_strcpy(dst,src)
+#define ofc_tastrncpy(dst,src,len) ofc_strncpy(dst,src,len)
+#define ofc_tastrlen(str) ofc_strlen(str)
+#define ofc_tastrnlen(str,len) ofc_strnlen(str,len)
+#define ofc_tastrdup(str) ofc_strdup(str)
+#define ofc_tastrcmp(astr,bstr) ofc_strcmp(astr,bstr)
+#define ofc_tastrcasecmp(astr,bstr) ofc_strcasecmp(astr,bstr)
+#define ofc_tastrncasecmp(astr,bstr,len) ofc_strncasecmp(astr,bstr,len)
+#define ofc_tastrtok(str,terms) ofc_strtok(str,terms)
+#define ofc_tastrrtok(str,terms) ofc_strrtok(str,terms)
+#define ofc_tastrncmp(astr,bstr,len) ofc_strncmp(astr,bstr,len)
+#define ofc_tastr2cstr(str) ofc_strdup(str)
+#define ofc_cstr2tastr(str) ofc_strdup(str)
 #endif
 
 #endif
