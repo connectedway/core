@@ -33,7 +33,6 @@ target_compile_definitions(test_all PUBLIC NO_MAIN ON)
 target_link_libraries(test_all PRIVATE of_core_shared unityextras)
 
 include_directories(
-	${of_core_BINARY_DIR}
 	${of_core_SOURCE_DIR}/include
 	${unity_SOURCE_DIR}/src
 	${unity_SOURCE_DIR}/extras/fixture/src

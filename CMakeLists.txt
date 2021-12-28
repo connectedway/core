@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.21.1)
 project(of_core VERSION 1.0.1 DESCRIPTION "OpenFiles Core Library")
 
-include(configs/default)
-configure_file(include/ofc/config.h.in ofc/config.h @ONLY)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
 set(SRCS
     src/app.c
     src/console.c
