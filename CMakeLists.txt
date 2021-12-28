@@ -36,36 +36,13 @@ set(SRCS
     src/waitset.c
     )
 
-include(FetchContent)
-
-FetchContent_Declare(of_core_${OFC_HEAP_IMPL}
-  URL ${openfiles_SOURCE_DIR}/of_core_${OFC_HEAP_IMPL}
-  )
-
-FetchContent_MakeAvailable(of_core_${OFC_HEAP_IMPL})
-
-FetchContent_Declare(of_core_${OFC_IMPL}
-  URL ${openfiles_SOURCE_DIR}/of_core_${OFC_IMPL}
-  )
-FetchContent_MakeAvailable(of_core_${OFC_IMPL})
-
 if(DEFINED CACHE{OFC_FS_DARWIN})
   message("Adding FS Darwin")
-  FetchContent_Declare(of_core_fs_darwin
-  URL ${openfiles_SOURCE_DIR}/of_core_fs_darwin
-  )
-
-  FetchContent_MakeAvailable(of_core_fs_darwin)
   list(APPEND fs_library_list of_core_fs_darwin)
 endif()
 
 if(DEFINED CACHE{OFC_FS_BOOKMARKS})
   message("Adding FS Bookmarks")
-  FetchContent_Declare(of_core_fs_bookmarks
-  URL ${openfiles_SOURCE_DIR}/of_core_fs_bookmarks
-  )
-
-  FetchContent_MakeAvailable(of_core_fs_bookmarks)
   list(APPEND fs_library_list of_core_fs_bookmarks)
 endif()
 
