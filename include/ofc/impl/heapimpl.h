@@ -41,11 +41,11 @@
  *
  * The number of entries in the array determines the maximum size of a
  * memory block and is defined in BlueUtil/BlueParam.h as 
- * BLUE_PARAM_HEAP_POWER.
+ * OFC_HEAP_POWER.
  *
  * The heap is statically allocated in the file BlueHeap.c and is a power of 2
  * bytes in size.  This power of this size must be less then 
- * BLUE_PARAM_HEAP_POWER.  To initialize the heap, all entries in the array
+ * OFC_HEAP_POWER.  To initialize the heap, all entries in the array
  * are cleared and the static heap is added to block list corresponding to
  * to the power of it's size.
  *
@@ -61,9 +61,9 @@
  * of blocks of all powers of two greater then then the power of the
  * allocation.  In other words, if the first allocation is for 72 bytes, it
  * is rounded up to 128 bytes (2^7).  The initial block at entry
- * BLUE_PARAM_HEAP_POWER will be split into two, one is added to the list
- * at entry BLUE_PARAM_HEAP_POWER-1 and the other is split and added to
- * list at BLUE_PARAM_HEAP_POWER-2 and so on until a block of 2^7th is 
+ * OFC_HEAP_POWER will be split into two, one is added to the list
+ * at entry OFC_HEAP_POWER-1 and the other is split and added to
+ * list at OFC_HEAP_POWER-2 and so on until a block of 2^7th is 
  * available and able to satisfy the allocation request.
  *
  * The heap will converge on a steady state where sufficient blocks of each
@@ -95,11 +95,11 @@ extern "C"
    * This function is only called by BlueInit.  It will initialize the
    * heap for use.  This may be a noop on many platforms
    */
-  BLUE_VOID BlueHeapInitImpl (BLUE_VOID) ;
+  OFC_VOID BlueHeapInitImpl (OFC_VOID) ;
   /**
    * Unload the heap implementation
    */
-  BLUE_VOID BlueHeapUnloadImpl (BLUE_VOID) ;
+  OFC_VOID BlueHeapUnloadImpl (OFC_VOID) ;
   /**
    * Deallocate a chunk of memory
    *
@@ -108,8 +108,8 @@ extern "C"
    * \param mem
    * A pointer to the memory to deallocate.
    */
-  BLUE_VOID BlueHeapFreeImpl (BLUE_LPVOID mem) ;
-  BLUE_VOID BlueHeapCheckAllocImpl (BLUE_LPCVOID mem) ;
+  OFC_VOID BlueHeapFreeImpl (OFC_LPVOID mem) ;
+  OFC_VOID BlueHeapCheckAllocImpl (OFC_LPCVOID mem) ;
   /**
    * Allocate a chunk of memory
    *
@@ -118,7 +118,7 @@ extern "C"
    * \param size
    * size of the memory block to allocate
    */
-  BLUE_LPVOID BlueHeapMallocImpl (BLUE_SIZET size) ;
+  OFC_LPVOID BlueHeapMallocImpl (OFC_SIZET size) ;
   /**
    * Change the size (reallocate) a chunk of memory
    *
@@ -137,8 +137,8 @@ extern "C"
    * Reallocating a chunk of memory to a size within the same power of two
    * 2^x to the 2^(x+1) will return the pointer passed in.
    */
-  BLUE_LPVOID BlueHeapReallocImpl (BLUE_LPVOID ptr, 
-				   BLUE_SIZET size) ;
+  OFC_LPVOID BlueHeapReallocImpl (OFC_LPVOID ptr,
+                                  OFC_SIZET size) ;
 #if defined(__cplusplus)
 }
 #endif

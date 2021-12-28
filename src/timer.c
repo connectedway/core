@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -14,12 +14,12 @@
 
 typedef struct
 {
-  BLUE_MSTIME  expiration_time ;
-  BLUE_CCHAR *id ;
+  OFC_MSTIME  expiration_time ;
+  OFC_CCHAR *id ;
 } BLUE_TIMER ;
 
-BLUE_CORE_LIB BLUE_HANDLE 
-BlueTimerCreate (BLUE_CCHAR *id)
+OFC_CORE_LIB BLUE_HANDLE
+BlueTimerCreate (OFC_CCHAR *id)
 {
   BLUE_TIMER *pTimer ;
   BLUE_HANDLE hTimer ;
@@ -31,14 +31,14 @@ BlueTimerCreate (BLUE_CCHAR *id)
   return (hTimer) ;
 }
 
-BLUE_CORE_LIB BLUE_CCHAR *BlueTimerID (BLUE_HANDLE hTimer)
+OFC_CORE_LIB OFC_CCHAR *BlueTimerID (BLUE_HANDLE hTimer)
 {
   BLUE_TIMER *pTimer ;
-  BLUE_CCHAR *id ;
+  OFC_CCHAR *id ;
 
   pTimer = BlueHandleLock (hTimer) ;
-  id = BLUE_NULL ;
-  if (pTimer != BLUE_NULL)
+  id = OFC_NULL ;
+  if (pTimer != OFC_NULL)
     {
       id = pTimer->id ;
       BlueHandleUnlock (hTimer) ;
@@ -46,18 +46,18 @@ BLUE_CORE_LIB BLUE_CCHAR *BlueTimerID (BLUE_HANDLE hTimer)
   return (id) ;
 }
 
-BLUE_CORE_LIB BLUE_MSTIME 
+OFC_CORE_LIB OFC_MSTIME
 BlueTimerGetWaitTime (BLUE_HANDLE hTimer)
 {
-  BLUE_MSTIME now ;
+  OFC_MSTIME now ;
   BLUE_TIMER *pTimer ;
-  BLUE_MSTIME ret ;
+  OFC_MSTIME ret ;
 
   ret = 0 ;
   pTimer = BlueHandleLock (hTimer) ;
-  if (pTimer != BLUE_NULL)
+  if (pTimer != OFC_NULL)
     {
-      BLUE_MSTIME elapsed ;
+      OFC_MSTIME elapsed ;
       now = BlueTimeGetNow() ;
       elapsed = pTimer->expiration_time - now ;
       if (elapsed > 0)
@@ -67,26 +67,26 @@ BlueTimerGetWaitTime (BLUE_HANDLE hTimer)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimerSet (BLUE_HANDLE hTimer, BLUE_MSTIME delta)
+OFC_CORE_LIB OFC_VOID
+BlueTimerSet (BLUE_HANDLE hTimer, OFC_MSTIME delta)
 {
   BLUE_TIMER *pTimer ;
 
   pTimer = BlueHandleLock (hTimer) ;
-  if (pTimer != BLUE_NULL)
+  if (pTimer != OFC_NULL)
     {
       pTimer->expiration_time = BlueTimeGetNow() + delta ;
       BlueHandleUnlock (hTimer) ;
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueTimerDestroy (BLUE_HANDLE hTimer)
 {
   BLUE_TIMER *pTimer ;
 
   pTimer = BlueHandleLock (hTimer) ;
-  if (pTimer != BLUE_NULL)
+  if (pTimer != OFC_NULL)
     {
       BlueHeapFree (pTimer) ;
       BlueHandleDestroy (hTimer) ;

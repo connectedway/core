@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/config.h"
@@ -14,7 +14,7 @@
 #include "ofc/net.h"
 #include "ofc/time.h"
 #include "ofc/thread.h"
-#if defined(BLUE_PARAM_MESSAGE_DEBUG)
+#if defined(OFC_MESSAGE_DEBUG)
 #include "ofc/message.h"
 #endif
 
@@ -30,8 +30,8 @@
 /*
  * BlueHeap must be loaded first
  */
-BLUE_LOAD BLUE_CORE_LIB BLUE_VOID 
-BlueUtilLoad (BLUE_VOID)
+OFC_LOAD OFC_CORE_LIB OFC_VOID
+ofc_core_load (OFC_VOID)
 {
   BlueHeapLoad() ;
   BlueHandle16Init() ;
@@ -40,22 +40,22 @@ BlueUtilLoad (BLUE_VOID)
   BluePathInit() ;
   BlueNetInit() ;
   BlueFSInit() ;
-  BlueFileInit() ;
+  OfcFileInit() ;
   BlueConfigInit() ;
-#if defined(BLUE_PARAM_PERF_STATS)
+#if defined(OFC_PERF_STATS)
   BlueTimePerfInit() ;
 #endif
 }
 
-BLUE_UNLOAD BLUE_CORE_LIB BLUE_VOID 
-BlueUtilUnload (BLUE_VOID)
+OFC_UNLOAD OFC_CORE_LIB OFC_VOID
+ofc_core_unload (OFC_VOID)
 {
-#if defined(BLUE_PARAM_PERF_STATS)
+#if defined(OFC_PERF_STATS)
   BlueTimePerfDestroy() ;
 #endif
 
   BlueConfigUnload() ;
-  BlueFileDestroy();
+  OfcFileDestroy();
 
   BlueFSDestroy();
 

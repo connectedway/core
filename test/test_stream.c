@@ -27,13 +27,13 @@
 static BLUE_HANDLE hScheduler;
 static BLUE_HANDLE hDone;
 
-static BLUE_INT
-test_startup_persist(BLUE_VOID)
+static OFC_INT
+test_startup_persist(OFC_VOID)
 {
-  BLUE_INT ret = 1;
-  BLUE_TCHAR path[BLUE_MAX_PATH] ;
+  OFC_INT ret = 1;
+  OFC_TCHAR path[OFC_MAX_PATH] ;
 
-  if (BlueEnvGet (BLUE_ENV_HOME, path, BLUE_MAX_PATH) == BLUE_TRUE)
+  if (ofc_env_get (OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE)
     {
       BlueFrameworkLoad (path);
       ret = 0;
@@ -41,9 +41,9 @@ test_startup_persist(BLUE_VOID)
   return (ret);
 }
 
-static BLUE_INT test_startup_default(BLUE_VOID)
+static OFC_INT test_startup_default(OFC_VOID)
 {
-  static BLUE_UUID uuid =
+  static OFC_UUID uuid =
     {
      0x04, 0x5d, 0x88, 0x8a, 0xeb, 0x1c, 0xc9, 0x11,
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
@@ -57,24 +57,24 @@ static BLUE_INT test_startup_default(BLUE_VOID)
   return(0);
 }
 
-static BLUE_INT test_startup(BLUE_VOID)
+static OFC_INT test_startup(OFC_VOID)
 {
-  BLUE_INT ret;
+  OFC_INT ret;
   BlueFrameworkInit();
-#if defined(BLUE_PARAM_PERSIST)
+#if defined(OFC_PERSIST)
   ret = test_startup_persist();
 #else
   ret = test_startup_default();
 #endif
   hScheduler = BlueSchedCreate();
-  hDone = BlueEventCreate(BLUE_EVENT_AUTO);
+  hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
 }
 
-static BLUE_VOID test_shutdown(BLUE_VOID)
+static OFC_VOID test_shutdown(OFC_VOID)
 {
-  BlueEventDestroy(hDone);
+  ofc_event_destroy(hDone);
   BlueSchedQuit(hScheduler);
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -121,7 +121,7 @@ typedef struct
    * A Handle to the Applications timer.
    */
   BLUE_HANDLE hTimer ;
-#if defined(BLUE_PARAM_MULTI_TCP)
+#if defined(OFC_MULTI_TCP)
   /**
    * A Handle to the configuration update wait queue
    */
@@ -138,23 +138,23 @@ typedef struct
   /**
    * Number of runs through the test
    */
-  BLUE_INT count ;
+  OFC_INT count ;
   BLUE_FAMILY_TYPE family ;
 } BLUE_STREAM_TEST ;
 
-static BLUE_VOID StreamTestPreSelect (BLUE_HANDLE app) ;
+static OFC_VOID StreamTestPreSelect (BLUE_HANDLE app) ;
 static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, 
 					 BLUE_HANDLE hSocket) ;
-static BLUE_VOID StreamTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID StreamTestDestroy (BLUE_HANDLE app) ;
 
-static BLUEAPP_TEMPLATE StreamTestAppDef =
+static OFC_APP_TEMPLATE StreamTestAppDef =
   {
     "Stream Test Application",
     &StreamTestPreSelect,
     &StreamTestPostSelect,
     &StreamTestDestroy,
-#if defined(BLUE_PARAM_APP_DEBUG)
-    BLUE_NULL
+#if defined(OFC_APP_DEBUG)
+    OFC_NULL
 #endif
   } ;
 
@@ -210,21 +210,21 @@ typedef struct
   /**
    * The header of the received message (contains the message length)
    */
-  BLUE_UINT32 header ;
+  OFC_UINT32 header ;
 } BLUE_SERVER_TEST ;
 
-static BLUE_VOID ServerTestPreSelect (BLUE_HANDLE app) ;
+static OFC_VOID ServerTestPreSelect (BLUE_HANDLE app) ;
 static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket) ;
-static BLUE_VOID ServerTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID ServerTestDestroy (BLUE_HANDLE app) ;
 
-static BLUEAPP_TEMPLATE ServerTestAppDef =
+static OFC_APP_TEMPLATE ServerTestAppDef =
   {
     "Stream Server Test Application",
     &ServerTestPreSelect,
     &ServerTestPostSelect,
     &ServerTestDestroy,
-#if defined(BLUE_PARAM_APP_DEBUG)
-    BLUE_NULL
+#if defined(OFC_APP_DEBUG)
+    OFC_NULL
 #endif
   } ;
 
@@ -272,22 +272,22 @@ typedef struct
   BLUE_IPADDR ip ;
 } BLUE_CLIENT_TEST ;
 
-static BLUE_VOID ClientTestPreSelect (BLUE_HANDLE app) ;
+static OFC_VOID ClientTestPreSelect (BLUE_HANDLE app) ;
 static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, 
 					 BLUE_HANDLE hSocket) ;
-static BLUE_VOID ClientTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID ClientTestDestroy (BLUE_HANDLE app) ;
 
 /**
  * The Stream Client's Application Scheduler Information
  */
-static BLUEAPP_TEMPLATE ClientTestAppDef =
+static OFC_APP_TEMPLATE ClientTestAppDef =
   {
     "Stream Client Test Application",
     &ClientTestPreSelect,
     &ClientTestPostSelect,
     &ClientTestDestroy,
-#if defined(BLUE_PARAM_APP_DEBUG)
-    BLUE_NULL
+#if defined(OFC_APP_DEBUG)
+    OFC_NULL
 #endif
   } ;
 
@@ -324,7 +324,7 @@ static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
 						BLUE_IPADDR *ip)
 {
   BLUE_STREAM_INTERFACE *interface ;
-  BLUE_CHAR ip_addr[IP6STR_LEN] ;
+  OFC_CHAR ip_addr[IP6STR_LEN] ;
 
   /*
    * Allocate a context for this interface
@@ -342,10 +342,10 @@ static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
     {
       /*
        * If we had trouble issueing a listen, free up the interface and
-       * return an error indication (BLUE_NULL)
+       * return an error indication (OFC_NULL)
        */
       BlueHeapFree (interface) ;
-      interface = BLUE_NULL ;
+      interface = OFC_NULL ;
     }
   else
     {
@@ -371,7 +371,7 @@ static BLUE_STREAM_INTERFACE *StartupInterface (BLUE_FAMILY_TYPE family,
  * A pointer to the interface structure associated with the interface to 
  * shutdown.
  */
-static BLUE_VOID ShutdownInterface (BLUE_STREAM_INTERFACE *interface)
+static OFC_VOID ShutdownInterface (BLUE_STREAM_INTERFACE *interface)
 {
   /*
    * Destroy the listening socket
@@ -393,9 +393,9 @@ static BLUE_VOID ShutdownInterface (BLUE_STREAM_INTERFACE *interface)
  * \param streamTest
  * A pointer to the Stream Socket Server's management data
  */
-static BLUE_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
+static OFC_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
 {
-#if !defined(BLUE_PARAM_MULTI_TCP)
+#if !defined(OFC_MULTI_TCP)
   BLUE_IPADDR ip ;
   BLUE_STREAM_INTERFACE *interface ;
 #endif
@@ -410,7 +410,7 @@ static BLUE_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
    * off configuring those interfaces until we get configuration updates.
    * If we are going to listen on the IP_ANY address, we can do that now.
    */
-#if !defined(BLUE_PARAM_MULTI_TCP)
+#if !defined(OFC_MULTI_TCP)
   /*
    * Get it's IP address
    */
@@ -429,7 +429,7 @@ static BLUE_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
    * Startup the interface
    */
   interface = StartupInterface (streamTest->family, &ip) ;
-  if (interface != BLUE_NULL)
+  if (interface != OFC_NULL)
     /*
      * If we successfully started the interface, add it to our list
      */
@@ -451,7 +451,7 @@ static BLUE_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
        */
       BlueTimerSet (streamTest->hTimer, STREAM_TEST_INTERVAL) ;
     }
-#if defined(BLUE_PARAM_MULTI_TCP)
+#if defined(OFC_MULTI_TCP)
   /*
    * Create an event to get configuration updates
    */
@@ -461,19 +461,19 @@ static BLUE_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
 #endif
 }
 
-#if defined(BLUE_PARAM_MULTI_TCP)
+#if defined(OFC_MULTI_TCP)
 static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
 {
   int i ;
   BLUE_IPADDR ip ;
   BLUE_STREAM_INTERFACE *interface ;
   BLUE_STREAM_INTERFACE *next_interface ;
-  BLUE_BOOL found ;
+  OFC_BOOL found ;
   /*
    * First look for deleted interfaces
    */
   for (interface = BlueQfirst (streamTest->interfaceList) ;
-       interface != BLUE_NULL ;
+       interface != OFC_NULL ;
        interface = next_interface)
     {
       next_interface = BlueQnext (streamTest->interfaceList, interface) ;
@@ -483,7 +483,7 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
       found = BLUE_FALSE ;
       for (i = 0 ; i < BlueConfigInterfaceCount() && !found ;)
 	{
-	  BlueConfigInterfaceAddr (i, &ip, BLUE_NULL, BLUE_NULL) ;
+	  BlueConfigInterfaceAddr (i, &ip, OFC_NULL, OFC_NULL) ;
 	  if (BlueNETIsAddrEqual (&interface->ip, &ip))
 	    found = BLUE_TRUE ;
 	  else
@@ -504,11 +504,11 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
    */
   for (i = 0 ; i < BlueConfigInterfaceCount() ; i++)
     {
-      BlueConfigInterfaceAddr (i, &ip, BLUE_NULL, BLUE_NULL) ;
+      BlueConfigInterfaceAddr (i, &ip, OFC_NULL, OFC_NULL) ;
 
       found = BLUE_FALSE ;
       for (interface = BlueQfirst (streamTest->interfaceList) ;
-	   interface != BLUE_NULL && !found ;)
+	   interface != OFC_NULL && !found ;)
 	{
 	  /*
 	   * Is this interface in the update message with the same values
@@ -525,7 +525,7 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
 	   * Add the interface
 	   */
 	  interface = StartupInterface (streamTest->family, &ip) ;
-	  if (interface != BLUE_NULL)
+	  if (interface != OFC_NULL)
 	    /*
 	     * If we successfully started the interface, add it to our list
 	     */
@@ -544,7 +544,7 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
  * \param app
  * The Application's Handle
  */
-static BLUE_VOID StreamTestPreSelect (BLUE_HANDLE app) 
+static OFC_VOID StreamTestPreSelect (BLUE_HANDLE app)
 {
   BLUE_STREAM_TEST *streamTest ;
   BLUE_STREAM_INTERFACE *interface ;
@@ -552,10 +552,10 @@ static BLUE_VOID StreamTestPreSelect (BLUE_HANDLE app)
   STREAM_TEST_STATE entry_state ;
   /*
    * Get our application data.  This is the structure that was passed into
-   * the BlueAppCreate call
+   * the ofc_app_create call
    */
-  streamTest = BlueAppGetData (app) ;
-  if (streamTest != BLUE_NULL)
+  streamTest = ofc_app_get_data (app) ;
+  if (streamTest != OFC_NULL)
     {
       do /* while streamTest->state != entry_state */
 	{
@@ -578,7 +578,7 @@ static BLUE_VOID StreamTestPreSelect (BLUE_HANDLE app)
 	       */
 	      BlueSchedAddWait (streamTest->scheduler, app, 
 				streamTest->hTimer) ;
-#if defined(BLUE_PARAM_MULTI_TCP)
+#if defined(OFC_MULTI_TCP)
 	      BlueSchedAddWait (streamTest->scheduler, app, 
 				streamTest->hConfigUpdate) ;
 #endif
@@ -587,7 +587,7 @@ static BLUE_VOID StreamTestPreSelect (BLUE_HANDLE app)
 	       * interface's socket.
 	       */
 	      for (interface = BlueQfirst (streamTest->interfaceList) ;
-		   interface != BLUE_NULL ;
+               interface != OFC_NULL ;
 		   interface = BlueQnext (streamTest->interfaceList, 
 					  interface))
 		{
@@ -611,7 +611,7 @@ static BLUE_VOID StreamTestPreSelect (BLUE_HANDLE app)
 	       */
 	      BlueSchedAddWait (streamTest->scheduler, app, 
 				streamTest->hTimer) ;
-#if defined(BLUE_PARAM_MULTI_TCP)
+#if defined(OFC_MULTI_TCP)
 	      BlueSchedAddWait (streamTest->scheduler, app, 
 				streamTest->hConfigUpdate) ;
 #endif
@@ -619,7 +619,7 @@ static BLUE_VOID StreamTestPreSelect (BLUE_HANDLE app)
 	       * And enable each interface we've started
 	       */
 	      for (interface = BlueQfirst (streamTest->interfaceList) ;
-		   interface != BLUE_NULL ;
+               interface != OFC_NULL ;
 		   interface = BlueQnext (streamTest->interfaceList, 
 					  interface))
 		{
@@ -653,19 +653,19 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
   BLUE_SERVER_TEST *serverTest ;
   BLUE_CLIENT_TEST *clientTest ;
   BLUE_STREAM_INTERFACE *interface ;
-  BLUE_BOOL progress ;
+  OFC_BOOL progress ;
   BLUE_SOCKET_EVENT_TYPE event_types ;
-  BLUE_CHAR ip_str[IP6STR_LEN] ;
+  OFC_CHAR ip_str[IP6STR_LEN] ;
 
   /*
    * Get the socket server's context
    */
-  streamTest = BlueAppGetData (app) ;
-  if (streamTest != BLUE_NULL)
+  streamTest = ofc_app_get_data (app) ;
+  if (streamTest != OFC_NULL)
     {
-      for (progress = BLUE_TRUE ; progress && !BlueAppDestroying(app);)
+      for (progress = OFC_TRUE ; progress && !ofc_app_destroying(app);)
 	{
-	  progress = BLUE_FALSE ;
+	  progress = OFC_FALSE ;
 	  /*
 	   * Dispatch on our state
 	   */
@@ -685,11 +685,11 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 	       * Find a matching interface socket
 	       */
 	      for (interface = BlueQfirst (streamTest->interfaceList) ;
-		   interface != BLUE_NULL && hSocket != interface->hListen ;
+               interface != OFC_NULL && hSocket != interface->hListen ;
 		   interface = BlueQnext (streamTest->interfaceList, 
 					  interface)) ;
 
-	      if (interface != BLUE_NULL && hSocket == interface->hListen)
+	      if (interface != OFC_NULL && hSocket == interface->hListen)
 		{
 		  /*
 		   * Found an Interface, Determine Event
@@ -724,13 +724,13 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 			}
 		      else
 			{
-			  progress = BLUE_TRUE ;
+			  progress = OFC_TRUE ;
 			  /*
 			   * Create the server application for this socket
 			   */
-			  BlueAppCreate (streamTest->scheduler, 
-					 &ServerTestAppDef, 
-					 serverTest) ;
+			  ofc_app_create (streamTest->scheduler,
+                              &ServerTestAppDef,
+                              serverTest) ;
 			}
 		    }
 		}
@@ -741,12 +741,12 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		      /*
 		       * we want to kill ourselves after a number of times
 		       */
-		      BlueAppKill (app) ;
+		      ofc_app_kill (app) ;
 		    }
 		  else
 		    {
 		      for (interface = BlueQfirst (streamTest->interfaceList) ;
-			   interface != BLUE_NULL ;
+                   interface != OFC_NULL ;
 			   interface = BlueQnext (streamTest->interfaceList, 
 						  interface)) 
 			{
@@ -773,9 +773,9 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 			   * Create the application
 			   */
 			  clientTest->app =
-			    BlueAppCreate (streamTest->scheduler, 
-					   &ClientTestAppDef, 
-					   clientTest) ;
+			    ofc_app_create (streamTest->scheduler,
+                                &ClientTestAppDef,
+                                clientTest) ;
 			}
 		      /*
 		       * And reset the timer so we'll get notification to 
@@ -784,7 +784,7 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		      BlueTimerSet (streamTest->hTimer, STREAM_TEST_INTERVAL) ;
 		    }
 		}
-#if defined(BLUE_PARAM_MULTI_TCP)
+#if defined(OFC_MULTI_TCP)
 	      else if (hSocket == streamTest->hConfigUpdate)
 		StreamTestReconfig (streamTest) ;
 #endif
@@ -804,7 +804,7 @@ static BLUE_HANDLE StreamTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
  * \param app
  * The application's handle
  */
-static BLUE_VOID StreamTestDestroy (BLUE_HANDLE app) 
+static OFC_VOID StreamTestDestroy (BLUE_HANDLE app)
 {
   BLUE_STREAM_TEST *streamTest ;
   BLUE_STREAM_INTERFACE *interface ;
@@ -814,8 +814,8 @@ static BLUE_VOID StreamTestDestroy (BLUE_HANDLE app)
   /*
    * Get the application's data
    */
-  streamTest = BlueAppGetData (app) ;
-  if (streamTest != BLUE_NULL)
+  streamTest = ofc_app_get_data (app) ;
+  if (streamTest != OFC_NULL)
     {
       /*
        * And dispatch on it's state
@@ -834,7 +834,7 @@ static BLUE_VOID StreamTestDestroy (BLUE_HANDLE app)
 	   * Destroy the timer
 	   */
 	  BlueTimerDestroy (streamTest->hTimer) ;
-#if defined(BLUE_PARAM_MULTI_TCP)
+#if defined(OFC_MULTI_TCP)
 	  BlueConfigUnregisterUpdate (streamTest->hConfigUpdate) ;
 	  BlueEventDestroy (streamTest->hConfigUpdate) ;
 #endif
@@ -842,7 +842,7 @@ static BLUE_VOID StreamTestDestroy (BLUE_HANDLE app)
 	   * And Shutdown all our configured interfaces
 	   */
 	  for (interface = BlueQdequeue (streamTest->interfaceList) ;
-	       interface != BLUE_NULL ;
+           interface != OFC_NULL ;
 	       interface = BlueQdequeue (streamTest->interfaceList))
 	    {
 	      ShutdownInterface (interface) ;
@@ -869,7 +869,7 @@ static BLUE_VOID StreamTestDestroy (BLUE_HANDLE app)
  * \param app
  * The Application's Handle
  */
-static BLUE_VOID ServerTestPreSelect (BLUE_HANDLE app) 
+static OFC_VOID ServerTestPreSelect (BLUE_HANDLE app)
 {
   BLUE_SERVER_TEST *serverTest ;
   BLUE_SOCKET_EVENT_TYPE event_types ;
@@ -878,8 +878,8 @@ static BLUE_VOID ServerTestPreSelect (BLUE_HANDLE app)
   /*
    * Get the application's data
    */
-  serverTest = BlueAppGetData (app) ;
-  if (serverTest != BLUE_NULL)
+  serverTest = ofc_app_get_data (app) ;
+  if (serverTest != OFC_NULL)
     {
       do /* while serverTest->state != entry_state */
 	{
@@ -898,7 +898,7 @@ static BLUE_VOID ServerTestPreSelect (BLUE_HANDLE app)
 	       * the connection.  So initialize some of our context and set 
 	       * our state to header.  There's nothing we need to do except 
 	       * await an incoming message */
-	      serverTest->recv_msg = BLUE_NULL ;
+	      serverTest->recv_msg = OFC_NULL ;
 	      serverTest->state = SERVER_TEST_STATE_HEADER ;
 	      /*
 	       * And enable socket events
@@ -941,22 +941,22 @@ static BLUE_VOID ServerTestPreSelect (BLUE_HANDLE app)
 static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket) 
 {
   BLUE_SERVER_TEST *serverTest ;
-  BLUE_SIZET count ;
-  BLUE_BOOL progress ;
+  OFC_SIZET count ;
+  OFC_BOOL progress ;
   BLUE_SOCKADDR sockaddr_local ;
   BLUE_SOCKADDR sockaddr_remote ;
-  BLUE_CHAR local_ip_str[IP6STR_LEN] ;
-  BLUE_CHAR remote_ip_str[IP6STR_LEN] ;
+  OFC_CHAR local_ip_str[IP6STR_LEN] ;
+  OFC_CHAR remote_ip_str[IP6STR_LEN] ;
 
   /*
    * Get the application's data
    */
-  serverTest = BlueAppGetData (app) ;
-  if (serverTest != BLUE_NULL)
+  serverTest = ofc_app_get_data (app) ;
+  if (serverTest != OFC_NULL)
     {
-      for (progress = BLUE_TRUE ; progress && !BlueAppDestroying(app);)
+      for (progress = OFC_TRUE ; progress && !ofc_app_destroying(app);)
 	{
-	  progress = BLUE_FALSE ;
+	  progress = OFC_FALSE ;
 	  /*
 	   * Dispatch on state
 	   */
@@ -981,7 +981,7 @@ static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		   * read event or not, but since that's the only thing we 
 		   * expect, we'll just go ahead and assume it's a read.
 		   */
-		  if (serverTest->recv_msg == BLUE_NULL)
+		  if (serverTest->recv_msg == OFC_NULL)
 		    {
 		      /*
 		       * If we haven't created a message context for the read,
@@ -994,7 +994,7 @@ static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		      serverTest->recv_msg = 
 			BlueMessageCreate (MSG_ALLOC_AUTO, 
 					   CLIENT_MSG_HEADER_LEN,
-					   (BLUE_CHAR *) &serverTest->header) ;
+					   (OFC_CHAR *) &serverTest->header) ;
 		    }
 		  /*
 		   * Now Service the read using recv_msg
@@ -1024,7 +1024,7 @@ static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		       * the heap.  
 		       */
 		      serverTest->recv_msg = 
-			BlueMessageCreate (MSG_ALLOC_HEAP, count, BLUE_NULL) ;
+			BlueMessageCreate (MSG_ALLOC_HEAP, count, OFC_NULL) ;
 		      /*
 		       * And switch our state to body
 		       */
@@ -1070,7 +1070,7 @@ static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		       * We persist only for receipt of one message.  So
 		       * start to tear down the application
 		       */
-		      BlueAppKill (app) ;
+		      ofc_app_kill (app) ;
 		    }
 		}
 	      break ;
@@ -1089,7 +1089,7 @@ static BLUE_HANDLE ServerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
  * \param app
  * The application's handle
  */
-static BLUE_VOID ServerTestDestroy (BLUE_HANDLE app) 
+static OFC_VOID ServerTestDestroy (BLUE_HANDLE app)
 {
   BLUE_SERVER_TEST *serverTest ;
 
@@ -1097,8 +1097,8 @@ static BLUE_VOID ServerTestDestroy (BLUE_HANDLE app)
   /*
    * Get our context
    */
-  serverTest = BlueAppGetData (app) ;
-  if (serverTest != BLUE_NULL)
+  serverTest = ofc_app_get_data (app) ;
+  if (serverTest != OFC_NULL)
     {
       /*
        * And switch on our state
@@ -1122,7 +1122,7 @@ static BLUE_VOID ServerTestDestroy (BLUE_HANDLE app)
 	  /*
 	   * If we have a message allocated, destroy it
 	   */
-	  if (serverTest->recv_msg != BLUE_NULL)
+	  if (serverTest->recv_msg != OFC_NULL)
 	    BlueMessageDestroy (serverTest->recv_msg) ;
 	  break ;
 	}
@@ -1133,17 +1133,17 @@ static BLUE_VOID ServerTestDestroy (BLUE_HANDLE app)
     }
 }
 
-BLUE_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
+OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
 {
-  BLUE_BOOL progress ;
-  BLUE_SIZET size ;
-  BLUE_CHAR *buffer ;
+  OFC_BOOL progress ;
+  OFC_SIZET size ;
+  OFC_CHAR *buffer ;
   BLUE_SOCKADDR sockaddr_local ;
   BLUE_SOCKADDR sockaddr_remote ;
-  BLUE_CHAR local_ip_str[IP6STR_LEN] ;
-  BLUE_CHAR remote_ip_str[IP6STR_LEN] ;
+  OFC_CHAR local_ip_str[IP6STR_LEN] ;
+  OFC_CHAR remote_ip_str[IP6STR_LEN] ;
 
-  progress = BLUE_FALSE;
+  progress = OFC_FALSE;
 
   /*
    * Create a message to hold the header and data
@@ -1153,7 +1153,7 @@ BLUE_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
       size = BlueCstrlen (CLIENT_MSG_DATA) ;
       clientTest->write_msg = BlueMessageCreate (MSG_ALLOC_HEAP,
 						 CLIENT_MSG_HEADER_LEN + size,
-						 BLUE_NULL) ;
+                                                 OFC_NULL) ;
       /*
        * Since it's allocated from the heap, let's get the
        * address of the buffer to fill with the message, then
@@ -1191,7 +1191,7 @@ BLUE_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
        * connected state.  We'll complete the write
        * servicing then.
        */
-      BlueAppKill (clientTest->app) ;
+      ofc_app_kill (clientTest->app) ;
     }
   return (progress) ;
 }
@@ -1205,7 +1205,7 @@ BLUE_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
  * \param app
  * The Application's Handle
  */
-static BLUE_VOID ClientTestPreSelect (BLUE_HANDLE app) 
+static OFC_VOID ClientTestPreSelect (BLUE_HANDLE app)
 {
   BLUE_CLIENT_TEST *clientTest ;
   BLUE_SOCKET_EVENT_TYPE event_types ;
@@ -1214,8 +1214,8 @@ static BLUE_VOID ClientTestPreSelect (BLUE_HANDLE app)
   /*
    * Get our context
    */
-  clientTest = BlueAppGetData (app) ;
-  if (clientTest != BLUE_NULL)
+  clientTest = ofc_app_get_data (app) ;
+  if (clientTest != OFC_NULL)
     {
       do /* while clientTest->state != entry_state */
 	{
@@ -1232,7 +1232,7 @@ static BLUE_VOID ClientTestPreSelect (BLUE_HANDLE app)
 	       * We are idle when we are first created.  So set up the client
 	       * application.
 	       */
-	      clientTest->write_msg = BLUE_NULL ;
+	      clientTest->write_msg = OFC_NULL ;
 	      clientTest->hSocket = BlueSocketConnect (&clientTest->ip, 
 						       STREAM_TEST_PORT) ;
 	      if (clientTest->hSocket != BLUE_HANDLE_NULL)
@@ -1252,7 +1252,7 @@ static BLUE_VOID ClientTestPreSelect (BLUE_HANDLE app)
 		   * We were not able to issue the connect, so we should just
 		   * clean up
 		   */
-		  BlueAppKill (app) ;
+		  ofc_app_kill (app) ;
 		}
 
 	      break ;
@@ -1292,18 +1292,18 @@ static BLUE_VOID ClientTestPreSelect (BLUE_HANDLE app)
 static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket) 
 {
   BLUE_CLIENT_TEST *clientTest ;
-  BLUE_BOOL progress ;
+  OFC_BOOL progress ;
   BLUE_SOCKET_EVENT_TYPE event_types ;
 
   /*
    * Get our context
    */
-  clientTest = BlueAppGetData (app) ;
-  if (clientTest != BLUE_NULL)
+  clientTest = ofc_app_get_data (app) ;
+  if (clientTest != OFC_NULL)
     {
-      for (progress = BLUE_TRUE ; progress && !BlueAppDestroying(app);)
+      for (progress = OFC_TRUE ; progress && !ofc_app_destroying(app);)
 	{
-	  progress = BLUE_FALSE ;
+	  progress = OFC_FALSE ;
 	  /*
 	   * Dispatch on our state
 	   */
@@ -1325,7 +1325,7 @@ static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
 		  event_types = BlueSocketTest (hSocket) ;
 		  if (event_types & BLUE_SOCKET_EVENT_CLOSE)
 		    {
-		      BlueAppKill (app) ;
+		      ofc_app_kill (app) ;
 		    }
 		  else if (BlueSocketConnected (clientTest->hSocket))
 		    {
@@ -1360,7 +1360,7 @@ static BLUE_HANDLE ClientTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hSocket)
  * \param app
  * The application's handle
  */
-static BLUE_VOID ClientTestDestroy (BLUE_HANDLE app) 
+static OFC_VOID ClientTestDestroy (BLUE_HANDLE app)
 {
   BLUE_CLIENT_TEST *clientTest ;
 
@@ -1369,8 +1369,8 @@ static BLUE_VOID ClientTestDestroy (BLUE_HANDLE app)
   /*
    * Get the app's context
    */
-  clientTest = BlueAppGetData (app) ;
-  if (clientTest != BLUE_NULL)
+  clientTest = ofc_app_get_data (app) ;
+  if (clientTest != OFC_NULL)
     {
       /*
        * And switch on state
@@ -1394,7 +1394,7 @@ static BLUE_VOID ClientTestDestroy (BLUE_HANDLE app)
 	  /*
 	   * And free the message if we have one
 	   */
-	  if (clientTest->write_msg != BLUE_NULL)
+	  if (clientTest->write_msg != OFC_NULL)
 	    BlueMessageDestroy (clientTest->write_msg) ;
 	  break ;
 	}
@@ -1439,15 +1439,15 @@ TEST(stream, test_stream)
    * Create the Application using the scheduler definition and the
    * management context
    */
-  hApp = BlueAppCreate (hScheduler, &StreamTestAppDef, streamTest) ;
+  hApp = ofc_app_create (hScheduler, &StreamTestAppDef, streamTest) ;
 
   if (hDone != BLUE_HANDLE_NULL)
     {
-      BlueAppSetWait (hApp, hDone) ;
-      BlueEventWait (hDone);
+      ofc_app_set_wait (hApp, hDone) ;
+      ofc_event_wait (hDone);
     }
 
-#if defined(BLUE_PARAM_DISCOVER_IPV6)
+#if defined(OFC_DISCOVER_IPV6)
   /*
    * Now IPv6. Allocate a management context for the socket server application
    */
@@ -1465,12 +1465,12 @@ TEST(stream, test_stream)
    * Create the Application using the scheduler definition and the
    * management context
    */
-  hApp = BlueAppCreate (hScheduler, &StreamTestAppDef, streamTest) ;
+  hApp = ofc_app_create (hScheduler, &StreamTestAppDef, streamTest) ;
 
   if (hDone != BLUE_HANDLE_NULL)
     {
-      BlueAppSetWait (hApp, hDone) ;
-      BlueEventWait (hDone);
+      ofc_app_set_wait (hApp, hDone) ;
+      ofc_event_wait (hDone);
     }
 #endif
 }	  

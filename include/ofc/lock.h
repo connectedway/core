@@ -12,7 +12,7 @@
 /**
  * The Platform Abstracted Lock Structure
  */
-typedef BLUE_VOID *BLUE_LOCK ;
+typedef OFC_VOID *BLUE_LOCK ;
 
 #if defined(__cplusplus)
 extern "C"
@@ -23,15 +23,15 @@ extern "C"
    *
    * Pointer to lock to initialize
    */
-  BLUE_CORE_LIB BLUE_LOCK
-  BlueLockInit (BLUE_VOID) ;
+  OFC_CORE_LIB BLUE_LOCK
+  BlueLockInit (OFC_VOID) ;
   /**
    * Destroy a Lock
    *
    * \param lock
    * Pointer to the lock to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueLockDestroy (BLUE_LOCK lock) ;
   /**
    * Test if a lock is available and lock it if it is.
@@ -42,10 +42,10 @@ extern "C"
    * Pointer to the lock to try
    *
    * \returns
-   * BLUE_TRUE if the lock has been obtained, BLUE_FALSE if the lock was
+   * OFC_TRUE if the lock has been obtained, OFC_FALSE if the lock was
    * not available
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueLockTry (BLUE_LOCK lock) ;
   /**
    * Wait for a lock
@@ -55,7 +55,7 @@ extern "C"
    * \param pLock
    * Pointer to lock to obtain
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueLock (BLUE_LOCK pLock) ;
   /**
    * Release a Lock
@@ -63,7 +63,7 @@ extern "C"
    * \param pLock
    * Pointer to lock to release
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueUnlock (BLUE_LOCK pLock) ;
 #if defined(__cplusplus)
 }

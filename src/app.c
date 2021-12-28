@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -20,10 +20,10 @@
  */
 typedef struct _BLUEAPP
 {
-  BLUEAPP_TEMPLATE *def ;	/* Pointer to app definition */
+  OFC_APP_TEMPLATE *def ;	/* Pointer to app definition */
   BLUE_HANDLE scheduler ;	/* Scheduler Hanlder */
-  BLUE_BOOL destroy ;		/* Flag to destroy app */
-  BLUE_VOID *app_data ;
+  OFC_BOOL destroy ;		/* Flag to destroy app */
+  OFC_VOID *app_data ;
   BLUE_HANDLE hNotify ;
 } BLUEAPP ;
 
@@ -37,9 +37,9 @@ typedef struct _BLUEAPP
  * Returns:
  *    The application created (Null if error)
  */
-BLUE_CORE_LIB BLUE_HANDLE 
-BlueAppCreate (BLUE_HANDLE scheduler, BLUEAPP_TEMPLATE *templatep, 
-	       BLUE_VOID *app_data)
+OFC_CORE_LIB BLUE_HANDLE
+ofc_app_create (BLUE_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
+                OFC_VOID *app_data)
 {
   BLUEAPP *app ;
   BLUE_HANDLE hApp ;
@@ -54,7 +54,7 @@ BlueAppCreate (BLUE_HANDLE scheduler, BLUEAPP_TEMPLATE *templatep,
    */
   app->def = templatep;
   app->scheduler = scheduler ;
-  app->destroy = BLUE_FALSE ;
+  app->destroy = OFC_FALSE ;
   app->app_data = app_data;
   app->hNotify = BLUE_HANDLE_NULL ;
 
@@ -63,10 +63,10 @@ BlueAppCreate (BLUE_HANDLE scheduler, BLUEAPP_TEMPLATE *templatep,
    * Application was initialized, add to scheduler
    */
   BlueSchedAdd (scheduler, hApp) ;
-#if defined(BLUE_PARAM_PRESELECT_PASS)
+#if defined(OFC_PRESELECT_PASS)
   BlueAppEventSig (hApp) ;
 #else
-  BlueAppPreselect (hApp) ;
+  ofc_app_preselect (hApp) ;
 #endif
   /*
    * Return the application pointer
@@ -75,40 +75,40 @@ BlueAppCreate (BLUE_HANDLE scheduler, BLUEAPP_TEMPLATE *templatep,
 }
 
 /*
- * BlueAppKill - schedule the application for destruction.
+ * ofc_app_kill - schedule the application for destruction.
  *
  * Accepts:
  *    The application to kill
  *
  * The application will be killed by the scheduler
  */
-BLUE_CORE_LIB BLUE_VOID 
-BlueAppKill (BLUE_HANDLE hApp)
+OFC_CORE_LIB OFC_VOID
+ofc_app_kill (BLUE_HANDLE hApp)
 {
   BLUEAPP *app ;
 
   app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  if (app != OFC_NULL)
     {
       /*
        * Set the flag to kill the app
        */
-      app->destroy = BLUE_TRUE ;
+      app->destroy = OFC_TRUE ;
       /*
        * And notify the scheduler
        */
       BlueHandleUnlock (hApp) ;
-      BlueAppEventSig (hApp) ;
+      ofc_app_sig_event (hApp) ;
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueAppSetWait (BLUE_HANDLE hApp, BLUE_HANDLE hNotify)
+OFC_CORE_LIB OFC_VOID
+ofc_app_set_wait (BLUE_HANDLE hApp, BLUE_HANDLE hNotify)
 {
   BLUEAPP *app ;
 
   app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  if (app != OFC_NULL)
     {
       app->hNotify = hNotify ;
       BlueHandleUnlock (hApp) ;
@@ -123,13 +123,13 @@ BlueAppSetWait (BLUE_HANDLE hApp, BLUE_HANDLE hNotify)
  *
  * This should only be called by the scheduler
  */
-BLUE_CORE_LIB BLUE_VOID 
-BlueAppDestroy (BLUE_HANDLE hApp)
+OFC_CORE_LIB OFC_VOID
+ofc_app_destroy (BLUE_HANDLE hApp)
 {
   BLUEAPP *app ;
 
   app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  if (app != OFC_NULL)
     {
       /*
        * Call the application specific routine
@@ -137,7 +137,7 @@ BlueAppDestroy (BLUE_HANDLE hApp)
       (*app->def->destroy)(hApp) ;
 
       if (app->hNotify != BLUE_HANDLE_NULL)
-	BlueEventSet  (app->hNotify) ;
+	ofc_event_set  (app->hNotify) ;
 
       BlueHandleDestroy (hApp) ;
       BlueHandleUnlock (hApp) ;
@@ -150,13 +150,13 @@ BlueAppDestroy (BLUE_HANDLE hApp)
  *
  * Accepts: hApp - The handle of the app to do the preselect for
  */
-BLUE_CORE_LIB BLUE_VOID 
-BlueAppPreselect (BLUE_HANDLE hApp)
+OFC_CORE_LIB OFC_VOID
+ofc_app_preselect (BLUE_HANDLE hApp)
 {
   BLUEAPP *app ;
 
   app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  if (app != OFC_NULL)
     {
       if (!app->destroy)
 	{
@@ -173,15 +173,15 @@ BlueAppPreselect (BLUE_HANDLE hApp)
  *    hApp - The handle of the app doing the postselect for
  *    events - The events that have occured
  */
-BLUE_CORE_LIB BLUE_HANDLE 
-BlueAppPostselect (BLUE_HANDLE hApp, BLUE_HANDLE hEvent)
+OFC_CORE_LIB BLUE_HANDLE
+ofc_app_postselect (BLUE_HANDLE hApp, BLUE_HANDLE hEvent)
 {
   BLUEAPP *app ;
   BLUE_HANDLE ret ;
 
   ret = BLUE_HANDLE_NULL ;
   app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  if (app != OFC_NULL)
     {
       if (!app->destroy)
 	{
@@ -198,13 +198,13 @@ BlueAppPostselect (BLUE_HANDLE hApp, BLUE_HANDLE hEvent)
  * Accepts:
  *    Handle to app that has generated a significant event
  */
-BLUE_CORE_LIB BLUE_VOID 
-BlueAppEventSig (BLUE_HANDLE hApp)
+OFC_CORE_LIB OFC_VOID
+ofc_app_sig_event (BLUE_HANDLE hApp)
 {
   BLUEAPP *app ;
 
   app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  if (app != OFC_NULL)
     {
       /*
        * Pass the significant event on to the scheduler
@@ -223,15 +223,15 @@ BlueAppEventSig (BLUE_HANDLE hApp)
  * Returns:
  *    whether we're destroying it or not
  */
-BLUE_CORE_LIB BLUE_BOOL 
-BlueAppDestroying (BLUE_HANDLE hApp)
+OFC_CORE_LIB OFC_BOOL
+ofc_app_destroying (BLUE_HANDLE hApp)
 {
   BLUEAPP *app ;
-  BLUE_BOOL ret ;
+  OFC_BOOL ret ;
 
   app = BlueHandleLock (hApp) ;
-  ret = BLUE_FALSE ;
-  if (app != BLUE_NULL)
+  ret = OFC_FALSE ;
+  if (app != OFC_NULL)
     {
       ret = app->destroy ;
       BlueHandleUnlock (hApp) ;
@@ -239,15 +239,15 @@ BlueAppDestroying (BLUE_HANDLE hApp)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID *
-BlueAppGetData (BLUE_HANDLE hApp)
+OFC_CORE_LIB OFC_VOID *
+ofc_app_get_data (BLUE_HANDLE hApp)
 {
   BLUEAPP *app ;
-  BLUE_VOID *ret ;
+  OFC_VOID *ret ;
 
-  ret = BLUE_NULL ;
+  ret = OFC_NULL ;
   app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  if (app != OFC_NULL)
     {
       ret = app->app_data ;
       BlueHandleUnlock (hApp) ;
@@ -255,7 +255,7 @@ BlueAppGetData (BLUE_HANDLE hApp)
   return (ret) ;
 }
 
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
 BLUE_CORE_LIB BLUE_VOID 
 BlueAppDump (BLUE_HANDLE hApp)
 {

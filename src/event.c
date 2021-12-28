@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -11,44 +11,44 @@
 #include "ofc/event.h"
 #include "ofc/impl/eventimpl.h"
 
-BLUE_CORE_LIB BLUE_HANDLE 
-BlueEventCreate (BLUE_EVENT_TYPE eventType)
+OFC_CORE_LIB BLUE_HANDLE
+ofc_event_create (OFC_EVENT_TYPE eventType)
 {
   return (BlueEventCreateImpl (eventType)) ;
 }
   
-BLUE_CORE_LIB BLUE_EVENT_TYPE 
-BlueEventGetType (BLUE_HANDLE hEvent)
+OFC_CORE_LIB OFC_EVENT_TYPE
+ofc_event_get_type (BLUE_HANDLE hEvent)
 {
   return (BlueEventGetTypeImpl (hEvent)) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueEventSet (BLUE_HANDLE hEvent) 
+OFC_CORE_LIB OFC_VOID
+ofc_event_set (BLUE_HANDLE hEvent)
 {
   BlueEventSetImpl (hEvent) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueEventReset (BLUE_HANDLE hEvent) 
+OFC_CORE_LIB OFC_VOID
+ofc_event_reset (BLUE_HANDLE hEvent)
 {
   BlueEventResetImpl (hEvent) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueEventDestroy (BLUE_HANDLE hEvent) 
+OFC_CORE_LIB OFC_VOID
+ofc_event_destroy (BLUE_HANDLE hEvent)
 {
   BlueEventDestroyImpl (hEvent) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueEventWait (BLUE_HANDLE hEvent) 
+OFC_CORE_LIB OFC_VOID
+ofc_event_wait (BLUE_HANDLE hEvent)
 {
   BlueEventWaitImpl (hEvent) ;
 }
 
-BLUE_CORE_LIB BLUE_BOOL 
-BlueEventTest (BLUE_HANDLE hEvent) 
+OFC_CORE_LIB OFC_BOOL
+ofc_event_test (BLUE_HANDLE hEvent)
 {
   return (BlueEventTestImpl (hEvent)) ;
 }

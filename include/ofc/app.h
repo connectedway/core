@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_APP_H__)
-#define __BLUE_APP_H__
+#if !defined(__OFC_APP_H__)
+#define __OFC_APP_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -16,15 +16,15 @@
  * Each application defines one of these and registers it with the
  * scheduler
  */
-typedef struct _BLUEAPP_TEMPLATE
+typedef struct _OFC_APP_TEMPLATE
 {
-  BLUE_CHAR *name ;			    /**< Name of App */
-  BLUE_VOID (*preselect)(BLUE_HANDLE app) ; /**< App's preselect routine */
+  OFC_CHAR *name ;			    /**< Name of App */
+  OFC_VOID (*preselect)(BLUE_HANDLE app) ; /**< App's preselect routine */
   /** Apps Postselect routine */
   BLUE_HANDLE (*postselect)(BLUE_HANDLE app, BLUE_HANDLE hEvent) ;
-  BLUE_VOID (*destroy)(BLUE_HANDLE app) ; /**< App's destroy routine */
-  BLUE_VOID (*dump)(BLUE_HANDLE app) ;	  /**< App's dump routine  */
-} BLUEAPP_TEMPLATE ;
+  OFC_VOID (*destroy)(BLUE_HANDLE app) ; /**< App's destroy routine */
+  OFC_VOID (*dump)(BLUE_HANDLE app) ;	  /**< App's dump routine  */
+} OFC_APP_TEMPLATE ;
 
 /**/
 #if defined(__cplusplus)
@@ -43,33 +43,33 @@ extern "C"
    * \returns
    * Handle to the application
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueAppCreate (BLUE_HANDLE scheduler, BLUEAPP_TEMPLATE *template,
-		 BLUE_VOID *app_dat) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  ofc_app_create (BLUE_HANDLE scheduler, OFC_APP_TEMPLATE *template,
+                  OFC_VOID *app_dat) ;
   /**
    * schedule the application for destruction.
    *
    * \param app
    * Handle to the app to kill
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueAppKill (BLUE_HANDLE app) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_app_kill (BLUE_HANDLE app) ;
   /**
    * Destroy an application
    *
    * \param app
    * Application to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueAppDestroy (BLUE_HANDLE app) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_app_destroy (BLUE_HANDLE app) ;
   /**
    * Call the apps preselect routine
    *
    * \param app
    * Handle to the app to preselect
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueAppPreselect (BLUE_HANDLE app) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_app_preselect (BLUE_HANDLE app) ;
   /**
    * Call the app's postselect routine
    *
@@ -79,8 +79,8 @@ extern "C"
    * \param hEvent
    * Event to pass to app
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueAppPostselect (BLUE_HANDLE hApp, BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  ofc_app_postselect (BLUE_HANDLE hApp, BLUE_HANDLE hEvent) ;
   /**
    * Signal a significant event for the app.  This is passed to the apps
    * scheduler. This will cause all applications on that scheduler to
@@ -89,8 +89,8 @@ extern "C"
    * \param app
    * Handle to the app to preselect
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueAppEventSig (BLUE_HANDLE app) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_app_sig_event (BLUE_HANDLE app) ;
   /**
    * Return whether we're destroying this app
    *
@@ -98,10 +98,10 @@ extern "C"
    * Test if an app is being destroyed
    *
    * \returns
-   * BLUE_TRUE if it's being destroyed.  BLUE_FALSE otherwise
+   * OFC_TRUE if it's being destroyed.  OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueAppDestroying (BLUE_HANDLE hApp) ;
+  OFC_CORE_LIB OFC_BOOL
+  ofc_app_destroying (BLUE_HANDLE hApp) ;
   /**
    * Return the apps context
    *
@@ -111,8 +111,8 @@ extern "C"
    * \returns
    * The apps context
    */
-  BLUE_CORE_LIB BLUE_VOID *
-  BlueAppGetData (BLUE_HANDLE hApp) ;
+  OFC_CORE_LIB OFC_VOID *
+  ofc_app_get_data (BLUE_HANDLE hApp) ;
   /**
    * Set an event to be notified when the app is destroyed
    *
@@ -122,8 +122,8 @@ extern "C"
    * \param hNotify
    * Event to notify when app exits
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueAppSetWait (BLUE_HANDLE hApp, BLUE_HANDLE hNotify) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_app_set_wait (BLUE_HANDLE hApp, BLUE_HANDLE hNotify) ;
 #if defined(BLUE_PARAM_APP_DEBUG)
   /**
    * Dump the state of the app
@@ -131,8 +131,8 @@ extern "C"
    * \param hApp
    * Handle to app to dump
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueAppDump (BLUE_HANDLE hApp) ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_app_dump (BLUE_HANDLE hApp) ;
 #endif
 
 #if defined(__cplusplus)

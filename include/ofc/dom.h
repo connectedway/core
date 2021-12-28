@@ -3,23 +3,23 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_DOM_H__)
-#define __BLUE_DOM_H__
+#if !defined(__OFC_DOM_H__)
+#define __OFC_DOM_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/persist.h"
 
 /**
- * \defgroup BlueConfig XML Handling
+ * \defgroup Open Files XML Handling
  *
- * Blue XML is an optional module used by the Blue Config subsystem.  
- * Blue XML provides a SAX and a DOM parser as well as a DOM printer.
+ * Open Files XML is an optional module used by the persist subsystem.  
+ * Open Files provides a SAX and a DOM parser as well as a DOM printer.
  */
 
 /**
- * \defgroup BlueDOM DOM Parser
- * \ingroup BlueConfig
+ * \defgroup OFC_DOM DOM Parser
+ * \ingroup persist
  */
 
 /** \{ */
@@ -42,9 +42,9 @@ typedef enum
 
 typedef struct dom_node
 {
-  BLUE_CHAR *ns ;
-  BLUE_CHAR *nodeName ;
-  BLUE_CHAR *nodeValue ;
+  OFC_CHAR *ns ;
+  OFC_CHAR *nodeName ;
+  OFC_CHAR *nodeValue ;
   DOM_NODE_TYPE nodeType ;
   struct dom_node *parentNode ;
   struct dom_node *firstChild ;
@@ -53,96 +53,96 @@ typedef struct dom_node
   struct dom_node *nextSibling ;
   struct dom_node *attributes ;
   struct dom_node *ownerDocument ;
-} BLUE_DOMNode ;
+} OFC_DOMNode ;
 
-typedef BLUE_CHAR BLUE_DOMString ;
-typedef BLUE_VOID BLUE_DocumentType ;
-typedef BLUE_DOMNode *BLUE_DOMNodelist ;
-typedef BLUE_DOMNode BLUE_DOMDocument ;
+typedef OFC_CHAR OFC_DOMString ;
+typedef OFC_VOID OFC_DocumentType ;
+typedef OFC_DOMNode *OFC_DOMNodelist ;
+typedef OFC_DOMNode OFC_DOMDocument ;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMcreateNode (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_create_node(OFC_VOID);
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMcreateDocument (BLUE_DOMString *namespaceURI, 
-			 BLUE_DOMString *qualifiedName,
-			 BLUE_DocumentType *doctype) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_create_document (OFC_DOMString *namespaceURI,
+                           OFC_DOMString *qualifiedName,
+                           OFC_DocumentType *doctype) ;
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMcreateElement (BLUE_DOMNode *document, 
-			const BLUE_DOMString *name) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_create_element (OFC_DOMNode *document,
+                          const OFC_DOMString *name) ;
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMcreateCDATASection (BLUE_DOMNode *document, 
-			     const BLUE_DOMString *data) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_create_cdata_section (OFC_DOMNode *document,
+                                const OFC_DOMString *data) ;
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMcreateProcessingInstruction (BLUE_DOMNode *document, 
-				      const BLUE_DOMString *target,
-				      const BLUE_DOMString *data) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_create_processing_instruction (OFC_DOMNode *document,
+                                         const OFC_DOMString *target,
+                                         const OFC_DOMString *data) ;
 
-  BLUE_CORE_LIB BLUE_DOMString *
-  BlueDOMgetAttribute (BLUE_DOMNode *elem, 
-		       const BLUE_DOMString *name) ;
+  OFC_CORE_LIB OFC_DOMString *
+  ofc_dom_get_attribute (OFC_DOMNode *elem,
+                         const OFC_DOMString *name) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueDOMsetAttribute (BLUE_DOMNode *elem, 
-		       const BLUE_DOMString *attr, 
-		       const BLUE_DOMString *value) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_dom_set_attribute (OFC_DOMNode *elem,
+                         const OFC_DOMString *attr,
+                         const OFC_DOMString *value) ;
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMappendChild (BLUE_DOMNode *document, BLUE_DOMNode *child) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_append_child (OFC_DOMNode *document, OFC_DOMNode *child) ;
 
-  BLUE_CORE_LIB BLUE_DOMNodelist *
-  BlueDOMgetElementsByTagName (BLUE_DOMNode *node, 
-			       const BLUE_DOMString *name) ;
+  OFC_CORE_LIB OFC_DOMNodelist *
+  ofc_dom_get_elements_by_tag_name (OFC_DOMNode *node,
+                                    const OFC_DOMString *name) ;
 
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueDOMgetElementCDATA (BLUE_DOMNode *doc, BLUE_CHAR *name) ;
+  OFC_CORE_LIB OFC_CHAR *
+  ofc_dom_get_element_cdata (OFC_DOMNode *doc, OFC_CHAR *name) ;
 
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueDOMgetElementCDATAUnescape (BLUE_DOMNode *doc, BLUE_CHAR *name) ;
+  OFC_CORE_LIB OFC_CHAR *
+  ofc_dom_get_element_cdata_unescape (OFC_DOMNode *doc, OFC_CHAR *name) ;
 
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueDOMgetCDATA (BLUE_DOMNode *node) ;
+  OFC_CORE_LIB OFC_CHAR *
+  ofc_dom_get_cdata (OFC_DOMNode *node) ;
 
-  BLUE_CORE_LIB BLUE_ULONG 
-  BlueDOMgetElementCDATAULong (BLUE_DOMNode *doc, BLUE_CHAR *name) ;
+  OFC_CORE_LIB OFC_ULONG
+  ofc_dom_get_element_cdata_long (OFC_DOMNode *doc, OFC_CHAR *name) ;
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMgetElement (BLUE_DOMNode *doc, const BLUE_CHAR *name) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_get_element (OFC_DOMNode *doc, const OFC_CHAR *name) ;
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMcreateElementCDATA (BLUE_DOMNode *doc, BLUE_CHAR *name, 
-			     const BLUE_CHAR *string) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_create_element_cdata (OFC_DOMNode *doc, OFC_CHAR *name,
+                                const OFC_CHAR *string) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueDOMdestroyNodelist (BLUE_DOMNodelist *nodelist) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_dom_destroy_node_list (OFC_DOMNodelist *nodelist) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueDOMdestroyDocument (BLUE_DOMNode *node) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_dom_destroy_document (OFC_DOMNode *node) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueDOMdestroyNode (BLUE_DOMNode *node) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_dom_destroy_node (OFC_DOMNode *node) ;
 
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len, 
-		     BLUE_DOMNode *node, BLUE_INT level) ;
+  OFC_CORE_LIB OFC_SIZET
+  ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
+                       OFC_DOMNode *node, OFC_INT level) ;
 
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueDOMsprintDocument (BLUE_CHAR *buf, BLUE_SIZET len, 
-			 BLUE_DOMNode *node) ;
+  OFC_CORE_LIB OFC_SIZET
+  ofc_dom_sprint_document (OFC_CHAR *buf, OFC_SIZET len,
+                           OFC_DOMNode *node) ;
 
-  BLUE_CORE_LIB BLUE_DOMNode *
-  BlueDOMloadDocument (BLUE_SIZET callback(BLUE_VOID*, BLUE_LPVOID, 
-					   BLUE_DWORD), 
-		       BLUE_VOID *) ;
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueDOMUnescape (BLUE_CHAR* data) ;
+  OFC_CORE_LIB OFC_DOMNode *
+  ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID,
+                                            OFC_DWORD),
+                         OFC_VOID *) ;
+  OFC_CORE_LIB OFC_SIZET
+  ofc_dom_unescape (OFC_CHAR* data) ;
 
 #if defined(__cplusplus)
 }

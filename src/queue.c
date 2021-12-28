@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -21,7 +21,7 @@ typedef struct _QUEUE_LINK
   struct _QUEUE_LINK *qNext ;	/* Pointer to the next link */
   struct _QUEUE_LINK *qPrev ;	/* Pointer to the previous link */
   union {
-    BLUE_VOID *qElement ;	/* Pointer to the link element if a link */
+    OFC_VOID *qElement ;	/* Pointer to the link element if a link */
     struct _QUEUE_LINK *qCache ; /* Pointer to the cache link if head */
   } u ;
 } QUEUE_LINK ;
@@ -29,7 +29,7 @@ typedef struct _QUEUE_LINK
 /*
 * Forward declarations
 */
-static QUEUE_LINK *BlueQfindLink (QUEUE_LINK *qHead, BLUE_VOID *qElement) ;
+static QUEUE_LINK *BlueQfindLink (QUEUE_LINK *qHead, OFC_VOID *qElement) ;
 
 /*
  * BlueQcreate - create a linked list
@@ -40,8 +40,8 @@ static QUEUE_LINK *BlueQfindLink (QUEUE_LINK *qHead, BLUE_VOID *qElement) ;
  * Returns:
  *    Queue
  */
-BLUE_CORE_LIB BLUE_HANDLE 
-BlueQcreate (BLUE_VOID)
+OFC_CORE_LIB BLUE_HANDLE
+BlueQcreate (OFC_VOID)
 {
   QUEUE_LINK *qHead ;
   BLUE_HANDLE handle ;
@@ -53,7 +53,7 @@ BlueQcreate (BLUE_VOID)
   /*
    * Did we get a head
    */
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
       /*
        * Yes, so initialize head
@@ -61,7 +61,7 @@ BlueQcreate (BLUE_VOID)
       qHead->qNext = qHead ;
       qHead->qPrev = qHead ;
       qHead->u.qCache = qHead ;
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
 
       handle = BlueHandleCreate (BLUE_HANDLE_QUEUE, qHead) ;
@@ -84,14 +84,14 @@ BlueQcreate (BLUE_VOID)
  * Returns:
  *    Nothing
  */
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueQdestroy (BLUE_HANDLE qHandle)
 {
   QUEUE_LINK *qHead ;
 
   qHead = BlueHandleLock (qHandle) ;
 
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
       /*
        * Is the queue empty?
@@ -115,16 +115,16 @@ BlueQdestroy (BLUE_HANDLE qHandle)
  *    qHead - Pointer to list header
  *    qElement - Pointer to element to add to list
  */
-BLUE_CORE_LIB BLUE_VOID 
-BlueQenqueue (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
+OFC_CORE_LIB OFC_VOID
+BlueQenqueue (BLUE_HANDLE qHandle, OFC_VOID *qElement)
 {
   QUEUE_LINK *qHead ;
   QUEUE_LINK *qLink ;
 
   qHead = BlueHandleLock (qHandle) ;
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       qLink = BlueQfindLink (qHead, qElement) ;
       if (qLink != qHead)
@@ -144,7 +144,7 @@ BlueQenqueue (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
        * And set the list cache to the new element
        */
       qHead->u.qCache = qLink ;
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       BlueHandleUnlock (qHandle) ;
     }
@@ -159,18 +159,18 @@ BlueQenqueue (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
  * Returns:
  *    Item at the front or NB_NULL
  */
-BLUE_CORE_LIB BLUE_VOID *
+OFC_CORE_LIB OFC_VOID *
 BlueQdequeue (BLUE_HANDLE qHandle)
 {
   QUEUE_LINK *qHead ;
   QUEUE_LINK *qLink ;
-  BLUE_VOID *qElement ;
+  OFC_VOID *qElement ;
 
-  qElement = BLUE_NULL ;
+  qElement = OFC_NULL ;
   qHead = BlueHandleLock (qHandle) ;
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       /*
        * See if the list is empty
@@ -181,7 +181,7 @@ BlueQdequeue (BLUE_HANDLE qHandle)
 	  /*
 	   * Yes, return empty
 	   */
-	  qElement = BLUE_NULL ;
+	  qElement = OFC_NULL ;
 	}
       else
 	{
@@ -198,7 +198,7 @@ BlueQdequeue (BLUE_HANDLE qHandle)
 	   */
 	  BlueHeapFree (qLink) ;
 	}
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       BlueHandleUnlock (qHandle) ;
     }
@@ -214,20 +214,20 @@ BlueQdequeue (BLUE_HANDLE qHandle)
  * Returns:
  *    True if empty, false otherwise
  */
-BLUE_CORE_LIB BLUE_BOOL 
+OFC_CORE_LIB OFC_BOOL
 BlueQempty (BLUE_HANDLE qHandle) 
 {
   QUEUE_LINK *qHead ;
-  BLUE_BOOL ret ;
+  OFC_BOOL ret ;
 
-  ret = BLUE_FALSE ;
+  ret = OFC_FALSE ;
   qHead = BlueHandleLock (qHandle) ;
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       if (qHead->qNext == qHead)
-	ret = BLUE_TRUE ;
+	ret = OFC_TRUE ;
       BlueHandleUnlock (qHandle) ;
     }
   return (ret) ;
@@ -242,16 +242,16 @@ BlueQempty (BLUE_HANDLE qHandle)
  * Returns:
  *    VOID * - Element that was at the front of the list
  */
-BLUE_CORE_LIB BLUE_VOID *
+OFC_CORE_LIB OFC_VOID *
 BlueQfirst (BLUE_HANDLE qHandle)
 {
-  BLUE_VOID *qElement ;
+  OFC_VOID *qElement ;
   QUEUE_LINK *qHead ;
 
   qHead = BlueHandleLock (qHandle) ;
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       /*
        * See if the list is empty
@@ -260,7 +260,7 @@ BlueQfirst (BLUE_HANDLE qHandle)
 	/*
 	 * Yes, return empty
 	 */
-	qElement = BLUE_NULL ;
+	qElement = OFC_NULL ;
       else
 	{
 	  /*
@@ -269,12 +269,12 @@ BlueQfirst (BLUE_HANDLE qHandle)
 	  qHead->u.qCache = qHead->qNext ;
 	  qElement = qHead->u.qCache->u.qElement ;
 	}
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       BlueHandleUnlock (qHandle) ;
     }
   else
-    qElement = BLUE_NULL ;
+    qElement = OFC_NULL ;
 
   return (qElement) ;
 }
@@ -289,18 +289,18 @@ BlueQfirst (BLUE_HANDLE qHandle)
  * Returns:
  *    VOID * - Pointer to the next element
  */
-BLUE_CORE_LIB BLUE_VOID *
-BlueQnext (BLUE_HANDLE qHandle, BLUE_VOID *qElement) 
+OFC_CORE_LIB OFC_VOID *
+BlueQnext (BLUE_HANDLE qHandle, OFC_VOID *qElement)
 {
   QUEUE_LINK *qLink ;
   QUEUE_LINK *qHead ;
-  BLUE_VOID *qReturn ;
+  OFC_VOID *qReturn ;
 
-  qReturn = BLUE_NULL ;
+  qReturn = OFC_NULL ;
   qHead = BlueHandleLock (qHandle) ;
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       /*
        * Locate the currrent link
@@ -315,7 +315,7 @@ BlueQnext (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
 	  /*
 	   * No, so return NULL
 	   */
-	  qReturn = BLUE_NULL ;
+	  qReturn = OFC_NULL ;
 	}
       else
 	{
@@ -331,14 +331,14 @@ BlueQnext (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
 	    /*
 	     * Yes, so return NULL
 	     */
-	    qReturn = BLUE_NULL ;
+	    qReturn = OFC_NULL ;
 	  else
 	    /*
 	     * No, so return the element
 	     */
 	    qReturn = qLink->u.qElement ;
 	}
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       BlueHandleUnlock (qHandle) ;
     }
@@ -355,16 +355,16 @@ BlueQnext (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
  * Returns:
  *    nothing
  */
-BLUE_CORE_LIB BLUE_VOID 
-BlueQunlink (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
+OFC_CORE_LIB OFC_VOID
+BlueQunlink (BLUE_HANDLE qHandle, OFC_VOID *qElement)
 {
   QUEUE_LINK *qLink ;
   QUEUE_LINK *qHead ;
 
   qHead = BlueHandleLock (qHandle) ;
-  if (qHead != BLUE_NULL)
+  if (qHead != OFC_NULL)
     {
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       /*
        * See if we can find the current element
@@ -389,7 +389,7 @@ BlueQunlink (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
 	   */
 	  BlueHeapFree (qLink) ;
 	}
-      if (qHead->qPrev == BLUE_NULL)
+      if (qHead->qPrev == OFC_NULL)
 	BlueProcessCrash ("queue corruption\n") ;
       BlueHandleUnlock (qHandle) ;
     }
@@ -407,7 +407,7 @@ BlueQunlink (BLUE_HANDLE qHandle, BLUE_VOID *qElement)
 *
 */
 static QUEUE_LINK *
-BlueQfindLink (QUEUE_LINK *qHead, BLUE_VOID *qElement)
+BlueQfindLink (QUEUE_LINK *qHead, OFC_VOID *qElement)
 {
   QUEUE_LINK *qLink ;
 
@@ -434,11 +434,11 @@ BlueQfindLink (QUEUE_LINK *qHead, BLUE_VOID *qElement)
   return (qLink) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueQclear (BLUE_HANDLE qHandle)
 {
-  BLUE_VOID *entry ;
+  OFC_VOID *entry ;
 
-  for (entry = BlueQdequeue (qHandle) ; entry != BLUE_NULL ; 
+  for (entry = BlueQdequeue (qHandle) ; entry != OFC_NULL ;
        entry = BlueQdequeue (qHandle)) ;
 }

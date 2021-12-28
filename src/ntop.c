@@ -25,11 +25,11 @@
 #define INADDRSZ 4
 #define INT16SZ 2
 
-static const BLUE_CHAR *BlueNETntop4(const BLUE_IPADDR *src, BLUE_CHAR *dst, BLUE_SIZET size);
-static const BLUE_CHAR *BlueNETntop6(const BLUE_IPADDR *src, BLUE_CHAR *dst, BLUE_SIZET size);
+static const OFC_CHAR *BlueNETntop4(const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size);
+static const OFC_CHAR *BlueNETntop6(const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size);
 
-const BLUE_CHAR *
-BlueNETntop (const BLUE_IPADDR *src, BLUE_CHAR *dst, BLUE_SIZET size)
+const OFC_CHAR *
+BlueNETntop (const BLUE_IPADDR *src, OFC_CHAR *dst, OFC_SIZET size)
 {
   BLUE_FAMILY_TYPE family ;
 
@@ -41,30 +41,30 @@ BlueNETntop (const BLUE_IPADDR *src, BLUE_CHAR *dst, BLUE_SIZET size)
     case BLUE_FAMILY_IPV6:
       return (BlueNETntop6(src, dst, size));
     default:
-      return (BLUE_NULL);
+      return (OFC_NULL);
     }
 }
 
-static const BLUE_CHAR *
-BlueNETntop4(const BLUE_IPADDR *ip, BLUE_CHAR *dst, BLUE_SIZET size)
+static const OFC_CHAR *
+BlueNETntop4(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
 {
-  static const BLUE_CHAR fmt[] = "%u.%u.%u.%u";
-  BLUE_CHAR tmp[IPSTR_LEN] ;
-  BLUE_UCHAR *src ;
+  static const OFC_CHAR fmt[] = "%u.%u.%u.%u";
+  OFC_CHAR tmp[IPSTR_LEN] ;
+  OFC_UCHAR *src ;
 
-  src = (BLUE_UCHAR *) &ip->u.ipv4.addr ;
+  src = (OFC_UCHAR *) &ip->u.ipv4.addr ;
 
   BlueCsnprintf(tmp, IPSTR_LEN, fmt, src[3], src[2], src[1], src[0]);
   if (BlueCstrnlen(tmp, IPSTR_LEN) > size) 
     {
-      return (BLUE_NULL);
+      return (OFC_NULL);
     }
   BlueCstrcpy(dst, tmp);
   return (dst);
 }
 
-static const BLUE_CHAR *
-BlueNETntop6(const BLUE_IPADDR *ip, BLUE_CHAR *dst, BLUE_SIZET size)
+static const OFC_CHAR *
+BlueNETntop6(const BLUE_IPADDR *ip, OFC_CHAR *dst, OFC_SIZET size)
 {
   /*
    * Note that int32_t and int16_t need only be "at least" large enough
@@ -73,18 +73,18 @@ BlueNETntop6(const BLUE_IPADDR *ip, BLUE_CHAR *dst, BLUE_SIZET size)
    * Keep this in mind if you think this function should have been coded
    * to use pointer overlays.  All the world's not a VAX.
    */
-  BLUE_CHAR tmp[IP6STR_LEN], *tp;
+  OFC_CHAR tmp[IP6STR_LEN], *tp;
   struct 
   { 
-    BLUE_INT base ;
-    BLUE_INT len ; 
+    OFC_INT base ;
+    OFC_INT len ;
   } best, cur;
-  BLUE_UINT16 words[IN6ADDRSZ / INT16SZ];
-  BLUE_INT i;
-  const BLUE_UCHAR *src ;
+  OFC_UINT16 words[IN6ADDRSZ / INT16SZ];
+  OFC_INT i;
+  const OFC_UCHAR *src ;
   BLUE_IPADDR ipv4 ;
 
-  src = (BLUE_UCHAR *) &ip->u.ipv6.blue_s6_addr ;
+  src = (OFC_UCHAR *) &ip->u.ipv6.blue_s6_addr ;
   BlueCmemset (tmp, '\0', IP6STR_LEN) ;
   /*
    * Preprocess:
@@ -152,7 +152,7 @@ BlueNETntop6(const BLUE_IPADDR *ip, BLUE_CHAR *dst, BLUE_SIZET size)
 	  ipv4.ip_version = BLUE_FAMILY_IP ;
 	  ipv4.u.ipv4.addr = BLUE_NET_NTOL (src, 12) ;
 	  if (!BlueNETntop4(&ipv4, tp, sizeof tmp - (tp - tmp)))
-	    return (BLUE_NULL);
+	    return (OFC_NULL);
 	  tp += BlueCstrnlen(tp, sizeof tmp - (tp - tmp));
 	  break;
 	}
@@ -171,17 +171,17 @@ BlueNETntop6(const BLUE_IPADDR *ip, BLUE_CHAR *dst, BLUE_SIZET size)
    */
   if ((tp - tmp) > size) 
     {
-      return (BLUE_NULL);
+      return (OFC_NULL);
     }
   BlueCstrcpy(dst, tmp);
   return (dst);
 }
 
 
-static BLUE_BOOL BlueNETpton4 (const BLUE_CHAR *src, BLUE_IPADDR *dst) ;
-static BLUE_BOOL BlueNETpton6 (const BLUE_CHAR *src, BLUE_IPADDR *dst) ;
+static OFC_BOOL BlueNETpton4 (const OFC_CHAR *src, BLUE_IPADDR *dst) ;
+static OFC_BOOL BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst) ;
 
-/* BLUE_INT
+/* OFC_INT
  * inet_pton(af, src, dst)
  *convert from presentation format (which usually means ASCII printable)
  *to network format (which is usually some kind of binary format).
@@ -192,12 +192,12 @@ static BLUE_BOOL BlueNETpton6 (const BLUE_CHAR *src, BLUE_IPADDR *dst) ;
  * author:
  *Paul Vixie, 1996.
  */
-BLUE_INT
-BlueNETpton (const BLUE_CHAR *src, BLUE_IPADDR *dst)
+OFC_INT
+BlueNETpton (const OFC_CHAR *src, BLUE_IPADDR *dst)
 {
-  BLUE_INT ret ;
+  OFC_INT ret ;
 
-  if (BlueCstrchr (src, ':') != BLUE_NULL)
+  if (BlueCstrchr (src, ':') != OFC_NULL)
     ret = BlueNETpton6(src, dst);
   else 
     ret = BlueNETpton4 (src, dst) ;
@@ -205,7 +205,7 @@ BlueNETpton (const BLUE_CHAR *src, BLUE_IPADDR *dst)
 
 }
 
-/* BLUE_INT
+/* OFC_INT
  * inet_pton4(src, dst)
  *like inet_aton() but without all the hexadecimal, octal (with the
  *exception of 0) and shorthand.
@@ -216,11 +216,11 @@ BlueNETpton (const BLUE_CHAR *src, BLUE_IPADDR *dst)
  * author:
  *Paul Vixie, 1996.
  */
-static BLUE_BOOL
-BlueNETpton4 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
+static OFC_BOOL
+BlueNETpton4 (const OFC_CHAR *src, BLUE_IPADDR *dst)
 {
-  BLUE_INT saw_digit, octets, ch;
-  BLUE_UCHAR tmp[INADDRSZ], *tp;
+  OFC_INT saw_digit, octets, ch;
+  OFC_UCHAR tmp[INADDRSZ], *tp;
 
   saw_digit = 0;
   octets = 0;
@@ -230,13 +230,13 @@ BlueNETpton4 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
 
       if (ch >= '0' && ch <= '9') 
 	{
-	  BLUE_UINT16 new = *tp * 10 + (ch - '0');
+	  OFC_UINT16 new = *tp * 10 + (ch - '0');
 
 	  if (saw_digit && *tp == 0)
 	    return (0);
 	  if (new > 255)
 	    return (0);
-	  *tp = (BLUE_UCHAR) new;
+	  *tp = (OFC_UCHAR) new;
 	  if (! saw_digit) 
 	    {
 	      if (++octets > 4)
@@ -262,7 +262,7 @@ BlueNETpton4 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
   return (1);
 }
 
-/* BLUE_INT
+/* OFC_INT
  * inet_pton6(src, dst)
  *convert presentation level address to network order binary form.
  * return:
@@ -275,20 +275,20 @@ BlueNETpton4 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
  * author:
  *Paul Vixie, 1996.
  */
-static BLUE_BOOL
-BlueNETpton6 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
+static OFC_BOOL
+BlueNETpton6 (const OFC_CHAR *src, BLUE_IPADDR *dst)
 {
-  static const BLUE_CHAR xdigits[] = "0123456789abcdef";
-  BLUE_UCHAR tmp[IN6ADDRSZ], *tp, *endp, *colonp;
-  const BLUE_CHAR *curtok;
-  BLUE_UINT ch, saw_xdigit;
-  BLUE_UINT16 val;
+  static const OFC_CHAR xdigits[] = "0123456789abcdef";
+  OFC_UCHAR tmp[IN6ADDRSZ], *tp, *endp, *colonp;
+  const OFC_CHAR *curtok;
+  OFC_UINT ch, saw_xdigit;
+  OFC_UINT16 val;
   BLUE_IPADDR ipv4 ;
-  BLUE_CHAR sch ;
+  OFC_CHAR sch ;
 
   tp = BlueCmemset(tmp, '\0', IN6ADDRSZ);
   endp = tp + IN6ADDRSZ;
-  colonp = BLUE_NULL;
+  colonp = OFC_NULL;
   /* Leading :: requires some special handling. */
   if (*src == ':')
     if (*++src != ':')
@@ -300,15 +300,15 @@ BlueNETpton6 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
   val = 0;
   while (*src != '\0')
     {
-      const BLUE_UCHAR *pch;
+      const OFC_UCHAR *pch;
 
       sch = *src++ ;
       ch = BLUE_C_TOLOWER (sch) ;
-      pch = (BLUE_UCHAR *) BlueCstrchr(xdigits, ch);
-      if (pch != BLUE_NULL) 
+      pch = (OFC_UCHAR *) BlueCstrchr(xdigits, ch);
+      if (pch != OFC_NULL)
 	{
 	  val <<= 4;
-	  val |= (pch - (BLUE_UCHAR *) xdigits);
+	  val |= (pch - (OFC_UCHAR *) xdigits);
 	  saw_xdigit = 1;
 	  continue;
 	}
@@ -332,8 +332,8 @@ BlueNETpton6 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
 	    {
 	      return (0);
 	    }
-	  *tp++ = (BLUE_UCHAR) (val >> 8) & 0xff;
-	  *tp++ = (BLUE_UCHAR) val & 0xff;
+	  *tp++ = (OFC_UCHAR) (val >> 8) & 0xff;
+	  *tp++ = (OFC_UCHAR) val & 0xff;
 	  saw_xdigit = 0;
 	  val = 0;
 	  continue;
@@ -354,17 +354,17 @@ BlueNETpton6 (const BLUE_CHAR *src, BLUE_IPADDR *dst)
 	{
 	  return (0);
 	}
-      *tp++ = (BLUE_UCHAR) (val >> 8) & 0xff;
-      *tp++ = (BLUE_UCHAR) val & 0xff;
+      *tp++ = (OFC_UCHAR) (val >> 8) & 0xff;
+      *tp++ = (OFC_UCHAR) val & 0xff;
     }
-  if (colonp != BLUE_NULL) 
+  if (colonp != OFC_NULL)
     {
       /*
        * Since some memmove()'s erroneously fail to handle
        * overlapping regions, we'll do the shift by hand.
        */
-      const BLUE_INT n = (BLUE_INT) (tp - colonp) ;
-      BLUE_INT i;
+      const OFC_INT n = (OFC_INT) (tp - colonp) ;
+      OFC_INT i;
 
       if (tp == endp)
 	{

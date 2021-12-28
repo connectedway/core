@@ -26,7 +26,7 @@ extern "C"
    * \param lock
    * Pointer to the lock to destroy
    */
-  BLUE_VOID BlueLockDestroyImpl (BLUE_LOCK lock) ;
+  OFC_VOID BlueLockDestroyImpl (BLUE_LOCK lock) ;
   /**
    * Test if a lock is available and lock it if it is.
    *
@@ -36,10 +36,10 @@ extern "C"
    * Pointer to the lock to try
    *
    * \returns
-   * BLUE_TRUE if the lock has been obtained, BLUE_FALSE if the lock was
+   * OFC_TRUE if the lock has been obtained, OFC_FALSE if the lock was
    * not available
    */
-  BLUE_BOOL BlueLockTryImpl (BLUE_LOCK lock) ;
+  OFC_BOOL BlueLockTryImpl (BLUE_LOCK lock) ;
   /**
    * Wait for a lock
    *
@@ -48,20 +48,20 @@ extern "C"
    * \param pLock
    * Pointer to lock to obtain
    */
-  BLUE_VOID BlueLockImpl (BLUE_LOCK pLock) ;
+  OFC_VOID BlueLockImpl (BLUE_LOCK pLock) ;
   /**
    * Release a Lock
    *
    * \param pLock
    * Pointer to lock to release
    */
-  BLUE_VOID BlueUnlockImpl (BLUE_LOCK pLock) ;
+  OFC_VOID BlueUnlockImpl (BLUE_LOCK pLock) ;
   /**
    * Initialize the Locking subsystem
    *
    * This routine will be called during system initialization
    */
-  BLUE_LOCK BlueLockInitImpl (BLUE_VOID) ;
+  BLUE_LOCK BlueLockInitImpl (OFC_VOID) ;
 #if defined(__cplusplus)
 }
 #endif

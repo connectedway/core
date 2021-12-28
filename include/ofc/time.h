@@ -19,7 +19,7 @@
 
 /** \{ */
 
-#if defined(BLUE_PARAM_PERF_STATS)
+#if defined(OFC_PERF_STATS)
 /**
  * A structure for helping us measure queing delay
  */
@@ -115,36 +115,36 @@ typedef struct
 extern "C"
 {
 #endif
-  BLUE_VOID EpochTimeToFileTime (const BLUE_ULONG tv_sec,
-				 const BLUE_ULONG tv_nsec,
-				 BLUE_FILETIME *filetime) ;
-  BLUE_VOID FileTimeToEpochTime (const BLUE_FILETIME *filetime,
-				 BLUE_ULONG *tv_sec,
-				 BLUE_ULONG *tv_nsec) ;
+  OFC_VOID EpochTimeToFileTime (const OFC_ULONG tv_sec,
+                                const OFC_ULONG tv_nsec,
+                                OFC_FILETIME *filetime) ;
+  OFC_VOID FileTimeToEpochTime (const OFC_FILETIME *filetime,
+                                OFC_ULONG *tv_sec,
+                                OFC_ULONG *tv_nsec) ;
   /**
    * Get a millisecond tick count
    *
    * \returns
    * A Millisecond Tick Count
    */
-  BLUE_CORE_LIB BLUE_MSTIME 
-  BlueTimeGetNow(BLUE_VOID) ;
+  OFC_CORE_LIB OFC_MSTIME
+  BlueTimeGetNow(OFC_VOID) ;
   /**
-   * Get Time of Day in BLUE_FILETIME format
+   * Get Time of Day in OFC_FILETIME format
    *
    * \param now
    * Pointer to where to store the current file time
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimeGetFileTime(BLUE_FILETIME *now) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueTimeGetFileTime(OFC_FILETIME *now) ;
   /**
    * Get The local time zone offset from UTC
    *
    * \returns
    * The number of minutes from UTC that this timezone is in
    */
-  BLUE_CORE_LIB BLUE_UINT16 
-  BlueTimeGetTimeZone(BLUE_VOID) ;
+  OFC_CORE_LIB OFC_UINT16
+  BlueTimeGetTimeZone(OFC_VOID) ;
   /**
    * Convert a File Time to a DOS Date Time
    *
@@ -158,12 +158,12 @@ extern "C"
    * Pointer to Fat Seconds Word
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueFileTimeToDosDateTime (const BLUE_FILETIME *lpFileTime,
-			     BLUE_WORD *lpFatDate,
-			     BLUE_WORD *lpFatTime) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueFileTimeToDosDateTime (const OFC_FILETIME *lpFileTime,
+                             OFC_WORD *lpFatDate,
+                             OFC_WORD *lpFatTime) ;
   /**
    * Convert a DOS Date Time to a File Time
    *
@@ -177,11 +177,11 @@ extern "C"
    * Pointer to where to store the file time
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueDosDateTimeToFileTime (BLUE_WORD FatDate, BLUE_WORD FatTime,
-			     BLUE_FILETIME *lpFileTime) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueDosDateTimeToFileTime (OFC_WORD FatDate, OFC_WORD FatTime,
+                             OFC_FILETIME *lpFileTime) ;
   /**
    * Build A DOS Date Time from components
    *
@@ -209,11 +209,11 @@ extern "C"
    * \param lpFatTime
    * A pointer to where to store the Time in DOS format
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimeElementsToDosDateTime (BLUE_UINT16 month, BLUE_UINT16 day,
-				 BLUE_UINT16 year, BLUE_UINT16 hour,
-				 BLUE_UINT16 min, BLUE_UINT16 sec,
-				 BLUE_WORD *lpFatDate, BLUE_WORD *lpFatTime) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueTimeElementsToDosDateTime (OFC_UINT16 month, OFC_UINT16 day,
+                                 OFC_UINT16 year, OFC_UINT16 hour,
+                                 OFC_UINT16 min, OFC_UINT16 sec,
+                                 OFC_WORD *lpFatDate, OFC_WORD *lpFatTime) ;
   /**
    * BlueTimeDosDateTimeToElements
    *
@@ -243,20 +243,20 @@ extern "C"
    * \param sec
    * Pointer to where to store the sec (0-59)
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimeDosDateTimeToElements (BLUE_WORD FatDate, BLUE_WORD FatTime,
-				 BLUE_UINT16 *month, BLUE_UINT16 *day,
-				 BLUE_UINT16 *year, BLUE_UINT16 *hour,
-				 BLUE_UINT16 *min, BLUE_UINT16 *sec) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueTimeDosDateTimeToElements (OFC_WORD FatDate, OFC_WORD FatTime,
+                                 OFC_UINT16 *month, OFC_UINT16 *day,
+                                 OFC_UINT16 *year, OFC_UINT16 *hour,
+                                 OFC_UINT16 *min, OFC_UINT16 *sec) ;
   /**
    * Get Process Runtime
    *
    * \returns
    * Returns the number of us of runtime
    */
-  BLUE_CORE_LIB BLUE_MSTIME 
-  BlueTimeGetRuntime (BLUE_VOID) ;
-#if defined(BLUE_PARAM_PERF_STATS)
+  OFC_CORE_LIB OFC_MSTIME
+  BlueTimeGetRuntime (OFC_VOID) ;
+#if defined(OFC_PERF_STATS)
   BLUE_CORE_LIB BLUE_MSTIME 
   BlueTimePerfStart (BLUE_TIME_PERF_ID id) ;
 

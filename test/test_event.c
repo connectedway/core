@@ -24,13 +24,13 @@
 static BLUE_HANDLE hScheduler;
 static BLUE_HANDLE hDone;
 
-static BLUE_INT
-test_startup_persist(BLUE_VOID)
+static OFC_INT
+test_startup_persist(OFC_VOID)
 {
-  BLUE_INT ret = 1;
-  BLUE_TCHAR path[BLUE_MAX_PATH] ;
+  OFC_INT ret = 1;
+  OFC_TCHAR path[OFC_MAX_PATH] ;
 
-  if (BlueEnvGet (BLUE_ENV_HOME, path, BLUE_MAX_PATH) == BLUE_TRUE)
+  if (ofc_env_get (OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE)
     {
       BlueFrameworkLoad (path);
       ret = 0;
@@ -38,9 +38,9 @@ test_startup_persist(BLUE_VOID)
   return (ret);
 }
 
-static BLUE_INT test_startup_default(BLUE_VOID)
+static OFC_INT test_startup_default(OFC_VOID)
 {
-  static BLUE_UUID uuid =
+  static OFC_UUID uuid =
     {
      0x04, 0x5d, 0x88, 0x8a, 0xeb, 0x1c, 0xc9, 0x11,
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
@@ -54,24 +54,24 @@ static BLUE_INT test_startup_default(BLUE_VOID)
   return(0);
 }
 
-static BLUE_INT test_startup(BLUE_VOID)
+static OFC_INT test_startup(OFC_VOID)
 {
-  BLUE_INT ret;
+  OFC_INT ret;
   BlueFrameworkInit();
-#if defined(BLUE_PARAM_PERSIST)
+#if defined(OFC_PERSIST)
   ret = test_startup_persist();
 #else
   ret = test_startup_default();
 #endif
   hScheduler = BlueSchedCreate();
-  hDone = BlueEventCreate(BLUE_EVENT_AUTO);
+  hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
 }
 
-static BLUE_VOID test_shutdown(BLUE_VOID)
+static OFC_VOID test_shutdown(OFC_VOID)
 {
-  BlueEventDestroy(hDone);
+  ofc_event_destroy(hDone);
   BlueSchedQuit(hScheduler);
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -91,30 +91,30 @@ typedef struct
   BLUE_HANDLE hTimer ;
   BLUE_HANDLE hEvent ;
   BLUE_HANDLE scheduler ;
-  BLUE_INT count ;
+  OFC_INT count ;
 } BLUE_EVENT_TEST ;
 
-static BLUE_VOID EventTestPreSelect (BLUE_HANDLE app) ;
+static OFC_VOID EventTestPreSelect (BLUE_HANDLE app) ;
 static BLUE_HANDLE EventTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent) ;
-static BLUE_VOID EventTestDestroy (BLUE_HANDLE app) ;
-#if defined(BLUE_PARAM_APP_DEBUG)
+static OFC_VOID EventTestDestroy (BLUE_HANDLE app) ;
+#if defined(OFC_APP_DEBUG)
 static BLUE_VOID EventTestDump (BLUE_HANDLE app) ;
 #endif
 
-static BLUEAPP_TEMPLATE EventTestAppDef =
+static OFC_APP_TEMPLATE EventTestAppDef =
   {
-    "Event Test Application",
-    &EventTestPreSelect,
-    &EventTestPostSelect,
-    &EventTestDestroy,
-#if defined(BLUE_PARAM_APP_DEBUG)
+          "Event Test Application",
+          &EventTestPreSelect,
+          &EventTestPostSelect,
+          &EventTestDestroy,
+#if defined(OFC_APP_DEBUG)
     &EventTestDump
 #else
-    BLUE_NULL
+          OFC_NULL
 #endif
   } ;
 
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
 static BLUE_VOID EventTestDump (BLUE_HANDLE app)
 {
   BLUE_EVENT_TEST *eventTest ;
@@ -129,13 +129,13 @@ static BLUE_VOID EventTestDump (BLUE_HANDLE app)
 }
 #endif
 
-static BLUE_VOID EventTestPreSelect (BLUE_HANDLE app) 
+static OFC_VOID EventTestPreSelect (BLUE_HANDLE app)
 {
   BLUE_EVENT_TEST *eventTest ;
   EVENT_TEST_STATE entry_state ;
 
-  eventTest = BlueAppGetData (app) ;
-  if (eventTest != BLUE_NULL)
+  eventTest = ofc_app_get_data (app) ;
+  if (eventTest != OFC_NULL)
     {
       do /* while eventTest->state != entry_state */
 	{
@@ -146,7 +146,7 @@ static BLUE_VOID EventTestPreSelect (BLUE_HANDLE app)
 	    {
 	    default:
 	    case EVENT_TEST_STATE_IDLE:
-	      eventTest->hEvent = BlueEventCreate(BLUE_EVENT_AUTO) ;
+	      eventTest->hEvent = ofc_event_create(OFC_EVENT_AUTO) ;
 	      if (eventTest->hEvent != BLUE_HANDLE_NULL)
 		{
 		  BlueSchedAddWait (eventTest->scheduler, app, 
@@ -175,14 +175,14 @@ static BLUE_VOID EventTestPreSelect (BLUE_HANDLE app)
 static BLUE_HANDLE EventTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent) 
 {
   BLUE_EVENT_TEST *eventTest ;
-  BLUE_BOOL progress ;
+  OFC_BOOL progress ;
 
-  eventTest = BlueAppGetData (app) ;
-  if (eventTest != BLUE_NULL)
+  eventTest = ofc_app_get_data (app) ;
+  if (eventTest != OFC_NULL)
     {
-      for (progress = BLUE_TRUE ; progress && !BlueAppDestroying(app);)
+      for (progress = OFC_TRUE ; progress && !ofc_app_destroying(app);)
 	{
-	  progress = BLUE_FALSE ;
+	  progress = OFC_FALSE ;
 
 	  switch (eventTest->state)
 	    {
@@ -197,11 +197,11 @@ static BLUE_HANDLE EventTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent)
 		  eventTest->count++ ;
 
 		  if (eventTest->count >= 10)
-		    BlueAppKill (app) ;
+		    ofc_app_kill (app) ;
 		}
 	      else if (hEvent == eventTest->hTimer)
 		{
-		  BlueEventSet (eventTest->hEvent) ;
+		  ofc_event_set (eventTest->hEvent) ;
 		  BlueTimerSet (eventTest->hTimer, EVENT_TEST_INTERVAL) ;
 		  BlueCprintf ("Timer Triggered\n") ;
 		}
@@ -212,12 +212,12 @@ static BLUE_HANDLE EventTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent)
   return (BLUE_HANDLE_NULL) ;
 }
 
-static BLUE_VOID EventTestDestroy (BLUE_HANDLE app) 
+static OFC_VOID EventTestDestroy (BLUE_HANDLE app)
 {
   BLUE_EVENT_TEST *eventTest ;
 
-  eventTest = BlueAppGetData (app) ;
-  if (eventTest != BLUE_NULL)
+  eventTest = ofc_app_get_data (app) ;
+  if (eventTest != OFC_NULL)
     {
       switch (eventTest->state)
 	{
@@ -227,7 +227,7 @@ static BLUE_VOID EventTestDestroy (BLUE_HANDLE app)
 
 	case EVENT_TEST_STATE_RUNNING:
 	  BlueTimerDestroy (eventTest->hTimer) ;
-	  BlueEventDestroy (eventTest->hEvent) ;
+	  ofc_event_destroy (eventTest->hEvent) ;
 	  break ;
 	}
 
@@ -257,12 +257,12 @@ TEST(event, test_event)
   eventTest->state = EVENT_TEST_STATE_IDLE ;
   eventTest->scheduler = hScheduler ;
 
-  hApp = BlueAppCreate (hScheduler, &EventTestAppDef, eventTest) ;
+  hApp = ofc_app_create (hScheduler, &EventTestAppDef, eventTest) ;
 
   if (hDone != BLUE_HANDLE_NULL)
     {
-      BlueAppSetWait (hApp, hDone) ;
-      BlueEventWait(hDone);
+      ofc_app_set_wait (hApp, hDone) ;
+      ofc_event_wait(hDone);
     }
 }	  
 

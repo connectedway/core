@@ -34,8 +34,8 @@ extern "C"
    * \returns
    * Handle to Scheduler
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueSchedCreate(BLUE_VOID) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueSchedCreate(OFC_VOID) ;
   /**
    * Cause a scheduler to quit
    *
@@ -43,9 +43,9 @@ extern "C"
    * Handle to scheduler to kill
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSchedQuit (BLUE_HANDLE scheduler) ;
   /**
    * Execute a preselect pass through all applications
@@ -54,7 +54,7 @@ extern "C"
    * Scheduler to run the preselect pass on
    *
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedPreselect (BLUE_HANDLE scheduler) ;
   /**
    * Execute a postselect pass through all applications
@@ -62,7 +62,7 @@ extern "C"
    * \param scheduler
    * Scheduler to run the postselect pass on
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedPostselect (BLUE_HANDLE scheduler) ;
   /**
    * Wait for an event on one of the applications within this scheduler
@@ -70,7 +70,7 @@ extern "C"
    * \param scheduler
    * Scheduler to wait for
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedWait (BLUE_HANDLE scheduler) ;
   /**
    * Destroy a scheduler
@@ -78,7 +78,7 @@ extern "C"
    * \param scheduler
    * Scheduler to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedDestroy (BLUE_HANDLE scheduler) ;
   /**
    * Add an application to a scheduler
@@ -89,7 +89,7 @@ extern "C"
    * \param hApp
    * The app to add to the scheduler
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedAdd (BLUE_HANDLE scheduler, BLUE_HANDLE hApp) ;
   /**
    * Trigger a significant event in a schedluer
@@ -99,7 +99,7 @@ extern "C"
    * \param scheduler
    * Scheduler to signal
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedSignificantEvent (BLUE_HANDLE scheduler) ;
   /**
    * Wake a scheduler
@@ -107,7 +107,7 @@ extern "C"
    * \param scheduler
    * Scheduler to wake
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedWake (BLUE_HANDLE scheduler) ;
   /**
    * Add an event for an app to wait for
@@ -121,10 +121,10 @@ extern "C"
    * \param hEvent
    * event to add to the app
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedAddWait (BLUE_HANDLE hScheduler, BLUE_HANDLE hApp,
 		    BLUE_HANDLE hEvent) ;
-  BLUE_CORE_LIB BLUE_VOID
+  OFC_CORE_LIB OFC_VOID
   BlueSchedClearWait (BLUE_HANDLE hScheduler, BLUE_HANDLE hApp) ;
   /**
    * Remove an event from a scheduler
@@ -135,7 +135,7 @@ extern "C"
    * \param hEvent
    * event to remove
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedRemoveWait (BLUE_HANDLE hScheduler, BLUE_HANDLE hEvent) ;
 
   /**
@@ -145,11 +145,11 @@ extern "C"
    * handler to scheduler
    *
    * \returns
-   * BLUE_TRUE if more apps exist, BLUE_FALSE otherwise
+   * OFC_TRUE if more apps exist, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSchedEmpty (BLUE_HANDLE hScheduler) ;
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
   /**
    * Dump debug info on the scheduler
    *
@@ -159,16 +159,16 @@ extern "C"
   BLUE_CORE_LIB BLUE_VOID 
   BlueSchedDump (BLUE_HANDLE hScheduler) ;
 #endif
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedJoin (BLUE_HANDLE hScheduler) ;
 
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSchedKill (BLUE_HANDLE hScheduler) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSchedKillAll (BLUE_HANDLE hScheduler) ;
 
-  BLUE_CORE_LIB BLUE_VOID BlueSchedLogMeasure (BLUE_HANDLE hScheduler) ;
+  OFC_CORE_LIB OFC_VOID BlueSchedLogMeasure (BLUE_HANDLE hScheduler) ;
 
 #if defined(__cplusplus)
 }

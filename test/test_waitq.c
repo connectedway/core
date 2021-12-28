@@ -24,13 +24,13 @@
 static BLUE_HANDLE hScheduler;
 static BLUE_HANDLE hDone;
 
-static BLUE_INT
-test_startup_persist(BLUE_VOID)
+static OFC_INT
+test_startup_persist(OFC_VOID)
 {
-  BLUE_INT ret = 1;
-  BLUE_TCHAR path[BLUE_MAX_PATH] ;
+  OFC_INT ret = 1;
+  OFC_TCHAR path[OFC_MAX_PATH] ;
 
-  if (BlueEnvGet (BLUE_ENV_HOME, path, BLUE_MAX_PATH) == BLUE_TRUE)
+  if (ofc_env_get (OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE)
     {
       BlueFrameworkLoad (path);
       ret = 0;
@@ -38,9 +38,9 @@ test_startup_persist(BLUE_VOID)
   return (ret);
 }
 
-static BLUE_INT test_startup_default(BLUE_VOID)
+static OFC_INT test_startup_default(OFC_VOID)
 {
-  static BLUE_UUID uuid =
+  static OFC_UUID uuid =
     {
      0x04, 0x5d, 0x88, 0x8a, 0xeb, 0x1c, 0xc9, 0x11,
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
@@ -54,24 +54,24 @@ static BLUE_INT test_startup_default(BLUE_VOID)
   return(0);
 }
 
-static BLUE_INT test_startup(BLUE_VOID)
+static OFC_INT test_startup(OFC_VOID)
 {
-  BLUE_INT ret;
+  OFC_INT ret;
   BlueFrameworkInit();
-#if defined(BLUE_PARAM_PERSIST)
+#if defined(OFC_PERSIST)
   ret = test_startup_persist();
 #else
   ret = test_startup_default();
 #endif
   hScheduler = BlueSchedCreate();
-  hDone = BlueEventCreate(BLUE_EVENT_AUTO);
+  hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
 }
 
-static BLUE_VOID test_shutdown(BLUE_VOID)
+static OFC_VOID test_shutdown(OFC_VOID)
 {
-  BlueEventDestroy(hDone);
+  ofc_event_destroy(hDone);
   BlueSchedQuit(hScheduler);
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -93,32 +93,32 @@ typedef struct
   BLUE_HANDLE hTimer ;
   BLUE_HANDLE hWaitQueue ;
   BLUE_HANDLE scheduler ;
-  BLUE_INT count ;
+  OFC_INT count ;
 } BLUE_WAITQ_TEST ;
 
-static BLUE_VOID WaitQueueTestPreSelect (BLUE_HANDLE app) ;
+static OFC_VOID WaitQueueTestPreSelect (BLUE_HANDLE app) ;
 static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app, 
 					    BLUE_HANDLE hWaitQueue) ;
-static BLUE_VOID WaitQueueTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID WaitQueueTestDestroy (BLUE_HANDLE app) ;
 
-static BLUEAPP_TEMPLATE WaitQueueTestAppDef =
+static OFC_APP_TEMPLATE WaitQueueTestAppDef =
   {
     "Wait Queue Test Application",
     &WaitQueueTestPreSelect,
     &WaitQueueTestPostSelect,
     &WaitQueueTestDestroy,
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
     BLUE_NULL
 #endif
   } ;
 
-static BLUE_VOID WaitQueueTestPreSelect (BLUE_HANDLE app) 
+static OFC_VOID WaitQueueTestPreSelect (BLUE_HANDLE app)
 {
   BLUE_WAITQ_TEST *waitqTest ;
   WAITQ_TEST_STATE entry_state ;
 
-  waitqTest = BlueAppGetData (app) ;
-  if (waitqTest != BLUE_NULL)
+  waitqTest = ofc_app_get_data (app) ;
+  if (waitqTest != OFC_NULL)
     {
       do /* while waitqTest->state != entry_state */
 	{
@@ -159,17 +159,17 @@ static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app,
 					    BLUE_HANDLE hWaitQueue) 
 {
   BLUE_WAITQ_TEST *waitqTest ;
-  BLUE_CHAR *msg ;
+  OFC_CHAR *msg ;
   BLUE_HANDLE hNext ;
-  BLUE_BOOL progress ;
+  OFC_BOOL progress ;
 
   hNext = BLUE_HANDLE_NULL ;
-  waitqTest = BlueAppGetData (app) ;
-  if (waitqTest != BLUE_NULL)
+  waitqTest = ofc_app_get_data (app) ;
+  if (waitqTest != OFC_NULL)
     {
-      for (progress = BLUE_TRUE ; progress && !BlueAppDestroying(app);)
+      for (progress = OFC_TRUE ; progress && !ofc_app_destroying(app);)
 	{
-	  progress = BLUE_FALSE ;
+	  progress = OFC_FALSE ;
 
 	  switch (waitqTest->state)
 	    {
@@ -181,9 +181,9 @@ static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app,
 	      if (hWaitQueue == waitqTest->hWaitQueue)
 		{
 		  msg = BlueWaitQdequeue (waitqTest->hWaitQueue) ;
-		  if (msg != BLUE_NULL)
+		  if (msg != OFC_NULL)
 		    {
-		      progress = BLUE_TRUE ;
+		      progress = OFC_TRUE ;
 		      BlueCprintf (msg) ;
 		      BlueHeapFree (msg) ;
 		    }
@@ -201,7 +201,7 @@ static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app,
 		    }
 		  else
 		    {
-		      BlueAppKill (app) ;
+		      ofc_app_kill (app) ;
 		      hNext = BLUE_HANDLE_NULL ;
 		    }
 		}
@@ -212,12 +212,12 @@ static BLUE_HANDLE WaitQueueTestPostSelect (BLUE_HANDLE app,
   return (hNext) ;
 }
 
-static BLUE_VOID WaitQueueTestDestroy (BLUE_HANDLE app) 
+static OFC_VOID WaitQueueTestDestroy (BLUE_HANDLE app)
 {
   BLUE_WAITQ_TEST *waitqTest ;
 
-  waitqTest = BlueAppGetData (app) ;
-  if (waitqTest != BLUE_NULL)
+  waitqTest = ofc_app_get_data (app) ;
+  if (waitqTest != OFC_NULL)
     {
       switch (waitqTest->state)
 	{
@@ -256,12 +256,12 @@ TEST(waitq, test_waitq)
   waitqTest->state = WAITQ_TEST_STATE_IDLE ;
   waitqTest->scheduler = hScheduler ;
 
-  hApp = BlueAppCreate (hScheduler, &WaitQueueTestAppDef, waitqTest) ;
+  hApp = ofc_app_create (hScheduler, &WaitQueueTestAppDef, waitqTest) ;
 
   if (hDone != BLUE_HANDLE_NULL)
     {
-      BlueAppSetWait (hApp, hDone) ;
-      BlueEventWait(hDone);
+      ofc_app_set_wait (hApp, hDone) ;
+      ofc_event_wait(hDone);
     }
 }	  
 

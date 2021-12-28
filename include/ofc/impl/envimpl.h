@@ -23,8 +23,8 @@
 extern "C"
 {
 #endif
-  BLUE_BOOL
-  BlueEnvGetImpl (BLUE_ENV_VALUE value, BLUE_TCHAR *ptr, BLUE_SIZET len) ;
+  OFC_BOOL
+  BlueEnvGetImpl (OFC_ENV_VALUE value, OFC_TCHAR *ptr, OFC_SIZET len) ;
 #if defined(__cplusplus)
 }
 #endif

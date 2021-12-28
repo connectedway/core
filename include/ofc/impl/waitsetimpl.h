@@ -48,9 +48,9 @@ extern "C"
    * \param hHandle
    * Handle to Wait Set
    */
-  BLUE_VOID BlueWaitSetSetAssocImpl (BLUE_HANDLE hHandle, 
-				     BLUE_HANDLE hApp, BLUE_HANDLE hSet) ;
-  BLUE_VOID 
+  OFC_VOID BlueWaitSetSetAssocImpl (BLUE_HANDLE hHandle,
+                                    BLUE_HANDLE hApp, BLUE_HANDLE hSet) ;
+  OFC_VOID
   BlueWaitSetSignalImpl (BLUE_HANDLE handle, BLUE_HANDLE hEvent) ;
   /**
    * Wake up a wait set
@@ -58,7 +58,7 @@ extern "C"
    * \param handle
    * Handle of wake set to wake
    */
-  BLUE_VOID BlueWaitSetWakeImpl (BLUE_HANDLE handle) ;
+  OFC_VOID BlueWaitSetWakeImpl (BLUE_HANDLE handle) ;
   /**
    * Create a wait set
    *
@@ -69,14 +69,14 @@ extern "C"
    * \param pWaitSet
    * Pointer to wait set abstraction that is returned
    */
-  BLUE_VOID BlueWaitSetCreateImpl (WAIT_SET *pWaitSet) ;
+  OFC_VOID BlueWaitSetCreateImpl (WAIT_SET *pWaitSet) ;
   /**
    * Destroy a wait set
    *
    * \param pWaitSet
    * Pointer to wait set context to destroy
    */
-  BLUE_VOID BlueWaitSetDestroyImpl (WAIT_SET *pWaitSet)  ;
+  OFC_VOID BlueWaitSetDestroyImpl (WAIT_SET *pWaitSet)  ;
   /**
    * Add an event to the wait set
    *
@@ -89,7 +89,7 @@ extern "C"
    * \param hEvent
    * Handle to the event to add
    */
-  BLUE_VOID 
+  OFC_VOID
   BlueWaitSetAddImpl (BLUE_HANDLE handle, BLUE_HANDLE hApp,
 		      BLUE_HANDLE hEvent) ;
 

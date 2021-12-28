@@ -3,32 +3,32 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/impl/consoleimpl.h"
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueWriteStdOut (BLUE_CCHAR *obuf, BLUE_SIZET len)
+OFC_CORE_LIB OFC_VOID
+ofc_write_stdout (OFC_CCHAR *obuf, OFC_SIZET len)
 {
   BlueWriteStdOutImpl (obuf, len) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueWriteConsole (BLUE_CCHAR *obuf)
+OFC_CORE_LIB OFC_VOID
+ofc_write_console (OFC_CCHAR *obuf)
 {
   BlueWriteConsoleImpl (obuf) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueReadLine (BLUE_CHAR *inbuf, BLUE_SIZET len)
+OFC_CORE_LIB OFC_VOID
+ofc_read_line (OFC_CHAR *inbuf, OFC_SIZET len)
 {
   BlueReadStdInImpl (inbuf, len) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueReadPassword (BLUE_CHAR *inbuf, BLUE_SIZET len)
+OFC_CORE_LIB OFC_VOID
+ofc_read_password (OFC_CHAR *inbuf, OFC_SIZET len)
 {
   BlueReadPasswordImpl (inbuf, len) ;
 }

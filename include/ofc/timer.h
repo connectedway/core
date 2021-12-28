@@ -28,8 +28,8 @@ extern "C"
    * \returns 
    * A handle to the timer
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueTimerCreate (BLUE_CCHAR *id) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueTimerCreate (OFC_CCHAR *id) ;
   /**
    * Get the remaining wait time for a timer
    *
@@ -40,7 +40,7 @@ extern "C"
    * The number of milliseconds that are left on the timer.  If the timer
    * is expired, a zero is returned.
    */
-  BLUE_CORE_LIB BLUE_MSTIME 
+  OFC_CORE_LIB OFC_MSTIME
   BlueTimerGetWaitTime (BLUE_HANDLE hTimer) ;
   /**
    * Set a timer with a millisecond count
@@ -51,18 +51,18 @@ extern "C"
    * \param delta
    * The number of milliseconds to tick for
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimerSet (BLUE_HANDLE hTimer, BLUE_MSTIME delta) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueTimerSet (BLUE_HANDLE hTimer, OFC_MSTIME delta) ;
   /**
    * Destroy a timer
    *
    * \param hTimer
    * The handle to the timer to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueTimerDestroy (BLUE_HANDLE hTimer) ;
 
-  BLUE_CORE_LIB BLUE_CCHAR *BlueTimerID (BLUE_HANDLE hTimer);
+  OFC_CORE_LIB OFC_CCHAR *BlueTimerID (BLUE_HANDLE hTimer);
 #if defined(__cplusplus)
 }
 #endif

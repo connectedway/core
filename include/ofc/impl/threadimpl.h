@@ -68,11 +68,11 @@ extern "C"
    */
   
   BLUE_HANDLE BlueThreadCreateImpl (BLUE_THREAD_FN scheduler,
-				    BLUE_CCHAR *thread_name, 
-				    BLUE_INT thread_instance,
-				    BLUE_VOID *context,
-				    BLUE_THREAD_DETACHSTATE detachstate,
-				    BLUE_HANDLE hNotify) ;
+                                    OFC_CCHAR *thread_name,
+                                    OFC_INT thread_instance,
+                                    OFC_VOID *context,
+                                    BLUE_THREAD_DETACHSTATE detachstate,
+                                    BLUE_HANDLE hNotify) ;
   /**
    * Delete a thread
    *
@@ -83,30 +83,30 @@ extern "C"
    *
    * \param hThread Handle to the thread to delete
    */
-  BLUE_VOID BlueThreadDeleteImpl (BLUE_HANDLE hThread) ;
+  OFC_VOID BlueThreadDeleteImpl (BLUE_HANDLE hThread) ;
   /**
    * Wait for a thread to exit
    *
    * \param hThread
    * Handle to thread to wait for
    */
-  BLUE_VOID BlueThreadWaitImpl (BLUE_HANDLE hThread) ;
+  OFC_VOID BlueThreadWaitImpl (BLUE_HANDLE hThread) ;
   /**
    * Check whether thread deletion has been scheduled.
    *
    * This function will return whether someone has called BlueThreadDelete
    *
    * \param hThread Handle of the thread to check
-   * \returns BLUE_TRUE if deletion is scheduled, BLUE_FALSE otherwise
+   * \returns OFC_TRUE if deletion is scheduled, OFC_FALSE otherwise
    */
-  BLUE_BOOL BlueThreadIsDeletingImpl (BLUE_HANDLE hThread) ;
+  OFC_BOOL BlueThreadIsDeletingImpl (BLUE_HANDLE hThread) ;
   /**
    * Sleep for a specified number of milliseconds
    *
    * \param milliseconds Number of milliseconds to sleep.  BLUE_INFINITE will
    * sleep forever.
    */
-  BLUE_VOID BlueSleepImpl (BLUE_DWORD milliseconds) ;
+  OFC_VOID BlueSleepImpl (OFC_DWORD milliseconds) ;
   /**
    * Create a Thread Specific Variable
    *
@@ -118,8 +118,8 @@ extern "C"
    *
    * \returns Variable ID
    */
-  BLUE_DWORD BlueThreadCreateVariableImpl (BLUE_VOID) ;
-  BLUE_VOID BlueThreadDestroyVariableImpl (BLUE_DWORD dkey);
+  OFC_DWORD BlueThreadCreateVariableImpl (OFC_VOID) ;
+  OFC_VOID BlueThreadDestroyVariableImpl (OFC_DWORD dkey);
   /**
    * Get the value of a variable
    *
@@ -127,7 +127,7 @@ extern "C"
    * \returns Pointer to the variable value structure.  If the variable value
    * was a 32 bit value, this can be cast to a DWORD value.
    */
-  BLUE_DWORD_PTR BlueThreadGetVariableImpl (BLUE_DWORD var) ;
+  OFC_DWORD_PTR BlueThreadGetVariableImpl (OFC_DWORD var) ;
   /**
    * Set the value of a thread specific variable
    *
@@ -135,8 +135,8 @@ extern "C"
    * \param val Pointer to a structure that becomes the variables value
    * If setting a 32 bit value, the pointer can be cast to a DWORD.
    */
-  BLUE_VOID 
-  BlueThreadSetVariableImpl (BLUE_DWORD var, BLUE_DWORD_PTR val) ;
+  OFC_VOID
+  BlueThreadSetVariableImpl (OFC_DWORD var, OFC_DWORD_PTR val) ;
   /**
    * Set the wait set of a thread
    *
@@ -146,7 +146,7 @@ extern "C"
    * \param wait_set
    * wait set to set
    */
-  BLUE_VOID
+  OFC_VOID
   BlueThreadSetWaitSetImpl (BLUE_HANDLE hThread, BLUE_HANDLE wait_set) ;
   /**
    * Create Local Storage for Local Variables
@@ -157,21 +157,21 @@ extern "C"
    * The routine should be called before any call using the BlueFile API 
    * (any call that manipulates last error).
    */
-  BLUE_CORE_LIB BLUE_VOID
-  BlueThreadCreateLocalStorageImpl (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadCreateLocalStorageImpl (OFC_VOID) ;
   /**
    * Destroys Local Storage for a thread
    */
-  BLUE_CORE_LIB BLUE_VOID
-  BlueThreadDestroyLocalStorageImpl (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadDestroyLocalStorageImpl (OFC_VOID) ;
   /**
    * Initialize the Blue Thread Facility
    */
-  BLUE_CORE_LIB BLUE_VOID
-  BlueThreadInitImpl (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadInitImpl (OFC_VOID) ;
 
-  BLUE_CORE_LIB BLUE_VOID
-  BlueThreadDestroyImpl (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadDestroyImpl (OFC_VOID) ;
 
 #if defined(__cplusplus)
 }

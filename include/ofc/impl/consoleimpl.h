@@ -35,14 +35,14 @@ extern "C"
    * \param len
    * Number of characters to output
    */
-  BLUE_VOID 
-  BlueWriteStdOutImpl (BLUE_CCHAR *obuf, BLUE_SIZET len) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueWriteConsoleImpl (BLUE_CCHAR *obuf) ;
-  BLUE_VOID 
-  BlueReadStdInImpl (BLUE_CHAR *inbuf, BLUE_SIZET len) ;
-  BLUE_VOID 
-  BlueReadPasswordImpl (BLUE_CHAR *inbuf, BLUE_SIZET len) ;
+  OFC_VOID
+  BlueWriteStdOutImpl (OFC_CCHAR *obuf, OFC_SIZET len) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueWriteConsoleImpl (OFC_CCHAR *obuf) ;
+  OFC_VOID
+  BlueReadStdInImpl (OFC_CHAR *inbuf, OFC_SIZET len) ;
+  OFC_VOID
+  BlueReadPasswordImpl (OFC_CHAR *inbuf, OFC_SIZET len) ;
 #if defined(__cplusplus)
 }
 #endif

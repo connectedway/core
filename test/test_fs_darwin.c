@@ -14,13 +14,13 @@
 #include "ofc/framework.h"
 #include "test_file.h"
 
-static BLUE_INT test_startup(BLUE_VOID)
+static OFC_INT test_startup(OFC_VOID)
 {
   BlueFrameworkInit();
   return(0);
 }
 
-static BLUE_VOID test_shutdown(BLUE_VOID)
+static OFC_VOID test_shutdown(OFC_VOID)
 {
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -40,7 +40,7 @@ TEST_TEAR_DOWN(fs_darwin)
 
 TEST(fs_darwin, test_fs_darwin)
 {
-  BLUE_INT ret ;
+  OFC_INT ret ;
   ret = test_file(OFC_TEST_FS_DARWIN_PATH);
   TEST_ASSERT_FALSE_MESSAGE(ret, "File Test Failed");
 }	  

@@ -3,26 +3,26 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_ENV_H__)
-#define __BLUE_ENV_H__
+#if !defined(__OFC_ENV_H__)
+#define __OFC_ENV_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 
 typedef enum 
 {
-  BLUE_ENV_HOME = 0,
-  BLUE_ENV_INSTALL,
-  BLUE_ENV_ROOT,
-  BLUE_ENV_NUM
-} BLUE_ENV_VALUE ;
+  OFC_ENV_HOME = 0,
+  OFC_ENV_INSTALL,
+  OFC_ENV_ROOT,
+  OFC_ENV_NUM
+} OFC_ENV_VALUE ;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  BLUE_CORE_LIB BLUE_BOOL
-  BlueEnvGet (BLUE_ENV_VALUE value, BLUE_TCHAR *ptr, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_BOOL
+  ofc_env_get (OFC_ENV_VALUE value, OFC_TCHAR *ptr, OFC_SIZET len) ;
 #if defined(__cplusplus)
 }
 #endif

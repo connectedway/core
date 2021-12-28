@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -11,8 +11,8 @@
 #include "ofc/impl/envimpl.h"
 
 
-BLUE_CORE_LIB BLUE_BOOL
-BlueEnvGet (BLUE_ENV_VALUE value, BLUE_TCHAR *ptr, BLUE_SIZET len) 
+OFC_CORE_LIB OFC_BOOL
+ofc_env_get (OFC_ENV_VALUE value, OFC_TCHAR *ptr, OFC_SIZET len)
 {
   return (BlueEnvGetImpl (value, ptr, len)) ;
 }

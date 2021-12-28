@@ -24,13 +24,13 @@
 static BLUE_HANDLE hScheduler;
 static BLUE_HANDLE hDone;
 
-static BLUE_INT
-test_startup_persist(BLUE_VOID)
+static OFC_INT
+test_startup_persist(OFC_VOID)
 {
-  BLUE_INT ret = 1;
-  BLUE_TCHAR path[BLUE_MAX_PATH] ;
+  OFC_INT ret = 1;
+  OFC_TCHAR path[OFC_MAX_PATH] ;
 
-  if (BlueEnvGet (BLUE_ENV_HOME, path, BLUE_MAX_PATH) == BLUE_TRUE)
+  if (ofc_env_get (OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE)
     {
       BlueFrameworkLoad (path);
       ret = 0;
@@ -38,9 +38,9 @@ test_startup_persist(BLUE_VOID)
   return (ret);
 }
 
-static BLUE_INT test_startup_default(BLUE_VOID)
+static OFC_INT test_startup_default(OFC_VOID)
 {
-  static BLUE_UUID uuid =
+  static OFC_UUID uuid =
     {
      0x04, 0x5d, 0x88, 0x8a, 0xeb, 0x1c, 0xc9, 0x11,
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
@@ -54,24 +54,24 @@ static BLUE_INT test_startup_default(BLUE_VOID)
   return(0);
 }
 
-static BLUE_INT test_startup(BLUE_VOID)
+static OFC_INT test_startup(OFC_VOID)
 {
-  BLUE_INT ret;
+  OFC_INT ret;
   BlueFrameworkInit();
-#if defined(BLUE_PARAM_PERSIST)
+#if defined(OFC_PERSIST)
   ret = test_startup_persist();
 #else
   ret = test_startup_default();
 #endif
   hScheduler = BlueSchedCreate();
-  hDone = BlueEventCreate(BLUE_EVENT_AUTO);
+  hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
 }
 
-static BLUE_VOID test_shutdown(BLUE_VOID)
+static OFC_VOID test_shutdown(OFC_VOID)
 {
-  BlueEventDestroy(hDone);
+  ofc_event_destroy(hDone);
   BlueSchedQuit(hScheduler);
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -90,7 +90,7 @@ static BLUE_VOID test_shutdown(BLUE_VOID)
  * code structure, but it is not necessarily required to understand it
  * unless you will be writing daemon apps.
  */
-static BLUE_DWORD ThreadTestApp (BLUE_HANDLE hThread, BLUE_VOID *context) ;
+static OFC_DWORD ThreadTestApp (BLUE_HANDLE hThread, OFC_VOID *context) ;
 
 /*
  * States that the deamon can be in
@@ -114,7 +114,7 @@ typedef struct
 /*
  * Forward declaration to the deamon apps preselect routine
  */
-static BLUE_VOID ThreadTestPreSelect (BLUE_HANDLE app) ;
+static OFC_VOID ThreadTestPreSelect (BLUE_HANDLE app) ;
 /*
  * Forward declaration to the deamon apps postselect routine
  */
@@ -123,9 +123,9 @@ static BLUE_HANDLE ThreadTestPostSelect (BLUE_HANDLE app,
 /*
  * Forward declaration to the deamon apps destroy routine
  */
-static BLUE_VOID ThreadTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID ThreadTestDestroy (BLUE_HANDLE app) ;
 
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
 /*
  * Forward declearation to the deamon apps dump routine
  */
@@ -135,20 +135,20 @@ static BLUE_VOID ThreadTestDump (BLUE_HANDLE app) ;
 /*
  * Definition of the thread test deamon application
  */
-static BLUEAPP_TEMPLATE ThreadTestAppDef =
+static OFC_APP_TEMPLATE ThreadTestAppDef =
   {
-    "Thread Test App",		/* The deamon name */
+          "Thread Test App",		/* The deamon name */
     &ThreadTestPreSelect,	/* The preselect routine */
     &ThreadTestPostSelect,	/* The post select routine */
     &ThreadTestDestroy,		/* The destroy routine */
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
     &ThreadTestDump		/* The dump routine */
 #else
-    BLUE_NULL
+          OFC_NULL
 #endif
   } ;
 
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
 /*
  * The deamon's dump routine.
  *
@@ -189,7 +189,7 @@ static BLUE_VOID ThreadTestDump (BLUE_HANDLE app)
  * \returns
  * A status.  0 is success
  */
-static BLUE_DWORD ThreadTestApp (BLUE_HANDLE hThread, BLUE_VOID *context) 
+static OFC_DWORD ThreadTestApp (BLUE_HANDLE hThread, OFC_VOID *context)
 {
   /*
    * The test thread should continue running until it is deleted
@@ -215,15 +215,15 @@ static BLUE_DWORD ThreadTestApp (BLUE_HANDLE hThread, BLUE_VOID *context)
  * \returns
  * Nothing
  */
-static BLUE_VOID ThreadTestPreSelect (BLUE_HANDLE app) 
+static OFC_VOID ThreadTestPreSelect (BLUE_HANDLE app)
 {
   THREAD_TEST_APP *ThreadApp ;	/* The deamon's context */
   THREAD_TEST_STATE entry_state ;
   /*
    * Obtain the deamon's context
    */
-  ThreadApp = BlueAppGetData (app) ;
-  if (ThreadApp != BLUE_NULL)
+  ThreadApp = ofc_app_get_data (app) ;
+  if (ThreadApp != OFC_NULL)
     {
       do /* while ThreadApp->state != entry_state */
 	{
@@ -283,24 +283,24 @@ static BLUE_VOID ThreadTestPreSelect (BLUE_HANDLE app)
 static BLUE_HANDLE ThreadTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent) 
 {
   THREAD_TEST_APP *ThreadApp ;	/* The deamon's context */
-  BLUE_BOOL progress ;		/* Whether we have serviced anything */
+  OFC_BOOL progress ;		/* Whether we have serviced anything */
 
   /*
    * Get the deamon's context
    */
-  ThreadApp = BlueAppGetData (app) ;
-  if (ThreadApp != BLUE_NULL)
+  ThreadApp = ofc_app_get_data (app) ;
+  if (ThreadApp != OFC_NULL)
     {
       /*
        * While we have just serviced something and while we are not
        * being destroyed
        */
-      for (progress = BLUE_TRUE ; progress && !BlueAppDestroying(app);)
+      for (progress = OFC_TRUE ; progress && !ofc_app_destroying(app);)
 	{
 	  /*
 	   * Say we haven't processed anything
 	   */
-	  progress = BLUE_FALSE ;
+	  progress = OFC_FALSE ;
 	  /*
 	   * Switch on our state
 	   */
@@ -323,11 +323,11 @@ static BLUE_HANDLE ThreadTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent)
 		  /*
 		   * Let's schedule us to be destroyed
 		   */
-		  BlueAppKill (app) ;
+		  ofc_app_kill (app) ;
 		  /*
 		   * And say we've serviced something
 		   */
-		  progress = BLUE_TRUE ;
+		  progress = OFC_TRUE ;
 		}
 	      break ;
 	    }
@@ -344,15 +344,15 @@ static BLUE_HANDLE ThreadTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent)
  *
  * \returns Nothing
  */
-static BLUE_VOID ThreadTestDestroy (BLUE_HANDLE app) 
+static OFC_VOID ThreadTestDestroy (BLUE_HANDLE app)
 {
   THREAD_TEST_APP *ThreadApp ;	/* Our deamon's context */
 
   /*
    * Get the deamon's context
    */
-  ThreadApp = BlueAppGetData (app) ;
-  if (ThreadApp != BLUE_NULL)
+  ThreadApp = ofc_app_get_data (app) ;
+  if (ThreadApp != OFC_NULL)
     {
       /*
        * Switch on our state
@@ -397,10 +397,10 @@ TEST(thread, test_thread)
   /*
    * Create the Thread that this deamon will interact with
    */
-  hThread = BlueThreadCreate (&ThreadTestApp, 
-			      BLUE_THREAD_THREAD_TEST, BLUE_THREAD_SINGLETON,
-			      BLUE_NULL,
-			      BLUE_THREAD_JOIN, BLUE_HANDLE_NULL) ;
+  hThread = BlueThreadCreate (&ThreadTestApp,
+                              BLUE_THREAD_THREAD_TEST, BLUE_THREAD_SINGLETON,
+                              OFC_NULL,
+                              BLUE_THREAD_JOIN, BLUE_HANDLE_NULL) ;
   if (hThread == BLUE_HANDLE_NULL)
     BlueCprintf ("Could not create ThreadTestApp\n") ;
   else
@@ -421,12 +421,12 @@ TEST(thread, test_thread)
       /*
        * Create the deamon application
        */
-      hApp = BlueAppCreate (ThreadApp->hScheduler, &ThreadTestAppDef, 
-			    ThreadApp) ;
+      hApp = ofc_app_create (ThreadApp->hScheduler, &ThreadTestAppDef,
+                             ThreadApp) ;
       if (hDone != BLUE_HANDLE_NULL)
 	{
-	  BlueAppSetWait (hApp, hDone) ;
-	  BlueEventWait(hDone);
+	  ofc_app_set_wait (hApp, hDone) ;
+	  ofc_event_wait(hDone);
 
 	  BlueCprintf ("Deleting Thread\n") ;
 	  /*

@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/config.h"
@@ -19,16 +19,16 @@
 
 struct blueheap_chunk
 {
-  BLUE_SIZET alloc_size ;
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+  OFC_SIZET alloc_size ;
+#if defined(OFC_HEAP_DEBUG)
   struct blueheap_chunk * dbgnext ;
   struct blueheap_chunk * dbgprev ;
-  BLUE_BOOL snap ;
+  OFC_BOOL snap ;
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
-  BLUE_VOID *caller1 ;
-  BLUE_VOID *caller2 ;
-  BLUE_VOID *caller3 ;
-  BLUE_VOID *caller4 ;
+  OFC_VOID *caller1 ;
+  OFC_VOID *caller2 ;
+  OFC_VOID *caller3 ;
+  OFC_VOID *caller4 ;
 #else
   BLUE_VOID *caller ;
 #endif
@@ -38,17 +38,17 @@ struct blueheap_chunk
 typedef struct
 {
   BLUE_LOCK lock ;
-  BLUE_UINT32 Max ;
-  BLUE_UINT32 Total ;
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+  OFC_UINT32 Max ;
+  OFC_UINT32 Total ;
+#if defined(OFC_HEAP_DEBUG)
   struct blueheap_chunk *Allocated ;
 #endif
 } BLUE_HEAP_STATS ;
 
 static BLUE_HEAP_STATS BlueHeapStats = {0};
 
-static BLUE_VOID 
-BlueHeapMallocAcct (BLUE_SIZET size, struct blueheap_chunk *chunk)
+static OFC_VOID
+BlueHeapMallocAcct (OFC_SIZET size, struct blueheap_chunk *chunk)
 {
   /*
    * Put on the allocation queue
@@ -61,7 +61,7 @@ BlueHeapMallocAcct (BLUE_SIZET size, struct blueheap_chunk *chunk)
   BlueUnlock (BlueHeapStats.lock) ;
 }
 
-static BLUE_VOID 
+static OFC_VOID
 BlueHeapFreeAcct (struct blueheap_chunk *chunk)
 {
   BlueLock (BlueHeapStats.lock) ;
@@ -69,35 +69,35 @@ BlueHeapFreeAcct (struct blueheap_chunk *chunk)
   BlueUnlock (BlueHeapStats.lock) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueHeapLoad (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID
+BlueHeapLoad (OFC_VOID)
 {
   BlueHeapStats.Max = 0 ;
   BlueHeapStats.Total = 0 ;
-#if defined(BLUE_PARAM_HEAP_DEBUG)
-  BlueHeapStats.Allocated = BLUE_NULL ;
+#if defined(OFC_HEAP_DEBUG)
+  BlueHeapStats.Allocated = OFC_NULL ;
 #endif
   BlueHeapInitImpl () ;
   BlueHeapStats.lock = BlueLockInit () ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueHeapUnload (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID
+BlueHeapUnload (OFC_VOID)
 {
   BlueLockDestroy (BlueHeapStats.lock) ;
-  BlueHeapStats.lock = BLUE_NULL;
+  BlueHeapStats.lock = OFC_NULL;
   BlueHeapUnloadImpl() ;
   BlueHeapDump();
 }
 
-#if defined(BLUE_PARAM_HEAP_DEBUG)
-static BLUE_VOID 
-BlueHeapDebugAlloc (BLUE_SIZET size, struct blueheap_chunk *chunk,
-		    BLUE_VOID *ret)
+#if defined(OFC_HEAP_DEBUG)
+static OFC_VOID
+BlueHeapDebugAlloc (OFC_SIZET size, struct blueheap_chunk *chunk,
+                    OFC_VOID *ret)
 {
   BlueLock (BlueHeapStats.lock) ;
   chunk->dbgnext = BlueHeapStats.Allocated ;
-  if (BlueHeapStats.Allocated != BLUE_NULL)
+  if (BlueHeapStats.Allocated != OFC_NULL)
     BlueHeapStats.Allocated->dbgprev = chunk ;
   BlueHeapStats.Allocated = chunk ;
   chunk->dbgprev = 0 ;
@@ -117,25 +117,25 @@ BlueHeapDebugAlloc (BLUE_SIZET size, struct blueheap_chunk *chunk,
 #else
   chunk->caller = ret ;
 #endif
-  chunk->snap = BLUE_FALSE ;
+  chunk->snap = OFC_FALSE ;
 
   BlueUnlock (BlueHeapStats.lock) ;
 }
 #endif
 
-#if defined(BLUE_PARAM_HEAP_DEBUG)
-static BLUE_VOID 
+#if defined(OFC_HEAP_DEBUG)
+static OFC_VOID
 BlueHeapDebugFree (struct blueheap_chunk *chunk)
 {
   /*
    * Pull off the allocation queue
    */
   BlueLock (BlueHeapStats.lock) ;
-  if (chunk->dbgprev != BLUE_NULL)
+  if (chunk->dbgprev != OFC_NULL)
     chunk->dbgprev->dbgnext = chunk->dbgnext ;
   else
     BlueHeapStats.Allocated = chunk->dbgnext ;
-  if (chunk->dbgnext != BLUE_NULL)
+  if (chunk->dbgnext != OFC_NULL)
     chunk->dbgnext->dbgprev = chunk->dbgprev ;
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
 #if defined(__cyg_profile)
@@ -155,35 +155,35 @@ BlueHeapDebugFree (struct blueheap_chunk *chunk)
 #endif
 
 #define OBUF_SIZE 200
-BLUE_CORE_LIB BLUE_VOID 
-BlueHeapDumpStats (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID
+BlueHeapDumpStats (OFC_VOID)
 {
-  BLUE_CHAR obuf[OBUF_SIZE] ;
-  BLUE_SIZET len ;
+  OFC_CHAR obuf[OBUF_SIZE] ;
+  OFC_SIZET len ;
   
   len = BlueCsnprintf (obuf, OBUF_SIZE,
 		       "Total Allocated Memory %d, Max Allocated Memory %d\n",
 		       BlueHeapStats.Total, BlueHeapStats.Max) ;
-  BlueWriteConsole (obuf) ;
+  ofc_write_console (obuf) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueHeapDump (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID
+BlueHeapDump (OFC_VOID)
 {
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
   struct blueheap_chunk *chunk ;
-  BLUE_CHAR obuf[OBUF_SIZE] ;
-  BLUE_SIZET len ;
+  OFC_CHAR obuf[OBUF_SIZE] ;
+  OFC_SIZET len ;
 #endif
 
   BlueHeapDumpStats() ;
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
-  if (BlueHeapStats.Allocated == BLUE_NULL)
+  if (BlueHeapStats.Allocated == OFC_NULL)
     {
       len = BlueCsnprintf (obuf, OBUF_SIZE,
 			   "\nHeap is Empty, No leaks detected\n");
-      BlueWriteConsole (obuf) ;
+      ofc_write_console (obuf) ;
     }
   else
     {
@@ -191,12 +191,12 @@ BlueHeapDump (BLUE_VOID)
 			   "%-10s %-10s %-10s %-10s %-10s %-10s\n",
 			   "Address", "Size", "Caller1", "Caller2", "Caller3", 
 			   "Caller4") ;
-      BlueWriteConsole (obuf) ;
+      ofc_write_console (obuf) ;
     }
 
   BlueLock (BlueHeapStats.lock) ;
   for (chunk = BlueHeapStats.Allocated ;
-       chunk != BLUE_NULL ;
+       chunk != OFC_NULL ;
        chunk = chunk->dbgnext)
     {
       if (!chunk->snap)
@@ -212,11 +212,11 @@ BlueHeapDump (BLUE_VOID)
 #else
 	  len = BlueCsnprintf (obuf, OBUF_SIZE, 
 			       "%-10p %-10d %-10p %-10p %-10p %-10p\n",
-			       chunk+1, (BLUE_INT) chunk->alloc_size, 
+			       chunk+1, (OFC_INT) chunk->alloc_size,
 			       chunk->caller1, chunk->caller2, chunk->caller3, 
 			       chunk->caller4) ;
 #endif
-	  BlueWriteConsole (obuf) ;
+	  ofc_write_console (obuf) ;
 	}
     }
   BlueUnlock (BlueHeapStats.lock) ;
@@ -236,16 +236,16 @@ BlueHeapDump (BLUE_VOID)
   BlueUnlock (BlueHeapStats.lock) ;
 #endif
   len = BlueCsnprintf (obuf, OBUF_SIZE, "\n") ;
-  BlueWriteConsole (obuf) ;
+  ofc_write_console (obuf) ;
 #endif
 }
 
-BLUE_CORE_LIB BLUE_VOID
-BlueHeapCheckAlloc (BLUE_LPCVOID mem)
+OFC_CORE_LIB OFC_VOID
+BlueHeapCheckAlloc (OFC_LPCVOID mem)
 {
   const struct blueheap_chunk * chunk ;
 
-  if (mem != BLUE_NULL)
+  if (mem != OFC_NULL)
     {
       chunk = mem ;
       chunk-- ;
@@ -254,38 +254,38 @@ BlueHeapCheckAlloc (BLUE_LPCVOID mem)
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueHeapSnap (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID
+BlueHeapSnap (OFC_VOID)
 {
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
   struct blueheap_chunk *chunk ;
 
   BlueLock (BlueHeapStats.lock) ;
   for (chunk = BlueHeapStats.Allocated ;
-       chunk != BLUE_NULL ;
+       chunk != OFC_NULL ;
        chunk = chunk->dbgnext)
     {
-      chunk->snap = BLUE_TRUE ;
+      chunk->snap = OFC_TRUE ;
     }
 
   BlueUnlock (BlueHeapStats.lock) ;
 #endif
 }
 
-BLUE_CORE_LIB BLUE_VOID
-BlueHeapDumpChunk (BLUE_LPVOID mem)
+OFC_CORE_LIB OFC_VOID
+BlueHeapDumpChunk (OFC_LPVOID mem)
 {
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
 #if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
   struct blueheap_chunk * chunk ;
 
-  if (mem != BLUE_NULL)
+  if (mem != OFC_NULL)
     {
       chunk = mem ;
       chunk-- ;
 
       BlueCprintf ("%-10p %-10d %-10p %-10p %-10p %-10p\n",
-		   chunk+1, (BLUE_INT) chunk->alloc_size, 
+		   chunk+1, (OFC_INT) chunk->alloc_size,
 		   chunk->caller1, chunk->caller2, chunk->caller3, 
 		   chunk->caller4) ;
     }
@@ -293,21 +293,21 @@ BlueHeapDumpChunk (BLUE_LPVOID mem)
 #endif
 }
 
-BLUE_CORE_LIB BLUE_LPVOID 
-BlueHeapMalloc (BLUE_SIZET size)
+OFC_CORE_LIB OFC_LPVOID
+BlueHeapMalloc (OFC_SIZET size)
 {
-  BLUE_LPVOID mem ;
+  OFC_LPVOID mem ;
   struct blueheap_chunk * chunk ;
 
-  mem = BLUE_NULL ;
+  mem = OFC_NULL ;
   chunk = BlueHeapMallocImpl (size + sizeof (struct blueheap_chunk)) ;
-  if (chunk != BLUE_NULL)
+  if (chunk != OFC_NULL)
     {
       BlueHeapMallocAcct (size, chunk) ;
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
       BlueHeapDebugAlloc (size, chunk, RETURN_ADDRESS()) ;
 #endif
-      mem = (BLUE_LPVOID) (++chunk) ;
+      mem = (OFC_LPVOID) (++chunk) ;
     }
   else
     {
@@ -316,23 +316,23 @@ BlueHeapMalloc (BLUE_SIZET size)
   return (mem) ;
 }
 
-BLUE_CORE_LIB BLUE_LPVOID 
-BlueHeapCalloc (BLUE_SIZET nmemb, BLUE_SIZET size)
+OFC_CORE_LIB OFC_LPVOID
+BlueHeapCalloc (OFC_SIZET nmemb, OFC_SIZET size)
 {
   return (BlueHeapMalloc (nmemb * size)) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueHeapFree (BLUE_LPVOID mem)
+OFC_CORE_LIB OFC_VOID
+BlueHeapFree (OFC_LPVOID mem)
 {
   struct blueheap_chunk * chunk ;
 
-  if (mem != BLUE_NULL)
+  if (mem != OFC_NULL)
     {
       chunk = mem ;
       chunk-- ;
 
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
       BlueHeapDebugFree (chunk) ;
 #endif
       BlueHeapFreeAcct (chunk) ;
@@ -340,31 +340,31 @@ BlueHeapFree (BLUE_LPVOID mem)
     }
 }
 
-BLUE_CORE_LIB BLUE_LPVOID 
-BlueHeapRealloc (BLUE_LPVOID ptr, BLUE_SIZET size)
+OFC_CORE_LIB OFC_LPVOID
+BlueHeapRealloc (OFC_LPVOID ptr, OFC_SIZET size)
 {
   struct blueheap_chunk * chunk ;
   struct blueheap_chunk * newchunk ;
-  BLUE_LPVOID mem ;
+  OFC_LPVOID mem ;
 
-  mem = BLUE_NULL ;
+  mem = OFC_NULL ;
   chunk = ptr ;
-  if (chunk != BLUE_NULL)
+  if (chunk != OFC_NULL)
     {
       chunk-- ;
 
       BlueHeapFreeAcct (chunk) ;
 
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
       BlueHeapDebugFree (chunk) ;
 #endif
 
       newchunk = BlueHeapReallocImpl (chunk, 
 				      size + sizeof (struct blueheap_chunk)) ;
 
-      if (newchunk != BLUE_NULL)
+      if (newchunk != OFC_NULL)
 	{
-#if defined(BLUE_PARAM_HEAP_DEBUG)
+#if defined(OFC_HEAP_DEBUG)
 	  BlueHeapDebugAlloc (size, newchunk, RETURN_ADDRESS()) ;
 #endif
 	  BlueHeapMallocAcct (size, newchunk) ;

@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-  BLUE_INT test_file (BLUE_LPCSTR test_root);
+  OFC_INT test_file (OFC_LPCSTR test_root);
 #if defined(__cplusplus)
 }
 #endif

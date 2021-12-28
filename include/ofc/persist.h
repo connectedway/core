@@ -58,8 +58,8 @@ extern "C"
    * any of the components that use the configuration or calling any of
    * the APIs to set configuration.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigInit(BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigInit(OFC_VOID) ;
   /**
    * Releases all Configuration Information
    *
@@ -67,8 +67,8 @@ extern "C"
    * be called to cleanly shutdown the Configuration Facility.  This 
    * should not be called unless all Blue Share components have exited.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigFree (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigFree (OFC_VOID) ;
   /**
    * Set a Default Configuration
    *
@@ -80,16 +80,16 @@ extern "C"
    * by having your own configuration routine that uses the manual 
    * configuration APIs.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigDefault (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigDefault (OFC_VOID) ;
 
-#if defined(BLUE_PARAM_PERSIST)
+#if defined(OFC_PERSIST)
   /**
    * Load a Persistent Configuration File
    *
    * This routine loads a Blue Share configuration.
    *
-   * In order to use this routine, you must have BLUE_PARAM_CONFIG_XML 
+   * In order to use this routine, you must have OFC_PERSIST 
    * defined.  It will load the configuration from an XML file. 
    * This routine will only set those fields present in the XML file.
    * A developer may wish to set default configuration info before calling
@@ -98,8 +98,8 @@ extern "C"
    *
    * \param lpFileName The XML File to load
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigLoad (BLUE_LPCTSTR lpFileName) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigLoad (OFC_LPCTSTR lpFileName) ;
   /**
    * Saves a Configuration to a Persisten File
    *
@@ -109,8 +109,8 @@ extern "C"
    *
    * \param lpFileName Name of XML File to save
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigSave (BLUE_LPCTSTR lpFileName) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigSave (OFC_LPCTSTR lpFileName) ;
   /**
    * Print a configuration to a buffer
    *
@@ -121,8 +121,8 @@ extern "C"
    * \param len
    * Pointer to where to store the length of the allocated buffer (plus null)
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigPrint (BLUE_LPVOID *buf, BLUE_SIZET *len) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigPrint (OFC_LPVOID *buf, OFC_SIZET *len) ;
 #endif
   /**
    * Configure the Blue Share Node Name
@@ -134,9 +134,9 @@ extern "C"
    * \param workgroup The Workgroup that this node exists within
    * \param desc The description of this node
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigSetNodeName (BLUE_LPCTSTR name, BLUE_LPCTSTR workgroup,
-			 BLUE_LPCTSTR desc) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigSetNodeName (OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
+                         OFC_LPCTSTR desc) ;
   /**
    * Obtain the Node Name Information for a Node
    *
@@ -147,9 +147,9 @@ extern "C"
    * \param workgroup Where to store a pointer to the workgroup
    * \param desc Where to store a pointer to the description
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigNodeName (BLUE_LPCTSTR *name, BLUE_LPCTSTR *workgroup,
-		      BLUE_LPCTSTR *desc) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigNodeName (OFC_LPCTSTR *name, OFC_LPCTSTR *workgroup,
+                      OFC_LPCTSTR *desc) ;
   /**
    * Set the Node's UUID
    *
@@ -161,15 +161,15 @@ extern "C"
    *
    * \param uuid Pointer to the uuid value to set
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigSetUUID (BLUE_UUID *uuid) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigSetUUID (OFC_UUID *uuid) ;
   /**
    * Return the Node's UUID
    *
    * \param uuid Pointer to where to place the UUID
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigUUID (BLUE_UUID *uuid) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigUUID (OFC_UUID *uuid) ;
   /**
    * Set the Interface Configuration Mode
    *
@@ -181,7 +181,7 @@ extern "C"
    *
    * \param itype Type of Interface Configuration Mode  
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueConfigSetInterfaceType (BLUE_CONFIG_ICONFIG_TYPE itype) ;
   /**
    * Return Interface Configuration Mode
@@ -191,14 +191,14 @@ extern "C"
    *
    * \returns Configuration Mode
    */
-  BLUE_CORE_LIB BLUE_CONFIG_ICONFIG_TYPE 
-  BlueConfigInterfaceConfig (BLUE_VOID) ;
+  OFC_CORE_LIB BLUE_CONFIG_ICONFIG_TYPE
+  BlueConfigInterfaceConfig (OFC_VOID) ;
   /**
    * Remove an Interface
    *
    * \param ip IP Address of interface to remove
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueConfigRemoveInterfaceConfig (BLUE_IPADDR *ip) ;
   /**
    * Define the number of interfaces supported by Blue Share
@@ -210,8 +210,8 @@ extern "C"
    *
    * \param i The number of interfaces supported
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigSetInterfaceCount (BLUE_INT i) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigSetInterfaceCount (OFC_INT i) ;
   /**
    * Configure an Interface
    *
@@ -221,28 +221,28 @@ extern "C"
    *
    * \param i The interface index of the interface
    * \param netbios_mode The NetBIOS mode of the interface
-   * \param ipaddress Pointer to IP Address of Interface.  If BLUE_NULL, 
+   * \param ipaddress Pointer to IP Address of Interface.  If OFC_NULL,
    * do not set.
-   * \param bcast Pointer to Broadcast Address of Interface.  If BLUE_NULL, 
+   * \param bcast Pointer to Broadcast Address of Interface.  If OFC_NULL,
    * do not set
-   * \param mask Pointer to the Mask of the interface.  If BLUE_NULL,
+   * \param mask Pointer to the Mask of the interface.  If OFC_NULL,
    * do not set
    * \param master Pointer to the name of the master browser for the 
-   * interface.  If BLUE_NULL, do not set.
+   * interface.  If OFC_NULL, do not set.
    * \param num_wins
    * Number of Wins Servers for this interface (if P, M, or H mode)
    * \param winslist
    * Pointer to the wins list to use for the interface
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigSetInterfaceConfig (BLUE_INT i,
-				BLUE_CONFIG_MODE netbios_mode,
-				BLUE_IPADDR *ipaddress,
-				BLUE_IPADDR *bcast,
-				BLUE_IPADDR *mask,
-				BLUE_CHAR *master,
-				BLUE_INT num_wins,
-				BLUE_IPADDR *winslist) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigSetInterfaceConfig (OFC_INT i,
+                                BLUE_CONFIG_MODE netbios_mode,
+                                BLUE_IPADDR *ipaddress,
+                                BLUE_IPADDR *bcast,
+                                BLUE_IPADDR *mask,
+                                OFC_CHAR *master,
+                                OFC_INT num_wins,
+                                BLUE_IPADDR *winslist) ;
   /**
    * Return the number of interfaces in use by Blue Share.  
    *
@@ -252,8 +252,8 @@ extern "C"
    *
    * \returns Number of Interfaces configured
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueConfigInterfaceCount (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_INT
+  BlueConfigInterfaceCount (OFC_VOID) ;
   /**
    * Return configuration information for an interface
    *
@@ -265,9 +265,9 @@ extern "C"
    * \param mask Pointer to where to store the mask for the interface.  If 
    * NULL, do not store
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigInterfaceAddr (BLUE_INT index, BLUE_IPADDR *addr,
-			   BLUE_IPADDR *pbcast, BLUE_IPADDR *mask) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigInterfaceAddr (OFC_INT index, BLUE_IPADDR *addr,
+                           BLUE_IPADDR *pbcast, BLUE_IPADDR *mask) ;
   /**
    * Configure Only the Local Master Browser for an Interface
    *
@@ -280,8 +280,8 @@ extern "C"
    * \param index Index of the Interface to set
    * \param local_master Name of the Local Master Browser
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigSetLocalMaster (BLUE_INT index, BLUE_LPCSTR local_master) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigSetLocalMaster (OFC_INT index, OFC_LPCSTR local_master) ;
   /**
    * Return the local master browser for an interface
    *
@@ -290,24 +290,24 @@ extern "C"
    * master browser name.  This pointer is to a static string.  It should
    * not be freed or modified.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigLocalMaster (BLUE_INT index, BLUE_LPCSTR *local_master) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigLocalMaster (OFC_INT index, OFC_LPCSTR *local_master) ;
   /**
    * Configure Only the Private Pointer for an Interface
    *
    * \param index Index of the Interface to set
    * \param priv Pointer to the private pointer
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigSetPrivate (BLUE_INT index, BLUE_VOID *priv) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigSetPrivate (OFC_INT index, OFC_VOID *priv) ;
   /**
    * Return the private pointer for an interface
    *
    * \param index Index of the interface to obtain the private pointer for
    * \param priv Pointer to where to store the private pointer.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigPrivate (BLUE_INT index, BLUE_VOID **priv) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigPrivate (OFC_INT index, OFC_VOID **priv) ;
 
   /**
    * Get the count of WINS Servers
@@ -317,8 +317,8 @@ extern "C"
    *
    * \returns Number of WINS Servers Configured
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueConfigWINSCount(BLUE_INT index) ;
+  OFC_CORE_LIB OFC_INT
+  BlueConfigWINSCount(OFC_INT index) ;
   /**
    * Get the IP Address of one of the WINS Servers
    *
@@ -329,8 +329,8 @@ extern "C"
    *
    * \param addr A pointer to a where to put the IP address
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigWINSAddr(BLUE_INT xface, BLUE_INT index, BLUE_IPADDR *addr) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigWINSAddr(OFC_INT xface, OFC_INT index, BLUE_IPADDR *addr) ;
   /**
    * Get the NetBIOS Mode of an Interface
    *
@@ -347,18 +347,18 @@ extern "C"
    * should be freed using BlueHeapFree after done
    * \returns The NetBIOS Mode of that interface
    */
-  BLUE_CORE_LIB BLUE_CONFIG_MODE 
-  BlueConfigInterfaceMode (BLUE_INT index, BLUE_INT *num_wins,
-			   BLUE_IPADDR **winslist) ;
+  OFC_CORE_LIB BLUE_CONFIG_MODE
+  BlueConfigInterfaceMode (OFC_INT index, OFC_INT *num_wins,
+                           BLUE_IPADDR **winslist) ;
 
   /**
    * Has the configuration been loaded
    *
    * \returns
-   * BLUE_TRUE if loaded, BLUE_FALSE otherwise
+   * OFC_TRUE if loaded, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueConfigLoaded (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueConfigLoaded (OFC_VOID) ;
   /**
    * Register a Update When Configuration Changed
    *
@@ -368,7 +368,7 @@ extern "C"
    * NOTE: Registers are guaranteed to get at least one notification after
    * registering that will contain adds for each configured interface.
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueConfigRegisterUpdate (BLUE_HANDLE hEvent) ;
   /**
    * Unregister a Configuration Update Notification
@@ -376,20 +376,20 @@ extern "C"
    * \param hEvent
    * The Event to remove 
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueConfigUnregisterUpdate (BLUE_HANDLE hEvent) ;
   /**
    * Initiate a configuration event
    *
    * The routine takes no arguments
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigUpdate (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigUpdate (OFC_VOID) ;
   /**
    * Unload the config library
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueConfigUnload (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueConfigUnload (OFC_VOID) ;
 
 #if defined(__cplusplus)
 }

@@ -14,16 +14,16 @@
 extern "C"
 {
 #endif
-  BLUE_PROCESS_ID BlueProcessGetImpl (BLUE_VOID) ;
-  BLUE_HANDLE BlueProcessExecImpl (BLUE_CTCHAR *name,
-				   BLUE_TCHAR *uname,
-				   BLUE_INT argc,
-				   BLUE_CHAR **argv) ;
-  BLUE_VOID BlueProcessTermImpl (BLUE_HANDLE hProcess) ;
-  BLUE_BOOL BlueProcessTermTrapImpl (BLUE_PROCESS_TRAP_HANDLER trap) ;
-  BLUE_VOID BlueProcessKillImpl (BLUE_PROCESS_ID id) ;
+  BLUE_PROCESS_ID BlueProcessGetImpl (OFC_VOID) ;
+  BLUE_HANDLE BlueProcessExecImpl (OFC_CTCHAR *name,
+                                   OFC_TCHAR *uname,
+                                   OFC_INT argc,
+                                   OFC_CHAR **argv) ;
+  OFC_VOID BlueProcessTermImpl (BLUE_HANDLE hProcess) ;
+  OFC_BOOL BlueProcessTermTrapImpl (BLUE_PROCESS_TRAP_HANDLER trap) ;
+  OFC_VOID BlueProcessKillImpl (BLUE_PROCESS_ID id) ;
   BLUE_PROCESS_ID BlueProcessGetIdImpl (BLUE_HANDLE hProcess) ;
-  BLUE_VOID BlueProcessCrashImpl (BLUE_CCHAR *obuf) ;
+  OFC_VOID BlueProcessCrashImpl (OFC_CCHAR *obuf) ;
 #if defined(__cplusplus)
 }
 #endif

@@ -115,7 +115,7 @@ extern "C"
 {
 #endif
 
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSocketSourceAddress (const BLUE_IPADDR *dest, 
 			   BLUE_IPADDR *source) ;
   /**
@@ -137,8 +137,8 @@ extern "C"
    * complete.  When the socket is connected, an event will be set for the 
    * handle and a call to BlueSocketConnected will return success.
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueSocketConnect (const BLUE_IPADDR *ip, BLUE_UINT16 port) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueSocketConnect (const BLUE_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Create a TCP socket and listen for incoming connections
    * 
@@ -159,8 +159,8 @@ extern "C"
    * When an incoming connection arrives, a socket event will be generated.
    * A subsequent call to BlueSocketAccept can then be issued.
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueSocketListen (const BLUE_IPADDR *ip, BLUE_UINT16 port) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueSocketListen (const BLUE_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Create a datagram socket
    *
@@ -182,9 +182,9 @@ extern "C"
    * so this will return immediately.  Events will be generated when 
    * traffic arrives or buffer space is available.
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueSocketDatagram (const BLUE_IPADDR *ip, BLUE_UINT16 port) ;
-  BLUE_CORE_LIB BLUE_HANDLE 
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueSocketDatagram (const BLUE_IPADDR *ip, OFC_UINT16 port) ;
+  OFC_CORE_LIB BLUE_HANDLE
   BlueSocketRaw (const BLUE_IPADDR *ip, BLUE_SOCKET_TYPE socktype) ;
   /**
    * Accept an incoming TCP connection
@@ -198,7 +198,7 @@ extern "C"
    * \returns
    * A handle to the newly accepted connection
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
+  OFC_CORE_LIB BLUE_HANDLE
   BlueSocketAccept (BLUE_HANDLE hMasterSocket) ;
   /**
    * Destroy a previously created socket.
@@ -211,7 +211,7 @@ extern "C"
    * The handle to the socket to destroy
    *
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueSocketDestroy (BLUE_HANDLE hSock) ;
   /**
    * Write data on a socket
@@ -228,7 +228,7 @@ extern "C"
    * \returns
    * True if we made progress on a write, false otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSocketWrite (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg) ;
   /**
    * Read Data from a socket
@@ -246,7 +246,7 @@ extern "C"
    * \returns
    * True if we made progress on a read, false otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSocketRead (BLUE_HANDLE hSocket, BLUE_MESSAGE *msg) ;
   /**
    * Test if a socket is connected or not
@@ -255,9 +255,9 @@ extern "C"
    * Socket to test
    *
    * \returns
-   * BLUE_TRUE if the socket is connected, BLUE_FALSE otherwise
+   * OFC_TRUE if the socket is connected, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSocketConnected (BLUE_HANDLE hSocket) ;
   /**
    * Test for a particular event on the socket
@@ -268,7 +268,7 @@ extern "C"
    * \returns
    * bit mask of events set
    */
-  BLUE_CORE_LIB BLUE_SOCKET_EVENT_TYPE 
+  OFC_CORE_LIB BLUE_SOCKET_EVENT_TYPE
   BlueSocketTest (BLUE_HANDLE hSocket) ;
   /**
    * Enable an event on the socket
@@ -280,9 +280,9 @@ extern "C"
    * Event Mask (events ORd together)
    *
    * \returns
-   * BLUE_TRUE if successful
+   * OFC_TRUE if successful
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSocketEnable (BLUE_HANDLE hSocket, BLUE_SOCKET_EVENT_TYPE type)  ;
   /**
    * Set the send buffer size of the lower socket layers
@@ -296,8 +296,8 @@ extern "C"
    * \param size
    * size to set the send buffer to.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueSocketSetSendSize (BLUE_HANDLE hSocket, BLUE_INT size) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueSocketSetSendSize (BLUE_HANDLE hSocket, OFC_INT size) ;
   /**
    * Set the receive buffer size of the lower socket layers
    * 
@@ -310,8 +310,8 @@ extern "C"
    * \param size
    * size to set the receive buffer to.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueSocketSetRecvSize (BLUE_HANDLE hSocket, BLUE_INT size) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueSocketSetRecvSize (BLUE_HANDLE hSocket, OFC_INT size) ;
   /**
    * Get the ip and ports of a tcp connection
    *
@@ -325,9 +325,9 @@ extern "C"
    * Poitner to the returned socketaddress structure for the remote side
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueSocketGetAddresses (BLUE_HANDLE hSock, BLUE_SOCKADDR *local, 
 			  BLUE_SOCKADDR *remote) ;
 
@@ -346,7 +346,7 @@ extern "C"
    * a handle to the implementation specific layer.  A different interface
    * may return the event to wait for or some other information
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
+  OFC_CORE_LIB BLUE_HANDLE
   BlueSocketGetImpl (BLUE_HANDLE hSocket) ;
 #if defined(__cplusplus)
 }

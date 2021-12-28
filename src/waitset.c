@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -77,7 +77,7 @@
  * thread.  
  *
  * This facility consists of a number of threads that perform I/O.  The 
- * actual number is build specific (BLUE_PARAM_NUM_OVERLAPPED_IOS).  Each 
+ * actual number is build specific (OFC_NUM_OVERLAPPED_IOS).  Each 
  * thread is a BlueScheduler and each of these schedulers have one app.  
  * There's a queue associated with each of these apps.  When a file I/O 
  * occurs, a message is built defining the I/O and queued to a free I/O app.  
@@ -93,8 +93,8 @@
  * scheme that works for the target platform.
  */
 
-BLUE_CORE_LIB BLUE_HANDLE 
-BlueWaitSetCreate (BLUE_VOID) 
+OFC_CORE_LIB BLUE_HANDLE
+BlueWaitSetCreate (OFC_VOID)
 {
   WAIT_SET *pWaitSet ;
   BLUE_HANDLE handle ;
@@ -108,14 +108,14 @@ BlueWaitSetCreate (BLUE_VOID)
   return (handle) ;
 }
   
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueWaitSetClear (BLUE_HANDLE handle) 
 {
   WAIT_SET *pWaitSet ;
   BLUE_HANDLE hEventHandle ;
 
   pWaitSet = BlueHandleLock (handle) ;
-  if (pWaitSet != BLUE_NULL)
+  if (pWaitSet != OFC_NULL)
     {
       for (hEventHandle = 
 	     (BLUE_HANDLE) BlueQdequeue (pWaitSet->hHandleQueue) ;
@@ -129,7 +129,7 @@ BlueWaitSetClear (BLUE_HANDLE handle)
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueWaitSetClearApp (BLUE_HANDLE handle, BLUE_HANDLE hApp) 
 {
   WAIT_SET *pWaitSet ;
@@ -137,19 +137,19 @@ BlueWaitSetClearApp (BLUE_HANDLE handle, BLUE_HANDLE hApp)
   BLUE_HANDLE hNext ;
 
   pWaitSet = BlueHandleLock (handle) ;
-  if (pWaitSet != BLUE_NULL)
+  if (pWaitSet != OFC_NULL)
     {
       for (hEventHandle = 
 	     (BLUE_HANDLE) BlueQfirst (pWaitSet->hHandleQueue) ;
 	   hEventHandle != BLUE_HANDLE_NULL ;)
 	{
 	  hNext = (BLUE_HANDLE) BlueQnext (pWaitSet->hHandleQueue, 
-					   (BLUE_VOID *) hEventHandle) ;
+					   (OFC_VOID *) hEventHandle) ;
 
 	  if (BlueHandleGetApp (hEventHandle) == hApp)
 	    {
 	      BlueQunlink (pWaitSet->hHandleQueue, 
-			   (BLUE_VOID *) hEventHandle) ;
+			   (OFC_VOID *) hEventHandle) ;
 	      BlueHandleSetApp (hEventHandle, 
 				BLUE_HANDLE_NULL, BLUE_HANDLE_NULL) ;
 	    }
@@ -160,14 +160,14 @@ BlueWaitSetClearApp (BLUE_HANDLE handle, BLUE_HANDLE hApp)
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueWaitSetDestroy (BLUE_HANDLE handle)
 {
   WAIT_SET *pWaitSet ;
   BLUE_HANDLE hEventHandle ;
 
   pWaitSet = BlueHandleLock (handle) ;
-  if (pWaitSet != BLUE_NULL)
+  if (pWaitSet != OFC_NULL)
     {
       for (hEventHandle = 
 	     (BLUE_HANDLE) BlueQdequeue (pWaitSet->hHandleQueue) ;
@@ -187,48 +187,48 @@ BlueWaitSetDestroy (BLUE_HANDLE handle)
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueWaitSetAdd (BLUE_HANDLE hSet, BLUE_HANDLE hApp, BLUE_HANDLE hEvent)
 {
   WAIT_SET *pWaitSet ;
 
   pWaitSet = BlueHandleLock (hSet) ;
-  if (pWaitSet != BLUE_NULL)
+  if (pWaitSet != OFC_NULL)
     {
       BlueWaitSetAddImpl (hSet, hApp, hEvent) ;
       BlueHandleSetApp (hEvent, hApp, hSet) ;
-      BlueQenqueue (pWaitSet->hHandleQueue, (BLUE_VOID *) hEvent) ;
+      BlueQenqueue (pWaitSet->hHandleQueue, (OFC_VOID *) hEvent) ;
       BlueHandleUnlock (hSet) ;
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueWaitSetRemove (BLUE_HANDLE hSet, BLUE_HANDLE hEvent)
 {
   WAIT_SET *pWaitSet ;
 
   pWaitSet = BlueHandleLock (hSet) ;
-  if (pWaitSet != BLUE_NULL)
+  if (pWaitSet != OFC_NULL)
     {
-      BlueQunlink (pWaitSet->hHandleQueue, (BLUE_VOID *) hEvent) ;
+      BlueQunlink (pWaitSet->hHandleQueue, (OFC_VOID *) hEvent) ;
       BlueHandleSetApp (hEvent, BLUE_HANDLE_NULL, BLUE_HANDLE_NULL) ;
       BlueHandleUnlock (hSet) ;
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueWaitSetWake (BLUE_HANDLE handle)
 {
   BlueWaitSetWakeImpl (handle) ;
 }
 
-BLUE_CORE_LIB BLUE_HANDLE 
+OFC_CORE_LIB BLUE_HANDLE
 BlueWaitSetWait (BLUE_HANDLE handle)
 {
   return (BlueWaitSetWaitImpl (handle)) ;
 }
  
-#if defined(BLUE_PARAM_HANDLE_PERF)
+#if defined(OFC_HANDLE_PERF)
 BLUE_CORE_LIB BLUE_VOID 
 BlueWaitSetLogMeasure (BLUE_HANDLE handle) 
 {

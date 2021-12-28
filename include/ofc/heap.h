@@ -43,13 +43,13 @@ extern "C"
    * This function is only called by BlueInit.  It will initialize the
    * heap for use.  This may be a noop on many platforms
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHeapLoad (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapLoad (OFC_VOID) ;
   /**
    * Unload the heap
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHeapUnload (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapUnload (OFC_VOID) ;
   /**
    * Deallocate a chunk of memory
    *
@@ -59,12 +59,12 @@ extern "C"
    * A pointer to the memory to deallocate.
    *
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHeapFree (BLUE_LPVOID mem) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHeapCheckAlloc (BLUE_LPCVOID mem) ;
-  BLUE_CORE_LIB BLUE_VOID
-  BlueHeapDumpChunk (BLUE_LPVOID mem) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapFree (OFC_LPVOID mem) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapCheckAlloc (OFC_LPCVOID mem) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapDumpChunk (OFC_LPVOID mem) ;
   /**
    * Allocate a chunk of memory
    *
@@ -76,11 +76,11 @@ extern "C"
    * \returns
    * Nothing
    */
-  BLUE_CORE_LIB BLUE_LPVOID 
-  BlueHeapMalloc (BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_LPVOID
+  BlueHeapMalloc (OFC_SIZET size) ;
 
-  BLUE_CORE_LIB BLUE_LPVOID 
-  BlueHeapCalloc (BLUE_SIZET nmemb, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_LPVOID
+  BlueHeapCalloc (OFC_SIZET nmemb, OFC_SIZET size) ;
   /**
    * Change the size (reallocate) a chunk of memory
    *
@@ -99,16 +99,16 @@ extern "C"
    * Reallocating a chunk of memory to a size within the same power of two
    * 2^x to the 2^(x+1) will return the pointer passed in.
    */
-  BLUE_CORE_LIB BLUE_LPVOID 
-  BlueHeapRealloc (BLUE_LPVOID ptr, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_LPVOID
+  BlueHeapRealloc (OFC_LPVOID ptr, OFC_SIZET size) ;
   /**
    * Dump Blue Heap Stats Usuage
    * 
    * This will print to the console the number of bytes used as well as the
    * maximum number of bytes that had been used 
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHeapDumpStats (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapDumpStats (OFC_VOID) ;
   /**
    * Dump Blue Heap Trace
    *
@@ -116,16 +116,16 @@ extern "C"
    * had been allocated includding who allocated it, the address of the
    * chunk and the size of the chunk.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHeapDump (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapDump (OFC_VOID) ;
   /**
    * Snap the Blue Heap
    * 
    * Mark all allocated blocks in the heap as previously allocated.  Only
    * those chunks that are 'not snapped' will be printed upon a dump
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHeapSnap (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHeapSnap (OFC_VOID) ;
 #if defined(__cplusplus)
 }
 #endif

@@ -6,7 +6,7 @@
 #if !defined(__BLUE_PROCESS_H__)
 #define __BLUE_PROCESS_H__
 
-typedef BLUE_VOID (BLUE_PROCESS_TRAP_HANDLER) (BLUE_INT signal) ;
+typedef OFC_VOID (BLUE_PROCESS_TRAP_HANDLER) (OFC_INT signal) ;
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -25,26 +25,26 @@ typedef enum
 extern "C"
 {
 #endif
-  BLUE_CORE_LIB BLUE_PROCESS_ID 
-  BlueProcessGet (BLUE_VOID) ;
+  OFC_CORE_LIB BLUE_PROCESS_ID
+  BlueProcessGet (OFC_VOID) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueProcessBlockSignal (BLUE_INT signal) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueProcessBlockSignal (OFC_INT signal) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueProcessUnblockSignal (BLUE_INT signal) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueProcessUnblockSignal (OFC_INT signal) ;
 
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueProcessExec (BLUE_CTCHAR *name, BLUE_TCHAR *uname,
-		   BLUE_INT arg_count, BLUE_CHAR **argv) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueProcessExec (OFC_CTCHAR *name, OFC_TCHAR *uname,
+                   OFC_INT arg_count, OFC_CHAR **argv) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueProcessTerm (BLUE_HANDLE hProcess) ;
 
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueProcessTermTrap (BLUE_PROCESS_TRAP_HANDLER trap) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueProcessSetPriority (BLUE_PROCESS_PRIORITY prio) ;
   /**
    * Kill a process.
@@ -55,7 +55,7 @@ extern "C"
    * \param id
    * Process id of process to kill
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueProcessKill (BLUE_PROCESS_ID id) ;
   /**
    * Get the process id of a process given it's process handle
@@ -66,10 +66,10 @@ extern "C"
    * \returns
    * Process Id
    */
-  BLUE_CORE_LIB BLUE_PROCESS_ID 
+  OFC_CORE_LIB BLUE_PROCESS_ID
   BlueProcessGetId (BLUE_HANDLE hProcess) ;
-  BLUE_CORE_LIB BLUE_VOID
-  BlueProcessCrash (BLUE_CCHAR *obuf) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueProcessCrash (OFC_CCHAR *obuf) ;
 
 #if defined(__cplusplus)
 }

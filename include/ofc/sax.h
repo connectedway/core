@@ -18,51 +18,51 @@
 
 /** \{ */
 
-typedef BLUE_VOID (STARTHANDLER)(BLUE_VOID *state, 
-				 BLUE_CCHAR *name,
-				 BLUE_CCHAR **atts) ;
+typedef OFC_VOID (STARTHANDLER)(OFC_VOID *state,
+                                OFC_CCHAR *name,
+                                OFC_CCHAR **atts) ;
 
-typedef BLUE_VOID (ENDHANDLER)(BLUE_VOID *state, 
-			       BLUE_CCHAR *name) ;
+typedef OFC_VOID (ENDHANDLER)(OFC_VOID *state,
+                              OFC_CCHAR *name) ;
 
-typedef BLUE_VOID (CHARHANDLER)(BLUE_VOID *state, 
-				BLUE_CCHAR *str,
-				BLUE_INT len) ;
+typedef OFC_VOID (CHARHANDLER)(OFC_VOID *state,
+                               OFC_CCHAR *str,
+                               OFC_INT len) ;
 
-typedef BLUE_VOID (XMLHANDLER)(BLUE_VOID *state, 
-			       BLUE_CCHAR *version,
-			       BLUE_CCHAR *encoding,
-			       BLUE_INT standalone) ;
+typedef OFC_VOID (XMLHANDLER)(OFC_VOID *state,
+                              OFC_CCHAR *version,
+                              OFC_CCHAR *encoding,
+                              OFC_INT standalone) ;
 
-typedef BLUE_VOID *BLUE_XML_PARSER ;
+typedef OFC_VOID *BLUE_XML_PARSER ;
 #define BLUE_XML_STATUS_ERROR -1 
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  BLUE_CORE_LIB BLUE_XML_PARSER 
-  BlueXMLparserCreate (BLUE_VOID *p) ;
+  OFC_CORE_LIB BLUE_XML_PARSER
+  BlueXMLparserCreate (OFC_VOID *p) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueXMLparserFree (BLUE_VOID *parsertoken) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueXMLparserFree (OFC_VOID *parsertoken) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueXMLsetUserData (BLUE_VOID *parsertoken, BLUE_VOID *state) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueXMLsetUserData (OFC_VOID *parsertoken, OFC_VOID *state) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueXMLsetElementHandler (BLUE_VOID *parsertoken, 
-			    STARTHANDLER startelement,
-			    ENDHANDLER endelement) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueXMLsetCharacterDataHandler (BLUE_VOID *parsertoken,
-				  CHARHANDLER chardata) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueXMLsetXmlDeclHandler (BLUE_VOID *parsertoken,
-			    XMLHANDLER xmldata) ;
-  BLUE_CORE_LIB BLUE_INT 
-  BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf, 
-		BLUE_SIZET len, BLUE_INT done) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueXMLsetElementHandler (OFC_VOID *parsertoken,
+                            STARTHANDLER startelement,
+                            ENDHANDLER endelement) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueXMLsetCharacterDataHandler (OFC_VOID *parsertoken,
+                                  CHARHANDLER chardata) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueXMLsetXmlDeclHandler (OFC_VOID *parsertoken,
+                            XMLHANDLER xmldata) ;
+  OFC_CORE_LIB OFC_INT
+  BlueXMLparse (OFC_VOID *parsertoken, OFC_CHAR *buf,
+                OFC_SIZET len, OFC_INT done) ;
 #if defined(__cplusplus)
 }
 #endif

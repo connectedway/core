@@ -3,32 +3,32 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_CORE_H__)
-#define __BLUE_CORE_H__
+#if !defined(__OFC_CORE_H__)
+#define __OFC_CORE_H__
 
 #include "ofc/types.h"
 #include "ofc/config.h"
 
 #undef WIN_DLL
 #if defined(_WIN32) && defined(WIN_DLL)
-#if defined(__BLUE_CORE_DLL__)
-#define BLUE_CORE_LIB __declspec(dllexport)
+#if defined(__OFC_CORE_DLL__)
+#define OFC_CORE_LIB __declspec(dllexport)
 #else
-#define BLUE_CORE_LIB __declspec(dllimport)
+#define OFC_CORE_LIB __declspec(dllimport)
 #endif
 #else
-#define BLUE_CORE_LIB
+#define OFC_CORE_LIB
 #endif
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  BLUE_CORE_LIB BLUE_VOID 
-    BlueUtilLoad (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+    ofc_core_load (OFC_VOID) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-    BlueUtilUnload (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+    ofc_core_unload (OFC_VOID) ;
 #if defined(__cplusplus)
 }
 #endif

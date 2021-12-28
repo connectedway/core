@@ -25,7 +25,7 @@
  * The character to test
  *
  * \returns
- * BLUE_TRUE if whitespace, BLUE_FALSE otherwise.
+ * OFC_TRUE if whitespace, OFC_FALSE otherwise.
  */
 #define BLUE_C_ISSPACE(c) (c == ' ' || c == '\f' || c == '\n' || \
 			   c == '\r' || c == '\t' || c == '\v') 
@@ -36,7 +36,7 @@
  * The wide character to test
  *
  * \returns
- * BLUE_TRUE if whitespace, BLUE_FALSE otherwise.
+ * OFC_TRUE if whitespace, OFC_FALSE otherwise.
  */
 #define BLUE_C_TISSPACE(c) (c == TCHAR(' ') || c == TCHAR('\f') || \
 			    c == TCHAR('\n') || c == TCHAR('\r') || \
@@ -48,7 +48,7 @@
  * The character to test
  *
  * \returns
- * BLUE_TRUE if a digit, BLUE_FALSE otherwise
+ * OFC_TRUE if a digit, OFC_FALSE otherwise
  */
 #define BLUE_C_ISDIGIT(c) (c >= '0' && c <= '9') 
 /**
@@ -58,7 +58,7 @@
  * The character to test
  *
  * \returns
- * BLUE_TRUE if a digit, BLUE_FALSE otherwise
+ * OFC_TRUE if a digit, OFC_FALSE otherwise
  */
 #define BLUE_C_TISDIGIT(c) (c >= TCHAR('0') && c <= TCHAR('9')) 
 /**
@@ -68,7 +68,7 @@
  * The character to test
  *
  * \returns
- * BLUE_TRUE if alphanumeric, BLUE_FALSE otherwise
+ * OFC_TRUE if alphanumeric, OFC_FALSE otherwise
  */
 #define BLUE_C_ISALPHA(c) {BLUE_C_ISUPPER((c)) || BLUE_C_ISLOWER((c)))
 #define BLUE_C_ISALNUM(c) (BLUE_C_ISUPPER(c)||BLUE_C_ISLOWER(c)||BLUE_C_ISDIGIT(c))
@@ -79,7 +79,7 @@
  * The character to test
  *
  * \returns
- * BLUE_TRUE if alphanumeric, BLUE_FALSE otherwise
+ * OFC_TRUE if alphanumeric, OFC_FALSE otherwise
  */
 #define BLUE_C_TISALPHA(c) {BLUE_C_TISUPPER(c) || BLUE_C_TISLOWER(c))
 /**
@@ -89,7 +89,7 @@
  * character to test
  *
  * \returns
- * BLUE_TRUE if upper case, BLUE_FALSE otherwise
+ * OFC_TRUE if upper case, OFC_FALSE otherwise
  */
 #define BLUE_C_ISUPPER(c) (c >=  'A' && c <= 'Z')
 /**
@@ -99,7 +99,7 @@
  * character to test
  *
  * \returns
- * BLUE_TRUE if upper case, BLUE_FALSE otherwise
+ * OFC_TRUE if upper case, OFC_FALSE otherwise
  */
 #define BLUE_C_TISUPPER(c) (c >=  TCHAR('A') && c <= TCHAR('Z'))
 /**
@@ -145,7 +145,7 @@
  * Character to test
  *
  * \returns
- * BLUE_TRUE if lower case, BLUE_FALSE otherwise
+ * OFC_TRUE if lower case, OFC_FALSE otherwise
  */
 #define BLUE_C_ISLOWER(c) (c >=  'a' && c <= 'z')
 /**
@@ -155,7 +155,7 @@
  * Character to test
  *
  * \returns
- * BLUE_TRUE if lower case, BLUE_FALSE otherwise
+ * OFC_TRUE if lower case, OFC_FALSE otherwise
  */
 #define BLUE_C_TISLOWER(c) (c >=  TCHAR('a') && c <= TCHAR('z'))
 /**
@@ -206,8 +206,8 @@ extern "C"
    * implies the first string is less then the second string.  And a zero 
    * result implies both strings are identical.
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCstrcmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCstrcmp (OFC_CCHAR *astr, OFC_CCHAR *bstr) ;
   /**
    * Compare two NULL terminated strings ignoring the case of the characters
    *
@@ -223,8 +223,8 @@ extern "C"
    * implies the first string is less then the second string.  And a zero 
    * result implies both strings are identical.
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCstrcasecmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCstrcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr) ;
   /**
    * Compare two NULL terminated strings, restricting the comparison to the
    * specified length
@@ -244,8 +244,8 @@ extern "C"
    * implies the first string is less then the second string.  And a zero 
    * result implies both strings are identical.
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCstrncmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCstrncmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len) ;
   /**
    * Compare two NULL terminated strings, restricting the comparison to the
    * specified length.  Ignore the case of the characters in the string.
@@ -265,8 +265,8 @@ extern "C"
    * implies the first string is less then the second string.  And a zero 
    * result implies both strings are identical.
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCstrncasecmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCstrncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len) ;
   /**
    * Find the length of a string
    *
@@ -276,8 +276,8 @@ extern "C"
    * \returns
    * The size of the string not including the terminating NIL
    */
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueCstrlen (BLUE_CCHAR *astr) ;
+  OFC_CORE_LIB OFC_SIZET
+  BlueCstrlen (OFC_CCHAR *astr) ;
   /**
    * Find the length of a string, but restrict the scan to the specified 
    * length.  If no end of string has been found by the specified length, 
@@ -292,8 +292,8 @@ extern "C"
    * \returns
    * The size of the string not including the terminating NIL
    */
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueCstrnlen (BLUE_CCHAR *astr, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_SIZET
+  BlueCstrnlen (OFC_CCHAR *astr, OFC_SIZET len) ;
   /**
    * Duplicate a string
    *
@@ -305,8 +305,8 @@ extern "C"
    * terminating NIL.  The returned memory must be freed by the calling
    * application when it is no longer necessary.
    */
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCstrdup (BLUE_CCHAR *astr) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCstrdup (OFC_CCHAR *astr) ;
   /**
    * Duplicate a string, but restrict by len
    *
@@ -321,10 +321,10 @@ extern "C"
    * terminating NIL.  The returned memory must be freed by the calling
    * application when it is no longer necessary.
    */
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCstrndup (BLUE_CCHAR *astr, BLUE_SIZET len) ;
-  BLUE_CORE_LIB BLUE_TCHAR *
-  BlueCtstrndup (BLUE_CTCHAR *astr, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCstrndup (OFC_CCHAR *astr, OFC_SIZET len) ;
+  OFC_CORE_LIB OFC_TCHAR *
+  BlueCtstrndup (OFC_CTCHAR *astr, OFC_SIZET len) ;
   /**
    * Copy a source string to a destination string
    *
@@ -342,12 +342,12 @@ extern "C"
    * is large enough to hold the entire contents of the source string 
    * including the terminating NIL.  If not, memory corruption will occur.
    */
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCstrcpy (BLUE_CHAR *dst, BLUE_CCHAR *src) ;
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCstrcat (BLUE_CHAR *dst, BLUE_CCHAR *src) ;
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCstrncat (BLUE_CHAR *dst, BLUE_CCHAR *src, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCstrcpy (OFC_CHAR *dst, OFC_CCHAR *src) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCstrcat (OFC_CHAR *dst, OFC_CCHAR *src) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCstrncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size) ;
   /**
    * Copy a unicode source string to a destination string
    *
@@ -365,8 +365,8 @@ extern "C"
    * is large enough to hold the entire contents of the source string 
    * including the terminating NIL.  If not, memory corruption will occur.
    */
-  BLUE_CORE_LIB BLUE_TCHAR *
-  BlueCtstrcpy (BLUE_TCHAR *dst, BLUE_CTCHAR *src) ;
+  OFC_CORE_LIB OFC_TCHAR *
+  BlueCtstrcpy (OFC_TCHAR *dst, OFC_CTCHAR *src) ;
   /**
    * Convert a string to upper case
    *
@@ -385,8 +385,8 @@ extern "C"
    * lower case alphabetic characters [a .. z] are converted.  Non-alphabetic 
    * characters will not be changed
    */
-  BLUE_CHAR *BlueCstrnupr (BLUE_CHAR *s, BLUE_SIZET len) ;
-  BLUE_TCHAR *BlueCtstrnupr (BLUE_TCHAR *src, BLUE_SIZET len) ;
+  OFC_CHAR *BlueCstrnupr (OFC_CHAR *s, OFC_SIZET len) ;
+  OFC_TCHAR *BlueCtstrnupr (OFC_TCHAR *src, OFC_SIZET len) ;
   /**
    * Copy a source string to a destination string where the size of the
    * destination string is given.
@@ -409,8 +409,8 @@ extern "C"
    * copied, unless the destination string is one byte larger then the
    * source string and the source string is terminated by a NIL.
    */
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCstrncpy (BLUE_CHAR *dst, BLUE_CCHAR *src, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCstrncpy (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET len) ;
   /**
    * Copy a source unicode string to a destination unicode string where the 
    * size of the destination string is given.
@@ -433,8 +433,8 @@ extern "C"
    * copied, unless the destination string is one byte larger then the
    * source string and the source string is terminated by a NIL.
    */
-  BLUE_CORE_LIB BLUE_TCHAR *
-  BlueCtstrncpy (BLUE_TCHAR *dst, BLUE_CTCHAR *src, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_TCHAR *
+  BlueCtstrncpy (OFC_TCHAR *dst, OFC_CTCHAR *src, OFC_SIZET len) ;
   /**
    * Return the length of a path
    *
@@ -444,8 +444,8 @@ extern "C"
    * \returns
    * size of string
    */
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueCtstrlen (BLUE_LPCTSTR str) ;
+  OFC_CORE_LIB OFC_SIZET
+  BlueCtstrlen (OFC_LPCTSTR str) ;
   /**
    * Return the length of a path, restricting the scan to the specified length.
    * If no EOS is found by the specified length, the maximum length is 
@@ -460,8 +460,8 @@ extern "C"
    * \returns
    * size of string
    */
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueCtstrnlen (BLUE_LPCTSTR str, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_SIZET
+  BlueCtstrnlen (OFC_LPCTSTR str, OFC_SIZET len) ;
   /**
    * Duplicate a path
    *
@@ -471,8 +471,8 @@ extern "C"
    * \returns
    * Duplicated string (UTF-16 or UTF-8)
    */
-  BLUE_CORE_LIB BLUE_LPTSTR 
-  BlueCtstrdup (BLUE_LPCTSTR str) ;
+  OFC_CORE_LIB OFC_LPTSTR
+  BlueCtstrdup (OFC_LPCTSTR str) ;
   /**
    * Compare two path strings
    *
@@ -485,8 +485,8 @@ extern "C"
    * \returns
    * <0 if A < b, =0 if a == b, >0 if a > b
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCtstrcmp (BLUE_LPCTSTR astr, BLUE_LPCTSTR bstr) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCtstrcmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr) ;
   /**
    * Compare two NULL terminated TSTRS, restricting the comparison to the
    * specified length
@@ -503,8 +503,8 @@ extern "C"
    * implies the first string is less then the second string.  And a zero 
    * result implies both strings are identical.
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCtstrcasecmp (BLUE_LPCTSTR astr, BLUE_LPCTSTR bstr) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCtstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr) ;
   /**
    * Compare two NULL terminated TSTRs, restricting the comparison to the
    * specified length.  Ignore the case of the characters in the string.
@@ -524,8 +524,8 @@ extern "C"
    * implies the first string is less then the second string.  And a zero 
    * result implies both strings are identical.
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCtstrncasecmp (BLUE_CTCHAR *astr, BLUE_CTCHAR *bstr, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCtstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len) ;
   /**
    * Scan a TSTR looking for a match on a character
    *
@@ -539,8 +539,8 @@ extern "C"
    * A pointer to first character matched.  If no character is matched,
    * a pointer to the end of string is returned.
    */
-  BLUE_CORE_LIB BLUE_LPCTSTR 
-  BlueCtstrtok (BLUE_LPCTSTR str, BLUE_LPCTSTR terms) ;
+  OFC_CORE_LIB OFC_LPCTSTR
+  BlueCtstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms) ;
 
   /**
    * Scan a ascii string looking for a match on a character
@@ -555,12 +555,12 @@ extern "C"
    * A pointer to first character matched.  If no character is matched,
    * a pointer to the end of string is returned.
    */
-  BLUE_CORE_LIB BLUE_LPSTR 
-  BlueCstrtok (BLUE_LPCSTR str, BLUE_LPCSTR terms) ;
-  BLUE_CORE_LIB BLUE_LPSTR
-  BlueCstrchr (BLUE_LPCSTR str, BLUE_CCHAR c) ;
-  BLUE_CORE_LIB BLUE_LPSTR
-  BlueCmemchr (BLUE_LPCSTR str, BLUE_CCHAR c, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_LPSTR
+  BlueCstrtok (OFC_LPCSTR str, OFC_LPCSTR terms) ;
+  OFC_CORE_LIB OFC_LPSTR
+  BlueCstrchr (OFC_LPCSTR str, OFC_CCHAR c) ;
+  OFC_CORE_LIB OFC_LPSTR
+  BlueCmemchr (OFC_LPCSTR str, OFC_CCHAR c, OFC_SIZET size) ;
   /**
    * Scan a TSTR starting at the end and going to the beginning
    *
@@ -574,8 +574,8 @@ extern "C"
    * A pointer to first character matched.  If no character is matched,
    * a pointer to the beginning of the string is returned.
    */
-  BLUE_CORE_LIB BLUE_LPCTSTR 
-  BlueCtstrrtok (BLUE_LPCTSTR str, BLUE_LPCTSTR terms) ;
+  OFC_CORE_LIB OFC_LPCTSTR
+  BlueCtstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms) ;
   /**
    * Scan a string starting at the end and going to the beginning
    *
@@ -589,8 +589,8 @@ extern "C"
    * A pointer to first character matched.  If no character is matched,
    * a pointer to the beginning of the string is returned.
    */
-  BLUE_CORE_LIB BLUE_LPCSTR 
-  BlueCstrrtok (BLUE_LPCSTR str, BLUE_LPCSTR terms) ;
+  OFC_CORE_LIB OFC_LPCSTR
+  BlueCstrrtok (OFC_LPCSTR str, OFC_LPCSTR terms) ;
   /**
    * Compare two NULL terminated TSTRs, restricting the comparison to the
    * specified length
@@ -610,8 +610,8 @@ extern "C"
    * implies the first string is less then the second string.  And a zero 
    * result implies both strings are identical.
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCtstrncmp (BLUE_CTCHAR *astr, BLUE_CTCHAR *bstr, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCtstrncmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len) ;
   /**
    * Convert a TSTR to a normal C string
    *
@@ -628,8 +628,8 @@ extern "C"
    * The character string returned has been allocated from the heap.  It must
    * be freed by a call to BlueHeapFree
    */
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCtstr2cstr (BLUE_LPCTSTR str) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCtstr2cstr (OFC_LPCTSTR str) ;
   /**
    * Convert a normal C string to a TSTR.
    *
@@ -646,8 +646,8 @@ extern "C"
    * The character string returned has been allocated from the heap.  It must
    * be freed by a call to BlueHeapFree
    */
-  BLUE_CORE_LIB BLUE_LPTSTR 
-  BlueCcstr2tstr (BLUE_CCHAR *str)  ;
+  OFC_CORE_LIB OFC_LPTSTR
+  BlueCcstr2tstr (OFC_CCHAR *str)  ;
   /**
    * Copy a chunk of memory to a different location
    *
@@ -663,8 +663,8 @@ extern "C"
    * \returns
    * Nothing
    */
-  BLUE_CORE_LIB BLUE_LPVOID 
-  BlueCmemcpy (BLUE_LPVOID out, BLUE_LPCVOID in, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_LPVOID
+  BlueCmemcpy (OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size) ;
   /**
    * Compare two strings
    *
@@ -680,8 +680,8 @@ extern "C"
    * \returns
    * < 0 if a < b, 0 if a = b, > 0 if a > b
    */
-  BLUE_CORE_LIB BLUE_INT 
-  BlueCmemcmp (BLUE_LPCVOID a, BLUE_LPCVOID b, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_INT
+  BlueCmemcmp (OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size) ;
   /**
    * Set all bytes in a block of memory to a value
    *
@@ -697,8 +697,8 @@ extern "C"
    * \returns
    * Nothing
    */
-  BLUE_CORE_LIB BLUE_LPVOID 
-  BlueCmemset (BLUE_LPVOID dst, BLUE_INT c, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_LPVOID
+  BlueCmemset (OFC_LPVOID dst, OFC_INT c, OFC_SIZET size) ;
   /**
    * Convert an integer string to a long value
    *
@@ -716,8 +716,8 @@ extern "C"
    * \returns
    * The long integer value of the integer string
    */
-  BLUE_CORE_LIB BLUE_LONG 
-  BlueCstrtol (const BLUE_CHAR *str, BLUE_CHAR **upd, BLUE_INT base) ;
+  OFC_CORE_LIB OFC_LONG
+  BlueCstrtol (const OFC_CHAR *str, OFC_CHAR **upd, OFC_INT base) ;
   /**
    * Convert an integer string to a unsigned long value
    *
@@ -735,8 +735,8 @@ extern "C"
    * \returns
    * The unsigned long integer value of the integer string
    */
-  BLUE_CORE_LIB BLUE_ULONG 
-  BlueCstrtoul (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base) ;
+  OFC_CORE_LIB OFC_ULONG
+  BlueCstrtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base) ;
   /**
    * Formatted string output
    *
@@ -766,9 +766,9 @@ extern "C"
    * destination string and the BlueCvsnprintf can be called again with the
    * allocated memory block and size of that block.
    */
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueCvsnprintf (BLUE_CHAR *str, BLUE_SIZET count, 
-		  BLUE_CCHAR *fmt, va_list args) ;
+  OFC_CORE_LIB OFC_SIZET
+  BlueCvsnprintf (OFC_CHAR *str, OFC_SIZET count,
+                  OFC_CCHAR *fmt, va_list args) ;
   /**
    * Formatted output
    *
@@ -788,8 +788,8 @@ extern "C"
    * This call takes any number of arguments each related to the respective
    * format character in the format string. \see BlueCvsnprintf
    */
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueCsnprintf(BLUE_CHAR *str, BLUE_SIZET count, BLUE_CCHAR *fmt,...) ;
+  OFC_CORE_LIB OFC_SIZET
+  BlueCsnprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...) ;
   /**
    * Perform formated output to the system console
    *
@@ -800,11 +800,11 @@ extern "C"
    * This call takes any number of arguments each related to the respective
    * format character in the format string. \see BlueCvsnprintf
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueCprintf(BLUE_CCHAR *fmt,...) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueCprintf(OFC_CCHAR *fmt, ...) ;
 
-  BLUE_CORE_LIB BLUE_CHAR *
-  BlueCsaprintf(BLUE_CCHAR *fmt,...) ;
+  OFC_CORE_LIB OFC_CHAR *
+  BlueCsaprintf(OFC_CCHAR *fmt, ...) ;
   /**
    * Perform formated output to a trace buffer
    *
@@ -839,20 +839,20 @@ extern "C"
 #define BlueCDumpTrace()
 #endif
 
-  BLUE_VOID BlueCuuidtoa (BLUE_UUID uuid, BLUE_CHAR *out) ;
+  OFC_VOID BlueCuuidtoa (OFC_UUID uuid, OFC_CHAR *out) ;
 
-  BLUE_VOID BlueCatouuid (const BLUE_CHAR *in, BLUE_UUID uuid) ;
+  OFC_VOID BlueCatouuid (const OFC_CHAR *in, OFC_UUID uuid) ;
 
 #if defined(__cplusplus)
 }
 #endif
 
-#if defined(BLUE_PARAM_UNICODE_API)
+#if defined(OFC_UNICODE_API)
 #define BlueCtastrcpy(dst,src) BlueCtstrcpy(dst,src)
 #define BlueCtastrncpy(dst,src,len) BlueCtstrncpy(dst,src,len)
 #define BlueCtastrlen(str) BlueCtstrlen(str)
 #define BlueCtastrnlen(str,len) BlueCtstrnlen(str,len)
-#define BlueCtastrdup(str) (BLUE_LPTASTR)BlueCtstrdup(str)
+#define BlueCtastrdup(str) (OFC_LPTASTR)BlueCtstrdup(str)
 #define BlueCtastrcmp(astr,bstr) BlueCtstrcmp(astr,bstr)
 #define BlueCtastrcasecmp(astr,bstr) BlueCtstrcasecmp(astr,bstr)
 #define BlueCtastrncasecmp(astr,bstr,len) BlueCtstrncasecmp(astr,bstr,len)

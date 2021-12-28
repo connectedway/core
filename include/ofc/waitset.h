@@ -28,7 +28,7 @@
 typedef struct
 {
   BLUE_HANDLE hHandleQueue ;	/**< List of events in wait set  */
-  BLUE_VOID *impl ;		/**< Pointer to implementation info  */
+  OFC_VOID *impl ;		/**< Pointer to implementation info  */
 } WAIT_SET ;
 
 #if defined(__cplusplus)
@@ -45,15 +45,15 @@ extern "C"
    * \returns
    * A handle to the wait set
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueWaitSetCreate (BLUE_VOID) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueWaitSetCreate (OFC_VOID) ;
   /**
    * Destroy a wait set
    *
    * \param handle
    * Handle of the wait set to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitSetDestroy (BLUE_HANDLE handle) ;
   /**
    * Wait for an event in a wait set to be ready
@@ -65,7 +65,7 @@ extern "C"
    * Handle to the app with the event that is ready.  
    * BLUE_HANDLE_NULL if woken by a wake call.
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
+  OFC_CORE_LIB BLUE_HANDLE
   BlueWaitSetWait (BLUE_HANDLE handle) ;
   /**
    * Wake up a wait set that is currently waiting.
@@ -73,7 +73,7 @@ extern "C"
    * \param handle
    * Handle of the wait set to wake up.
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitSetWake (BLUE_HANDLE handle) ;
   /**
    * Add an event to the wait set
@@ -87,7 +87,7 @@ extern "C"
    * \param hEvent
    * Handle to the event to add
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitSetAdd (BLUE_HANDLE hSet, BLUE_HANDLE hApp, BLUE_HANDLE hEvent) ;
   /**
    * Remove an event from a wait set
@@ -98,7 +98,7 @@ extern "C"
    * \param hEvent
    * Handle to event to remove
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitSetRemove (BLUE_HANDLE hSet, BLUE_HANDLE hEvent) ;
   /**
    * Remove all events from a wait set
@@ -106,11 +106,11 @@ extern "C"
    * \param handle
    * Handle to wait set
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitSetClear (BLUE_HANDLE handle) ;
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitSetClearApp (BLUE_HANDLE handle, BLUE_HANDLE hApp) ;
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
   BLUE_CORE_LIB BLUE_VOID 
   BlueWaitSetLogMeasure (BLUE_HANDLE handle)  ;
 #endif

@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include <stdarg.h>
 #if defined(__APPLE__)
@@ -24,25 +24,25 @@
 
 struct trace_t
 {
-  BLUE_INT BlueCTraceOffset ;
-  BLUE_CHAR BlueCTraceBuf[BLUE_PARAM_TRACE_LEN] ;
-  BLUE_OFFT BlueCTraceLock ;
+  OFC_INT BlueCTraceOffset ;
+  OFC_CHAR BlueCTraceBuf[OFC_TRACE_LEN] ;
+  OFC_OFFT BlueCTraceLock ;
 } ;
 
 /**
  * \internal
  * Determine if a character is a whitespace
  */
-BLUE_CORE_LIB BLUE_INT 
-BlueCstrcmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr)
+OFC_CORE_LIB OFC_INT
+BlueCstrcmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
 {
-  BLUE_CCHAR *pa ;
-  BLUE_CCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CCHAR *pa ;
+  OFC_CCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -72,16 +72,16 @@ BlueCstrcmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCstrcasecmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr)
+OFC_CORE_LIB OFC_INT
+BlueCstrcasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr)
 {
-  BLUE_CCHAR *pa ;
-  BLUE_CCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CCHAR *pa ;
+  OFC_CCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -112,16 +112,16 @@ BlueCstrcasecmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCstrncmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr, BLUE_SIZET len)
+OFC_CORE_LIB OFC_INT
+BlueCstrncmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
 {
-  BLUE_CCHAR *pa ;
-  BLUE_CCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CCHAR *pa ;
+  OFC_CCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -152,16 +152,16 @@ BlueCstrncmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCstrncasecmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr, BLUE_SIZET len)
+OFC_CORE_LIB OFC_INT
+BlueCstrncasecmp (OFC_CCHAR *astr, OFC_CCHAR *bstr, OFC_SIZET len)
 {
-  BLUE_CCHAR *pa ;
-  BLUE_CCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CCHAR *pa ;
+  OFC_CCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -199,13 +199,13 @@ BlueCstrncasecmp (BLUE_CCHAR *astr, BLUE_CCHAR *bstr, BLUE_SIZET len)
  * \internal
  * Measure the size of a string
  */
-BLUE_CORE_LIB BLUE_SIZET 
-BlueCstrlen (BLUE_CCHAR *astr)
+OFC_CORE_LIB OFC_SIZET
+BlueCstrlen (OFC_CCHAR *astr)
 {
-  BLUE_SIZET ret ;
-  BLUE_CCHAR *pa ;
+  OFC_SIZET ret ;
+  OFC_CCHAR *pa ;
 
-  if (astr == BLUE_NULL)
+  if (astr == OFC_NULL)
     ret = 0 ;
   else
     {
@@ -221,13 +221,13 @@ BlueCstrlen (BLUE_CCHAR *astr)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueCstrnlen (BLUE_CCHAR *astr, BLUE_SIZET len)
+OFC_CORE_LIB OFC_SIZET
+BlueCstrnlen (OFC_CCHAR *astr, OFC_SIZET len)
 {
-  BLUE_SIZET ret ;
-  BLUE_CCHAR *pa ;
+  OFC_SIZET ret ;
+  OFC_CCHAR *pa ;
 
-  if (astr == BLUE_NULL)
+  if (astr == OFC_NULL)
     ret = 0 ;
   else
     {
@@ -244,14 +244,14 @@ BlueCstrnlen (BLUE_CCHAR *astr, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCstrdup (BLUE_CCHAR *astr)
+OFC_CORE_LIB OFC_CHAR *
+BlueCstrdup (OFC_CCHAR *astr)
 {
-  BLUE_SIZET size ;
-  BLUE_CHAR *ret ;
+  OFC_SIZET size ;
+  OFC_CHAR *ret ;
 
-  if (astr == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (astr == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       size = BlueCstrlen(astr) ;
@@ -261,15 +261,15 @@ BlueCstrdup (BLUE_CCHAR *astr)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCstrndup (BLUE_CCHAR *astr, BLUE_SIZET len)
+OFC_CORE_LIB OFC_CHAR *
+BlueCstrndup (OFC_CCHAR *astr, OFC_SIZET len)
 {
-  BLUE_SIZET size ;
-  BLUE_CHAR *ret ;
-  BLUE_SIZET slen ;
+  OFC_SIZET size ;
+  OFC_CHAR *ret ;
+  OFC_SIZET slen ;
 
-  if (astr == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (astr == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       slen = BlueCstrnlen(astr, len) ;
@@ -280,35 +280,35 @@ BlueCstrndup (BLUE_CCHAR *astr, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_TCHAR *
-BlueCtstrndup (BLUE_CTCHAR *astr, BLUE_SIZET len)
+OFC_CORE_LIB OFC_TCHAR *
+BlueCtstrndup (OFC_CTCHAR *astr, OFC_SIZET len)
 {
-  BLUE_SIZET size ;
-  BLUE_TCHAR *ret ;
-  BLUE_SIZET slen ;
+  OFC_SIZET size ;
+  OFC_TCHAR *ret ;
+  OFC_SIZET slen ;
 
-  if (astr == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (astr == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       slen = BlueCtstrnlen(astr, len) ;
       size = BLUE_C_MIN(slen, len) + 1 ;
-      ret = BlueHeapMalloc (size * sizeof (BLUE_TCHAR)) ;
+      ret = BlueHeapMalloc (size * sizeof (OFC_TCHAR)) ;
       BlueCtstrncpy (ret, astr, size) ;
     }
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCstrncpy (BLUE_CHAR *dst, BLUE_CCHAR *src, BLUE_SIZET len)
+OFC_CORE_LIB OFC_CHAR *
+BlueCstrncpy (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET len)
 {
-  BLUE_CCHAR *psrc;
-  BLUE_CHAR *pdst ;
-  BLUE_CHAR *ret ;
+  OFC_CCHAR *psrc;
+  OFC_CHAR *pdst ;
+  OFC_CHAR *ret ;
 
-  if (src == BLUE_NULL || dst == BLUE_NULL)
+  if (src == OFC_NULL || dst == OFC_NULL)
     {
-      ret = BLUE_NULL ;
+      ret = OFC_NULL ;
     }
   else
     {
@@ -331,14 +331,14 @@ BlueCstrncpy (BLUE_CHAR *dst, BLUE_CCHAR *src, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CHAR *BlueCstrnupr (BLUE_CHAR *src, BLUE_SIZET len)
+OFC_CHAR *BlueCstrnupr (OFC_CHAR *src, OFC_SIZET len)
 {
-  BLUE_CHAR *psrc;
-  BLUE_CHAR *ret ;
+  OFC_CHAR *psrc;
+  OFC_CHAR *ret ;
 
-  if (src == BLUE_NULL)
+  if (src == OFC_NULL)
     {
-      ret = BLUE_NULL ;
+      ret = OFC_NULL ;
     }
   else
     {
@@ -356,14 +356,14 @@ BLUE_CHAR *BlueCstrnupr (BLUE_CHAR *src, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_TCHAR *BlueCtstrnupr (BLUE_TCHAR *src, BLUE_SIZET len)
+OFC_TCHAR *BlueCtstrnupr (OFC_TCHAR *src, OFC_SIZET len)
 {
-  BLUE_TCHAR *psrc;
-  BLUE_TCHAR *ret ;
+  OFC_TCHAR *psrc;
+  OFC_TCHAR *ret ;
 
-  if (src == BLUE_NULL)
+  if (src == OFC_NULL)
     {
-      ret = BLUE_NULL ;
+      ret = OFC_NULL ;
     }
   else
     {
@@ -381,16 +381,16 @@ BLUE_TCHAR *BlueCtstrnupr (BLUE_TCHAR *src, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_TCHAR *
-BlueCtstrncpy (BLUE_TCHAR *dst, BLUE_CTCHAR *src, BLUE_SIZET len)
+OFC_CORE_LIB OFC_TCHAR *
+BlueCtstrncpy (OFC_TCHAR *dst, OFC_CTCHAR *src, OFC_SIZET len)
 {
-  BLUE_CTCHAR *psrc;
-  BLUE_TCHAR *pdst ;
-  BLUE_TCHAR *ret ;
+  OFC_CTCHAR *psrc;
+  OFC_TCHAR *pdst ;
+  OFC_TCHAR *ret ;
 
-  if (src == BLUE_NULL || dst == BLUE_NULL)
+  if (src == OFC_NULL || dst == OFC_NULL)
     {
-      ret = BLUE_NULL ;
+      ret = OFC_NULL ;
     }
   else
     {
@@ -412,15 +412,15 @@ BlueCtstrncpy (BLUE_TCHAR *dst, BLUE_CTCHAR *src, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCstrcpy (BLUE_CHAR *dst, BLUE_CCHAR *src)
+OFC_CORE_LIB OFC_CHAR *
+BlueCstrcpy (OFC_CHAR *dst, OFC_CCHAR *src)
 {
-  BLUE_CCHAR *psrc;
-  BLUE_CHAR *pdst ;
-  BLUE_CHAR *ret ;
+  OFC_CCHAR *psrc;
+  OFC_CHAR *pdst ;
+  OFC_CHAR *ret ;
 
-  if (src == BLUE_NULL || dst == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (src == OFC_NULL || dst == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       psrc = src ;
@@ -438,15 +438,15 @@ BlueCstrcpy (BLUE_CHAR *dst, BLUE_CCHAR *src)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCstrcat (BLUE_CHAR *dst, BLUE_CCHAR *src)
+OFC_CORE_LIB OFC_CHAR *
+BlueCstrcat (OFC_CHAR *dst, OFC_CCHAR *src)
 {
-  BLUE_CCHAR *psrc;
-  BLUE_CHAR *pdst ;
-  BLUE_CHAR *ret ;
+  OFC_CCHAR *psrc;
+  OFC_CHAR *pdst ;
+  OFC_CHAR *ret ;
 
-  if (src == BLUE_NULL || dst == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (src == OFC_NULL || dst == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       psrc = src ;
@@ -464,15 +464,15 @@ BlueCstrcat (BLUE_CHAR *dst, BLUE_CCHAR *src)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCstrncat (BLUE_CHAR *dst, BLUE_CCHAR *src, BLUE_SIZET size)
+OFC_CORE_LIB OFC_CHAR *
+BlueCstrncat (OFC_CHAR *dst, OFC_CCHAR *src, OFC_SIZET size)
 {
-  BLUE_CCHAR *psrc;
-  BLUE_CHAR *pdst ;
-  BLUE_CHAR *ret ;
+  OFC_CCHAR *psrc;
+  OFC_CHAR *pdst ;
+  OFC_CHAR *ret ;
 
-  if (src == BLUE_NULL || dst == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (src == OFC_NULL || dst == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       psrc = src ;
@@ -492,15 +492,15 @@ BlueCstrncat (BLUE_CHAR *dst, BLUE_CCHAR *src, BLUE_SIZET size)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_TCHAR *
-BlueCtstrcpy (BLUE_TCHAR *dst, BLUE_CTCHAR *src)
+OFC_CORE_LIB OFC_TCHAR *
+BlueCtstrcpy (OFC_TCHAR *dst, OFC_CTCHAR *src)
 {
-  BLUE_CTCHAR *psrc;
-  BLUE_TCHAR *pdst ;
-  BLUE_TCHAR *ret ;
+  OFC_CTCHAR *psrc;
+  OFC_TCHAR *pdst ;
+  OFC_TCHAR *ret ;
 
-  if (src == BLUE_NULL || dst == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (src == OFC_NULL || dst == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       psrc = src ;
@@ -518,26 +518,26 @@ BlueCtstrcpy (BLUE_TCHAR *dst, BLUE_CTCHAR *src)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueCtstrlen (BLUE_LPCTSTR str)
+OFC_CORE_LIB OFC_SIZET
+BlueCtstrlen (OFC_LPCTSTR str)
 {
-  BLUE_SIZET ret ;
-  BLUE_LPCTSTR p ;
+  OFC_SIZET ret ;
+  OFC_LPCTSTR p ;
 
-  if (str == BLUE_NULL)
+  if (str == OFC_NULL)
     ret = 0 ;
   else
     for (ret = 0, p = str ; *p != TCHAR_EOS ; ret++, p++) ;
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueCtstrnlen (BLUE_LPCTSTR str, BLUE_SIZET len)
+OFC_CORE_LIB OFC_SIZET
+BlueCtstrnlen (OFC_LPCTSTR str, OFC_SIZET len)
 {
-  BLUE_SIZET ret ;
-  BLUE_LPCTSTR p ;
+  OFC_SIZET ret ;
+  OFC_LPCTSTR p ;
 
-  if (str == BLUE_NULL)
+  if (str == OFC_NULL)
     ret = 0 ;
   else
     for (ret = 0, p = str ; *p != TCHAR_EOS && len > 0 ; ret++, p++, len--) ;
@@ -545,32 +545,32 @@ BlueCtstrnlen (BLUE_LPCTSTR str, BLUE_SIZET len)
 }
 
 
-BLUE_CORE_LIB BLUE_LPTSTR 
-BlueCtstrdup (BLUE_LPCTSTR str)
+OFC_CORE_LIB OFC_LPTSTR
+BlueCtstrdup (OFC_LPCTSTR str)
 {
-  BLUE_LPTSTR ret ;
-  BLUE_SIZET len ;
+  OFC_LPTSTR ret ;
+  OFC_SIZET len ;
 
-  ret = BLUE_NULL ;
-  if (str != BLUE_NULL)
+  ret = OFC_NULL ;
+  if (str != OFC_NULL)
     {
-      len = (BlueCtstrlen(str) + 1) * sizeof (BLUE_TCHAR) ;
+      len = (BlueCtstrlen(str) + 1) * sizeof (OFC_TCHAR) ;
       ret = BlueHeapMalloc (len) ;
       BlueCmemcpy (ret, str, len) ;
     }
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCtstrcmp (BLUE_LPCTSTR astr, BLUE_LPCTSTR bstr)
+OFC_CORE_LIB OFC_INT
+BlueCtstrcmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
 {
-  BLUE_CTCHAR *pa ;
-  BLUE_CTCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CTCHAR *pa ;
+  OFC_CTCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -600,16 +600,16 @@ BlueCtstrcmp (BLUE_LPCTSTR astr, BLUE_LPCTSTR bstr)
   return ret ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCtstrcasecmp (BLUE_LPCTSTR astr, BLUE_LPCTSTR bstr)
+OFC_CORE_LIB OFC_INT
+BlueCtstrcasecmp (OFC_LPCTSTR astr, OFC_LPCTSTR bstr)
 {
-  BLUE_CTCHAR *pa ;
-  BLUE_CTCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CTCHAR *pa ;
+  OFC_CTCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -640,16 +640,16 @@ BlueCtstrcasecmp (BLUE_LPCTSTR astr, BLUE_LPCTSTR bstr)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCtstrncmp (BLUE_CTCHAR *astr, BLUE_CTCHAR *bstr, BLUE_SIZET len)
+OFC_CORE_LIB OFC_INT
+BlueCtstrncmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
 {
-  BLUE_CTCHAR *pa ;
-  BLUE_CTCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CTCHAR *pa ;
+  OFC_CTCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -682,16 +682,16 @@ BlueCtstrncmp (BLUE_CTCHAR *astr, BLUE_CTCHAR *bstr, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCtstrncasecmp (BLUE_CTCHAR *astr, BLUE_CTCHAR *bstr, BLUE_SIZET len)
+OFC_CORE_LIB OFC_INT
+BlueCtstrncasecmp (OFC_CTCHAR *astr, OFC_CTCHAR *bstr, OFC_SIZET len)
 {
-  BLUE_CTCHAR *pa ;
-  BLUE_CTCHAR *pb ;
-  BLUE_INT ret ;
+  OFC_CTCHAR *pa ;
+  OFC_CTCHAR *pb ;
+  OFC_INT ret ;
 
-  if (astr == BLUE_NULL || bstr == BLUE_NULL)
+  if (astr == OFC_NULL || bstr == OFC_NULL)
     {
-      if (astr == BLUE_NULL && bstr == BLUE_NULL)
+      if (astr == OFC_NULL && bstr == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -725,25 +725,25 @@ BlueCtstrncasecmp (BLUE_CTCHAR *astr, BLUE_CTCHAR *bstr, BLUE_SIZET len)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_LPCTSTR 
-BlueCtstrtok (BLUE_LPCTSTR str, BLUE_LPCTSTR terms)
+OFC_CORE_LIB OFC_LPCTSTR
+BlueCtstrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
 {
-  BLUE_LPCTSTR peek ;
-  BLUE_BOOL hit ;
-  BLUE_LPCTSTR ret ;
+  OFC_LPCTSTR peek ;
+  OFC_BOOL hit ;
+  OFC_LPCTSTR ret ;
 
-  if (str == BLUE_NULL || terms == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (str == OFC_NULL || terms == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
-      for (peek = str, hit = BLUE_FALSE ; *peek != TCHAR_EOS && !hit ; )
+      for (peek = str, hit = OFC_FALSE ; *peek != TCHAR_EOS && !hit ; )
 	{
-	  BLUE_INT i ;
+	  OFC_INT i ;
 
 	  for (i = 0 ; i < BlueCtstrlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
-		hit = BLUE_TRUE ;
+		hit = OFC_TRUE ;
 	    }
 	  if (!hit)
 	    peek++ ;
@@ -753,87 +753,87 @@ BlueCtstrtok (BLUE_LPCTSTR str, BLUE_LPCTSTR terms)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_LPSTR 
-BlueCstrtok (BLUE_LPCSTR str, BLUE_LPCSTR terms)
+OFC_CORE_LIB OFC_LPSTR
+BlueCstrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
 {
-  BLUE_LPCSTR peek ;
-  BLUE_BOOL hit ;
-  BLUE_LPSTR ret ;
+  OFC_LPCSTR peek ;
+  OFC_BOOL hit ;
+  OFC_LPSTR ret ;
 
-  if (str == BLUE_NULL || terms == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (str == OFC_NULL || terms == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
-      for (peek = str, hit = BLUE_FALSE ; *peek != '\0' && !hit ; )
+      for (peek = str, hit = OFC_FALSE ; *peek != '\0' && !hit ; )
 	{
-	  BLUE_INT i ;
+	  OFC_INT i ;
 
 	  for (i = 0 ; i < BlueCstrlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
-		hit = BLUE_TRUE ;
+		hit = OFC_TRUE ;
 	    }
 	  if (!hit)
 	    peek++ ;
 	}
-      ret = (BLUE_LPSTR) peek ;
+      ret = (OFC_LPSTR) peek ;
     }
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_LPSTR
-BlueCstrchr (BLUE_LPCSTR str, BLUE_CCHAR c) 
+OFC_CORE_LIB OFC_LPSTR
+BlueCstrchr (OFC_LPCSTR str, OFC_CCHAR c)
 {
-  BLUE_LPCSTR peek ;
-  BLUE_LPSTR ret ;
+  OFC_LPCSTR peek ;
+  OFC_LPSTR ret ;
 
-  ret = BLUE_NULL ;
-  if (str != BLUE_NULL)
+  ret = OFC_NULL ;
+  if (str != OFC_NULL)
     {
       for (peek = str ; *peek != c && *peek != '\0' ; peek++) ;
       if (*peek == c)
-	ret = (BLUE_LPSTR) peek ;
+	ret = (OFC_LPSTR) peek ;
     }
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_LPSTR
-BlueCmemchr (BLUE_LPCSTR str, BLUE_CCHAR c, BLUE_SIZET size) 
+OFC_CORE_LIB OFC_LPSTR
+BlueCmemchr (OFC_LPCSTR str, OFC_CCHAR c, OFC_SIZET size)
 {
-  BLUE_LPCSTR peek ;
-  BLUE_LPSTR ret ;
+  OFC_LPCSTR peek ;
+  OFC_LPSTR ret ;
 
-  ret = BLUE_NULL ;
-  if (str != BLUE_NULL)
+  ret = OFC_NULL ;
+  if (str != OFC_NULL)
     {
       for (peek = str ; *peek != c && size > 0 ; peek++, size--) ;
       if (*peek == c)
-	ret = (BLUE_LPSTR) peek ;
+	ret = (OFC_LPSTR) peek ;
     }
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_LPCTSTR 
-BlueCtstrrtok (BLUE_LPCTSTR str, BLUE_LPCTSTR terms)
+OFC_CORE_LIB OFC_LPCTSTR
+BlueCtstrrtok (OFC_LPCTSTR str, OFC_LPCTSTR terms)
 {
-  BLUE_LPCTSTR peek ;
-  BLUE_BOOL hit ;
-  BLUE_LPCTSTR ret ;
+  OFC_LPCTSTR peek ;
+  OFC_BOOL hit ;
+  OFC_LPCTSTR ret ;
 
-  if (str == BLUE_NULL || terms == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (str == OFC_NULL || terms == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       peek = str + BlueCtstrlen(str) ;
 
-      for (peek--, hit = BLUE_FALSE ; peek != str && !hit ; )
+      for (peek--, hit = OFC_FALSE ; peek != str && !hit ; )
 	{
-	  BLUE_INT i ;
+	  OFC_INT i ;
 
 	  for (i = 0 ; i < BlueCtstrlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
-		hit = BLUE_TRUE ;
+		hit = OFC_TRUE ;
 	    }
 	  if (!hit)
 	    peek -- ;
@@ -843,27 +843,27 @@ BlueCtstrrtok (BLUE_LPCTSTR str, BLUE_LPCTSTR terms)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_LPCSTR 
-BlueCstrrtok (BLUE_LPCSTR str, BLUE_LPCSTR terms)
+OFC_CORE_LIB OFC_LPCSTR
+BlueCstrrtok (OFC_LPCSTR str, OFC_LPCSTR terms)
 {
-  BLUE_LPCSTR peek ;
-  BLUE_BOOL hit ;
-  BLUE_LPCSTR ret ;
+  OFC_LPCSTR peek ;
+  OFC_BOOL hit ;
+  OFC_LPCSTR ret ;
 
-  if (str == BLUE_NULL || terms == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (str == OFC_NULL || terms == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
       peek = str + BlueCstrlen(str) ;
 
-      for (peek--, hit = BLUE_FALSE ; peek != str && !hit ; )
+      for (peek--, hit = OFC_FALSE ; peek != str && !hit ; )
 	{
-	  BLUE_INT i ;
+	  OFC_INT i ;
 
 	  for (i = 0 ; i < BlueCstrlen(terms) && !hit ; i++)
 	    {
 	      if (*peek == terms[i])
-		hit = BLUE_TRUE ;
+		hit = OFC_TRUE ;
 	    }
 	  if (!hit)
 	    peek -- ;
@@ -873,66 +873,66 @@ BlueCstrrtok (BLUE_LPCSTR str, BLUE_LPCSTR terms)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCtstr2cstr (BLUE_LPCTSTR str)
+OFC_CORE_LIB OFC_CHAR *
+BlueCtstr2cstr (OFC_LPCTSTR str)
 {
-  BLUE_SIZET len ;
-  BLUE_CHAR *cstr ;
-  BLUE_INT i ;
-  BLUE_CTCHAR *ptstr ;
-  BLUE_CHAR *pcstr ;
+  OFC_SIZET len ;
+  OFC_CHAR *cstr ;
+  OFC_INT i ;
+  OFC_CTCHAR *ptstr ;
+  OFC_CHAR *pcstr ;
 
-  cstr = BLUE_NULL ;
-  if (str != BLUE_NULL)
+  cstr = OFC_NULL ;
+  if (str != OFC_NULL)
     {
       len = BlueCtstrlen (str) ;
       cstr = BlueHeapMalloc (len + 1) ;
       pcstr = cstr ;
       ptstr = str ;
       for (i = 0 ; i < len ; i++)
-	*pcstr++ = (BLUE_CHAR) *ptstr++ ;
+	*pcstr++ = (OFC_CHAR) *ptstr++ ;
       *pcstr = '\0' ;
     }
   return (cstr) ;
 }
 
-BLUE_CORE_LIB BLUE_LPTSTR 
-BlueCcstr2tstr (BLUE_CCHAR *str)
+OFC_CORE_LIB OFC_LPTSTR
+BlueCcstr2tstr (OFC_CCHAR *str)
 {
-  BLUE_SIZET len ;
-  BLUE_LPTSTR tstr ;
-  BLUE_INT i ;
-  BLUE_TCHAR *ptstr ;
-  BLUE_CCHAR *pcstr ;
+  OFC_SIZET len ;
+  OFC_LPTSTR tstr ;
+  OFC_INT i ;
+  OFC_TCHAR *ptstr ;
+  OFC_CCHAR *pcstr ;
 
-  tstr = BLUE_NULL ;
-  if (str != BLUE_NULL)
+  tstr = OFC_NULL ;
+  if (str != OFC_NULL)
     {
       len = BlueCstrlen (str) ;
-      tstr = BlueHeapMalloc ((len + 1) * sizeof (BLUE_TCHAR)) ;
+      tstr = BlueHeapMalloc ((len + 1) * sizeof (OFC_TCHAR)) ;
       ptstr = tstr ;
       pcstr = str ;
       for (i = 0 ; i < len ; i++)
-	*ptstr++ = (BLUE_TCHAR) (*pcstr++) ;
-      *ptstr = (BLUE_TCHAR) '\0' ;
+	*ptstr++ = (OFC_TCHAR) (*pcstr++) ;
+      *ptstr = (OFC_TCHAR) '\0' ;
     }
   return (tstr) ;
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueCmemcmp (BLUE_LPCVOID a, BLUE_LPCVOID b, BLUE_SIZET size)
+OFC_CORE_LIB OFC_INT
+BlueCmemcmp (OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size)
 {
-  BLUE_INT ret ;
-  BLUE_UINT32 *puint32 ;
-  const BLUE_UINT32 *pcuint32 ;
-  BLUE_UINT16 *puint16 ;
-  const BLUE_UINT16 *pcuint16 ;
-  BLUE_UINT8 *puint8 ;
-  const BLUE_UINT8 *pcuint8 ;
+  OFC_INT ret ;
+  OFC_UINT32 *puint32 ;
+  const OFC_UINT32 *pcuint32 ;
+  OFC_UINT16 *puint16 ;
+  const OFC_UINT16 *pcuint16 ;
+  OFC_UINT8 *puint8 ;
+  const OFC_UINT8 *pcuint8 ;
 
-  if (a == BLUE_NULL || b == BLUE_NULL)
+  if (a == OFC_NULL || b == OFC_NULL)
     {
-      if (a == BLUE_NULL && b == BLUE_NULL)
+      if (a == OFC_NULL && b == OFC_NULL)
 	ret = 0 ;
       else
 	ret = -1 ;
@@ -940,18 +940,18 @@ BlueCmemcmp (BLUE_LPCVOID a, BLUE_LPCVOID b, BLUE_SIZET size)
   else
     {
       ret = 0 ;
-      if (!((BLUE_DWORD_PTR) a & 0x03) && !((BLUE_DWORD_PTR) b & 0x03))
+      if (!((OFC_DWORD_PTR) a & 0x03) && !((OFC_DWORD_PTR) b & 0x03))
 	{
-	  puint32 = (BLUE_UINT32 *) b ;
-	  pcuint32 = (const BLUE_UINT32 *) a ;
+	  puint32 = (OFC_UINT32 *) b ;
+	  pcuint32 = (const OFC_UINT32 *) a ;
 
 	  while (size >= 4 && ret == 0)
 	    {
 	      ret = *pcuint32++ - *puint32++ ;
 	      size -= 4 ;
 	    }
-	  puint8 = (BLUE_UINT8 *) puint32 ;
-	  pcuint8 = (const BLUE_UINT8 *) pcuint32 ;
+	  puint8 = (OFC_UINT8 *) puint32 ;
+	  pcuint8 = (const OFC_UINT8 *) pcuint32 ;
 	  while (size != 0 && ret == 0)
 	    {
 	      ret = *pcuint8++ - *puint8++ ;
@@ -959,18 +959,18 @@ BlueCmemcmp (BLUE_LPCVOID a, BLUE_LPCVOID b, BLUE_SIZET size)
 	    }
 
 	}
-      else if (!((BLUE_DWORD_PTR) a & 0x01) && !((BLUE_DWORD_PTR) b & 0x01))
+      else if (!((OFC_DWORD_PTR) a & 0x01) && !((OFC_DWORD_PTR) b & 0x01))
 	{
-	  puint16 = (BLUE_UINT16 *) b ;
-	  pcuint16 = (const BLUE_UINT16 *) a ;
+	  puint16 = (OFC_UINT16 *) b ;
+	  pcuint16 = (const OFC_UINT16 *) a ;
 
 	  while (size >= 2 && ret == 0)
 	    {
 	      ret = *pcuint16++ - *puint16++ ;
 	      size -= 2 ;
 	    }
-	  puint8 = (BLUE_UINT8 *) puint16 ;
-	  pcuint8 = (const BLUE_UINT8 *) pcuint16 ;
+	  puint8 = (OFC_UINT8 *) puint16 ;
+	  pcuint8 = (const OFC_UINT8 *) pcuint16 ;
 	  while (size != 0 && ret == 0)
 	    {
 	      ret = *pcuint8++ - *puint8++ ;
@@ -979,8 +979,8 @@ BlueCmemcmp (BLUE_LPCVOID a, BLUE_LPCVOID b, BLUE_SIZET size)
 	}
       else
 	{
-	  puint8 = (BLUE_UINT8 *) b ;
-	  pcuint8 = (const BLUE_UINT8 *) a ;
+	  puint8 = (OFC_UINT8 *) b ;
+	  pcuint8 = (const OFC_UINT8 *) a ;
 
 	  while (size != 0 && ret == 0)
 	    {
@@ -992,53 +992,53 @@ BlueCmemcmp (BLUE_LPCVOID a, BLUE_LPCVOID b, BLUE_SIZET size)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_LPVOID 
-BlueCmemcpy (BLUE_LPVOID out, BLUE_LPCVOID in, BLUE_SIZET size)
+OFC_CORE_LIB OFC_LPVOID
+BlueCmemcpy (OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size)
 {
-  BLUE_LPVOID dst ;
-  BLUE_UINT32 *puint32 ;
-  const BLUE_UINT32 *pcuint32 ;
-  BLUE_UINT16 *puint16 ;
-  const BLUE_UINT16 *pcuint16 ;
-  BLUE_UINT8 *puint8 ;
-  const BLUE_UINT8 *pcuint8 ;
+  OFC_LPVOID dst ;
+  OFC_UINT32 *puint32 ;
+  const OFC_UINT32 *pcuint32 ;
+  OFC_UINT16 *puint16 ;
+  const OFC_UINT16 *pcuint16 ;
+  OFC_UINT8 *puint8 ;
+  const OFC_UINT8 *pcuint8 ;
 
-  if (out == BLUE_NULL || in == BLUE_NULL)
-    dst = BLUE_NULL ;
+  if (out == OFC_NULL || in == OFC_NULL)
+    dst = OFC_NULL ;
   else
     {
       dst = out ;
 
-      if (!((BLUE_DWORD_PTR) in & 0x03) && !((BLUE_DWORD_PTR) out & 0x03))
+      if (!((OFC_DWORD_PTR) in & 0x03) && !((OFC_DWORD_PTR) out & 0x03))
 	{
-	  puint32 = (BLUE_UINT32 *) out ;
-	  pcuint32 = (const BLUE_UINT32 *) in ;
+	  puint32 = (OFC_UINT32 *) out ;
+	  pcuint32 = (const OFC_UINT32 *) in ;
 
 	  while (size >= 4)
 	    {
 	      *puint32++ = *pcuint32++ ;
 	      size -= 4 ;
 	    }
-	  puint8 = (BLUE_UINT8 *) puint32 ;
-	  pcuint8 = (const BLUE_UINT8 *) pcuint32 ;
+	  puint8 = (OFC_UINT8 *) puint32 ;
+	  pcuint8 = (const OFC_UINT8 *) pcuint32 ;
 	  while (size != 0)
 	    {
 	      *puint8++ = *pcuint8++ ;
 	      size -- ;
 	    }
 	}
-      else if (!((BLUE_DWORD_PTR)in & 0x01) && !((BLUE_DWORD_PTR)out & 0x01))
+      else if (!((OFC_DWORD_PTR)in & 0x01) && !((OFC_DWORD_PTR)out & 0x01))
 	{
-	  puint16 = (BLUE_UINT16 *) out ;
-	  pcuint16 = (const BLUE_UINT16 *) in ;
+	  puint16 = (OFC_UINT16 *) out ;
+	  pcuint16 = (const OFC_UINT16 *) in ;
 
 	  while (size >= 2)
 	    {
 	      *puint16++ = *pcuint16++ ;
 	      size -= 2 ;
 	    }
-	  puint8 = (BLUE_UINT8 *) puint16 ;
-	  pcuint8 = (const BLUE_UINT8 *) pcuint16 ;
+	  puint8 = (OFC_UINT8 *) puint16 ;
+	  pcuint8 = (const OFC_UINT8 *) pcuint16 ;
 	  while (size != 0)
 	    {
 	      *puint8++ = *pcuint8++ ;
@@ -1047,8 +1047,8 @@ BlueCmemcpy (BLUE_LPVOID out, BLUE_LPCVOID in, BLUE_SIZET size)
 	}
       else
 	{
-	  puint8 = (BLUE_UINT8 *) out ;
-	  pcuint8 = (const BLUE_UINT8 *) in ;
+	  puint8 = (OFC_UINT8 *) out ;
+	  pcuint8 = (const OFC_UINT8 *) in ;
 
 	  while (size != 0)
 	    {
@@ -1060,17 +1060,17 @@ BlueCmemcpy (BLUE_LPVOID out, BLUE_LPCVOID in, BLUE_SIZET size)
   return (dst) ;
 }
 
-BLUE_CORE_LIB BLUE_LPVOID 
-BlueCmemset (BLUE_LPVOID dst, BLUE_INT c, BLUE_SIZET size)
+OFC_CORE_LIB OFC_LPVOID
+BlueCmemset (OFC_LPVOID dst, OFC_INT c, OFC_SIZET size)
 {
-  BLUE_CHAR *pa ;
-  BLUE_LPVOID ret ;
+  OFC_CHAR *pa ;
+  OFC_LPVOID ret ;
 
-  if (dst == BLUE_NULL)
-    ret = BLUE_NULL ;
+  if (dst == OFC_NULL)
+    ret = OFC_NULL ;
   else
     {
-      pa = (BLUE_CHAR *) dst ;
+      pa = (OFC_CHAR *) dst ;
 
       while (size--)
 	*pa++ = c ;
@@ -1080,7 +1080,7 @@ BlueCmemset (BLUE_LPVOID dst, BLUE_INT c, BLUE_SIZET size)
   return (ret) ;
 }
 
-static BLUE_UINT8 cvtIn[] =
+static OFC_UINT8 cvtIn[] =
   {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9,		/* '0' - '9' */
     100, 100, 100, 100, 100, 100, 100,		/* punctuation */
@@ -1093,15 +1093,15 @@ static BLUE_UINT8 cvtIn[] =
     30, 31, 32, 33, 34, 35
   } ;
 
-BLUE_CORE_LIB BLUE_ULONG 
-BlueCstrtoul (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base)
+OFC_CORE_LIB OFC_ULONG
+BlueCstrtoul (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
 {
-  const BLUE_CHAR *p;
-  BLUE_ULONG result = 0 ;
-  BLUE_UINT digit ;
-  BLUE_INT anyDigits = 0 ;
+  const OFC_CHAR *p;
+  OFC_ULONG result = 0 ;
+  OFC_UINT digit ;
+  OFC_INT anyDigits = 0 ;
 
-  if (string == BLUE_NULL)
+  if (string == OFC_NULL)
     result = 0 ;
   else
     {
@@ -1210,7 +1210,7 @@ BlueCstrtoul (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base)
 		  break ;
 		}
 	      digit = cvtIn[digit] ;
-	      if (digit >= (BLUE_UINT) base)
+	      if (digit >= (OFC_UINT) base)
 		{
 		  break;
 		}
@@ -1227,21 +1227,21 @@ BlueCstrtoul (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base)
 	  p = string ;
 	}
 
-      if (endPtr != BLUE_NULL)
+      if (endPtr != OFC_NULL)
 	{
-	  *endPtr = (BLUE_CHAR *) p ;
+	  *endPtr = (OFC_CHAR *) p ;
 	}
     }
   return result ;
 }
 
-BLUE_CORE_LIB BLUE_LONG 
-BlueCstrtol (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base)
+OFC_CORE_LIB OFC_LONG
+BlueCstrtol (const OFC_CHAR *string, OFC_CHAR **endPtr, OFC_INT base)
 {
-  const BLUE_CHAR *p;
-  BLUE_LONG result;
+  const OFC_CHAR *p;
+  OFC_LONG result;
 
-  if (string == BLUE_NULL)
+  if (string == OFC_NULL)
     result = 0 ;
   else
     {
@@ -1261,7 +1261,7 @@ BlueCstrtol (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base)
       if (*p == '-')
 	{
 	  p += 1 ;
-	  result = -((BLUE_LONG) BlueCstrtoul(p, endPtr, base)) ;
+	  result = -((OFC_LONG) BlueCstrtoul(p, endPtr, base)) ;
 	}
       else
 	{
@@ -1274,7 +1274,7 @@ BlueCstrtol (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base)
 
       if ((result == 0) && (endPtr != 0) && (*endPtr == p))
 	{
-	  *endPtr = (BLUE_CHAR *) string ;
+	  *endPtr = (OFC_CHAR *) string ;
 	}
     }
   return result ;
@@ -1287,22 +1287,22 @@ BlueCstrtol (const BLUE_CHAR *string, BLUE_CHAR **endPtr, BLUE_INT base)
  * on all source code distributions
  */
 
-static BLUE_SIZET dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen,
-		       BLUE_CCHAR *format, va_list args) ;
-static BLUE_VOID fmtstr(BLUE_CHAR *buffer, BLUE_SIZET *currlen,
-			BLUE_SIZET maxlen, BLUE_CCHAR *value,
-			BLUE_INT flags, BLUE_SIZET min, BLUE_SIZET max) ;
-static BLUE_VOID fmttstr(BLUE_CHAR *buffer, BLUE_SIZET *currlen,
-			 BLUE_SIZET maxlen, BLUE_CTCHAR *value,
-			 BLUE_INT flags, BLUE_SIZET min, BLUE_SIZET max) ;
-static BLUE_VOID fmttastr(BLUE_CHAR *buffer, BLUE_SIZET *currlen,
-			 BLUE_SIZET maxlen, BLUE_CTACHAR *value,
-			 BLUE_INT flags, BLUE_SIZET min, BLUE_SIZET max) ;
-static BLUE_VOID fmtint(BLUE_CHAR *buffer, BLUE_SIZET *currlen,
-			BLUE_SIZET maxlen, BLUE_LONG value, BLUE_INT base,
-			BLUE_SIZET min, BLUE_SIZET max, BLUE_INT flags);
-static BLUE_VOID dopr_outch(BLUE_CHAR *buffer, BLUE_SIZET *currlen,
-			    BLUE_SIZET maxlen, BLUE_CHAR c);
+static OFC_SIZET dopr(OFC_CHAR *buffer, OFC_SIZET maxlen,
+                      OFC_CCHAR *format, va_list args) ;
+static OFC_VOID fmtstr(OFC_CHAR *buffer, OFC_SIZET *currlen,
+                       OFC_SIZET maxlen, OFC_CCHAR *value,
+                       OFC_INT flags, OFC_SIZET min, OFC_SIZET max) ;
+static OFC_VOID fmttstr(OFC_CHAR *buffer, OFC_SIZET *currlen,
+                        OFC_SIZET maxlen, OFC_CTCHAR *value,
+                        OFC_INT flags, OFC_SIZET min, OFC_SIZET max) ;
+static OFC_VOID fmttastr(OFC_CHAR *buffer, OFC_SIZET *currlen,
+                         OFC_SIZET maxlen, OFC_CTACHAR *value,
+                         OFC_INT flags, OFC_SIZET min, OFC_SIZET max) ;
+static OFC_VOID fmtint(OFC_CHAR *buffer, OFC_SIZET *currlen,
+                       OFC_SIZET maxlen, OFC_LONG value, OFC_INT base,
+                       OFC_SIZET min, OFC_SIZET max, OFC_INT flags);
+static OFC_VOID dopr_outch(OFC_CHAR *buffer, OFC_SIZET *currlen,
+                           OFC_SIZET maxlen, OFC_CHAR c);
 
 /*
  * dopr(): poor man's version of doprintf
@@ -1333,20 +1333,20 @@ static BLUE_VOID dopr_outch(BLUE_CHAR *buffer, BLUE_SIZET *currlen,
 
 #define CHAR_TO_INT(p) ((p)- '0')
 
-static BLUE_SIZET 
-dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
+static OFC_SIZET
+dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args)
 {
-  BLUE_CHAR ch ;
-  BLUE_CCHAR *strvalue ;
-  BLUE_CTCHAR *tstrvalue ;
-  BLUE_CTACHAR *tastrvalue ;
-  BLUE_LONG value ;
-  BLUE_SIZET min ;
-  BLUE_SIZET max ;
-  BLUE_INT state ;
-  BLUE_INT flags ;
-  BLUE_INT cflags ;
-  BLUE_SIZET currlen ;
+  OFC_CHAR ch ;
+  OFC_CCHAR *strvalue ;
+  OFC_CTCHAR *tstrvalue ;
+  OFC_CTACHAR *tastrvalue ;
+  OFC_LONG value ;
+  OFC_SIZET min ;
+  OFC_SIZET max ;
+  OFC_INT state ;
+  OFC_INT flags ;
+  OFC_INT cflags ;
+  OFC_SIZET currlen ;
 
   state = DP_S_DEFAULT ;
   currlen = flags = cflags = min = 0 ;
@@ -1402,14 +1402,14 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	  break ;
 
 	case DP_S_MIN:
-	  if (BLUE_C_ISDIGIT((BLUE_UINT8)ch))
+	  if (BLUE_C_ISDIGIT((OFC_UINT8)ch))
 	    {
 	      min = 10 * min + CHAR_TO_INT (ch) ;
 	      ch = *format++ ;
 	    }
 	  else if (ch == '*')
 	    {
-	      min = va_arg (args, BLUE_INT) ;
+	      min = va_arg (args, OFC_INT) ;
 	      ch = *format++ ;
 	      state = DP_S_DOT ;
 	    }
@@ -1430,7 +1430,7 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	    }
 	  break ;
 	case DP_S_MAX:
-	  if (BLUE_C_ISDIGIT((BLUE_UINT8)ch))
+	  if (BLUE_C_ISDIGIT((OFC_UINT8)ch))
 	    {
 	      if (max < 0)
 		max = 0 ;
@@ -1439,7 +1439,7 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	    }
 	  else if (ch == '*')
 	    {
-	      max = va_arg (args, BLUE_INT) ;
+	      max = va_arg (args, OFC_INT) ;
 	      ch = *format++ ;
 	      state = DP_S_MOD ;
 	    }
@@ -1472,15 +1472,15 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      flags |= DP_F_UNSIGNED ;
 	      if (cflags == DP_C_SHORT)
 		{
-		  value = va_arg (args, BLUE_UINT) ;
+		  value = va_arg (args, OFC_UINT) ;
 		}
 	      else if (cflags == DP_C_LONG)
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_ULONG) ;
+		  value = (OFC_LONG)va_arg (args, OFC_ULONG) ;
 		}
 	      else
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_UINT) ;
+		  value = (OFC_LONG)va_arg (args, OFC_UINT) ;
 		}
 	      fmtint (buffer, &currlen, maxlen, value, 2, min, max, flags) ;
 	      break ;
@@ -1488,15 +1488,15 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	    case 'i':
 	      if (cflags == DP_C_SHORT)
 		{
-		  value = va_arg (args, BLUE_INT) ;
+		  value = va_arg (args, OFC_INT) ;
 		}
 	      else if (cflags == DP_C_LONG)
 		{
-		  value = va_arg (args, BLUE_LONG) ;
+		  value = va_arg (args, OFC_LONG) ;
 		}
 	      else
 		{
-		  value = va_arg (args, BLUE_INT) ;
+		  value = va_arg (args, OFC_INT) ;
 		}
 	      fmtint (buffer, &currlen, maxlen, value, 10, min, max, flags) ;
 	      break ;
@@ -1504,15 +1504,15 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      flags |= DP_F_UNSIGNED ;
 	      if (cflags == DP_C_SHORT)
 		{
-		  value = va_arg (args, BLUE_UINT) ;
+		  value = va_arg (args, OFC_UINT) ;
 		}
 	      else if (cflags == DP_C_LONG)
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_ULONG) ;
+		  value = (OFC_LONG)va_arg (args, OFC_ULONG) ;
 		}
 	      else
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_UINT) ;
+		  value = (OFC_LONG)va_arg (args, OFC_UINT) ;
 		}
 	      fmtint (buffer, &currlen, maxlen, value, 8, min, max, flags) ;
 	      break ;
@@ -1520,15 +1520,15 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      flags |= DP_F_UNSIGNED ;
 	      if (cflags == DP_C_SHORT)
 		{
-		  value = va_arg (args, BLUE_UINT) ;
+		  value = va_arg (args, OFC_UINT) ;
 		}
 	      else if (cflags == DP_C_LONG)
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_ULONG) ;
+		  value = (OFC_LONG)va_arg (args, OFC_ULONG) ;
 		}
 	      else
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_UINT) ;
+		  value = (OFC_LONG)va_arg (args, OFC_UINT) ;
 		}
 	      fmtint (buffer, &currlen, maxlen, value, 10, min, max, flags) ;
 	      break ;
@@ -1538,20 +1538,20 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      flags |= DP_F_UNSIGNED ;
 	      if (cflags == DP_C_SHORT)
 		{
-		  value = va_arg (args, BLUE_UINT) ;
+		  value = va_arg (args, OFC_UINT) ;
 		}
 	      else if (cflags == DP_C_LONG)
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_ULONG) ;
+		  value = (OFC_LONG)va_arg (args, OFC_ULONG) ;
 		}
 	      else
 		{
-		  value = (BLUE_LONG)va_arg (args, BLUE_UINT) ;
+		  value = (OFC_LONG)va_arg (args, OFC_UINT) ;
 		}
 	      fmtint (buffer, &currlen, maxlen, value, 16, min, max, flags) ;
 	      break ;
 	    case 'c':
-	      dopr_outch(buffer, &currlen, maxlen, va_arg (args, BLUE_INT)) ;
+	      dopr_outch(buffer, &currlen, maxlen, va_arg (args, OFC_INT)) ;
 	      break ;
 #if defined(__APPLE__)
 	    case 'e':
@@ -1568,7 +1568,7 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      break ;
 #endif
 	    case 's':
-	      strvalue = va_arg (args, BLUE_CHAR *) ;
+	      strvalue = va_arg (args, OFC_CHAR *) ;
 	      if (!strvalue)
 		strvalue = "(null)" ;
 	      if (max == -1)
@@ -1580,7 +1580,7 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      fmtstr(buffer, &currlen, maxlen, strvalue, flags, min, max) ;
 	      break ;
 	    case 'S':
-	      tstrvalue = va_arg (args, BLUE_TCHAR *) ;
+	      tstrvalue = va_arg (args, OFC_TCHAR *) ;
 	      if (!tstrvalue)
 		tstrvalue = TSTR("(null)") ;
 	      if (max == -1)
@@ -1592,7 +1592,7 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      fmttstr(buffer, &currlen, maxlen, tstrvalue, flags, min, max) ;
 	      break ;
 	    case 'A':
-	      tastrvalue = va_arg (args, BLUE_TACHAR *) ;
+	      tastrvalue = va_arg (args, OFC_TACHAR *) ;
 	      if (!tastrvalue)
 		tastrvalue = TASTR("(null)") ;
 	      if (max == -1)
@@ -1605,29 +1605,29 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
 	      break ;
 	    case 'p':
 	      flags |= DP_F_UNSIGNED ;
-	      strvalue = va_arg (args, BLUE_CHAR *) ;
+	      strvalue = va_arg (args, OFC_CHAR *) ;
 	      fmtint (buffer, &currlen, maxlen,
-		      (BLUE_ULONG)((BLUE_ULONG_PTR)strvalue & BLUE_ULONG_MAX),
+		      (OFC_ULONG)((OFC_ULONG_PTR)strvalue & OFC_ULONG_MAX),
 		      16, min, max, flags) ;
 	      break ;
 	    case 'n':
 	      if (cflags == DP_C_SHORT)
 		{
-		  BLUE_SHORT *num ;
-		  num = va_arg (args, BLUE_SHORT *) ;
-		  *num = (BLUE_SHORT) currlen ;
+		  OFC_SHORT *num ;
+		  num = va_arg (args, OFC_SHORT *) ;
+		  *num = (OFC_SHORT) currlen ;
 		}
 	      else if (cflags == DP_C_LONG)
 		{
-		  BLUE_LONG *num ;
-		  num = va_arg (args, BLUE_LONG *) ;
-		  *num = (BLUE_LONG)currlen ;
+		  OFC_LONG *num ;
+		  num = va_arg (args, OFC_LONG *) ;
+		  *num = (OFC_LONG)currlen ;
 		}
 	      else
 		{
-		  BLUE_INT *num ;
-		  num = va_arg (args, BLUE_INT *) ;
-		  *num = (BLUE_INT) currlen ;
+		  OFC_INT *num ;
+		  num = va_arg (args, OFC_INT *) ;
+		  *num = (OFC_INT) currlen ;
 		}
 	      break ;
 	    case '%':
@@ -1664,13 +1664,13 @@ dopr(BLUE_CHAR *buffer, BLUE_SIZET maxlen, BLUE_CCHAR *format, va_list args)
   return currlen ;
 }
 
-static BLUE_VOID 
-fmtstr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen, 
-       BLUE_CCHAR *value, BLUE_INT flags, BLUE_SIZET min, BLUE_SIZET max)
+static OFC_VOID
+fmtstr(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
+       OFC_CCHAR *value, OFC_INT flags, OFC_SIZET min, OFC_SIZET max)
 {
-  BLUE_SIZET padlen ;
-  BLUE_SIZET strln ;
-  BLUE_INT cnt = 0 ;
+  OFC_SIZET padlen ;
+  OFC_SIZET strln ;
+  OFC_INT cnt = 0 ;
 
   strln  = BlueCstrlen (value) ;
 
@@ -1700,13 +1700,13 @@ fmtstr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
     }
 }
 
-static BLUE_VOID 
-fmttstr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen, 
-	BLUE_CTCHAR *value, BLUE_INT flags, BLUE_SIZET min, BLUE_SIZET max)
+static OFC_VOID
+fmttstr(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
+        OFC_CTCHAR *value, OFC_INT flags, OFC_SIZET min, OFC_SIZET max)
 {
-  BLUE_SIZET padlen ;
-  BLUE_SIZET strln ;
-  BLUE_INT cnt = 0 ;
+  OFC_SIZET padlen ;
+  OFC_SIZET strln ;
+  OFC_INT cnt = 0 ;
 
   strln  = BlueCtstrlen (value) ;
 
@@ -1725,7 +1725,7 @@ fmttstr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
     }
   while (*value && (cnt < max))
     {
-      dopr_outch(buffer, currlen, maxlen, (BLUE_CCHAR) (*value++)) ;
+      dopr_outch(buffer, currlen, maxlen, (OFC_CCHAR) (*value++)) ;
       ++cnt ;
     }
   while ((padlen < 0) && (cnt < max))
@@ -1736,13 +1736,13 @@ fmttstr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
     }
 }
 
-static BLUE_VOID 
-fmttastr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen, 
-	 BLUE_CTACHAR *value, BLUE_INT flags, BLUE_SIZET min, BLUE_SIZET max)
+static OFC_VOID
+fmttastr(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
+         OFC_CTACHAR *value, OFC_INT flags, OFC_SIZET min, OFC_SIZET max)
 {
-  BLUE_SIZET padlen ;
-  BLUE_SIZET strln ;
-  BLUE_INT cnt = 0 ;
+  OFC_SIZET padlen ;
+  OFC_SIZET strln ;
+  OFC_INT cnt = 0 ;
 
   strln  = BlueCtastrlen (value) ;
 
@@ -1761,7 +1761,7 @@ fmttastr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
     }
   while (*value && (cnt < max))
     {
-      dopr_outch(buffer, currlen, maxlen, (BLUE_CCHAR) (*value++)) ;
+      dopr_outch(buffer, currlen, maxlen, (OFC_CCHAR) (*value++)) ;
       ++cnt ;
     }
   while ((padlen < 0) && (cnt < max))
@@ -1774,19 +1774,19 @@ fmttastr(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
 
 /* Have to handle DP_F_NUM (ie 0x and 0 alternates) */
 
-static BLUE_VOID 
-fmtint(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen, 
-       BLUE_LONG value, BLUE_INT base, BLUE_SIZET min, BLUE_SIZET max,
-       BLUE_INT flags)
+static OFC_VOID
+fmtint(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
+       OFC_LONG value, OFC_INT base, OFC_SIZET min, OFC_SIZET max,
+       OFC_INT flags)
 {
 #define MAX_CONVERT_PLACES 40
-  BLUE_INT signvalue = 0 ;
-  BLUE_ULONG uvalue ;
-  BLUE_CHAR  convert[MAX_CONVERT_PLACES] ;
-  BLUE_INT place = 0 ;
-  BLUE_SIZET spadlen = 0 ; /* amount to space pad */
-  BLUE_SIZET zpadlen = 0 ; /* amount to zero pad */
-  BLUE_INT caps = 0 ;
+  OFC_INT signvalue = 0 ;
+  OFC_ULONG uvalue ;
+  OFC_CHAR  convert[MAX_CONVERT_PLACES] ;
+  OFC_INT place = 0 ;
+  OFC_SIZET spadlen = 0 ; /* amount to space pad */
+  OFC_SIZET zpadlen = 0 ; /* amount to zero pad */
+  OFC_INT caps = 0 ;
 
   if (max < 0)
     max = 0 ;
@@ -1816,8 +1816,8 @@ fmtint(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
     {
       convert[place++] =
 	(caps ? "0123456789ABCDEF" : "0123456789abcdef")
-	[uvalue % (BLUE_UINT) base] ;
-      uvalue = (uvalue / (BLUE_UINT)base ) ;
+	[uvalue % (OFC_UINT) base] ;
+      uvalue = (uvalue / (OFC_UINT)base ) ;
     }
   while (uvalue && (place < MAX_CONVERT_PLACES)) ;
 
@@ -1872,9 +1872,9 @@ fmtint(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
     }
 }
 
-static BLUE_VOID 
-dopr_outch(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen, 
-	   BLUE_CHAR c)
+static OFC_VOID
+dopr_outch(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
+           OFC_CHAR c)
 {
   if (*currlen < maxlen)
     {
@@ -1883,13 +1883,13 @@ dopr_outch(BLUE_CHAR *buffer, BLUE_SIZET *currlen, BLUE_SIZET maxlen,
   (*currlen)++ ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueCvsnprintf (BLUE_CHAR *str, BLUE_SIZET count,
-		BLUE_CCHAR *fmt, va_list args)
+OFC_CORE_LIB OFC_SIZET
+BlueCvsnprintf (OFC_CHAR *str, OFC_SIZET count,
+                OFC_CCHAR *fmt, va_list args)
 {
-  BLUE_SIZET res ;
+  OFC_SIZET res ;
 
-  if ((BLUE_INT)count < 0)
+  if ((OFC_INT)count < 0)
     count = 0 ;
 
   res = dopr(str, count, fmt, args) ;
@@ -1897,10 +1897,10 @@ BlueCvsnprintf (BLUE_CHAR *str, BLUE_SIZET count,
   return (res) ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueCsnprintf(BLUE_CHAR *str, BLUE_SIZET count, BLUE_CCHAR *fmt,...)
+OFC_CORE_LIB OFC_SIZET
+BlueCsnprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...)
 {
-  BLUE_SIZET ret ;
+  OFC_SIZET ret ;
   va_list ap ;
 
   va_start(ap, fmt) ;
@@ -1912,16 +1912,16 @@ BlueCsnprintf(BLUE_CHAR *str, BLUE_SIZET count, BLUE_CCHAR *fmt,...)
 }
 
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueCprintf(BLUE_CCHAR *fmt,...)
+OFC_CORE_LIB OFC_VOID
+BlueCprintf(OFC_CCHAR *fmt, ...)
 {
-  BLUE_CHAR *obuf ;
-  BLUE_SIZET len ;
+  OFC_CHAR *obuf ;
+  OFC_SIZET len ;
 
   va_list ap ;
 
   va_start(ap,fmt) ;
-  len = BlueCvsnprintf(BLUE_NULL, 0, fmt, ap) ;
+  len = BlueCvsnprintf(OFC_NULL, 0, fmt, ap) ;
   va_end(ap) ;
 
   obuf = BlueHeapMalloc (len+1) ;
@@ -1929,21 +1929,21 @@ BlueCprintf(BLUE_CCHAR *fmt,...)
   BlueCvsnprintf(obuf, len+1, fmt, ap) ;
   va_end(ap) ;
 
-  BlueWriteStdOut (obuf, len) ;
+  ofc_write_stdout (obuf, len) ;
 
   BlueHeapFree (obuf) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueCsaprintf(BLUE_CCHAR *fmt,...)
+OFC_CORE_LIB OFC_CHAR *
+BlueCsaprintf(OFC_CCHAR *fmt, ...)
 {
-  BLUE_CHAR *obuf ;
-  BLUE_SIZET len ;
+  OFC_CHAR *obuf ;
+  OFC_SIZET len ;
 
   va_list ap ;
 
   va_start(ap, fmt) ;
-  len = BlueCvsnprintf(BLUE_NULL, 0, fmt, ap) ;
+  len = BlueCvsnprintf(OFC_NULL, 0, fmt, ap) ;
   va_end(ap) ;
 
   obuf = BlueHeapMalloc (len+1) ;
@@ -2019,17 +2019,17 @@ BlueCTrace(BLUE_CCHAR *fmt,...)
   BlueHeapFree (obuf) ;
 
   trace = BlueGetTrace() ;
-  if (trace != BLUE_NULL && ((len + 1) < BLUE_PARAM_TRACE_LEN))
+  if (trace != BLUE_NULL && ((len + 1) < OFC_TRACE_LEN))
     {
       BlueLock (trace->BlueCTraceLock) ;
-      olen = BLUE_C_MIN (len, BLUE_PARAM_TRACE_LEN - 
+      olen = BLUE_C_MIN (len, OFC_TRACE_LEN - 
 			 trace->BlueCTraceOffset - 1) ;
       BlueCmemcpy (trace->BlueCTraceBuf + trace->BlueCTraceOffset, 
 		   obuf2, olen) ;
       *(trace->BlueCTraceBuf + trace->BlueCTraceOffset + olen) = '\0' ;
 
       trace->BlueCTraceOffset += (olen + 1) ;
-      if ((trace->BlueCTraceOffset) == BLUE_PARAM_TRACE_LEN)
+      if ((trace->BlueCTraceOffset) == OFC_TRACE_LEN)
 	trace->BlueCTraceOffset = 0 ;
 
       len -= olen ;
@@ -2064,7 +2064,7 @@ BLUE_CORE_LIB BLUE_VOID BlueCDumpTrace(BLUE_VOID)
 	  olen = BlueCstrlen (obuf) ;
 	  BlueCprintf ("%s", obuf) ;
 	  off += (olen + 1) ;
-	  if (off == BLUE_PARAM_TRACE_LEN)
+	  if (off == OFC_TRACE_LEN)
 	    off = 0 ;
 	} 
       while (off != trace->BlueCTraceOffset) ;
@@ -2077,11 +2077,11 @@ BLUE_CORE_LIB BLUE_VOID BlueCDumpTrace(BLUE_VOID)
 #define atohex(a) ((a) >= '0' && (a) <= '9' ? ((a) - '0') : \
     (a) >= 'a' && (a) <= 'f' ? ((a) - 'a' + 10) : ((a) - 'A' + 10))
 
-BLUE_VOID 
-BlueCuuidtoa (BLUE_UUID uuid, BLUE_CHAR *out)
+OFC_VOID
+BlueCuuidtoa (OFC_UUID uuid, OFC_CHAR *out)
 {
-  BLUE_INT i ;
-  BLUE_INT val ;
+  OFC_INT i ;
+  OFC_INT val ;
 
   for (i = 0 ; i < 4 ; i++)
     {
@@ -2120,11 +2120,11 @@ BlueCuuidtoa (BLUE_UUID uuid, BLUE_CHAR *out)
   *out++ = '\0' ;
 }
 
-BLUE_VOID 
-BlueCatouuid (const BLUE_CHAR *in, BLUE_UUID uuid)
+OFC_VOID
+BlueCatouuid (const OFC_CHAR *in, OFC_UUID uuid)
 {
-  BLUE_INT i ;
-  BLUE_INT val ;
+  OFC_INT i ;
+  OFC_INT val ;
 
   for (i = 0 ; i < 4 ; i++)
     {

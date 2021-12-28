@@ -12,11 +12,11 @@
 /**
  * The definition of the 32 bit handle
  */
-typedef BLUE_DWORD_PTR BLUE_HANDLE ;
+typedef OFC_DWORD_PTR BLUE_HANDLE ;
 /**
  * The definition of the 16 bit handle
  */
-typedef BLUE_UINT16 BLUE_HANDLE16 ;
+typedef OFC_UINT16 BLUE_HANDLE16 ;
 
 /**
  * An Invalid 32 bit handle Handle
@@ -102,8 +102,8 @@ extern "C"
    * \returns
    * The Handle
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueHandleCreate (BLUE_HANDLE_TYPE hType, BLUE_VOID *context) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueHandleCreate (BLUE_HANDLE_TYPE hType, OFC_VOID *context) ;
   /**
    * Increase the reference count of a handle and return the context
    *
@@ -113,9 +113,9 @@ extern "C"
    * \returns
    * The context for the handle
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueHandleLock (BLUE_HANDLE handle) ;
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueHandleLockEx (BLUE_HANDLE handle, BLUE_HANDLE_TYPE type) ;
   /**
    * Decrement the reference count of a handle
@@ -127,7 +127,7 @@ extern "C"
    * If the handle is marked to be destroyed and the decrement results in
    * the reference count reaching 0, the handle will be freed
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueHandleUnlock (BLUE_HANDLE handle) ;
   /**
    * Mark a handle to be destroyed
@@ -140,7 +140,7 @@ extern "C"
    * be marked for destruction.  If no references are outstanding, the 
    * handle will be destroyed immediately.
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueHandleDestroy (BLUE_HANDLE handle) ;
   /**
    * Associate a handle with an application
@@ -160,7 +160,7 @@ extern "C"
    * the scheduler knows which application to service when an event occurs
    * on a specific handle
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueHandleSetApp (BLUE_HANDLE hHandle, BLUE_HANDLE hApp, BLUE_HANDLE hSet) ;
   /**
    * Return the application associated with a handle
@@ -173,7 +173,7 @@ extern "C"
    *
    * \see BlueHandleSetApp
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
+  OFC_CORE_LIB BLUE_HANDLE
   BlueHandleGetApp (BLUE_HANDLE hHandle) ;
   /**
    * Return the Wait Set that this handle is part of
@@ -186,7 +186,7 @@ extern "C"
    *
    * \see BlueHandleSetApp
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
+  OFC_CORE_LIB BLUE_HANDLE
   BlueHandleGetWaitSet (BLUE_HANDLE hHandle) ;
   /**
    * Get the handle type
@@ -197,7 +197,7 @@ extern "C"
    * \returns
    * The type of the handle
    */
-  BLUE_CORE_LIB BLUE_HANDLE_TYPE 
+  OFC_CORE_LIB BLUE_HANDLE_TYPE
   BlueHandleGetType (BLUE_HANDLE hHandle) ;
   /**
    * Initialize the 16 bit handle support. 
@@ -205,13 +205,13 @@ extern "C"
    * This should be called at system initialization/startup time to 
    * create the handle database and initialize the check digits.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHandle16Init (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHandle16Init (OFC_VOID) ;
   /**
    * Destroy the 16 bit handle structures
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueHandle16Free (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueHandle16Free (OFC_VOID) ;
   /**
    * Create a 16 bit handle and associate with a context
    *
@@ -221,15 +221,15 @@ extern "C"
    * \returns
    * The 16 bit handle
    */
-  BLUE_CORE_LIB BLUE_HANDLE16 
-  BlueHandle16Create (BLUE_VOID *context) ;
+  OFC_CORE_LIB BLUE_HANDLE16
+  BlueHandle16Create (OFC_VOID *context) ;
   /**
    * Destroy a 16 bit handle
    *
    * \param hHandle
    * The 16 bit handle to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueHandle16Destroy (BLUE_HANDLE16 hHandle) ;
   /**
    * Reference a 16 bit handle
@@ -242,9 +242,9 @@ extern "C"
    *
    * \returns
    * A pointer to the context associated with the handle.  If the handle is 
-   * invalid, BLUE_NULL is returned.
+   * invalid, OFC_NULL is returned.
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueHandle16Lock (BLUE_HANDLE16 hHandle) ;
   /**
    * Dereference a 16 bit handle
@@ -256,7 +256,7 @@ extern "C"
    * If the reference count reaches zero and the handle is marked for 
    * destruction the handle will be released.
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueHandle16Unlock (BLUE_HANDLE16 hHandle) ;
 
 #if defined(BLUE_PARAM_HANDLE_DEBUG)

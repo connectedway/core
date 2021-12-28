@@ -30,21 +30,21 @@ extern "C"
    * \returns
    * A Millisecond Tick Count
    */
-  BLUE_MSTIME BlueTimeGetNowImpl(BLUE_VOID) ;
+  OFC_MSTIME BlueTimeGetNowImpl(OFC_VOID) ;
   /**
-   * Get Time of Day in BLUE_FILETIME format
+   * Get Time of Day in OFC_FILETIME format
    *
    * \param now
    * Pointer to where to store the current file time
    */
-  BLUE_VOID BlueTimeGetFileTimeImpl (BLUE_FILETIME *now) ;
+  OFC_VOID BlueTimeGetFileTimeImpl (OFC_FILETIME *now) ;
   /**
    * Get The local time zone offset from UTC
    *
    * \returns
    * The number of minutes from UTC that this timezone is in
    */
-  BLUE_UINT16 BlueTimeGetTimeZoneImpl (BLUE_VOID) ;
+  OFC_UINT16 BlueTimeGetTimeZoneImpl (OFC_VOID) ;
   /**
    * Convert a File Time to a DOS Date Time
    *
@@ -58,12 +58,12 @@ extern "C"
    * Pointer to Fat Seconds Word
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_BOOL 
-  BlueFileTimeToDosDateTimeImpl (const BLUE_FILETIME *lpFileTime,
-				 BLUE_WORD *lpFatDate,
-				 BLUE_WORD *lpFatTime) ;
+  OFC_BOOL
+  BlueFileTimeToDosDateTimeImpl (const OFC_FILETIME *lpFileTime,
+                                 OFC_WORD *lpFatDate,
+                                 OFC_WORD *lpFatTime) ;
   /**
    * Convert a DOS Date Time to a File Time
    *
@@ -77,19 +77,19 @@ extern "C"
    * Pointer to where to store the file time
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_BOOL 
-  BlueDosDateTimeToFileTimeImpl (BLUE_WORD FatDate, 
-				 BLUE_WORD FatTime,
-				 BLUE_FILETIME *lpFileTime) ;
+  OFC_BOOL
+  BlueDosDateTimeToFileTimeImpl (OFC_WORD FatDate,
+                                 OFC_WORD FatTime,
+                                 OFC_FILETIME *lpFileTime) ;
   /**
    * Returns Number of US of runtime
    *
    * \returns
    * Runtime in us
    */
-  BLUE_MSTIME BlueTimeGetRuntimeImpl (BLUE_VOID) ;
+  OFC_MSTIME BlueTimeGetRuntimeImpl (OFC_VOID) ;
 
 #if defined(__cplusplus)
 }

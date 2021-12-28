@@ -70,11 +70,11 @@ extern "C"
    * endianess.
    *
    * \returns
-   * BLUE_TRUE if the bind was successful, BLUE_FALSE otherwise.
+   * OFC_TRUE if the bind was successful, OFC_FALSE otherwise.
    */
-  BLUE_BOOL 
+  OFC_BOOL
   BlueSocketImplBind (BLUE_HANDLE hSocket, const BLUE_IPADDR *ip,
-		      BLUE_UINT16 port) ;
+                      OFC_UINT16 port) ;
   /**
    * Close a socket
    *
@@ -84,9 +84,9 @@ extern "C"
    * Socket to close
    *
    * \returns
-   * BLUE_TRUE if socket is closed, BLUE_FALSE otherwise.
+   * OFC_TRUE if socket is closed, OFC_FALSE otherwise.
    */
-  BLUE_BOOL 
+  OFC_BOOL
   BlueSocketImplClose (BLUE_HANDLE hSocket) ;
   /**
    * Connect to a remote
@@ -103,11 +103,11 @@ extern "C"
    * remote port to connect to.  Should be specified in platform endianess.
    *
    * \returns
-   * BLUE_TRUE if connect initiated.  BLUE_FALSE otherwise
+   * OFC_TRUE if connect initiated.  OFC_FALSE otherwise
    */
-  BLUE_BOOL 
-  BlueSocketImplConnect (BLUE_HANDLE hSocket, 
-			 const BLUE_IPADDR *ip, BLUE_UINT16 port) ;
+  OFC_BOOL
+  BlueSocketImplConnect (BLUE_HANDLE hSocket,
+                         const BLUE_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Listen for an incoming connection
    *
@@ -120,10 +120,10 @@ extern "C"
    * Number of simulatenous connections to allow
    *
    * \returns
-   * BLUE_TRUE if socket is listening, BLUE_FALSE otherwise.
+   * OFC_TRUE if socket is listening, OFC_FALSE otherwise.
    */
-  BLUE_BOOL 
-  BlueSocketImplListen (BLUE_HANDLE hSocket, BLUE_INT backlog) ;
+  OFC_BOOL
+  BlueSocketImplListen (BLUE_HANDLE hSocket, OFC_INT backlog) ;
   /**
    * Accept an incoming connection
    *
@@ -145,7 +145,7 @@ extern "C"
    */  
   BLUE_HANDLE 
   BlueSocketImplAccept (BLUE_HANDLE hSocket,
-			BLUE_IPADDR *ip, BLUE_UINT16 *port) ;
+                        BLUE_IPADDR *ip, OFC_UINT16 *port) ;
   /**
    * Resuse ip address and port
    *
@@ -158,10 +158,10 @@ extern "C"
    * Whether to allow or disallow reuse
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_BOOL 
-  BlueSocketImplReuseAddr (BLUE_HANDLE hSocket, BLUE_BOOL onoff) ;
+  OFC_BOOL
+  BlueSocketImplReuseAddr (BLUE_HANDLE hSocket, OFC_BOOL onoff) ;
   /**
    * Set a socket as non blocking
    *
@@ -171,13 +171,13 @@ extern "C"
    * Socket to set nonblocking or blocking
    *
    * \param onoff
-   * Whether to set to nonblocking (BLUE_TRUE) or blocking (BLUE_FALSE)
+   * Whether to set to nonblocking (OFC_TRUE) or blocking (OFC_FALSE)
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_BOOL 
-  BlueSocketImplNoBlock (BLUE_HANDLE hSocket, BLUE_BOOL onoff) ;
+  OFC_BOOL
+  BlueSocketImplNoBlock (BLUE_HANDLE hSocket, OFC_BOOL onoff) ;
   /**
    * Test if a socket is connected.
    *
@@ -190,9 +190,9 @@ extern "C"
    * The socket to test if it's connected.
    * 
    * \returns
-   * BLUE_TRUE if connected, BLUE_FALSE otherwise.
+   * OFC_TRUE if connected, OFC_FALSE otherwise.
    */
-  BLUE_BOOL 
+  OFC_BOOL
   BlueSocketImplConnected (BLUE_HANDLE hSocket) ;
   /**
    * Send data on a socket
@@ -211,9 +211,9 @@ extern "C"
    * \returns
    * Number of bytes sent, or -1 if error.
    */
-  BLUE_SIZET 
-  BlueSocketImplSend (BLUE_HANDLE hSocket, const BLUE_VOID *buf,
-		      BLUE_SIZET len) ;
+  OFC_SIZET
+  BlueSocketImplSend (BLUE_HANDLE hSocket, const OFC_VOID *buf,
+                      OFC_SIZET len) ;
   /**
    * Send data on a datagram socket
    *
@@ -237,11 +237,11 @@ extern "C"
    * \returns
    * Number of bytes sent or -1 if error
    */
-  BLUE_SIZET 
-  BlueSocketImplSendTo (BLUE_HANDLE hSocket, const BLUE_VOID *buf,
-			BLUE_SIZET len, 
-			const BLUE_IPADDR *ip,
-			BLUE_UINT16 port) ;
+  OFC_SIZET
+  BlueSocketImplSendTo (BLUE_HANDLE hSocket, const OFC_VOID *buf,
+                        OFC_SIZET len,
+                        const BLUE_IPADDR *ip,
+                        OFC_UINT16 port) ;
   /**
    * Receive data from a socket
    *
@@ -259,10 +259,10 @@ extern "C"
    * \returns
    * Number of bytes read, or -1 if error.
    */
-  BLUE_SIZET 
-  BlueSocketImplRecv (BLUE_HANDLE hSocket, 
-		      BLUE_VOID *buf, 
-		      BLUE_SIZET len) ;
+  OFC_SIZET
+  BlueSocketImplRecv (BLUE_HANDLE hSocket,
+                      OFC_VOID *buf,
+                      OFC_SIZET len) ;
   /**
    * Receive data from a datagram socket
    *
@@ -286,12 +286,12 @@ extern "C"
    * \returns
    * Number of bytes received, or -1 if error.
    */
-  BLUE_SIZET 
+  OFC_SIZET
   BlueSocketImplRecvFrom (BLUE_HANDLE hSocket,
-			  BLUE_VOID *buf,
-			  BLUE_SIZET len,
-			  BLUE_IPADDR *ip,
-			  BLUE_UINT16 *port) ;
+                          OFC_VOID *buf,
+                          OFC_SIZET len,
+                          BLUE_IPADDR *ip,
+                          OFC_UINT16 *port) ;
   /**
    * Destroy a socket
    *
@@ -300,7 +300,7 @@ extern "C"
    * \param hSocket
    * Socket to destroy
    */
-  BLUE_VOID 
+  OFC_VOID
   BlueSocketImplDestroy (BLUE_HANDLE hSocket) ;
   /**
    * Test for an event on the socket
@@ -329,9 +329,9 @@ extern "C"
    * event mask to set
    *
    * \returns 
-   * BLUE_TRUE if event is set, otherwise BLUE_FALSE
+   * OFC_TRUE if event is set, otherwise OFC_FALSE
    */
-  BLUE_BOOL 
+  OFC_BOOL
   BlueSocketImplEnable (BLUE_HANDLE hSocket, 
 			BLUE_SOCKET_EVENT_TYPE type) ;
   /**
@@ -345,8 +345,8 @@ extern "C"
    * \param size
    * size to set the buffer to
    */
-  BLUE_VOID 
-  BlueSocketImplSetRecvSize (BLUE_HANDLE hSocket, BLUE_INT size) ;
+  OFC_VOID
+  BlueSocketImplSetRecvSize (BLUE_HANDLE hSocket, OFC_INT size) ;
   /**
    * Set the sockets send buffer size
    *
@@ -358,8 +358,8 @@ extern "C"
    * \param size
    * size to set the buffer to
    */
-  BLUE_VOID 
-  BlueSocketImplSetSendSize (BLUE_HANDLE hSocket, BLUE_INT size) ;
+  OFC_VOID
+  BlueSocketImplSetSendSize (BLUE_HANDLE hSocket, OFC_INT size) ;
   /**
    * Get the Implementations Event Handle
    *
@@ -386,16 +386,16 @@ extern "C"
    * Poitner to the returned socketaddress structure for the remote side
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_BOOL 
+  OFC_BOOL
   BlueSocketImplGetAddresses (BLUE_HANDLE hSock,
 			      BLUE_SOCKADDR *local, 
 			      BLUE_SOCKADDR *remote) ;
-  BLUE_INT BlueSocketImplGetFD (BLUE_HANDLE hSocket)  ;
-  BLUE_UINT16 BlueSocketImplGetEvent (BLUE_HANDLE hSocket) ;
-  BLUE_VOID BlueSocketImplSetEvent (BLUE_HANDLE hSocket,
-				      BLUE_UINT16 revents) ;
+  OFC_INT BlueSocketImplGetFD (BLUE_HANDLE hSocket)  ;
+  OFC_UINT16 BlueSocketImplGetEvent (BLUE_HANDLE hSocket) ;
+  OFC_VOID BlueSocketImplSetEvent (BLUE_HANDLE hSocket,
+                                   OFC_UINT16 revents) ;
 #if defined(__cplusplus)
 }
 #endif

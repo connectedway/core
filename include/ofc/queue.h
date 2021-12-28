@@ -28,15 +28,15 @@ extern "C"
    * \returns
    * Handle to the linked list
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueQcreate (BLUE_VOID) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueQcreate (OFC_VOID) ;
   /**
    * Destroy a queue
    *
    * \param qHead
    * Head of queue
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueQdestroy (BLUE_HANDLE qHead) ;
   /**
    * Add an element to the end of the list
@@ -47,8 +47,8 @@ extern "C"
    * \param qElement 
    * Pointer to element to add to list
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueQenqueue (BLUE_HANDLE qHead, BLUE_VOID *qElement) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueQenqueue (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Remove an element from the front of the list
    *
@@ -56,9 +56,9 @@ extern "C"
    * Pointer to list header
    * 
    * \returns
-   * Item at the front or BLUE_NULL
+   * Item at the front or OFC_NULL
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueQdequeue (BLUE_HANDLE qHead) ;
   /**
    * See if queue is empty
@@ -67,9 +67,9 @@ extern "C"
    * Queue Head
    *
    * \returns
-   * BLUE_TRUE if empty, BLUE_FALSE otherwise
+   * OFC_TRUE if empty, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueQempty (BLUE_HANDLE qHead) ;
   /**
    * Return the head of the linked list
@@ -80,7 +80,7 @@ extern "C"
    * \returns
    * Element that was at the front of the list
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueQfirst (BLUE_HANDLE qHead) ;
   /**
    * Return the next element on the list
@@ -94,8 +94,8 @@ extern "C"
    * \returns
    * Pointer to the next element
    */
-  BLUE_CORE_LIB BLUE_VOID *
-  BlueQnext (BLUE_HANDLE qHead, BLUE_VOID *qElement) ;
+  OFC_CORE_LIB OFC_VOID *
+  BlueQnext (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Unlink the current element from the list
    *
@@ -105,8 +105,8 @@ extern "C"
    * \param qElement
    * Pointer to the current element
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueQunlink (BLUE_HANDLE qHead, BLUE_VOID *qElement) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueQunlink (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Clear the contents of a linked list
    *
@@ -120,7 +120,7 @@ extern "C"
    * either only static information is contained in the list, or the dynamic
    * information is freed someother way.
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueQclear (BLUE_HANDLE qHandle) ;
 
 #if defined(__cplusplus)

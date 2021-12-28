@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_EVENT_H__)
-#define __BLUE_EVENT_H__
+#if !defined(__OFC_EVENT_H__)
+#define __OFC_EVENT_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -16,10 +16,10 @@
  */
 typedef enum
   {
-    BLUE_EVENT_MANUAL,		/**< Arming of the event is manual  */
-    BLUE_EVENT_AUTO		/**< Arming of the event is automatic
+    OFC_EVENT_MANUAL,		/**< Arming of the event is manual  */
+    OFC_EVENT_AUTO		/**< Arming of the event is automatic
 				   It is reenabled after processing */
-  } BLUE_EVENT_TYPE ;
+  } OFC_EVENT_TYPE ;
 
 #if defined(__cplusplus)
 extern "C"
@@ -34,8 +34,8 @@ extern "C"
    * \returns
    * Handle to the event
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueEventCreate (BLUE_EVENT_TYPE eventType) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  ofc_event_create (OFC_EVENT_TYPE eventType) ;
   /**
    * Return the type of event
    *
@@ -45,8 +45,8 @@ extern "C"
    * \returns
    * The event type
    */
-  BLUE_CORE_LIB BLUE_EVENT_TYPE 
-  BlueEventGetType (BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB OFC_EVENT_TYPE
+  ofc_event_get_type (BLUE_HANDLE hEvent) ;
   /**
    * Set an event.  
    *
@@ -55,8 +55,8 @@ extern "C"
    * \param hEvent
    * The event to signal
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueEventSet (BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_event_set (BLUE_HANDLE hEvent) ;
   /**
    * Reset an Event
    *
@@ -65,8 +65,8 @@ extern "C"
    * \param hEvent
    * The event to rearm
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueEventReset (BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_event_reset (BLUE_HANDLE hEvent) ;
   /**
    * Test if an event has been signalled
    *
@@ -74,10 +74,10 @@ extern "C"
    * The event handle to test
    *
    * \returns
-   * BLUE_TRUE if set, BLUE_FALSE otherwise
+   * OFC_TRUE if set, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueEventTest (BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB OFC_BOOL
+  ofc_event_test (BLUE_HANDLE hEvent) ;
   /**
    * Destroy an Event
    *
@@ -85,16 +85,16 @@ extern "C"
    * The handle to the event to destroy
    * Nothing
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueEventDestroy (BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_event_destroy (BLUE_HANDLE hEvent) ;
   /**
    * Wait for an event to fire.
    *
    * If the event is an automatic event, it is automatically reset after
    * this return returns
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueEventWait (BLUE_HANDLE hEvent) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_event_wait (BLUE_HANDLE hEvent) ;
 #if defined(__cplusplus)
 }
 #endif

@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -11,8 +11,8 @@
 #include "ofc/process.h"
 #include "ofc/impl/processimpl.h"
 
-BLUE_CORE_LIB BLUE_PROCESS_ID 
-BlueProcessGet (BLUE_VOID)
+OFC_CORE_LIB BLUE_PROCESS_ID
+BlueProcessGet (OFC_VOID)
 {
   BLUE_PROCESS_ID pid ;
 
@@ -20,9 +20,9 @@ BlueProcessGet (BLUE_VOID)
   return (pid) ;
 }
 
-BLUE_CORE_LIB BLUE_HANDLE 
-BlueProcessExec (BLUE_CTCHAR *name, BLUE_TCHAR *uname,
-		 BLUE_INT argc, BLUE_CHAR **argv) 
+OFC_CORE_LIB BLUE_HANDLE
+BlueProcessExec (OFC_CTCHAR *name, OFC_TCHAR *uname,
+                 OFC_INT argc, OFC_CHAR **argv)
 {
   BLUE_HANDLE hProcess ;
 
@@ -31,7 +31,7 @@ BlueProcessExec (BLUE_CTCHAR *name, BLUE_TCHAR *uname,
 }
 
 
-BLUE_CORE_LIB BLUE_PROCESS_ID 
+OFC_CORE_LIB BLUE_PROCESS_ID
 BlueProcessGetId (BLUE_HANDLE hProcess)
 {
   BLUE_PROCESS_ID ret ;
@@ -40,29 +40,29 @@ BlueProcessGetId (BLUE_HANDLE hProcess)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueProcessTerm (BLUE_HANDLE hProcess) 
 {
   BlueProcessTermImpl (hProcess) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueProcessKill (BLUE_PROCESS_ID id)
 {
   BlueProcessKillImpl (id) ;
 }
 
-BLUE_CORE_LIB BLUE_BOOL 
+OFC_CORE_LIB OFC_BOOL
 BlueProcessTermTrap (BLUE_PROCESS_TRAP_HANDLER trap)
 {
-  BLUE_BOOL ret ;
+  OFC_BOOL ret ;
 
   ret = BlueProcessTermTrapImpl (trap) ;
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID
-BlueProcessCrash (BLUE_CCHAR *obuf)
+OFC_CORE_LIB OFC_VOID
+BlueProcessCrash (OFC_CCHAR *obuf)
 {
   BlueProcessCrashImpl (obuf) ;
 }

@@ -22,13 +22,13 @@
 static BLUE_HANDLE hScheduler;
 static BLUE_HANDLE hDone;
 
-static BLUE_INT
-test_startup_persist(BLUE_VOID)
+static OFC_INT
+test_startup_persist(OFC_VOID)
 {
-  BLUE_INT ret = 1;
-  BLUE_TCHAR path[BLUE_MAX_PATH] ;
+  OFC_INT ret = 1;
+  OFC_TCHAR path[OFC_MAX_PATH] ;
 
-  if (BlueEnvGet (BLUE_ENV_HOME, path, BLUE_MAX_PATH) == BLUE_TRUE)
+  if (ofc_env_get (OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE)
     {
       BlueFrameworkLoad (path);
       ret = 0;
@@ -36,9 +36,9 @@ test_startup_persist(BLUE_VOID)
   return (ret);
 }
 
-static BLUE_INT test_startup_default(BLUE_VOID)
+static OFC_INT test_startup_default(OFC_VOID)
 {
-  static BLUE_UUID uuid =
+  static OFC_UUID uuid =
     {
      0x04, 0x5d, 0x88, 0x8a, 0xeb, 0x1c, 0xc9, 0x11,
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
@@ -52,24 +52,24 @@ static BLUE_INT test_startup_default(BLUE_VOID)
   return(0);
 }
 
-static BLUE_INT test_startup(BLUE_VOID)
+static OFC_INT test_startup(OFC_VOID)
 {
-  BLUE_INT ret;
+  OFC_INT ret;
   BlueFrameworkInit();
-#if defined(BLUE_PARAM_PERSIST)
+#if defined(OFC_PERSIST)
   ret = test_startup_persist();
 #else
   ret = test_startup_default();
 #endif
   hScheduler = BlueSchedCreate();
-  hDone = BlueEventCreate(BLUE_EVENT_AUTO);
+  hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
 }
 
-static BLUE_VOID test_shutdown(BLUE_VOID)
+static OFC_VOID test_shutdown(OFC_VOID)
 {
-  BlueEventDestroy(hDone);
+  ofc_event_destroy(hDone);
   BlueSchedQuit(hScheduler);
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -89,31 +89,31 @@ typedef struct
   TIMER_TEST_STATE state ;
   BLUE_HANDLE hTimer ;
   BLUE_HANDLE scheduler ;
-  BLUE_INT count ;
+  OFC_INT count ;
 } BLUE_TIMER_TEST ;
 
-static BLUE_VOID TimerTestPreSelect (BLUE_HANDLE app) ;
+static OFC_VOID TimerTestPreSelect (BLUE_HANDLE app) ;
 static BLUE_HANDLE TimerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent) ;
-static BLUE_VOID TimerTestDestroy (BLUE_HANDLE app) ;
+static OFC_VOID TimerTestDestroy (BLUE_HANDLE app) ;
 
-static BLUEAPP_TEMPLATE TimerTestAppDef =
+static OFC_APP_TEMPLATE TimerTestAppDef =
   {
    "Timer Test Application",
    &TimerTestPreSelect,
    &TimerTestPostSelect,
    &TimerTestDestroy,
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
    BLUE_NULL
 #endif
 } ;
 
-static BLUE_VOID TimerTestPreSelect (BLUE_HANDLE app)
+static OFC_VOID TimerTestPreSelect (BLUE_HANDLE app)
 {
   BLUE_TIMER_TEST *timerTest ;
   TIMER_TEST_STATE entry_state ;
 
-  timerTest = BlueAppGetData (app) ;
-  if (timerTest != BLUE_NULL)
+  timerTest = ofc_app_get_data (app) ;
+  if (timerTest != OFC_NULL)
     {
       do
 	{
@@ -146,14 +146,14 @@ static BLUE_VOID TimerTestPreSelect (BLUE_HANDLE app)
 static BLUE_HANDLE TimerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent) 
 {
   BLUE_TIMER_TEST *timerTest ;
-  BLUE_BOOL progress ;
+  OFC_BOOL progress ;
 
-  timerTest = BlueAppGetData (app) ;
-  if (timerTest != BLUE_NULL)
+  timerTest = ofc_app_get_data (app) ;
+  if (timerTest != OFC_NULL)
     {
-      for (progress = BLUE_TRUE ; progress && !BlueAppDestroying(app);)
+      for (progress = OFC_TRUE ; progress && !ofc_app_destroying(app);)
 	{
-	  progress = BLUE_FALSE ;
+	  progress = OFC_FALSE ;
 
 	  switch (timerTest->state)
 	    {
@@ -168,7 +168,7 @@ static BLUE_HANDLE TimerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent)
 		  timerTest->count++ ;
 		  if (timerTest->count >= TIMER_TEST_COUNT)
 		    {
-		      BlueAppKill (app) ;
+		      ofc_app_kill (app) ;
 		    }
 		  else
 		    BlueTimerSet (timerTest->hTimer, TIMER_TEST_INTERVAL) ;
@@ -180,12 +180,12 @@ static BLUE_HANDLE TimerTestPostSelect (BLUE_HANDLE app, BLUE_HANDLE hEvent)
   return (BLUE_HANDLE_NULL) ;
 }
 
-static BLUE_VOID TimerTestDestroy (BLUE_HANDLE app) 
+static OFC_VOID TimerTestDestroy (BLUE_HANDLE app)
 {
   BLUE_TIMER_TEST *timerTest ;
 
-  timerTest = BlueAppGetData (app) ;
-  if (timerTest != BLUE_NULL)
+  timerTest = ofc_app_get_data (app) ;
+  if (timerTest != OFC_NULL)
     {
       switch (timerTest->state)
 	{
@@ -224,12 +224,12 @@ TEST(timer, test_timer)
   timerTest->state = TIMER_TEST_STATE_IDLE ;
   timerTest->scheduler = hScheduler ;
 
-  hApp = BlueAppCreate (hScheduler, &TimerTestAppDef, timerTest) ;
+  hApp = ofc_app_create (hScheduler, &TimerTestAppDef, timerTest) ;
 
   if (hDone != BLUE_HANDLE_NULL)
     {
-      BlueAppSetWait (hApp, hDone) ;
-      BlueEventWait(hDone);
+      ofc_app_set_wait (hApp, hDone) ;
+      ofc_event_wait(hDone);
     }
 }	  
 

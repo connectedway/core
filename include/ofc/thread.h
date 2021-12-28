@@ -83,7 +83,7 @@ typedef enum
 /**
  * The prototype for the thread function
  */
-typedef BLUE_DWORD(BLUE_THREAD_FN)(BLUE_HANDLE hThread, BLUE_VOID *context) ;
+typedef OFC_DWORD(BLUE_THREAD_FN)(BLUE_HANDLE hThread, OFC_VOID *context) ;
 
 #if defined(__cplusplus)
 extern "C"
@@ -109,12 +109,12 @@ extern "C"
    *
    * \returns The thread handle
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueThreadCreate (BLUE_THREAD_FN scheduler, 
-		    BLUE_CCHAR *thread_name, BLUE_INT thread_instance,
-		    BLUE_VOID *context,
-		    BLUE_THREAD_DETACHSTATE detachstate,
-		    BLUE_HANDLE hNotify) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueThreadCreate (BLUE_THREAD_FN scheduler,
+                    OFC_CCHAR *thread_name, OFC_INT thread_instance,
+                    OFC_VOID *context,
+                    BLUE_THREAD_DETACHSTATE detachstate,
+                    BLUE_HANDLE hNotify) ;
   /**
    * Delete a thread
    *
@@ -125,7 +125,7 @@ extern "C"
    *
    * \param hThread Handle to the thread to delete
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueThreadDelete (BLUE_HANDLE hThread) ;
   /**
    * Wait for a thread to exit
@@ -133,7 +133,7 @@ extern "C"
    * \param hThread
    * Handle to the thread to wait for
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueThreadWait (BLUE_HANDLE hThread) ;
   /**
    * Check whether thread deletion has been scheduled.
@@ -141,9 +141,9 @@ extern "C"
    * This function will return whether someone has called BlueThreadDelete
    *
    * \param hThread Handle of the thread to check
-   * \returns BLUE_TRUE if deletion is scheduled, BLUE_FALSE otherwise
+   * \returns OFC_TRUE if deletion is scheduled, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueThreadIsDeleting (BLUE_HANDLE hThread) ;
   /**
    * Sleep for a specified number of milliseconds
@@ -151,8 +151,8 @@ extern "C"
    * \param milliseconds Number of milliseconds to sleep.  BLUE_INFINITE will
    * sleep forever.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueSleep (BLUE_DWORD milliseconds) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueSleep (OFC_DWORD milliseconds) ;
   /**
    * Create a Thread Specific Variable
    *
@@ -164,9 +164,9 @@ extern "C"
    *
    * \returns Variable ID
    */
-  BLUE_CORE_LIB BLUE_DWORD 
-  BlueThreadCreateVariable (BLUE_VOID) ;
-  BLUE_VOID BlueThreadDestroyVariable (BLUE_DWORD dkey);
+  OFC_CORE_LIB OFC_DWORD
+  BlueThreadCreateVariable (OFC_VOID) ;
+  OFC_VOID BlueThreadDestroyVariable (OFC_DWORD dkey);
   /**
    * Set the value of a thread specific variable
    *
@@ -174,8 +174,8 @@ extern "C"
    * \param val Pointer to a structure that becomes the variables value
    * If setting a 32 bit value, the pointer can be cast to a DWORD.
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueThreadSetVariable (BLUE_DWORD var, BLUE_DWORD_PTR val) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadSetVariable (OFC_DWORD var, OFC_DWORD_PTR val) ;
   /**
    * Get the value of a variable
    *
@@ -183,8 +183,8 @@ extern "C"
    * \returns Pointer to the variable value structure.  If the variable value
    * was a 32 bit value, this can be cast to a DWORD value.
    */
-  BLUE_CORE_LIB BLUE_DWORD_PTR
-  BlueThreadGetVariable (BLUE_DWORD var) ;
+  OFC_CORE_LIB OFC_DWORD_PTR
+  BlueThreadGetVariable (OFC_DWORD var) ;
   /**
    * Create Local Storage for Local Variables
    *
@@ -194,23 +194,23 @@ extern "C"
    * The routine should be called before any call using the BlueFile API 
    * (any call that manipulates last error).
    */
-  BLUE_CORE_LIB BLUE_VOID
-  BlueThreadCreateLocalStorage (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadCreateLocalStorage (OFC_VOID) ;
   /**
    * Destroys Local Storage for a thread
    */
-  BLUE_CORE_LIB BLUE_VOID
-  BlueThreadDestroyLocalStorage (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadDestroyLocalStorage (OFC_VOID) ;
   /**
    * Initialize the Blue Thread Facility
    */
-  BLUE_CORE_LIB BLUE_VOID
-  BlueThreadInit (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueThreadInit (OFC_VOID) ;
   /**
    * Destructor for thread facility
    */
-   BLUE_CORE_LIB BLUE_VOID
-   BlueThreadDestroy (BLUE_VOID) ;
+   OFC_CORE_LIB OFC_VOID
+   BlueThreadDestroy (OFC_VOID) ;
   /**
    * Set the wait set of a thread
    *
@@ -222,7 +222,7 @@ extern "C"
    * \param wait_set
    * Handle to the wait set
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueThreadSetWaitSet (BLUE_HANDLE hThread, BLUE_HANDLE wait_set) ;
 
 #if defined(__cplusplus)

@@ -109,7 +109,7 @@ typedef struct _BLUE_MESSAGE
   /**
    * Size of Message
    */
-  BLUE_SIZET length;
+  OFC_SIZET length;
   /**
    * Source or destination IP address of Message for UDP
    */
@@ -117,53 +117,53 @@ typedef struct _BLUE_MESSAGE
   /**
    * Source or destination port of message for UDP
    */
-  BLUE_UINT16 port;
+  OFC_UINT16 port;
   /**
    * Message Data
    */
-  BLUE_CHAR *msg;
+  OFC_CHAR *msg;
   /**
    * Current Pointer into Message
    */
-  BLUE_INT offset ;
+  OFC_INT offset ;
   /**
    * Current Size of Message
    */
-  BLUE_SIZET send_size ;
+  OFC_SIZET send_size ;
   /** 
    * Number of bytes still to be sent
    */
-  BLUE_SIZET count ;
+  OFC_SIZET count ;
   /**
    * FIFO 1 Pointer.  FIFOs are useful for certain protocols that place
    * data sequentially at a particular offset in the message.
    */
-  BLUE_INT FIFO1 ;
+  OFC_INT FIFO1 ;
   /**
    * The amount of space left in the fifo
    */
-  BLUE_SIZET FIFO1rem ;
+  OFC_SIZET FIFO1rem ;
   /**
    * FIFO base
    */
-  BLUE_INT FIFO1base ;
+  OFC_INT FIFO1base ;
   /**
    * FIFO size
    */
-  BLUE_INT FIFO1size ;
+  OFC_INT FIFO1size ;
   /**
    * Parameter offset
    */
-  BLUE_INT param_offset ;
+  OFC_INT param_offset ;
   /**
    * Parameter Length
    */
-  BLUE_SIZET param_len ;
+  OFC_SIZET param_len ;
   /**
    * Message Base
    */
-  BLUE_INT base ;
-#if defined(BLUE_PARAM_MESSAGE_DEBUG)
+  OFC_INT base ;
+#if defined(OFC_MESSAGE_DEBUG)
   /**
    * link to next message on debug lists
    */
@@ -184,15 +184,15 @@ typedef struct _BLUE_MESSAGE
   BLUE_VOID *caller ;
 #endif
 #endif
-  BLUE_VOID *context ;
-  BLUE_BOOL destroy_after_send ;
+  OFC_VOID *context ;
+  OFC_BOOL destroy_after_send ;
 } BLUE_MESSAGE ;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-#if defined(BLUE_PARAM_MESSAGE_DEBUG)
+#if defined(OFC_MESSAGE_DEBUG)
   /**
    * Initialize the message debugging facility
    */
@@ -216,10 +216,10 @@ extern "C"
    * \returns
    * Pointer to message header
    */
-  BLUE_CORE_LIB BLUE_MESSAGE *
+  OFC_CORE_LIB BLUE_MESSAGE *
   BlueMessageCreate (MSG_ALLOC_TYPE msgType,
-		     BLUE_SIZET msgDataLength,
-		     BLUE_VOID *msgData) ;
+                     OFC_SIZET msgDataLength,
+                     OFC_VOID *msgData) ;
   /**
    * Creates a UDP stlye message
    *
@@ -241,19 +241,19 @@ extern "C"
    * \returns
    * Pointer to message header
    */
-  BLUE_CORE_LIB BLUE_MESSAGE *
+  OFC_CORE_LIB BLUE_MESSAGE *
   BlueDatagramCreate (MSG_ALLOC_TYPE msgType,
-		      BLUE_SIZET msgDataLength,
-		      BLUE_CHAR *msgData,
-		      BLUE_IPADDR *ip,
-		      BLUE_UINT16 port) ;
+                      OFC_SIZET msgDataLength,
+                      OFC_CHAR *msgData,
+                      BLUE_IPADDR *ip,
+                      OFC_UINT16 port) ;
   /**
    * Destroy a message
    *
    * \param msg
    * The message header to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueMessageDestroy (BLUE_MESSAGE *msg) ;
   /**
    * Test whether all bytes have been sent or received.
@@ -262,9 +262,9 @@ extern "C"
    * The message to test whether the buffers have been drained
    *
    * \returns
-   * BLUE_TRUE if the message is done, BLUE_FALSE otherwise
+   * OFC_TRUE if the message is done, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueMessageDone (BLUE_MESSAGE *msg) ;
   /**
    * Return the address of the begining of message buffer.
@@ -275,7 +275,7 @@ extern "C"
    * \returns
    * Pointer to the message buffer
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueMessageData (BLUE_MESSAGE *msg) ;
   /**
    * Return the data pointer, and remove from the message
@@ -286,7 +286,7 @@ extern "C"
    * \returns
    * Pointer to the data
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueMessageUnloadData (BLUE_MESSAGE *msg) ;
   /**
    * Get a pointer to an offset in a message
@@ -300,8 +300,8 @@ extern "C"
    * \returns
    * Pointer into the message
    */
-  BLUE_CORE_LIB BLUE_VOID *
-  BlueMessageGetPointer (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_VOID *
+  BlueMessageGetPointer (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Return the offset of the current byte pointer
    *
@@ -315,7 +315,7 @@ extern "C"
    * \returns
    * The offset
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageOffset (BLUE_MESSAGE *msg) ;
   /**
    * Set the send size.
@@ -330,8 +330,8 @@ extern "C"
    * \param size
    * The size of the send buffer
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageSetSendSize (BLUE_MESSAGE *msg, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageSetSendSize (BLUE_MESSAGE *msg, OFC_SIZET size) ;
   /**
    * Get the IP address and port of a received message
    *
@@ -344,8 +344,8 @@ extern "C"
    * \param port
    * the port that sent the message data
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageAddr (BLUE_MESSAGE *msg, BLUE_IPADDR *ip, BLUE_UINT16 *port) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageAddr (BLUE_MESSAGE *msg, BLUE_IPADDR *ip, OFC_UINT16 *port) ;
   /**
    * Set the destination IP address and port for a message
    *
@@ -358,8 +358,8 @@ extern "C"
    * \param port
    * the destination port
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageSetAddr (BLUE_MESSAGE *msg, BLUE_IPADDR *ip, BLUE_UINT16 port) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageSetAddr (BLUE_MESSAGE *msg, BLUE_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Reset message buffer pointers
    *
@@ -370,7 +370,7 @@ extern "C"
    * \param msg
    * The message to reset
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueMessageReset (BLUE_MESSAGE *msg) ;
   /**
    * Set the base offset of a message.
@@ -384,8 +384,8 @@ extern "C"
    * \param base
    * Offset to new base
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageSetBase (BLUE_MESSAGE *msg, BLUE_INT base) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageSetBase (BLUE_MESSAGE *msg, OFC_INT base) ;
   /**
    * Get the base of a message
    *
@@ -399,7 +399,7 @@ extern "C"
    * \returns
    * The message base
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageGetBase (BLUE_MESSAGE *msg) ;
   /**
    * Get the allocated size of the message buffer
@@ -410,7 +410,7 @@ extern "C"
    * \returns
    * The allocated size of the message buffer
    */
-  BLUE_CORE_LIB BLUE_SIZET 
+  OFC_CORE_LIB OFC_SIZET
   BlueMessageGetLength (BLUE_MESSAGE *msg) ;
   /**
    * Put a 16 bit value into the message in the correct endianess
@@ -425,10 +425,10 @@ extern "C"
    * The value to put in the message
    *
    * \returns
-   * BLUE_TRUE if the value was stored, BLUE_FALSE otherwise
+   * OFC_TRUE if the value was stored, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessagePutU16 (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_UINT16 value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessagePutU16 (BLUE_MESSAGE *msg, OFC_INT offset, OFC_UINT16 value) ;
   /**
    * Put an 8 bit value into the message in the correct endianess
    *
@@ -442,10 +442,10 @@ extern "C"
    * The value to put in the message
    *
    * \returns
-   * BLUE_TRUE if the value was stored, BLUE_FALSE otherwise
+   * OFC_TRUE if the value was stored, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessagePutU8 (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_UINT8 value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessagePutU8 (BLUE_MESSAGE *msg, OFC_INT offset, OFC_UINT8 value) ;
   /**
    * Put a 32 bit value into the message in the correct endianess
    *
@@ -459,10 +459,10 @@ extern "C"
    * The value to put in the message
    *
    * \returns
-   * BLUE_TRUE if the value was stored, BLUE_FALSE otherwise
+   * OFC_TRUE if the value was stored, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessagePutU32 (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_UINT32 value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessagePutU32 (BLUE_MESSAGE *msg, OFC_INT offset, OFC_UINT32 value) ;
   /**
    * Put a 64 bit value into the message in the correct endianess
    *
@@ -476,10 +476,10 @@ extern "C"
    * The value to put in the message
    *
    * \returns
-   * BLUE_TRUE if the value was stored, BLUE_FALSE otherwise
+   * OFC_TRUE if the value was stored, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessagePutU64 (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_UINT64 *value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessagePutU64 (BLUE_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value) ;
   /**
    * Put a wide or normal character string in the message
    *
@@ -493,10 +493,10 @@ extern "C"
    * String to put
    *
    * \returns 
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessagePutTStr (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_LPCTSTR str) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessagePutTStr (BLUE_MESSAGE *msg, OFC_INT offset, OFC_LPCTSTR str) ;
   /**
    * Put a wide or normal character string in the message, but limit to
    * a maximum count
@@ -514,11 +514,11 @@ extern "C"
    * Maximum characters to put
    *
    * \returns 
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessagePutTStrn (BLUE_MESSAGE *msg, BLUE_INT offset, 
-		       BLUE_LPCTSTR str, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessagePutTStrn (BLUE_MESSAGE *msg, OFC_INT offset,
+                       OFC_LPCTSTR str, OFC_SIZET len) ;
   /**
    * Get a wide or normal character string from a message.  Limit the
    * characters returned by a value.  This call will allocate a buffer
@@ -537,11 +537,11 @@ extern "C"
    * Maximum characters to get
    *
    * \returns 
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageGetTStrn (BLUE_MESSAGE *msg, BLUE_INT offset, 
-		       BLUE_LPTSTR *str, BLUE_SIZET max_len) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageGetTStrn (BLUE_MESSAGE *msg, OFC_INT offset,
+                       OFC_LPTSTR *str, OFC_SIZET max_len) ;
   /**
    * Get a wide or normal character string from a message.  Limit the
    * characters returned by a value.  This call will use a buffer provided
@@ -560,11 +560,11 @@ extern "C"
    * Maximum characters to get
    *
    * \returns 
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageGetTStrnx (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			BLUE_LPTSTR str, BLUE_SIZET max_len) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageGetTStrnx (BLUE_MESSAGE *msg, OFC_INT offset,
+                        OFC_LPTSTR str, OFC_SIZET max_len) ;
   /**
    * Get a wide or normal character string from a message.  The string
    * returned must be freed
@@ -579,10 +579,10 @@ extern "C"
    * Pointer to where to return the string pointer
    *
    * \returns 
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageGetTStr (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_LPTSTR *str) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageGetTStr (BLUE_MESSAGE *msg, OFC_INT offset, OFC_LPTSTR *str) ;
   /**
    * Put a string into a message
    *
@@ -596,10 +596,10 @@ extern "C"
    * Pointer to string to put
    *
    * \returns
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessagePutCStr (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_LPCSTR str) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessagePutCStr (BLUE_MESSAGE *msg, OFC_INT offset, OFC_LPCSTR str) ;
   /**
    * Return the size of a string at a particular offset
    *
@@ -615,9 +615,9 @@ extern "C"
    * \returns
    * size of string
    */
-  BLUE_CORE_LIB BLUE_SIZET 
-  BlueMessageGetTStringLen (BLUE_MESSAGE *msg, BLUE_INT offset,
-			    BLUE_SIZET max_len) ;
+  OFC_CORE_LIB OFC_SIZET
+  BlueMessageGetTStringLen (BLUE_MESSAGE *msg, OFC_INT offset,
+                            OFC_SIZET max_len) ;
   /**
    * Get an 8 bit value from a message
    * 
@@ -630,8 +630,8 @@ extern "C"
    * \returns
    * The value obtained
    */
-  BLUE_CORE_LIB BLUE_UINT8 
-  BlueMessageGetU8 (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_UINT8
+  BlueMessageGetU8 (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Get a 16 bit value from a message
    * 
@@ -644,8 +644,8 @@ extern "C"
    * \returns
    * The value obtained
    */
-  BLUE_CORE_LIB BLUE_UINT16 
-  BlueMessageGetU16 (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_UINT16
+  BlueMessageGetU16 (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Get a 32 bit value from a message
    * 
@@ -658,8 +658,8 @@ extern "C"
    * \returns
    * The value obtained
    */
-  BLUE_CORE_LIB BLUE_UINT32 
-  BlueMessageGetU32 (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_UINT32
+  BlueMessageGetU32 (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Get a 64 bit value from a message
    * 
@@ -672,8 +672,8 @@ extern "C"
    * \param val
    * Pointer to where to return the value
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageGetU64 (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_UINT64 *val) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageGetU64 (BLUE_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *val) ;
   /**
    * Set the offset for the FIFO1
    *
@@ -690,8 +690,8 @@ extern "C"
    * \param size
    * Size of the fifo
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageFIFO1Set (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageFIFO1Set (BLUE_MESSAGE *msg, OFC_INT offset, OFC_SIZET size) ;
   /**
    * Push an area onto the stack
    *
@@ -709,8 +709,8 @@ extern "C"
    * \returns
    * Address of the structure pushed
    */
-  BLUE_CORE_LIB BLUE_VOID *
-  BlueMessageFIFO1Push (BLUE_MESSAGE *msg, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_VOID *
+  BlueMessageFIFO1Push (BLUE_MESSAGE *msg, OFC_SIZET size) ;
   /**
    * Pop an area from the stack
    *
@@ -726,8 +726,8 @@ extern "C"
    * \returns
    * address of the structure popped.
    */
-  BLUE_CORE_LIB BLUE_VOID *
-  BlueMessageFIFO1Pop (BLUE_MESSAGE *msg, BLUE_SIZET size) ;
+  OFC_CORE_LIB OFC_VOID *
+  BlueMessageFIFO1Pop (BLUE_MESSAGE *msg, OFC_SIZET size) ;
   /**
    * Align the FIFO pointer in a message
    *
@@ -737,8 +737,8 @@ extern "C"
    * \param align
    * align size (2, 4, 8)
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageFIFO1Align (BLUE_MESSAGE *msg, BLUE_INT align) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageFIFO1Align (BLUE_MESSAGE *msg, OFC_INT align) ;
   /**
    * Push an 8 bit value onto the FIFO stack
    *
@@ -749,10 +749,10 @@ extern "C"
    * The value to push
    *
    * \returns
-   * BLUE_TRUE if the data could be pushed, BLUE_FALSE otherwise
+   * OFC_TRUE if the data could be pushed, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFIFO1PushU8 (BLUE_MESSAGE *msg, BLUE_UINT8 value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFIFO1PushU8 (BLUE_MESSAGE *msg, OFC_UINT8 value) ;
   /**
    * Push a 16 bit value onto the FIFO stack
    *
@@ -763,10 +763,10 @@ extern "C"
    * The value to push
    *
    * \returns
-   * BLUE_TRUE if the data could be pushed, BLUE_FALSE otherwise
+   * OFC_TRUE if the data could be pushed, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFIFO1PushU16 (BLUE_MESSAGE *msg, BLUE_UINT16 value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFIFO1PushU16 (BLUE_MESSAGE *msg, OFC_UINT16 value) ;
   /**
    * Push a 32 bit value onto the FIFO stack
    *
@@ -777,10 +777,10 @@ extern "C"
    * The value to push
    *
    * \returns
-   * BLUE_TRUE if the data could be pushed, BLUE_FALSE otherwise
+   * OFC_TRUE if the data could be pushed, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFIFO1PushU32 (BLUE_MESSAGE *msg, BLUE_UINT32 value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFIFO1PushU32 (BLUE_MESSAGE *msg, OFC_UINT32 value) ;
   /**
    * Push a 64 bit value onto the FIFO stack
    *
@@ -791,10 +791,10 @@ extern "C"
    * The value to push
    *
    * \returns
-   * BLUE_TRUE if the data could be pushed, BLUE_FALSE otherwise
+   * OFC_TRUE if the data could be pushed, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFIFO1PushU64 (BLUE_MESSAGE *msg, BLUE_UINT64 *value) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFIFO1PushU64 (BLUE_MESSAGE *msg, OFC_UINT64 *value) ;
   /**
    * Push a string (wide or normal) character string on the stack
    *
@@ -805,10 +805,10 @@ extern "C"
    * string to push
    *
    * \returns
-   * BLUE_TRUE if data could be pushed, BLUE_FALSE otherwise
+   * OFC_TRUE if data could be pushed, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFIFO1PushTStr (BLUE_MESSAGE *msg, BLUE_LPCTSTR str) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFIFO1PushTStr (BLUE_MESSAGE *msg, OFC_LPCTSTR str) ;
   /**
    * Push a wide or normal character string onto the fifo, but limit to
    * a maximum count
@@ -823,11 +823,11 @@ extern "C"
    * Maximum characters to put
    *
    * \returns 
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFIFO1PushTStrn (BLUE_MESSAGE *msg, BLUE_LPCTSTR str, 
-			     BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFIFO1PushTStrn (BLUE_MESSAGE *msg, OFC_LPCTSTR str,
+                             OFC_SIZET len) ;
   /**
    * Push a normal character string onto the fifo.
    *
@@ -838,10 +838,10 @@ extern "C"
    * String to put
    *
    * \returns 
-   * BLUE_TRUE if put was successful, BLUE_FALSE otherwise
+   * OFC_TRUE if put was successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFIFO1PushCStr (BLUE_MESSAGE *msg, BLUE_LPCSTR str) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFIFO1PushCStr (BLUE_MESSAGE *msg, OFC_LPCSTR str) ;
   /**
    * Pop an optionally unicode string off the stack.
    *
@@ -854,8 +854,8 @@ extern "C"
    * \returns
    * pointer to string returned.  This string must be released
    */
-  BLUE_CORE_LIB BLUE_LPTSTR 
-  BlueMessageFIFO1PopTStrn (BLUE_MESSAGE *msg, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_LPTSTR
+  BlueMessageFIFO1PopTStrn (BLUE_MESSAGE *msg, OFC_SIZET len) ;
   /**
    * Pop a wide or normal character string from a fifo.  Limit the
    * characters returned by a value.  This call will use a buffer provided
@@ -870,9 +870,9 @@ extern "C"
    * \param len
    * Maximum characters to get
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageFIFO1PopTStrnx (BLUE_MESSAGE *msg, BLUE_LPTSTR str,
-			     BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageFIFO1PopTStrnx (BLUE_MESSAGE *msg, OFC_LPTSTR str,
+                             OFC_SIZET len) ;
   /**
    * Pop a normal character string from a fifo.  Limit the
    * characters returned by a value.  This will return a pointer to a string
@@ -887,8 +887,8 @@ extern "C"
    * \returns 
    * Pointer to string returned.
    */
-  BLUE_CORE_LIB BLUE_LPCSTR 
-  BlueMessageFIFO1PopCStrn (BLUE_MESSAGE *msg, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_LPCSTR
+  BlueMessageFIFO1PopCStrn (BLUE_MESSAGE *msg, OFC_SIZET len) ;
   /**
    * Pop an 8 bit value from the message FIFO
    *
@@ -898,7 +898,7 @@ extern "C"
    * \returns
    * The value popped
    */
-  BLUE_CORE_LIB BLUE_UINT8 
+  OFC_CORE_LIB OFC_UINT8
   BlueMessageFIFO1PopU8 (BLUE_MESSAGE *msg) ;
   /**
    * Pop a 16 bit value from the message FIFO
@@ -909,7 +909,7 @@ extern "C"
    * \returns
    * The value popped
    */
-  BLUE_CORE_LIB BLUE_UINT16 
+  OFC_CORE_LIB OFC_UINT16
   BlueMessageFIFO1PopU16 (BLUE_MESSAGE *msg) ;
   /**
    * Pop a 32 bit value from the message FIFO
@@ -920,7 +920,7 @@ extern "C"
    * \returns
    * The value popped
    */
-  BLUE_CORE_LIB BLUE_UINT32 
+  OFC_CORE_LIB OFC_UINT32
   BlueMessageFIFO1PopU32 (BLUE_MESSAGE *msg) ;
   /**
    * Pop a 64 bit value from the message FIFO
@@ -931,8 +931,8 @@ extern "C"
    * \param val
    * Pointer to where to return the value
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageFIFO1PopU64 (BLUE_MESSAGE *msg, BLUE_UINT64 *val) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageFIFO1PopU64 (BLUE_MESSAGE *msg, OFC_UINT64 *val) ;
   /**
    * Pop a C string from the stack (NULL terminated CHAR)
    *
@@ -942,7 +942,7 @@ extern "C"
    * \returns
    * Pointer to the string.  The stack pointer is passed the NULL at the EOS
    */
-  BLUE_CORE_LIB BLUE_CHAR *
+  OFC_CORE_LIB OFC_CHAR *
   BlueMessageFIFO1PopCString (BLUE_MESSAGE *msg) ;
   /**
    * Pop a Unicode string from the stack (NULL terminated TCHAR)
@@ -953,7 +953,7 @@ extern "C"
    * \returns
    * Pointer to the string.  The stack pointer is passed the NULL at the EOS
    */
-  BLUE_CORE_LIB BLUE_TCHAR *
+  OFC_CORE_LIB OFC_TCHAR *
   BlueMessageFIFO1PopTStr (BLUE_MESSAGE *msg) ;
   /**
    * Get the offset of the FIFO
@@ -967,7 +967,7 @@ extern "C"
    * \returns
    * The FIFO offset value
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageFIFO1Get (BLUE_MESSAGE *msg) ;
   /**
    * Update the FIFO pointer to some fixed offset
@@ -981,8 +981,8 @@ extern "C"
    * \param offset
    * The new fifo pointer
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageFIFO1Update (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageFIFO1Update (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Return the size of the remaining fifo
    *
@@ -992,7 +992,7 @@ extern "C"
    * \returns
    * Size of the remaining fifo
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageFIFO1Rem (BLUE_MESSAGE *msg) ;
   /**
    * Return the full size of the FIFO
@@ -1003,7 +1003,7 @@ extern "C"
    * \returns
    * size of fifo
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageFIFO1Size (BLUE_MESSAGE *msg) ;
   /**
    * Return the used length of the fifo
@@ -1014,7 +1014,7 @@ extern "C"
    * \returns
    * Size of the used portion of the fifo
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageFIFO1Len (BLUE_MESSAGE *msg) ;
   /**
    * Return the base offset of the fifo
@@ -1025,7 +1025,7 @@ extern "C"
    * \returns
    * offset of the fifo in the message
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageFIFO1Base (BLUE_MESSAGE *msg) ;
   /**
    * Get a pointer to the first byte of the FIFO
@@ -1036,7 +1036,7 @@ extern "C"
    * \returns
    * Pointer to the start of the fifo
    */
-  BLUE_CORE_LIB BLUE_CHAR *
+  OFC_CORE_LIB OFC_CHAR *
   BlueMessageFIFO1BasePointer (BLUE_MESSAGE *msg) ;
   /**
    * See if there is room in the FIFO
@@ -1047,7 +1047,7 @@ extern "C"
    * \returns
    * TRUE if there is room, FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueMessageFIFO1Valid (BLUE_MESSAGE *msg) ;
   /**
    * Set the endianess of the message
@@ -1058,7 +1058,7 @@ extern "C"
    * \param endianess
    * The endianess to set
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueMessageSetEndian (BLUE_MESSAGE *msg, MSG_ENDIAN endianess) ;
   /**
    * Put a 8 bit byte in the parameter block of a message
@@ -1072,8 +1072,8 @@ extern "C"
    * \param value
    * 8 bit value to put
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageParamPutU8 (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_UINT8 value) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageParamPutU8 (BLUE_MESSAGE *msg, OFC_INT offset, OFC_UINT8 value) ;
   /**
    * Put a 16 bit byte in the parameter block of a message
    *
@@ -1086,9 +1086,9 @@ extern "C"
    * \param value
    * 16 bit value to put
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageParamPutU16 (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			  BLUE_UINT16 value) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageParamPutU16 (BLUE_MESSAGE *msg, OFC_INT offset,
+                          OFC_UINT16 value) ;
   /**
    * Put a 32 bit byte in the parameter block of a message
    *
@@ -1101,9 +1101,9 @@ extern "C"
    * \param value
    * 32 bit value to put
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageParamPutU32 (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			  BLUE_UINT32 value) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageParamPutU32 (BLUE_MESSAGE *msg, OFC_INT offset,
+                          OFC_UINT32 value) ;
   /**
    * Put a 64 bit byte in the parameter block of a message
    *
@@ -1116,9 +1116,9 @@ extern "C"
    * \param val
    * 64 bit value to put
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageParamPutU64 (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			  BLUE_UINT64 *val) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageParamPutU64 (BLUE_MESSAGE *msg, OFC_INT offset,
+                          OFC_UINT64 *val) ;
   /**
    * Get an 8 bit value out of a parameter block of a message
    *
@@ -1131,8 +1131,8 @@ extern "C"
    * \returns
    * The 8 bit value
    */
-  BLUE_CORE_LIB BLUE_UINT8 
-  BlueMessageParamGetU8 (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_UINT8
+  BlueMessageParamGetU8 (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Get a 16 bit value out of a parameter block of a message
    *
@@ -1145,8 +1145,8 @@ extern "C"
    * \returns
    * The 16 bit value
    */
-  BLUE_CORE_LIB BLUE_UINT16 
-  BlueMessageParamGetU16 (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_UINT16
+  BlueMessageParamGetU16 (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Get a 32 bit value out of a parameter block of a message
    *
@@ -1159,8 +1159,8 @@ extern "C"
    * \returns
    * The 32 bit value
    */
-  BLUE_CORE_LIB BLUE_UINT32 
-  BlueMessageParamGetU32 (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_UINT32
+  BlueMessageParamGetU32 (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Get an 64 bit value out of a parameter block of a message
    *
@@ -1173,9 +1173,9 @@ extern "C"
    * \param val
    * Pointer to where to return the 64 bit value
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageParamGetU64 (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			  BLUE_UINT64 *val) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageParamGetU64 (BLUE_MESSAGE *msg, OFC_INT offset,
+                          OFC_UINT64 *val) ;
   /**
    * Initialize the parameter block of a message
    *
@@ -1188,8 +1188,8 @@ extern "C"
    * \param len
    * The size of the parameter block
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueMessageParamSet (BLUE_MESSAGE *msg, BLUE_INT offset, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageParamSet (BLUE_MESSAGE *msg, OFC_INT offset, OFC_SIZET len) ;
   /**
    * Get the offset of the parameter block
    *
@@ -1199,7 +1199,7 @@ extern "C"
    * \returns
    * The offset to the parameter block
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageParamGetOffset (BLUE_MESSAGE *msg) ;
   /**
    * Get the size of the parameter block of a message
@@ -1210,7 +1210,7 @@ extern "C"
    * \returns
    * The length of tghe message
    */
-  BLUE_CORE_LIB BLUE_INT 
+  OFC_CORE_LIB OFC_INT
   BlueMessageParamGetLen (BLUE_MESSAGE *msg) ;
   /**
    * Get a wide or normal string from the parameter block of a message
@@ -1226,11 +1226,11 @@ extern "C"
    * This pointer must be freed when done using
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageParamGetTStr (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			   BLUE_LPTSTR *str) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageParamGetTStr (BLUE_MESSAGE *msg, OFC_INT offset,
+                           OFC_LPTSTR *str) ;
   /**
    * Put a wide or normal string into the paramter block of a message
    *
@@ -1244,14 +1244,14 @@ extern "C"
    * String to place
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageParamPutTStr (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			   BLUE_LPTSTR str) ;
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageParamPutTStrn (BLUE_MESSAGE *msg, BLUE_INT offset, 
-			    BLUE_LPCTSTR str, BLUE_SIZET len) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageParamPutTStr (BLUE_MESSAGE *msg, OFC_INT offset,
+                           OFC_LPTSTR str) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageParamPutTStrn (BLUE_MESSAGE *msg, OFC_INT offset,
+                            OFC_LPCTSTR str, OFC_SIZET len) ;
   /**
    * Get a pointer to an offset with the parameter block
    *
@@ -1264,8 +1264,8 @@ extern "C"
    * \returns 
    * Pointer to that offet within the parameter block
    */
-  BLUE_CORE_LIB BLUE_VOID *
-  BlueMessageParamGetPointer (BLUE_MESSAGE *msg, BLUE_INT offset) ;
+  OFC_CORE_LIB OFC_VOID *
+  BlueMessageParamGetPointer (BLUE_MESSAGE *msg, OFC_INT offset) ;
   /**
    * Reallocate a message
    *
@@ -1276,10 +1276,10 @@ extern "C"
    * The new size of the message
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageRealloc (BLUE_MESSAGE *msg, BLUE_SIZET msgDataLength) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageRealloc (BLUE_MESSAGE *msg, OFC_SIZET msgDataLength) ;
   /**
    * Determine if a message has been received from a particular interface
    *
@@ -1295,11 +1295,11 @@ extern "C"
    * convienience.  If the ointer is NULL, no ip address is returned
    *
    * \returns
-   * BLUE_TRUE if it is in the subnet, BLUE_FALSE otherwise
+   * OFC_TRUE if it is in the subnet, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
-  BlueMessageFromSubnet (BLUE_MESSAGE *msg, BLUE_INT iface, 
-			 BLUE_IPADDR *intip) ;
+  OFC_CORE_LIB OFC_BOOL
+  BlueMessageFromSubnet (BLUE_MESSAGE *msg, OFC_INT iface,
+                         BLUE_IPADDR *intip) ;
   /**
    * Set the context for a message
    *
@@ -1309,8 +1309,8 @@ extern "C"
    * \param context
    * Context to set
    */
-  BLUE_CORE_LIB BLUE_VOID
-  BlueMessageSetContext (BLUE_MESSAGE *msg, BLUE_VOID *context) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueMessageSetContext (BLUE_MESSAGE *msg, OFC_VOID *context) ;
   /**
    * Get the context of a message
    *
@@ -1320,10 +1320,10 @@ extern "C"
    * \returns
    * Context
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueMessageGetContext (BLUE_MESSAGE *msg) ;
-  BLUE_CORE_LIB BLUE_BOOL BlueMessageDestroyAfterSend (BLUE_MESSAGE *msg) ;
-  BLUE_CORE_LIB BLUE_VOID BlueMessageSetDestroyAfterSend (BLUE_MESSAGE *msg) ;
+  OFC_CORE_LIB OFC_BOOL BlueMessageDestroyAfterSend (BLUE_MESSAGE *msg) ;
+  OFC_CORE_LIB OFC_VOID BlueMessageSetDestroyAfterSend (BLUE_MESSAGE *msg) ;
 #if defined(__cplusplus)
 }
 #endif

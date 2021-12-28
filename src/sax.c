@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -27,37 +27,37 @@ typedef enum
 typedef struct 
 {
   XML_STATE state ;
-  BLUE_VOID *userdata ;
+  OFC_VOID *userdata ;
   STARTHANDLER *startelement ;
   ENDHANDLER *endelement ;
   CHARHANDLER *charhandler ;
   XMLHANDLER *xmlhandler ;
-  BLUE_CHAR tag[200] ;
-  BLUE_CHAR *tagp ;
-  BLUE_CHAR *atts[MAX_ATTS*2] ;
-  BLUE_CHAR *charp ;
-  BLUE_CHAR *version ;
-  BLUE_CHAR *encoding ;
-  BLUE_INT standalone ;
+  OFC_CHAR tag[200] ;
+  OFC_CHAR *tagp ;
+  OFC_CHAR *atts[MAX_ATTS * 2] ;
+  OFC_CHAR *charp ;
+  OFC_CHAR *version ;
+  OFC_CHAR *encoding ;
+  OFC_INT standalone ;
 } XML_PARSER_CONTEXT ;
 
-BLUE_CORE_LIB BLUE_XML_PARSER 
-BlueXMLparserCreate (BLUE_VOID *p)
+OFC_CORE_LIB BLUE_XML_PARSER
+BlueXMLparserCreate (OFC_VOID *p)
 {
   XML_PARSER_CONTEXT *parser ;
 
   parser = (XML_PARSER_CONTEXT *) BlueHeapMalloc (sizeof (XML_PARSER_CONTEXT)) ;
-  parser->startelement = BLUE_NULL ;
-  parser->endelement = BLUE_NULL ;
-  parser->charhandler = BLUE_NULL ;
-  parser->xmlhandler = BLUE_NULL ;
+  parser->startelement = OFC_NULL ;
+  parser->endelement = OFC_NULL ;
+  parser->charhandler = OFC_NULL ;
+  parser->xmlhandler = OFC_NULL ;
 
   parser->state = XML_IDLE ;
-  return ((BLUE_VOID *) parser) ;
+  return ((OFC_VOID *) parser) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueXMLparserFree (BLUE_VOID *parsertoken)
+OFC_CORE_LIB OFC_VOID
+BlueXMLparserFree (OFC_VOID *parsertoken)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -65,8 +65,8 @@ BlueXMLparserFree (BLUE_VOID *parsertoken)
   BlueHeapFree (parser) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueXMLsetUserData (BLUE_VOID *parsertoken, BLUE_VOID *state)
+OFC_CORE_LIB OFC_VOID
+BlueXMLsetUserData (OFC_VOID *parsertoken, OFC_VOID *state)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -74,10 +74,10 @@ BlueXMLsetUserData (BLUE_VOID *parsertoken, BLUE_VOID *state)
   parser->userdata = state ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueXMLsetElementHandler (BLUE_VOID *parsertoken, 
-			  STARTHANDLER startelement,
-			  ENDHANDLER endelement)
+OFC_CORE_LIB OFC_VOID
+BlueXMLsetElementHandler (OFC_VOID *parsertoken,
+                          STARTHANDLER startelement,
+                          ENDHANDLER endelement)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -86,9 +86,9 @@ BlueXMLsetElementHandler (BLUE_VOID *parsertoken,
   parser->endelement = endelement ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueXMLsetCharacterDataHandler (BLUE_VOID *parsertoken,
-				CHARHANDLER chardata)
+OFC_CORE_LIB OFC_VOID
+BlueXMLsetCharacterDataHandler (OFC_VOID *parsertoken,
+                                CHARHANDLER chardata)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -96,8 +96,8 @@ BlueXMLsetCharacterDataHandler (BLUE_VOID *parsertoken,
   parser->charhandler = chardata ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueXMLsetXmlDeclHandler (BLUE_VOID *parsertoken, XMLHANDLER xmldata)
+OFC_CORE_LIB OFC_VOID
+BlueXMLsetXmlDeclHandler (OFC_VOID *parsertoken, XMLHANDLER xmldata)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -105,11 +105,11 @@ BlueXMLsetXmlDeclHandler (BLUE_VOID *parsertoken, XMLHANDLER xmldata)
   parser->xmlhandler = xmldata ;
 }
 
-static BLUE_VOID 
+static OFC_VOID
 XML_ParseTagXML (XML_PARSER_CONTEXT *parser)
 {
-  BLUE_INT i ;
-  BLUE_CHAR *p ;
+  OFC_INT i ;
+  OFC_CHAR *p ;
 
   p = parser->tag ;
   while ((*p != ' ') && (*p != '\t') && (*p != '\n') && (*p != '\0'))
@@ -121,8 +121,8 @@ XML_ParseTagXML (XML_PARSER_CONTEXT *parser)
     p++ ;
 
   i = 0 ;
-  parser->atts[i] = BLUE_NULL ;
-  parser->atts[i+1] = BLUE_NULL ;
+  parser->atts[i] = OFC_NULL ;
+  parser->atts[i+1] = OFC_NULL ;
 
   while ((*p != '\0') && (i < MAX_ATTS*2))
     {
@@ -163,13 +163,13 @@ XML_ParseTagXML (XML_PARSER_CONTEXT *parser)
 	p++ ;
 
       i += 2 ;
-      parser->atts[i] = BLUE_NULL ;
-      parser->atts[i+1] = BLUE_NULL ;
+      parser->atts[i] = OFC_NULL ;
+      parser->atts[i+1] = OFC_NULL ;
     }
 
-  parser->version = BLUE_NULL ;
-  parser->encoding = BLUE_NULL ;
-  for (i = 0 ; parser->atts[i] != BLUE_NULL ; i+=2)
+  parser->version = OFC_NULL ;
+  parser->encoding = OFC_NULL ;
+  for (i = 0 ; parser->atts[i] != OFC_NULL ; i+=2)
     {
       if (BlueCstrcmp (parser->atts[i], "version") == 0)
 	parser->version = parser->atts[i+1] ;
@@ -178,11 +178,11 @@ XML_ParseTagXML (XML_PARSER_CONTEXT *parser)
     }
 }
   
-static BLUE_VOID 
+static OFC_VOID
 XML_ParseTagAtts (XML_PARSER_CONTEXT *parser)
 {
-  BLUE_INT i ;
-  BLUE_CHAR *p ;
+  OFC_INT i ;
+  OFC_CHAR *p ;
 
   p = parser->tag ;
   while ((*p != ' ') && (*p != '\t') && (*p != '\n') && (*p != '\0'))
@@ -194,8 +194,8 @@ XML_ParseTagAtts (XML_PARSER_CONTEXT *parser)
     p++ ;
 
   i = 0 ;
-  parser->atts[i] = BLUE_NULL ;
-  parser->atts[i+1] = BLUE_NULL ;
+  parser->atts[i] = OFC_NULL ;
+  parser->atts[i+1] = OFC_NULL ;
 
   while ((*p != '\0') && (i < MAX_ATTS*2))
     {
@@ -234,17 +234,17 @@ XML_ParseTagAtts (XML_PARSER_CONTEXT *parser)
 	p++ ;
 
       i += 2 ;
-      parser->atts[i] = BLUE_NULL ;
-      parser->atts[i+1] = BLUE_NULL ;
+      parser->atts[i] = OFC_NULL ;
+      parser->atts[i+1] = OFC_NULL ;
     }
 }
 
-BLUE_CORE_LIB BLUE_INT 
-BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf, 
-	      BLUE_SIZET len, BLUE_INT done)
+OFC_CORE_LIB OFC_INT
+BlueXMLparse (OFC_VOID *parsertoken, OFC_CHAR *buf,
+              OFC_SIZET len, OFC_INT done)
 {
   XML_PARSER_CONTEXT *parser ;
-  BLUE_CHAR *p ;
+  OFC_CHAR *p ;
 
   parser = (XML_PARSER_CONTEXT *) parsertoken ;
   /*
@@ -281,10 +281,10 @@ BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf,
 	      *(parser->tagp) = '\0' ;
 	      XML_ParseTagAtts (parser) ;
 	      
-	      if (parser->startelement != BLUE_NULL)
+	      if (parser->startelement != OFC_NULL)
 		(*parser->startelement)(parser->userdata,
 					parser->tag,
-					(BLUE_CCHAR **) &(parser->atts)) ;
+					(OFC_CCHAR **) &(parser->atts)) ;
 	      parser->state = XML_ENDTAG ;
 	    }
 	  else if (parser->state == XML_OPENTAG)
@@ -299,12 +299,12 @@ BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf,
 	    {
 	      if (parser->charp != p)
 		{
-		  if (parser->charhandler != BLUE_NULL)
+		  if (parser->charhandler != OFC_NULL)
 		    (*parser->charhandler)(parser->userdata,
 					   parser->charp,
-					   (BLUE_INT) 
-					   ((BLUE_DWORD_PTR) p - 
-					    (BLUE_DWORD_PTR) parser->charp)) ;
+					   (OFC_INT)
+					   ((OFC_DWORD_PTR) p -
+                        (OFC_DWORD_PTR) parser->charp)) ;
 		}
 	      parser->state = XML_OPENTAG ;
 	      parser->tagp = parser->tag ;
@@ -327,10 +327,10 @@ BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf,
 	    {
 	      *(parser->tagp) = '\0' ;
 	      XML_ParseTagAtts (parser) ;
-	      if (parser->startelement != BLUE_NULL)
+	      if (parser->startelement != OFC_NULL)
 		(*parser->startelement)(parser->userdata,
 					parser->tag,
-					(BLUE_CCHAR **) &(parser->atts)) ;
+					(OFC_CCHAR **) &(parser->atts)) ;
 	      parser->state = XML_IDLE ;
 	      parser->charp = p+1 ;
 	    }
@@ -338,7 +338,7 @@ BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf,
 	    {
 	      *(parser->tagp) = '\0' ;
 	      XML_ParseTagAtts (parser) ;
-	      if (parser->endelement != BLUE_NULL)
+	      if (parser->endelement != OFC_NULL)
 		(*parser->endelement)(parser->userdata,
 				      parser->tag) ;
 	      parser->state = XML_IDLE ;
@@ -348,7 +348,7 @@ BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf,
 	    {
 	      *(parser->tagp) = '\0' ;
 	      XML_ParseTagXML (parser) ;
-	      if (parser->xmlhandler != BLUE_NULL)
+	      if (parser->xmlhandler != OFC_NULL)
 		(*parser->xmlhandler)(parser->userdata,
 				      parser->version,
 				      parser->encoding,
@@ -384,12 +384,12 @@ BlueXMLparse (BLUE_VOID *parsertoken, BLUE_CHAR *buf,
     {
       if ((parser->state == XML_IDLE) && (parser->charp != p))
 	{
-	  if (parser->charhandler != BLUE_NULL)
+	  if (parser->charhandler != OFC_NULL)
 	    (*parser->charhandler)(parser->userdata,
 				   parser->charp,
-				   (BLUE_INT) 
-				   ((BLUE_DWORD_PTR) p - 
-				    (BLUE_DWORD_PTR) parser->charp)) ;
+				   (OFC_INT)
+				   ((OFC_DWORD_PTR) p -
+                    (OFC_DWORD_PTR) parser->charp)) ;
 	}
     }
 

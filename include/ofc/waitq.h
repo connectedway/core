@@ -27,15 +27,15 @@ extern "C"
    * \returns
    * Handle to the wait queue
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
-  BlueWaitQcreate (BLUE_VOID) ;
+  OFC_CORE_LIB BLUE_HANDLE
+  BlueWaitQcreate (OFC_VOID) ;
   /**
    * Destroy a queue
    *
    * \param qHead
    * Head of queue
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitQdestroy (BLUE_HANDLE qHead) ;
   /**
    * Add an element to the end of the list
@@ -46,8 +46,8 @@ extern "C"
    * \param qElement 
    * Pointer to element to add to list
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueWaitQenqueue (BLUE_HANDLE qHead, BLUE_VOID *qElement) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueWaitQenqueue (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Remove an element from the front of the list
    *
@@ -57,7 +57,7 @@ extern "C"
    * \returns
    * Item at the front or NB_NULL
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueWaitQdequeue (BLUE_HANDLE qHead) ;
   /**
    * See if queue is empty
@@ -66,9 +66,9 @@ extern "C"
    * Queue Head
    *
    * \returns
-   * BLUE_TRUE if empty, BLUE_FALSE otherwise
+   * OFC_TRUE if empty, OFC_FALSE otherwise
    */
-  BLUE_CORE_LIB BLUE_BOOL 
+  OFC_CORE_LIB OFC_BOOL
   BlueWaitQempty (BLUE_HANDLE qHead) ;
   /**
    * Return the head of the linked list
@@ -79,7 +79,7 @@ extern "C"
    * \returns 
    * Pointer to the first element on the queue 
    */
-  BLUE_CORE_LIB BLUE_VOID *
+  OFC_CORE_LIB OFC_VOID *
   BlueWaitQfirst (BLUE_HANDLE qHead) ;
   /**
    * Return the next element on the list
@@ -93,8 +93,8 @@ extern "C"
    * \returns
    * Pointer to the next element on the queue.
    */
-  BLUE_CORE_LIB BLUE_VOID *
-  BlueWaitQnext (BLUE_HANDLE qHead, BLUE_VOID *qElement) ;
+  OFC_CORE_LIB OFC_VOID *
+  BlueWaitQnext (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Unlink the current element from the list
    *
@@ -104,15 +104,15 @@ extern "C"
    * \param qElement 
    * Pointer to the current element
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueWaitQunlink (BLUE_HANDLE qHead, BLUE_VOID *qElement) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueWaitQunlink (BLUE_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Clear the contents of a wait queue
    *
    * \param qHandle
    * Handle to the waitqueue to destroy
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitQclear (BLUE_HANDLE qHandle) ;
   /**
    * Get the event handle that the wait queue waits on
@@ -123,7 +123,7 @@ extern "C"
    * \returns
    * Handle to the event for the queue
    */
-  BLUE_CORE_LIB BLUE_HANDLE 
+  OFC_CORE_LIB BLUE_HANDLE
   BlueWaitQGetEventHandle (BLUE_HANDLE qHandle) ;
   /**
    * Wait for an element to be placed on the wait queue
@@ -135,7 +135,7 @@ extern "C"
    * When an element has been placed on the queue, the calling thread will
    * be woken
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueWaitQBlock (BLUE_HANDLE waitq) ;
 
 #if defined(__cplusplus)

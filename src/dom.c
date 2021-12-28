@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -12,80 +12,80 @@
 #include "ofc/dom.h"
 #include "ofc/sax.h"
 
-static BLUE_VOID 
-update_remainder (BLUE_SIZET count, BLUE_CHAR **p, 
-		  BLUE_SIZET *total, BLUE_SIZET *remainder) ;
+static OFC_VOID
+update_remainder (OFC_SIZET count, OFC_CHAR **p,
+                  OFC_SIZET *total, OFC_SIZET *remainder) ;
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMcreateNode (BLUE_VOID)
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_create_node(OFC_VOID)
 {
-  BLUE_DOMNode *node ;
+  OFC_DOMNode *node ;
 
-  node = (BLUE_DOMNode *) BlueHeapMalloc (sizeof (BLUE_DOMNode)) ;
-  if (node != BLUE_NULL)
+  node = (OFC_DOMNode *) BlueHeapMalloc (sizeof (OFC_DOMNode)) ;
+  if (node != OFC_NULL)
     {
-      node->nodeName = BLUE_NULL ;
-      node->ns = BLUE_NULL ;
-      node->nodeValue = BLUE_NULL ;
-      node->parentNode = BLUE_NULL ;
-      node->firstChild = BLUE_NULL ;
-      node->lastChild = BLUE_NULL ;
-      node->previousSibling = BLUE_NULL ;
-      node->nextSibling = BLUE_NULL ;
-      node->attributes = BLUE_NULL ;
-      node->ownerDocument = BLUE_NULL ;
+      node->nodeName = OFC_NULL ;
+      node->ns = OFC_NULL ;
+      node->nodeValue = OFC_NULL ;
+      node->parentNode = OFC_NULL ;
+      node->firstChild = OFC_NULL ;
+      node->lastChild = OFC_NULL ;
+      node->previousSibling = OFC_NULL ;
+      node->nextSibling = OFC_NULL ;
+      node->attributes = OFC_NULL ;
+      node->ownerDocument = OFC_NULL ;
     }
   return (node) ;
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMcreateDocument (BLUE_DOMString *namespaceURI, 
-		       BLUE_DOMString *qualifiedName,
-		       BLUE_DocumentType *doctype) 
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_create_document (OFC_DOMString *namespaceURI,
+                         OFC_DOMString *qualifiedName,
+                         OFC_DocumentType *doctype)
 {
-  BLUE_DOMNode *doc ;
+  OFC_DOMNode *doc ;
 
-  doc = BlueDOMcreateNode() ;
-  if (doc != BLUE_NULL)
+  doc = ofc_dom_create_node();
+  if (doc != OFC_NULL)
     {
       doc->nodeType = DOCUMENT_NODE ;
       doc->ownerDocument = doc ;
-      doc->ns = BLUE_NULL ;
+      doc->ns = OFC_NULL ;
       doc->nodeName = BlueCstrdup("ROOT") ;
     }
   return (doc) ;
 }
 
-static BLUE_VOID 
-parseName (BLUE_CCHAR *name, BLUE_DOMNode *elem) 
+static OFC_VOID
+parseName (OFC_CCHAR *name, OFC_DOMNode *elem)
 {
-  BLUE_INT i ;
-  BLUE_CHAR *p ;
+  OFC_INT i ;
+  OFC_CHAR *p ;
 
-  for (i = 0, p = (BLUE_CHAR *) name; (*p != '\0') && (*p != ':') ; i++, p++) ;
+  for (i = 0, p = (OFC_CHAR *) name; (*p != '\0') && (*p != ':') ; i++, p++) ;
 
   if (*p == ':')
     {
       elem->ns = BlueHeapMalloc (i+1) ;
-      BlueCmemcpy (elem->ns, (const BLUE_LPVOID) name, i) ;
+      BlueCmemcpy (elem->ns, (const OFC_LPVOID) name, i) ;
       elem->ns[i] = '\0' ;
       p++ ;
       elem->nodeName = BlueCstrdup (p) ;
     }
   else
     {
-      elem->ns = BLUE_NULL ;
+      elem->ns = OFC_NULL ;
       elem->nodeName = BlueCstrdup (name) ;
     }
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMcreateElement (BLUE_DOMNode *document, const BLUE_DOMString *name)
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_create_element (OFC_DOMNode *document, const OFC_DOMString *name)
 {
-  BLUE_DOMNode *elem ;
+  OFC_DOMNode *elem ;
 
-  elem = BlueDOMcreateNode() ;
-  if (elem != BLUE_NULL)
+  elem = ofc_dom_create_node();
+  if (elem != OFC_NULL)
     {
       elem->nodeType = ELEMENT_NODE ;
       elem->ownerDocument = document ;
@@ -94,146 +94,146 @@ BlueDOMcreateElement (BLUE_DOMNode *document, const BLUE_DOMString *name)
   return (elem) ;
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMcreateCDATASection (BLUE_DOMNode *document, 
-			   const BLUE_DOMString *data)
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_create_cdata_section (OFC_DOMNode *document,
+                              const OFC_DOMString *data)
 {
-  BLUE_DOMNode *cdata ;
+  OFC_DOMNode *cdata ;
 
-  cdata = BlueDOMcreateNode() ;
-  if (cdata != BLUE_NULL)
+  cdata = ofc_dom_create_node();
+  if (cdata != OFC_NULL)
     {
       cdata->nodeType = CDATA_SECTION_NODE ;
       cdata->ownerDocument = document ;
-      cdata->nodeValue = (BLUE_DOMString *) BlueCstrdup (data) ;
+      cdata->nodeValue = (OFC_DOMString *) BlueCstrdup (data) ;
     }
   return (cdata) ;
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMcreateProcessingInstruction (BLUE_DOMNode *document, 
-				    const BLUE_DOMString *target,
-				    const BLUE_DOMString *data) 
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_create_processing_instruction (OFC_DOMNode *document,
+                                       const OFC_DOMString *target,
+                                       const OFC_DOMString *data)
 {
-  BLUE_DOMNode *pi ;
+  OFC_DOMNode *pi ;
 
-  pi = BlueDOMcreateNode() ;
-  if (pi != BLUE_NULL)
+  pi = ofc_dom_create_node();
+  if (pi != OFC_NULL)
     {
       pi->nodeType = PROCESSING_INSTRUCTION_NODE ;
       pi->ownerDocument = document ;
-      pi->ns = BLUE_NULL ;
-      pi->nodeName = (BLUE_DOMString *) BlueCstrdup (target) ;
-      pi->nodeValue = (BLUE_DOMString *) BlueCstrdup (data) ;
+      pi->ns = OFC_NULL ;
+      pi->nodeName = (OFC_DOMString *) BlueCstrdup (target) ;
+      pi->nodeValue = (OFC_DOMString *) BlueCstrdup (data) ;
     }
   return (pi) ;
 }
 
-BLUE_CORE_LIB BLUE_DOMString *
-BlueDOMgetAttribute (BLUE_DOMNode *elem, const BLUE_DOMString *name)
+OFC_CORE_LIB OFC_DOMString *
+ofc_dom_get_attribute (OFC_DOMNode *elem, const OFC_DOMString *name)
 {
-  BLUE_DOMNode *attr ;
-  BLUE_DOMString *value ;
+  OFC_DOMNode *attr ;
+  OFC_DOMString *value ;
 
   attr = elem->attributes ;
 
-  while ((attr != BLUE_NULL) && (BlueCstrcmp (attr->nodeName, 
-					      (BLUE_CHAR *) name) != 0))
+  while ((attr != OFC_NULL) && (BlueCstrcmp (attr->nodeName,
+                                             (OFC_CHAR *) name) != 0))
     {
       attr = attr->nextSibling ;
     }
 
-  if (attr == BLUE_NULL)
-    value = BLUE_NULL ;
+  if (attr == OFC_NULL)
+    value = OFC_NULL ;
   else
     value = attr->nodeValue ;
 
   return (value) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueDOMsetAttribute (BLUE_DOMNode *elem, const BLUE_DOMString *name, 
-		     const BLUE_DOMString *value) 
+OFC_CORE_LIB OFC_VOID
+ofc_dom_set_attribute (OFC_DOMNode *elem, const OFC_DOMString *name,
+                       const OFC_DOMString *value)
 {
-  BLUE_DOMNode *attr ;
+  OFC_DOMNode *attr ;
 
   attr = elem->attributes ;
 
-  while ((attr != BLUE_NULL) && (BlueCstrcmp (attr->nodeName, name) != 0))
+  while ((attr != OFC_NULL) && (BlueCstrcmp (attr->nodeName, name) != 0))
     {
       attr = attr->nextSibling ;
     }
 
-  if (attr == BLUE_NULL)
+  if (attr == OFC_NULL)
     {
       /*
        * Need to add a new attribute
        */
-      attr = BlueDOMcreateNode() ;
-      if (attr != BLUE_NULL)
+      attr = ofc_dom_create_node();
+      if (attr != OFC_NULL)
 	{
 	  attr->nodeType = ATTRIBUTE_NODE ;
 	  attr->ownerDocument = elem->ownerDocument ;
 	  parseName (name, attr) ;
 	  attr->parentNode = elem ;
 	  attr->nextSibling = elem->attributes ;
-	  attr->previousSibling = BLUE_NULL ;
+	  attr->previousSibling = OFC_NULL ;
 	  elem->attributes = attr ;
 	}
     }
 
-  if (attr != BLUE_NULL)
+  if (attr != OFC_NULL)
     {
-      if (attr->nodeValue != BLUE_NULL)
+      if (attr->nodeValue != OFC_NULL)
 	BlueHeapFree (attr->nodeValue) ;
-      attr->nodeValue = (BLUE_DOMString *) BlueCstrdup (value) ;
+      attr->nodeValue = (OFC_DOMString *) BlueCstrdup (value) ;
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueDOMunlinkChild (BLUE_DOMNode *node)
+OFC_CORE_LIB OFC_VOID
+BlueDOMunlinkChild (OFC_DOMNode *node)
 {
-  if (node->nextSibling == BLUE_NULL)
+  if (node->nextSibling == OFC_NULL)
     {
-      if (node->parentNode != BLUE_NULL)
+      if (node->parentNode != OFC_NULL)
 	node->parentNode->lastChild = node->previousSibling ;
     }
   else
     node->nextSibling->previousSibling = node->previousSibling ;
     
-  if (node->previousSibling == BLUE_NULL)
+  if (node->previousSibling == OFC_NULL)
     {
-      if (node->parentNode != BLUE_NULL)
+      if (node->parentNode != OFC_NULL)
 	node->parentNode->firstChild = node->nextSibling ;
     }
   else
     node->previousSibling->nextSibling = node->nextSibling ;
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMappendChild (BLUE_DOMNode *parent, BLUE_DOMNode *child) 
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_append_child (OFC_DOMNode *document, OFC_DOMNode *child)
 {
-  BLUE_DOMNode *node ;
+  OFC_DOMNode *node ;
 
   if (child->nodeType == DOCUMENT_NODE)
     {
       node = child->firstChild ;
-      while (node != BLUE_NULL)
+      while (node != OFC_NULL)
 	{
 	  BlueDOMunlinkChild (node) ;
-	  BlueDOMappendChild (parent, node) ;
+        ofc_dom_append_child(document, node) ;
 	  node = child->firstChild ;
 	}
-      BlueDOMdestroyNode (child) ;
+      ofc_dom_destroy_node (child) ;
     }
   else
     {
-      child->parentNode = parent ;
-      child->previousSibling = parent->lastChild ;
-      parent->lastChild = child ;
-      if (child->previousSibling == BLUE_NULL)
+      child->parentNode = document ;
+      child->previousSibling = document->lastChild ;
+        document->lastChild = child ;
+      if (child->previousSibling == OFC_NULL)
 	{
-	  parent->firstChild = child ;
+        document->firstChild = child ;
 	}
       else
 	{
@@ -243,42 +243,42 @@ BlueDOMappendChild (BLUE_DOMNode *parent, BLUE_DOMNode *child)
   return (child) ;
 }
 
-BLUE_CORE_LIB BLUE_DOMNodelist *
-BlueDOMgetElementsByTagName (BLUE_DOMNode *node, 
-			     const BLUE_DOMString *name)
+OFC_CORE_LIB OFC_DOMNodelist *
+ofc_dom_get_elements_by_tag_name (OFC_DOMNode *node,
+                                  const OFC_DOMString *name)
 {
-  BLUE_DOMNodelist *nodelist ;
-  BLUE_DOMNode *root ;
-  BLUE_INT nodecount ;
+  OFC_DOMNodelist *nodelist ;
+  OFC_DOMNode *root ;
+  OFC_INT nodecount ;
 
   nodecount = 0 ;
-  nodelist = (BLUE_DOMNodelist *) BlueHeapMalloc (1 * sizeof (BLUE_DOMNode *)) ;
-  nodelist[0] = BLUE_NULL ;
+  nodelist = (OFC_DOMNodelist *) BlueHeapMalloc (1 * sizeof (OFC_DOMNode *)) ;
+  nodelist[0] = OFC_NULL ;
   root = node ;
 
-  while (node != BLUE_NULL)
+  while (node != OFC_NULL)
     {
       if (node->nodeType == ELEMENT_NODE)
 	{
-	  if (BlueCstrcmp (node->nodeName, (BLUE_CHAR *) name) == 0)
+	  if (BlueCstrcmp (node->nodeName, (OFC_CHAR *) name) == 0)
 	    {
 	      nodecount++ ;
 	      nodelist = BlueHeapRealloc (nodelist, 
 					  (nodecount+1) * 
-					  sizeof (BLUE_DOMNode *)) ;
+					  sizeof (OFC_DOMNode *)) ;
 	      nodelist[nodecount-1] = node ;
-	      nodelist[nodecount] = BLUE_NULL ;
+	      nodelist[nodecount] = OFC_NULL ;
 	    }
 	}
 
-      if (node->firstChild != BLUE_NULL)
+      if (node->firstChild != OFC_NULL)
 	node = node->firstChild ;
       else 
 	{
-	  while ((node != root) && (node->nextSibling == BLUE_NULL))
+	  while ((node != root) && (node->nextSibling == OFC_NULL))
 	    node = node->parentNode ;
 	  if (node == root)
-	    node = BLUE_NULL ;
+	    node = OFC_NULL ;
 	  else
 	    node = node->nextSibling ;
 	}
@@ -286,15 +286,15 @@ BlueDOMgetElementsByTagName (BLUE_DOMNode *node,
   return (nodelist) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueDOMdestroyNodelist (BLUE_DOMNodelist *nodelist)
+OFC_CORE_LIB OFC_VOID
+ofc_dom_destroy_node_list (OFC_DOMNodelist *nodelist)
 {
   BlueHeapFree (nodelist) ;
 }
 
-static BLUE_VOID 
-update_remainder (BLUE_SIZET count, BLUE_CHAR **p, 
-		  BLUE_SIZET *total, BLUE_SIZET *remainder)
+static OFC_VOID
+update_remainder (OFC_SIZET count, OFC_CHAR **p,
+                  OFC_SIZET *total, OFC_SIZET *remainder)
 {
   *total += count ;
 
@@ -305,24 +305,24 @@ update_remainder (BLUE_SIZET count, BLUE_CHAR **p,
   *p += count ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueDOMsprintAttributes (BLUE_CHAR *buf, BLUE_SIZET len, BLUE_DOMNode *attr)
+OFC_CORE_LIB OFC_SIZET
+BlueDOMsprintAttributes (OFC_CHAR *buf, OFC_SIZET len, OFC_DOMNode *attr)
 {
-  BLUE_CHAR *p ;
-  BLUE_SIZET rem ;
-  BLUE_SIZET count ;
-  BLUE_SIZET total ;
+  OFC_CHAR *p ;
+  OFC_SIZET rem ;
+  OFC_SIZET count ;
+  OFC_SIZET total ;
 
   rem = len ;
   p = buf ;
   total = 0 ;
 
-  while (attr != BLUE_NULL)
+  while (attr != OFC_NULL)
     {
       count = BlueCsnprintf (p, rem, " ") ;
       update_remainder (count, &p, &total, &rem) ;
 
-      if (attr->ns == BLUE_NULL)
+      if (attr->ns == OFC_NULL)
 	count = BlueCsnprintf(p, rem, "%s=\"%s\"", attr->nodeName, 
 			      attr->nodeValue) ;
       else
@@ -336,19 +336,19 @@ BlueDOMsprintAttributes (BLUE_CHAR *buf, BLUE_SIZET len, BLUE_DOMNode *attr)
   return (total) ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueDOMsprintDocument (BLUE_CHAR *buf, BLUE_SIZET len, BLUE_DOMNode *node)
+OFC_CORE_LIB OFC_SIZET
+ofc_dom_sprint_document (OFC_CHAR *buf, OFC_SIZET len, OFC_DOMNode *node)
 {
-  BLUE_CHAR *p ;
-  BLUE_SIZET rem ;
-  BLUE_SIZET count ;
-  BLUE_SIZET total ;
+  OFC_CHAR *p ;
+  OFC_SIZET rem ;
+  OFC_SIZET count ;
+  OFC_SIZET total ;
 
   rem = len ;
   p = buf ;
   total = 0 ;
 
-  count = BlueDOMsprintNode (p, rem, node, 0) ;
+  count = ofc_dom_sprint_node (p, rem, node, 0) ;
   update_remainder (count, &p, &total, &rem) ;
 
   if (total > 0)
@@ -360,21 +360,21 @@ BlueDOMsprintDocument (BLUE_CHAR *buf, BLUE_SIZET len, BLUE_DOMNode *node)
   return (total) ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len, 
-		   BLUE_DOMNode *node, BLUE_INT level)
+OFC_CORE_LIB OFC_SIZET
+ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
+                     OFC_DOMNode *node, OFC_INT level)
 {
-  BLUE_INT i ;
-  BLUE_CHAR *p ;
-  BLUE_SIZET rem ;
-  BLUE_SIZET count ;
-  BLUE_SIZET total ;
+  OFC_INT i ;
+  OFC_CHAR *p ;
+  OFC_SIZET rem ;
+  OFC_SIZET count ;
+  OFC_SIZET total ;
 
   rem = len ;
   p = buf ;
   total = 0 ;
 
-  while (node != BLUE_NULL)
+  while (node != OFC_NULL)
     {
       switch (node->nodeType)
 	{
@@ -382,13 +382,13 @@ BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len,
 	  /*
 	   * Print the children
 	   */
-	  count = BlueDOMsprintNode(p, rem, node->firstChild, level) ;
+	  count = ofc_dom_sprint_node(p, rem, node->firstChild, level) ;
 	  update_remainder (count, &p, &total, &rem) ;
 
 	  break ;
 
 	case PROCESSING_INSTRUCTION_NODE:
-	  if (node->ns == BLUE_NULL)
+	  if (node->ns == OFC_NULL)
 	    count = BlueCsnprintf (p, rem, "<?%s %s?>\n", 
 				   node->nodeName, node->nodeValue) ;
 	  else
@@ -406,7 +406,7 @@ BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len,
 	      update_remainder (count, &p, &total, &rem) ;
 	    }
 	      
-	  if (node->ns == BLUE_NULL)
+	  if (node->ns == OFC_NULL)
 	    count = BlueCsnprintf (p, rem, "<%s", node->nodeName) ;
 	  else
 	    count = BlueCsnprintf (p, rem, "<%s:%s", 
@@ -414,7 +414,7 @@ BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len,
 				   node->nodeName) ;
 	  update_remainder (count, &p, &total, &rem) ;
 
-	  if (node->attributes != BLUE_NULL)
+	  if (node->attributes != OFC_NULL)
 	    {
 	      count = BlueDOMsprintAttributes (p, rem, node->attributes) ;
 	      update_remainder (count, &p, &total, &rem) ;
@@ -427,7 +427,7 @@ BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len,
 	    {
 	      if (node->firstChild->nodeType == CDATA_SECTION_NODE)
 		{
-		  count = BlueDOMsprintNode(p, rem, node->firstChild, 
+		  count = ofc_dom_sprint_node(p, rem, node->firstChild,
 					    level+1) ;
 		  update_remainder (count, &p, &total, &rem) ;
 		}
@@ -436,7 +436,7 @@ BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len,
 		  count = BlueCsnprintf (p, rem, "\n") ;
 		  update_remainder (count, &p, &total, &rem) ;
 
-		  count = BlueDOMsprintNode(p, rem, node->firstChild, 
+		  count = ofc_dom_sprint_node(p, rem, node->firstChild,
 					    level+1) ;
 		  update_remainder (count, &p, &total, &rem) ;
 
@@ -448,7 +448,7 @@ BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len,
 		}
 	    }
 
-	  if (node->ns == BLUE_NULL)
+	  if (node->ns == OFC_NULL)
 	    count = BlueCsnprintf (p, rem, "</%s>\n", node->nodeName) ;
 	  else
 	    count = BlueCsnprintf (p, rem, "</%s:%s>\n", 
@@ -480,40 +480,40 @@ BlueDOMsprintNode (BLUE_CHAR *buf, BLUE_SIZET len,
   return (total) ;
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMcreateElementCDATA (BLUE_DOMNode *doc, BLUE_CHAR *name, 
-			   const BLUE_CHAR *string)
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_create_element_cdata (OFC_DOMNode *doc, OFC_CHAR *name,
+                              const OFC_CHAR *string)
 {
-  BLUE_DOMNode *node ;
-  BLUE_DOMNode *cdata ;
+  OFC_DOMNode *node ;
+  OFC_DOMNode *cdata ;
 
-  node = BlueDOMcreateElement (doc, name) ;
-  if ((node != BLUE_NULL) &&
-      ((string != BLUE_NULL) && (string[0] != '\0')))
+  node = ofc_dom_create_element(doc, name) ;
+  if ((node != OFC_NULL) &&
+      ((string != OFC_NULL) && (string[0] != '\0')))
     {
-      cdata = BlueDOMcreateCDATASection (doc, string) ;
-      if (cdata != BLUE_NULL)
-	BlueDOMappendChild (node, cdata) ;
+      cdata = ofc_dom_create_cdata_section(doc, string) ;
+      if (cdata != OFC_NULL)
+          ofc_dom_append_child(node, cdata) ;
       else
 	{
-	  BlueDOMdestroyDocument (node) ;
-	  node = BLUE_NULL ;
+	  ofc_dom_destroy_document (node) ;
+	  node = OFC_NULL ;
 	}
     }
   return (node) ;
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMgetElement (BLUE_DOMNode *doc, const BLUE_CHAR *name)
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_get_element (OFC_DOMNode *doc, const OFC_CHAR *name)
 {
-  BLUE_BOOL found ;
-  BLUE_DOMNode *child ;
-  BLUE_DOMNode *node ;
+  OFC_BOOL found ;
+  OFC_DOMNode *child ;
+  OFC_DOMNode *node ;
 
   child = doc->firstChild ;
-  found = BLUE_FALSE ;
+  found = OFC_FALSE ;
 
-  while ((child != BLUE_NULL) && !found)
+  while ((child != OFC_NULL) && !found)
     {
       if ((child->nodeType == ELEMENT_NODE) &&
 	  (BlueCstrcmp (child->nodeName, name) == 0))
@@ -525,11 +525,11 @@ BlueDOMgetElement (BLUE_DOMNode *doc, const BLUE_CHAR *name)
   if (!found)
     {
       node = doc->firstChild ;
-      child = BLUE_NULL ;
-      while ((node != BLUE_NULL) && (child == BLUE_NULL))
+      child = OFC_NULL ;
+      while ((node != OFC_NULL) && (child == OFC_NULL))
 	{
-	  child = BlueDOMgetElement (node, name) ;
-	  if (child == BLUE_NULL)
+	  child = ofc_dom_get_element (node, name) ;
+	  if (child == OFC_NULL)
 	    node = node->nextSibling ;
 	}
     }
@@ -537,54 +537,54 @@ BlueDOMgetElement (BLUE_DOMNode *doc, const BLUE_CHAR *name)
   return (child) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueDOMgetCDATA (BLUE_DOMNode *node)
+OFC_CORE_LIB OFC_CHAR *
+ofc_dom_get_cdata (OFC_DOMNode *node)
 {
-  BLUE_CHAR *text ;
+  OFC_CHAR *text ;
 
-  if ((node->firstChild != BLUE_NULL) &&
+  if ((node->firstChild != OFC_NULL) &&
       (node->firstChild->nodeType == CDATA_SECTION_NODE))
     text = node->firstChild->nodeValue ;
   else
-    text = BLUE_NULL ;
+    text = OFC_NULL ;
 
   return (text) ;
 } 
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueDOMgetElementCDATA (BLUE_DOMNode *doc, BLUE_CHAR *name)
+OFC_CORE_LIB OFC_CHAR *
+ofc_dom_get_element_cdata (OFC_DOMNode *doc, OFC_CHAR *name)
 {
-  BLUE_CHAR *text ;
-  BLUE_DOMNode *node ;
+  OFC_CHAR *text ;
+  OFC_DOMNode *node ;
 
-  text = BLUE_NULL ;
-  node = BlueDOMgetElement (doc, name) ;
-  if (node != BLUE_NULL)
+  text = OFC_NULL ;
+  node = ofc_dom_get_element (doc, name) ;
+  if (node != OFC_NULL)
     {
-      text = BlueDOMgetCDATA (node) ;
+      text = ofc_dom_get_cdata(node) ;
     }
   return (text) ;
 }
 
-BLUE_CORE_LIB BLUE_CHAR *
-BlueDOMgetElementCDATAUnescape (BLUE_DOMNode *doc, BLUE_CHAR *name)
+OFC_CORE_LIB OFC_CHAR *
+ofc_dom_get_element_cdata_unescape (OFC_DOMNode *doc, OFC_CHAR *name)
 {
-  BLUE_CHAR *cdata ;
+  OFC_CHAR *cdata ;
 
-  cdata = BlueDOMgetElementCDATA (doc, name) ;
+  cdata = ofc_dom_get_element_cdata(doc, name) ;
 
-  if (cdata != BLUE_NULL)
-    BlueDOMUnescape (cdata) ;
+  if (cdata != OFC_NULL)
+    ofc_dom_unescape (cdata) ;
 
   return (cdata) ;
 }
 
-BLUE_CORE_LIB BLUE_SIZET 
-BlueDOMUnescape (BLUE_CHAR* data)
+OFC_CORE_LIB OFC_SIZET
+ofc_dom_unescape (OFC_CHAR* data)
 {
-  BLUE_CHAR *end = data + BlueCstrlen(data);
-  BLUE_CHAR *i = data;
-  BLUE_CHAR *j = data;
+  OFC_CHAR *end = data + BlueCstrlen(data);
+  OFC_CHAR *i = data;
+  OFC_CHAR *j = data;
 
   /*
    * Iterate through the string to find escaped sequences
@@ -635,50 +635,50 @@ BlueDOMUnescape (BLUE_CHAR* data)
     }
   i[0] = '\0';
 
-  return (BLUE_SIZET)(i - data);
+  return (OFC_SIZET)(i - data);
 }
 
-BLUE_CORE_LIB BLUE_ULONG 
-BlueDOMgetElementCDATAULong (BLUE_DOMNode *doc, BLUE_CHAR *name)
+OFC_CORE_LIB OFC_ULONG
+ofc_dom_get_element_cdata_long (OFC_DOMNode *doc, OFC_CHAR *name)
 {
-  BLUE_CHAR *cdata ;
-  BLUE_ULONG val ;
+  OFC_CHAR *cdata ;
+  OFC_ULONG val ;
 
-  cdata = BlueDOMgetElementCDATA (doc, name) ;
+  cdata = ofc_dom_get_element_cdata(doc, name) ;
 
-  if (cdata != BLUE_NULL)
-    val = BlueCstrtoul (cdata, BLUE_NULL, 0) ;
+  if (cdata != OFC_NULL)
+    val = BlueCstrtoul (cdata, OFC_NULL, 0) ;
   else
     val = 0 ;
 
   return (val) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueDOMdestroyNode (BLUE_DOMNode *node)
+OFC_CORE_LIB OFC_VOID
+ofc_dom_destroy_node (OFC_DOMNode *node)
 {
-  if (node->ns != BLUE_NULL)
+  if (node->ns != OFC_NULL)
     BlueHeapFree (node->ns) ;
-  if (node->nodeName != BLUE_NULL)
+  if (node->nodeName != OFC_NULL)
     BlueHeapFree (node->nodeName) ;
-  if (node->nodeValue != BLUE_NULL)
+  if (node->nodeValue != OFC_NULL)
     BlueHeapFree (node->nodeValue) ;
   BlueHeapFree (node) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueDOMdestroyDocument (BLUE_DOMNode *node)
+OFC_CORE_LIB OFC_VOID
+ofc_dom_destroy_document (OFC_DOMNode *node)
 {
-  BLUE_DOMNode *attr ;
+  OFC_DOMNode *attr ;
 
-  while (node->firstChild != BLUE_NULL)
-    BlueDOMdestroyDocument (node->firstChild) ;
+  while (node->firstChild != OFC_NULL)
+    ofc_dom_destroy_document (node->firstChild) ;
 
-  while (node->attributes != BLUE_NULL)
+  while (node->attributes != OFC_NULL)
     {
       attr = node->attributes ;
       node->attributes = node->attributes->nextSibling ;
-      BlueDOMdestroyNode (attr) ;
+      ofc_dom_destroy_node (attr) ;
     }
 
   /*
@@ -686,82 +686,82 @@ BlueDOMdestroyDocument (BLUE_DOMNode *node)
    */
   BlueDOMunlinkChild (node) ;
 
-  BlueDOMdestroyNode (node) ;
+  ofc_dom_destroy_node (node) ;
 }
 
 typedef struct dom_state
 {
-  BLUE_INT depth ;
-  BLUE_DOMNode *currentNode ;
-  BLUE_SIZET valuelen ;
-  BLUE_CHAR *value ;
-  BLUE_DOMNode *document ;
+  OFC_INT depth ;
+  OFC_DOMNode *currentNode ;
+  OFC_SIZET valuelen ;
+  OFC_CHAR *value ;
+  OFC_DOMNode *document ;
   BLUE_XML_PARSER parser ; 
 } DOMState ;
 
-static BLUE_VOID 
-startElement(BLUE_VOID *userData, BLUE_CCHAR *name, BLUE_CCHAR **atts)
+static OFC_VOID
+startElement(OFC_VOID *userData, OFC_CCHAR *name, OFC_CCHAR **atts)
 {
-  BLUE_DOMNode *elem ;
+  OFC_DOMNode *elem ;
   DOMState *dom_state ;
 
   dom_state = (DOMState *) userData ;
 
   dom_state->depth += 1 ;
 
-  elem = BlueDOMcreateElement (dom_state->document, name) ;
+  elem = ofc_dom_create_element(dom_state->document, name) ;
 
-  if (elem != BLUE_NULL)
+  if (elem != OFC_NULL)
     {
-      BlueDOMappendChild (dom_state->currentNode, elem) ;
+        ofc_dom_append_child(dom_state->currentNode, elem) ;
       dom_state->currentNode = elem ;
 
       /*
        * Check attributes
        */
-      while ((atts != BLUE_NULL) && (*atts != BLUE_NULL))
+      while ((atts != OFC_NULL) && (*atts != OFC_NULL))
 	{
-	  BlueDOMsetAttribute (elem, *(atts), *(atts+1)) ;
+        ofc_dom_set_attribute(elem, *(atts), *(atts + 1)) ;
 	  atts+=2 ;
 	}
     }
 
-  if (dom_state->value != BLUE_NULL)
+  if (dom_state->value != OFC_NULL)
     {
       BlueHeapFree (dom_state->value) ;
-      dom_state->value = BLUE_NULL ;
+      dom_state->value = OFC_NULL ;
     }
   dom_state->valuelen = 0 ;
 }
 
-static BLUE_VOID 
-endElement(BLUE_VOID *userData, BLUE_CCHAR *name)
+static OFC_VOID
+endElement(OFC_VOID *userData, OFC_CCHAR *name)
 {
   DOMState *dom_state ;
-  BLUE_DOMNode *elem ;
-  BLUE_DOMNode *cdata ;
+  OFC_DOMNode *elem ;
+  OFC_DOMNode *cdata ;
 
   dom_state = (DOMState *) userData ;
 
   dom_state->depth -= 1 ;
   elem = dom_state->currentNode ;
 
-  if (dom_state->value != BLUE_NULL)
+  if (dom_state->value != OFC_NULL)
     {
-      cdata = BlueDOMcreateCDATASection (dom_state->document, 
-					 dom_state->value) ;
-      BlueDOMappendChild (elem, cdata) ;
+      cdata = ofc_dom_create_cdata_section(dom_state->document,
+                                           dom_state->value) ;
+        ofc_dom_append_child(elem, cdata) ;
 
       BlueHeapFree (dom_state->value) ;
       dom_state->valuelen = 0 ;
-      dom_state->value = BLUE_NULL ;
+      dom_state->value = OFC_NULL ;
     }
 
   dom_state->currentNode = elem->parentNode ;
 }
 
-static BLUE_VOID 
-characterData(BLUE_VOID *userData, BLUE_CCHAR *str, BLUE_INT len)
+static OFC_VOID
+characterData(OFC_VOID *userData, OFC_CCHAR *str, OFC_INT len)
 {
   DOMState *dom_state ;
 
@@ -770,7 +770,7 @@ characterData(BLUE_VOID *userData, BLUE_CCHAR *str, BLUE_INT len)
   /*
    * strip leading white space
    */
-  if (dom_state->value == BLUE_NULL)
+  if (dom_state->value == OFC_NULL)
     {
       for ( ;
 	   ((len > 0) && 
@@ -784,7 +784,7 @@ characterData(BLUE_VOID *userData, BLUE_CCHAR *str, BLUE_INT len)
   if (len > 0)
     {
       dom_state->value = 
-	(BLUE_CHAR *) BlueHeapRealloc (dom_state->value, 
+	(OFC_CHAR *) BlueHeapRealloc (dom_state->value,
 				       dom_state->valuelen+len+1) ;
       BlueCstrncpy (dom_state->value + dom_state->valuelen, str, len) ;
       dom_state->valuelen += len ;
@@ -792,23 +792,23 @@ characterData(BLUE_VOID *userData, BLUE_CCHAR *str, BLUE_INT len)
     }
 }
 
-static BLUE_VOID 
-xmlDeclaration(BLUE_VOID *userData, BLUE_CCHAR *version,
-	       BLUE_CCHAR *encoding, BLUE_INT standalone)
+static OFC_VOID
+xmlDeclaration(OFC_VOID *userData, OFC_CCHAR *version,
+               OFC_CCHAR *encoding, OFC_INT standalone)
 {
-  BLUE_DOMNode *pi ;
+  OFC_DOMNode *pi ;
   DOMState *dom_state ;
-  BLUE_CHAR *data ;
+  OFC_CHAR *data ;
 
-  BLUE_CHAR *p ;
-  BLUE_SIZET rem ;
-  BLUE_SIZET count ;
-  BLUE_SIZET total ;
+  OFC_CHAR *p ;
+  OFC_SIZET rem ;
+  OFC_SIZET count ;
+  OFC_SIZET total ;
 
   dom_state = (DOMState *) userData ;
-  data = BLUE_NULL ;
+  data = OFC_NULL ;
 
-  for (total = 0, p = BLUE_NULL ; p == BLUE_NULL ; )
+  for (total = 0, p = OFC_NULL ; p == OFC_NULL ; )
     {
       if (total == 0)
 	{
@@ -816,18 +816,18 @@ xmlDeclaration(BLUE_VOID *userData, BLUE_CCHAR *version,
 	}
       else
 	{
-	  data = (BLUE_CHAR *) BlueHeapMalloc (total + 1) ;
+	  data = (OFC_CHAR *) BlueHeapMalloc (total + 1) ;
 	  p = data ;
 	  rem = total + 1 ;
 	}
 
-      if (version != BLUE_NULL)
+      if (version != OFC_NULL)
 	{
 	  count = BlueCsnprintf (p, rem, "version=\"%s\" ", version) ;
 	  update_remainder (count, &p, &total, &rem) ;
 	}
 
-      if (encoding != BLUE_NULL)
+      if (encoding != OFC_NULL)
 	{
 	  count = BlueCsnprintf (p, rem, "encoding=\"%s\" ", encoding) ;
 	  update_remainder (count, &p, &total, &rem) ;
@@ -840,46 +840,46 @@ xmlDeclaration(BLUE_VOID *userData, BLUE_CCHAR *version,
       update_remainder (count, &p, &total, &rem) ;
     }
 
-  if (data != BLUE_NULL)
+  if (data != OFC_NULL)
     {
-      pi = BlueDOMcreateProcessingInstruction (dom_state->document, 
-					       "xml", data) ;
+      pi = ofc_dom_create_processing_instruction(dom_state->document,
+                                                 "xml", data) ;
       BlueHeapFree (data) ;
 
-      if (pi != BLUE_NULL)
+      if (pi != OFC_NULL)
 	{
-	  BlueDOMappendChild (dom_state->currentNode, pi) ;
+        ofc_dom_append_child(dom_state->currentNode, pi) ;
 	}
     }
 }
 
-BLUE_CORE_LIB BLUE_DOMNode *
-BlueDOMloadDocument (BLUE_SIZET callback(BLUE_VOID*, BLUE_LPVOID, BLUE_DWORD), 
-		     BLUE_VOID *context)
+OFC_CORE_LIB OFC_DOMNode *
+ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID, OFC_DWORD),
+                       OFC_VOID *context)
 {
-  BLUE_DOMNode *doc ;
+  OFC_DOMNode *doc ;
   DOMState *dom_state ;
-  BLUE_CHAR *buf ;
-  BLUE_SIZET len ;
-  BLUE_BOOL done ;
+  OFC_CHAR *buf ;
+  OFC_SIZET len ;
+  OFC_BOOL done ;
 
-  doc = BLUE_NULL ;
+  doc = OFC_NULL ;
   dom_state = (DOMState *) BlueHeapMalloc (sizeof (DOMState)) ;
-  if (dom_state != BLUE_NULL)
+  if (dom_state != OFC_NULL)
     {
-      dom_state->value = BLUE_NULL ;
+      dom_state->value = OFC_NULL ;
       dom_state->valuelen = 0 ;
       dom_state->depth = 0 ;
-      doc = BlueDOMcreateDocument (BLUE_NULL, BLUE_NULL, BLUE_NULL) ;
-      if (doc != BLUE_NULL)
+      doc = ofc_dom_create_document(OFC_NULL, OFC_NULL, OFC_NULL) ;
+      if (doc != OFC_NULL)
 	{
 	  dom_state->document = doc ;
 
 	  dom_state->currentNode = doc ;
 
-	  dom_state->parser = BlueXMLparserCreate(BLUE_NULL) ;
+	  dom_state->parser = BlueXMLparserCreate(OFC_NULL) ;
 
-	  if (dom_state->parser != BLUE_NULL)
+	  if (dom_state->parser != OFC_NULL)
 	    {
 	      BlueXMLsetUserData(dom_state->parser, dom_state);
 	      BlueXMLsetElementHandler(dom_state->parser, 
@@ -888,10 +888,10 @@ BlueDOMloadDocument (BLUE_SIZET callback(BLUE_VOID*, BLUE_LPVOID, BLUE_DWORD),
 					      characterData) ;
 	      BlueXMLsetXmlDeclHandler (dom_state->parser, xmlDeclaration) ;
 
-	      buf = (BLUE_CHAR *) BlueHeapMalloc (1024) ;
+	      buf = (OFC_CHAR *) BlueHeapMalloc (1024) ;
 
 	      done = 0 ;
-	      while (done == BLUE_FALSE)
+	      while (done == OFC_FALSE)
 		{
 		  len = (*callback)(context, buf, 1024) ;
 
@@ -903,7 +903,7 @@ BlueDOMloadDocument (BLUE_SIZET callback(BLUE_VOID*, BLUE_LPVOID, BLUE_DWORD),
 		      if (BlueXMLparse(dom_state->parser, buf, len, done) == 
 			  BLUE_XML_STATUS_ERROR) 
 			{
-			  doc = BLUE_NULL ;
+			  doc = OFC_NULL ;
 			  done = 1 ;
 			}
 		    }
@@ -916,9 +916,9 @@ BlueDOMloadDocument (BLUE_SIZET callback(BLUE_VOID*, BLUE_LPVOID, BLUE_DWORD),
 	    }
 	}
 
-      if (dom_state->value != BLUE_NULL)
+      if (dom_state->value != OFC_NULL)
 	BlueHeapFree (dom_state->value) ;
-      dom_state->value = BLUE_NULL ;
+      dom_state->value = OFC_NULL ;
 
       BlueHeapFree (dom_state) ;
     }

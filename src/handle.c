@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/types.h"
 #include "ofc/handle.h"
@@ -42,21 +42,21 @@ typedef struct _STACK
 typedef struct _HANDLE_CONTEXT
 {
   BLUE_HANDLE_TYPE type ;
-  BLUE_INT reference ;
-  BLUE_BOOL destroy ;
-  BLUE_VOID *context ;
+  OFC_INT reference ;
+  OFC_BOOL destroy ;
+  OFC_VOID *context ;
   BLUE_HANDLE wait_app ;
   BLUE_HANDLE wait_set ;
 #if defined(DISABLED)
   STACK trace[10] ;
   BLUE_INT trace_idx ;
 #endif
-#if defined(BLUE_PARAM_HANDLE_PERF)
+#if defined(OFC_HANDLE_PERF)
   BLUE_MSTIME last_triggered ;
   BLUE_MSTIME avg_interval ;
   BLUE_UINT32 avg_count ;
 #endif
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
   struct _HANDLE_CONTEXT * dbgnext ;
   struct _HANDLE_CONTEXT * dbgprev ;
 #if defined(__GNUC__)
@@ -72,12 +72,12 @@ typedef struct _HANDLE_CONTEXT
 
 typedef struct _HANDLE16_CONTEXT
 {
-  BLUE_UCHAR id ;
-  BLUE_UCHAR instance ;
-  BLUE_BOOL alloc ;
-  BLUE_VOID *context ;
-  BLUE_INT ref ;
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+  OFC_UCHAR id ;
+  OFC_UCHAR instance ;
+  OFC_BOOL alloc ;
+  OFC_VOID *context ;
+  OFC_INT ref ;
+#if defined(OFC_HANDLE_DEBUG)
   struct _HANDLE16_CONTEXT * dbgnext ;
   struct _HANDLE16_CONTEXT * dbgprev ;
 #if defined(__GNUC__)
@@ -95,7 +95,7 @@ typedef struct _HANDLE16_CONTEXT
 BLUE_LOCK BlueHandle16Mutex ;
 BLUE_LOCK HandleLock ;
 
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
 static HANDLE_CONTEXT *BlueHandleAlloc ;
 static HANDLE16_CONTEXT *BlueHandle16Alloc ;
 
@@ -245,14 +245,14 @@ BLUE_VOID BlueHandle16DebugDump (BLUE_VOID)
 
 #endif
 
-BLUE_CORE_LIB BLUE_HANDLE
-BlueHandleCreate (BLUE_HANDLE_TYPE hType, BLUE_VOID *context)
+OFC_CORE_LIB BLUE_HANDLE
+BlueHandleCreate (BLUE_HANDLE_TYPE hType, OFC_VOID *context)
 {
   HANDLE_CONTEXT *handle_context ;
 
   handle_context = BlueHeapMalloc (sizeof (HANDLE_CONTEXT)) ;
   handle_context->reference = 0 ;
-  handle_context->destroy = BLUE_FALSE ;
+  handle_context->destroy = OFC_FALSE ;
   handle_context->type = hType ;
   handle_context->context = context ;
 #if defined(DISABLED)
@@ -262,40 +262,40 @@ BlueHandleCreate (BLUE_HANDLE_TYPE hType, BLUE_VOID *context)
   handle_context->wait_set = BLUE_HANDLE_NULL ;
   handle_context->wait_app = BLUE_HANDLE_NULL ;
 
-#if defined(BLUE_PARAM_HANDLE_PERF)
+#if defined(OFC_HANDLE_PERF)
   handle_context->last_triggered = 0 ;
   handle_context->avg_interval = 0 ;
   handle_context->avg_count = 0 ;
 #endif
 
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
   BlueHandleDebugAlloc (handle_context, RETURN_ADDRESS()) ;
 #endif
 
   return ((BLUE_HANDLE) handle_context) ;
 }
 
-BLUE_CORE_LIB BLUE_HANDLE_TYPE BlueHandleGetType (BLUE_HANDLE hHandle)
+OFC_CORE_LIB BLUE_HANDLE_TYPE BlueHandleGetType (BLUE_HANDLE hHandle)
 {
   HANDLE_CONTEXT *handle ;
   BLUE_HANDLE_TYPE type ;
 
   type = BLUE_HANDLE_UNKNOWN ;
   handle = (HANDLE_CONTEXT *) hHandle ;
-  if (handle != BLUE_NULL)
+  if (handle != OFC_NULL)
     {
       type = handle->type ;
     }
   return (type) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID *BlueHandleLock (BLUE_HANDLE handle)
+OFC_CORE_LIB OFC_VOID *BlueHandleLock (BLUE_HANDLE handle)
 {
   HANDLE_CONTEXT *handle_context ;
-  BLUE_VOID *ret ;
+  OFC_VOID *ret ;
 
   handle_context = (HANDLE_CONTEXT *) handle ;
-  ret = BLUE_NULL ;
+  ret = OFC_NULL ;
 
   BlueLock (HandleLock) ;
 #if defined(DISABLED)
@@ -327,12 +327,12 @@ handle_context->destroy ;
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID *
+OFC_CORE_LIB OFC_VOID *
 BlueHandleLockEx (BLUE_HANDLE handle, BLUE_HANDLE_TYPE type)
 {
-  BLUE_VOID *ret ;
+  OFC_VOID *ret ;
 
-  ret = BLUE_NULL ;
+  ret = OFC_NULL ;
   if (BlueHandleGetType (handle) == type)
     ret = BlueHandleLock (handle) ;
   else
@@ -340,7 +340,7 @@ BlueHandleLockEx (BLUE_HANDLE handle, BLUE_HANDLE_TYPE type)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID BlueHandleUnlock (BLUE_HANDLE handle)
+OFC_CORE_LIB OFC_VOID BlueHandleUnlock (BLUE_HANDLE handle)
 {
   HANDLE_CONTEXT *handle_context ;
 
@@ -368,10 +368,10 @@ BLUE_CORE_LIB BLUE_VOID BlueHandleUnlock (BLUE_HANDLE handle)
 
   if (handle_context->destroy && handle_context->reference == 0)
     {
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
       BlueHandleDebugFree (handle_context) ;
 #endif
-#if defined(BLUE_PARAM_HANDLE_PERF)
+#if defined(OFC_HANDLE_PERF)
       BlueHandlePrintInterval ("Handle: ", handle) ;
 #endif
       BlueUnlock (HandleLock) ;
@@ -381,7 +381,7 @@ BLUE_CORE_LIB BLUE_VOID BlueHandleUnlock (BLUE_HANDLE handle)
     BlueUnlock (HandleLock) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID BlueHandleDestroy (BLUE_HANDLE handle)
+OFC_CORE_LIB OFC_VOID BlueHandleDestroy (BLUE_HANDLE handle)
 {
   HANDLE_CONTEXT *handle_context ;
 
@@ -413,19 +413,19 @@ BLUE_CORE_LIB BLUE_VOID BlueHandleDestroy (BLUE_HANDLE handle)
   if (handle_context->reference == 0)
     {
 
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
       BlueHandleDebugFree (handle_context) ;
 #endif
-#if defined(BLUE_PARAM_HANDLE_PERF)
+#if defined(OFC_HANDLE_PERF)
       BlueHandlePrintInterval ("Handle: ", handle) ;
 #endif
       BlueHeapFree (handle_context) ;
     }
   else
-    handle_context->destroy = BLUE_TRUE ;
+    handle_context->destroy = OFC_TRUE ;
 }
 
-BLUE_CORE_LIB BLUE_VOID
+OFC_CORE_LIB OFC_VOID
 BlueHandleSetApp (BLUE_HANDLE hHandle, BLUE_HANDLE hApp, BLUE_HANDLE hSet)
 {
   HANDLE_CONTEXT *handle_context ;
@@ -440,7 +440,7 @@ BlueHandleSetApp (BLUE_HANDLE hHandle, BLUE_HANDLE hApp, BLUE_HANDLE hSet)
     }
 }
 
-BLUE_CORE_LIB BLUE_HANDLE BlueHandleGetApp (BLUE_HANDLE hHandle) 
+OFC_CORE_LIB BLUE_HANDLE BlueHandleGetApp (BLUE_HANDLE hHandle)
 {
   HANDLE_CONTEXT *handle_context ;
 
@@ -449,7 +449,7 @@ BLUE_CORE_LIB BLUE_HANDLE BlueHandleGetApp (BLUE_HANDLE hHandle)
   return (handle_context->wait_app) ;
 }
 
-BLUE_CORE_LIB BLUE_HANDLE BlueHandleGetWaitSet (BLUE_HANDLE hHandle) 
+OFC_CORE_LIB BLUE_HANDLE BlueHandleGetWaitSet (BLUE_HANDLE hHandle)
 {
   HANDLE_CONTEXT *handle_context ;
 
@@ -458,18 +458,18 @@ BLUE_CORE_LIB BLUE_HANDLE BlueHandleGetWaitSet (BLUE_HANDLE hHandle)
   return (handle_context->wait_set) ;
 }
 
-static HANDLE16_CONTEXT Handle16Array[BLUE_PARAM_MAX_HANDLE16] ;
+static HANDLE16_CONTEXT Handle16Array[OFC_MAX_HANDLE16] ;
 static BLUE_HANDLE Handle16Free ;
 
 #define HANDLE16_MAKE(ix, id) ((BLUE_HANDLE16) (ix & 0xFF) << 8 | (id & 0xFF))
-#define HANDLE16_INSTANCE(handle) ((BLUE_UCHAR) ((handle >> 8) & 0xFF))
-#define HANDLE16_ID(handle) ((BLUE_UCHAR) (handle & 0xFF))
+#define HANDLE16_INSTANCE(handle) ((OFC_UCHAR) ((handle >> 8) & 0xFF))
+#define HANDLE16_ID(handle) ((OFC_UCHAR) (handle & 0xFF))
 
-BLUE_CORE_LIB BLUE_VOID BlueHandle16Init (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID BlueHandle16Init (OFC_VOID)
 {
-  BLUE_INT i ;
+  OFC_INT i ;
 
-#if defined (BLUE_PARAM_HANDLE_DEBUG)
+#if defined (OFC_HANDLE_DEBUG)
   BlueHandleDebugInit() ;
 #endif
 
@@ -478,18 +478,18 @@ BLUE_CORE_LIB BLUE_VOID BlueHandle16Init (BLUE_VOID)
 
   Handle16Free = BlueQcreate() ;
 
-  for (i = 0 ; i < BLUE_PARAM_MAX_HANDLE16 ; i++)
+  for (i = 0 ; i < OFC_MAX_HANDLE16 ; i++)
     {
       Handle16Array[i].id = i ;
       Handle16Array[i].instance = 0xFF ;
-      Handle16Array[i].context = BLUE_NULL ;
-      Handle16Array[i].alloc = BLUE_FALSE ;
+      Handle16Array[i].context = OFC_NULL ;
+      Handle16Array[i].alloc = OFC_FALSE ;
       Handle16Array[i].ref = 0 ;
       BlueQenqueue (Handle16Free, &Handle16Array[i]) ;
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID BlueHandle16Free (BLUE_VOID)
+OFC_CORE_LIB OFC_VOID BlueHandle16Free (OFC_VOID)
 {
   BlueQclear (Handle16Free) ;
   BlueQdestroy (Handle16Free) ;
@@ -498,20 +498,20 @@ BLUE_CORE_LIB BLUE_VOID BlueHandle16Free (BLUE_VOID)
   BlueLockDestroy (HandleLock) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID *BlueHandle16Lock (BLUE_HANDLE16 hHandle)
+OFC_CORE_LIB OFC_VOID *BlueHandle16Lock (BLUE_HANDLE16 hHandle)
 {
-  BLUE_VOID *ret ;
-  BLUE_UCHAR id ;
+  OFC_VOID *ret ;
+  OFC_UCHAR id ;
   HANDLE16_CONTEXT *handle ;
 
-  ret = BLUE_NULL ;
+  ret = OFC_NULL ;
   BlueLock (BlueHandle16Mutex) ;
   id = HANDLE16_ID (hHandle) ;
-  if (id < BLUE_PARAM_MAX_HANDLE16)
+  if (id < OFC_MAX_HANDLE16)
     {
       handle = &Handle16Array[id] ;    
       if (handle->instance == HANDLE16_INSTANCE(hHandle) &&
-          handle->alloc == BLUE_TRUE)
+          handle->alloc == OFC_TRUE)
         {
           ret = handle->context ;
           handle->ref++ ;
@@ -522,7 +522,7 @@ BLUE_CORE_LIB BLUE_VOID *BlueHandle16Lock (BLUE_HANDLE16 hHandle)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_HANDLE16 BlueHandle16Create (BLUE_VOID *context)
+OFC_CORE_LIB BLUE_HANDLE16 BlueHandle16Create (OFC_VOID *context)
 {
   HANDLE16_CONTEXT *handle ;  
   BLUE_HANDLE16 ret ;
@@ -530,20 +530,20 @@ BLUE_CORE_LIB BLUE_HANDLE16 BlueHandle16Create (BLUE_VOID *context)
   ret = BLUE_HANDLE16_INVALID ;
   BlueLock (BlueHandle16Mutex) ;
   handle = BlueQdequeue (Handle16Free) ;
-  if (handle != BLUE_NULL)
+  if (handle != OFC_NULL)
     {
       handle->instance++ ;
       if (handle->instance == 0xFF || handle->instance == 0)
         handle->instance = 1 ;
-      handle->alloc = BLUE_TRUE ;
+      handle->alloc = OFC_TRUE ;
       handle->ref++ ;
       handle->context = context ;
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
       BlueHandle16DebugAlloc (handle, RETURN_ADDRESS()) ;
 #endif
       ret = HANDLE16_MAKE (handle->instance, handle->id) ;
     }
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
   else
     BlueHandle16DebugDump() ;
 #endif
@@ -557,20 +557,20 @@ BLUE_CORE_LIB BLUE_HANDLE16 BlueHandle16Create (BLUE_VOID *context)
   return (ret) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID BlueHandle16Destroy (BLUE_HANDLE16 hHandle)
+OFC_CORE_LIB OFC_VOID BlueHandle16Destroy (BLUE_HANDLE16 hHandle)
 {
-  BLUE_UCHAR id ;
+  OFC_UCHAR id ;
   HANDLE16_CONTEXT *handle ;
 
   BlueLock (BlueHandle16Mutex) ;
   id = HANDLE16_ID (hHandle) ;
-  if (id < BLUE_PARAM_MAX_HANDLE16)
+  if (id < OFC_MAX_HANDLE16)
     {
       handle = &Handle16Array[id] ;    
       if (handle->instance == HANDLE16_INSTANCE(hHandle) &&
-          handle->alloc == BLUE_TRUE)
+          handle->alloc == OFC_TRUE)
         {
-          handle->context = BLUE_NULL ;
+          handle->context = OFC_NULL ;
 	  BlueUnlock (BlueHandle16Mutex) ;
           BlueHandle16Unlock (hHandle) ;
         }
@@ -591,26 +591,26 @@ BLUE_CORE_LIB BLUE_VOID BlueHandle16Destroy (BLUE_HANDLE16 hHandle)
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID BlueHandle16Unlock (BLUE_HANDLE16 hHandle)
+OFC_CORE_LIB OFC_VOID BlueHandle16Unlock (BLUE_HANDLE16 hHandle)
 {
-  BLUE_UCHAR id ;
+  OFC_UCHAR id ;
   HANDLE16_CONTEXT *handle ;
 
   BlueLock (BlueHandle16Mutex) ;
   id = HANDLE16_ID (hHandle) ;
-  if (id < BLUE_PARAM_MAX_HANDLE16)
+  if (id < OFC_MAX_HANDLE16)
     {
       handle = &Handle16Array[id] ;    
       if (handle->instance == HANDLE16_INSTANCE(hHandle) &&
-          handle->alloc == BLUE_TRUE)
+          handle->alloc == OFC_TRUE)
         {
           handle->ref-- ;
           if (handle->ref == 0)
             {
-#if defined(BLUE_PARAM_HANDLE_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
 	      BlueHandle16DebugFree (handle) ;
 #endif
-	      handle->alloc = BLUE_FALSE ;
+	      handle->alloc = OFC_FALSE ;
               BlueQenqueue (Handle16Free, handle) ;
             }
         }
@@ -620,7 +620,7 @@ BLUE_CORE_LIB BLUE_VOID BlueHandle16Unlock (BLUE_HANDLE16 hHandle)
   BlueUnlock (BlueHandle16Mutex) ;
 }
 
-#if defined(BLUE_PARAM_HANDLE_PERF)
+#if defined(OFC_HANDLE_PERF)
 BLUE_CORE_LIB BLUE_VOID BlueHandleMeasure (BLUE_HANDLE hHandle)
 {
   HANDLE_CONTEXT *handle_context ;

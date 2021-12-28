@@ -3,41 +3,41 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/lock.h"
 #include "ofc/impl/lockimpl.h"
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueLockDestroy (BLUE_LOCK lock) 
 {
   BlueLockDestroyImpl (lock) ;
 }
 
-BLUE_CORE_LIB BLUE_BOOL 
+OFC_CORE_LIB OFC_BOOL
 BlueLockTry (BLUE_LOCK lock) 
 {
   return (BlueLockTryImpl (lock)) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueLock (BLUE_LOCK pLock) 
 {
-  if (pLock != BLUE_NULL)
+  if (pLock != OFC_NULL)
     BlueLockImpl (pLock) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
+OFC_CORE_LIB OFC_VOID
 BlueUnlock (BLUE_LOCK pLock) 
 {
-  if (pLock != BLUE_NULL)
+  if (pLock != OFC_NULL)
     BlueUnlockImpl (pLock) ;
 }
 
-BLUE_CORE_LIB BLUE_LOCK
-BlueLockInit (BLUE_VOID) 
+OFC_CORE_LIB BLUE_LOCK
+BlueLockInit (OFC_VOID)
 {
   BLUE_LOCK plock;
   plock = BlueLockInitImpl () ;

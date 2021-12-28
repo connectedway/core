@@ -13,13 +13,13 @@
 #include "ofc/heap.h"
 #include "ofc/framework.h"
 
-static BLUE_INT test_startup(BLUE_VOID)
+static OFC_INT test_startup(OFC_VOID)
 {
   BlueFrameworkInit();
   return(0);
 }
 
-static BLUE_VOID test_shutdown(BLUE_VOID)
+static OFC_VOID test_shutdown(OFC_VOID)
 {
   BlueFrameworkShutdown();
   BlueFrameworkDestroy();
@@ -39,17 +39,17 @@ TEST_TEAR_DOWN(path)
 
 TEST(path, test_path)
 {
-    BLUE_LPTSTR tfilename ;
-    BLUE_LPSTR cfilename ;
-    BLUE_LPTSTR tcursor ;
-    BLUE_LPSTR ccursor ;
-    BLUE_SIZET rem ;
-    BLUE_SIZET trem ;
-    BLUE_SIZET len ;
+    OFC_LPTSTR tfilename ;
+    OFC_LPSTR cfilename ;
+    OFC_LPTSTR tcursor ;
+    OFC_LPSTR ccursor ;
+    OFC_SIZET rem ;
+    OFC_SIZET trem ;
+    OFC_SIZET len ;
 
     rem = 20 ;
     trem = rem ;
-    tfilename = BlueHeapMalloc ((trem+1) * sizeof (BLUE_TCHAR)) ;
+    tfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_TCHAR)) ;
     tcursor = tfilename ;
 
     len = BluePathMakeURLW (&tcursor, &trem,
@@ -67,7 +67,7 @@ TEST(path, test_path)
 
     rem = len ;
     trem = rem ;
-    tfilename = BlueHeapMalloc ((trem+1) * sizeof (BLUE_TCHAR)) ;
+    tfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_TCHAR)) ;
     tcursor = tfilename ;
 
     len = BluePathMakeURLW (&tcursor, &trem,
@@ -85,7 +85,7 @@ TEST(path, test_path)
 
     rem = 20 ;
     trem = rem ;
-    cfilename = BlueHeapMalloc ((trem+1) * sizeof (BLUE_CHAR)) ;
+    cfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_CHAR)) ;
     ccursor = cfilename ;
 
     len = BluePathMakeURLA (&ccursor, &trem,
@@ -103,7 +103,7 @@ TEST(path, test_path)
 
     rem = len ;
     trem = rem ;
-    cfilename = BlueHeapMalloc ((trem+1) * sizeof (BLUE_CHAR)) ;
+    cfilename = BlueHeapMalloc ((trem+1) * sizeof (OFC_CHAR)) ;
     ccursor = cfilename ;
 
     len = BluePathMakeURLA (&ccursor, &trem,

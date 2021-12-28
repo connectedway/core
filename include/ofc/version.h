@@ -17,15 +17,15 @@
 /**
  * Define the Major version of Blue Share
  */
-#define BLUE_PARAM_SHARE_MAJOR 5
+#define OFC_SHARE_MAJOR 5
 /**
  * Define the Minor version of Blue Share
  */
-#define BLUE_PARAM_SHARE_MINOR 0
+#define OFC_SHARE_MINOR 0
 /**
  * Define the tag this has in git repo
  */
-#define BLUE_PARAM_SHARE_TAG "1.0.30"
+#define OFC_SHARE_TAG "1.0.30"
 
 /** \} */
 

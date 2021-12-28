@@ -3,7 +3,7 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#define __BLUE_CORE_DLL__
+#define __OFC_CORE_DLL__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -11,16 +11,16 @@
 #include "ofc/time.h"
 #include "ofc/impl/timeimpl.h"
 
-#if defined(BLUE_PARAM_64BIT_INTEGER)
+#if defined(OFC_64BIT_INTEGER)
 
-BLUE_VOID EpochTimeToFileTime (const BLUE_ULONG tv_sec,
-			       const BLUE_ULONG tv_nsec,
-			       BLUE_FILETIME *filetime)
+OFC_VOID EpochTimeToFileTime (const OFC_ULONG tv_sec,
+                              const OFC_ULONG tv_nsec,
+                              OFC_FILETIME *filetime)
 {
-  BLUE_UINT64 secs ;
-  BLUE_UINT64 ns ;
+  OFC_UINT64 secs ;
+  OFC_UINT64 ns ;
 
-  secs = (BLUE_UINT64) tv_sec + BLUE_TIME_S_EPOCH_OFFSET_1900 ;
+  secs = (OFC_UINT64) tv_sec + BLUE_TIME_S_EPOCH_OFFSET_1900 ;
 
   /*
    * Convert to number of 100 ns
@@ -29,25 +29,25 @@ BLUE_VOID EpochTimeToFileTime (const BLUE_ULONG tv_sec,
   /*
    * Name into 100ns chunks
    */
-  filetime->dwHighDateTime = (BLUE_DWORD) (ns >> 32) ;
-  filetime->dwLowDateTime = (BLUE_DWORD) (ns & 0xFFFFFFFF) ;
+  filetime->dwHighDateTime = (OFC_DWORD) (ns >> 32) ;
+  filetime->dwLowDateTime = (OFC_DWORD) (ns & 0xFFFFFFFF) ;
 }
 
-BLUE_VOID FileTimeToEpochTime (const BLUE_FILETIME *filetime,
-			       BLUE_ULONG *tv_sec,
-			       BLUE_ULONG *tv_nsec)
+OFC_VOID FileTimeToEpochTime (const OFC_FILETIME *filetime,
+                              OFC_ULONG *tv_sec,
+                              OFC_ULONG *tv_nsec)
 {
-  BLUE_UINT64 ns ;
+  OFC_UINT64 ns ;
 
   /*
    * Name into 100ns chunks
    */
-  ns = (BLUE_UINT64)filetime->dwHighDateTime << 32 | filetime->dwLowDateTime ;
+  ns = (OFC_UINT64)filetime->dwHighDateTime << 32 | filetime->dwLowDateTime ;
   /*
    * Convert to number of secs
    */
-  *tv_sec = (BLUE_ULONG) ((ns / (1000 * 1000 * 10)) - 
-	                  BLUE_TIME_S_EPOCH_OFFSET_1900) ;
+  *tv_sec = (OFC_ULONG) ((ns / (1000 * 1000 * 10)) -
+                         BLUE_TIME_S_EPOCH_OFFSET_1900) ;
   *tv_nsec = (ns % (1000 * 1000 * 10)) * 100 ;
 }
 #else
@@ -123,47 +123,47 @@ BLUE_VOID FileTimeToEpochTime (const BLUE_FILETIME *filetime,
 }
 #endif
 
-BLUE_CORE_LIB BLUE_MSTIME 
-BlueTimeGetNow(BLUE_VOID) 
+OFC_CORE_LIB OFC_MSTIME
+BlueTimeGetNow(OFC_VOID)
 {
   return (BlueTimeGetNowImpl ()) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimeGetFileTime(BLUE_FILETIME *filetime)
+OFC_CORE_LIB OFC_VOID
+BlueTimeGetFileTime(OFC_FILETIME *filetime)
 {
   BlueTimeGetFileTimeImpl (filetime) ;
 }
 
-BLUE_CORE_LIB BLUE_UINT16 
-BlueTimeGetTimeZone (BLUE_VOID)
+OFC_CORE_LIB OFC_UINT16
+BlueTimeGetTimeZone (OFC_VOID)
 {
   return (BlueTimeGetTimeZoneImpl ()) ;
 }
 
-BLUE_CORE_LIB BLUE_BOOL 
-BlueFileTimeToDosDateTime (const BLUE_FILETIME *lpFileTime,
-			   BLUE_WORD *lpFatDate, BLUE_WORD *lpFatTime)
+OFC_CORE_LIB OFC_BOOL
+BlueFileTimeToDosDateTime (const OFC_FILETIME *lpFileTime,
+                           OFC_WORD *lpFatDate, OFC_WORD *lpFatTime)
 {
   return (BlueFileTimeToDosDateTimeImpl (lpFileTime, lpFatDate, lpFatTime)) ;
 }
 
-BLUE_CORE_LIB BLUE_BOOL 
-BlueDosDateTimeToFileTime (BLUE_WORD FatDate, BLUE_WORD FatTime,
-			   BLUE_FILETIME *lpFileTime) 
+OFC_CORE_LIB OFC_BOOL
+BlueDosDateTimeToFileTime (OFC_WORD FatDate, OFC_WORD FatTime,
+                           OFC_FILETIME *lpFileTime)
 {
   return (BlueDosDateTimeToFileTimeImpl (FatDate, FatTime, lpFileTime)) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimeElementsToDosDateTime (BLUE_UINT16 month,
-			       BLUE_UINT16 day,
-			       BLUE_UINT16 year,
-			       BLUE_UINT16 hour,
-			       BLUE_UINT16 min,
-			       BLUE_UINT16 sec,
-			       BLUE_WORD *lpFatDate,
-			       BLUE_WORD *lpFatTime)
+OFC_CORE_LIB OFC_VOID
+BlueTimeElementsToDosDateTime (OFC_UINT16 month,
+                               OFC_UINT16 day,
+                               OFC_UINT16 year,
+                               OFC_UINT16 hour,
+                               OFC_UINT16 min,
+                               OFC_UINT16 sec,
+                               OFC_WORD *lpFatDate,
+                               OFC_WORD *lpFatTime)
 {					 
   *lpFatDate = 
     month << BLUE_DOS_MONTH_SHIFT |
@@ -175,15 +175,15 @@ BlueTimeElementsToDosDateTime (BLUE_UINT16 month,
     sec << BLUE_DOS_SECS_SHIFT ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimeDosDateTimeToElements (BLUE_WORD FatDate,
-			       BLUE_WORD FatTime,
-			       BLUE_UINT16 *month,
-			       BLUE_UINT16 *day,
-			       BLUE_UINT16 *year,
-			       BLUE_UINT16 *hour,
-			       BLUE_UINT16 *min,
-			       BLUE_UINT16 *sec) 
+OFC_CORE_LIB OFC_VOID
+BlueTimeDosDateTimeToElements (OFC_WORD FatDate,
+                               OFC_WORD FatTime,
+                               OFC_UINT16 *month,
+                               OFC_UINT16 *day,
+                               OFC_UINT16 *year,
+                               OFC_UINT16 *hour,
+                               OFC_UINT16 *min,
+                               OFC_UINT16 *sec)
 {
   *hour = (FatTime & BLUE_DOS_HRS) >> BLUE_DOS_HRS_SHIFT ;
   *min = (FatTime & BLUE_DOS_MINS) >> BLUE_DOS_MINS_SHIFT ;
@@ -195,7 +195,7 @@ BlueTimeDosDateTimeToElements (BLUE_WORD FatDate,
     BLUE_DOS_YEAR_BASE ; 
 }
 
-#if defined(BLUE_PARAM_PERF_STATS)
+#if defined(OFC_PERF_STATS)
 
 static BLUE_CHAR *BlueTimePerfNames[BLUE_TIME_PERF_NUM] =
   {

@@ -95,13 +95,13 @@ typedef struct
    * If the function fails, the return valid is BLUE_INVALID_HANDLE_VALUE
    * If it succeeds, it will return a file handle.
    */
-  BLUE_HANDLE (*CreateFile)(BLUE_LPCTSTR lpFileName, 
-			    BLUE_DWORD dwDesiredAccess, 
-			    BLUE_DWORD dwShareMode,
-			    BLUE_LPSECURITY_ATTRIBUTES lpSecurityAttributes, 
-			    BLUE_DWORD dwCreationDisposition,
-			    BLUE_DWORD dwFlagsAndAttributes, 
-			    BLUE_HANDLE hTemplateFile) ;
+  BLUE_HANDLE (*CreateFile)(OFC_LPCTSTR lpFileName,
+                            OFC_DWORD dwDesiredAccess,
+                            OFC_DWORD dwShareMode,
+                            OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+                            OFC_DWORD dwCreationDisposition,
+                            OFC_DWORD dwFlagsAndAttributes,
+                            BLUE_HANDLE hTemplateFile) ;
   /**
    * Deletes an existing file
    *
@@ -109,9 +109,9 @@ typedef struct
    * The name of the file in UNC or SMB URL format
    *
    * \returns
-   * If success, returns BLUE_TRUE, if failure returns BLUE_FALSE
+   * If success, returns OFC_TRUE, if failure returns OFC_FALSE
    */
-  BLUE_BOOL (*DeleteFile)(BLUE_LPCTSTR lpFileName) ;
+  OFC_BOOL (*DeleteFile)(OFC_LPCTSTR lpFileName) ;
   /**
    * Searches a directory for a file or subdirectory that matches the name
    * or pattern.
@@ -124,41 +124,41 @@ typedef struct
    * FileGnome.  Direct* would match Direct, Directory, DirectDeposit
    *
    * \param lpFindFileData
-   * A pointer to the BLUE_WIN32_FIND_DATA structure.  
+   * A pointer to the OFC_WIN32_FIND_DATA structure.
    *
    * \returns
    * If the function succeeds, it will return a handle that can be used
-   * in subsequent BlueFindNextFile or BlueFindClose call.
+   * in subsequent OfcFindNextFile or OfcFindClose call.
    * If the function failed, it will return BLUE_INVALID_HANDLE_VALUE.
    */
-  BLUE_HANDLE (*FindFirstFile)(BLUE_LPCTSTR lpFileName,
-			       BLUE_LPWIN32_FIND_DATAW lpFindFileData,
-			       BLUE_BOOL *more) ;
+  BLUE_HANDLE (*FindFirstFile)(OFC_LPCTSTR lpFileName,
+							   OFC_LPWIN32_FIND_DATAW lpFindFileData,
+							   OFC_BOOL *more) ;
   /**
-   * Continues a search from a previous call to BlueFindFirstFile
+   * Continues a search from a previous call to OfcFindFirstFile
    *
    * \param hFindFile
-   * The search handle returned from BlueFindFirstFile
+   * The search handle returned from OfcFindFirstFile
    *
    * \param lpFindFileData
-   * A pointer to the BLUE_WIN32_FIND_DATA structure.  
+   * A pointer to the OFC_WIN32_FIND_DATA structure.
    *
    * \returns
-   * BLUE_TRUE if the call succeeded, BLUE_FALSE otherwise
+   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*FindNextFile)(BLUE_HANDLE hFindFile,
-			    BLUE_LPWIN32_FIND_DATAW lpFindFileData,
-			    BLUE_BOOL *more) ;
+  OFC_BOOL (*FindNextFile)(BLUE_HANDLE hFindFile,
+						   OFC_LPWIN32_FIND_DATAW lpFindFileData,
+						   OFC_BOOL *more) ;
   /**
-   * Closes a file search handle opened by a call to BlueFindFirstFile
+   * Closes a file search handle opened by a call to OfcFindFirstFile
    *
    * \param hFindFile
    * The file search handle
    *
    * \returns
-   * BLUE_TRUE if the call succeeded, BLUE_FALSE otherwise
+   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*FindClose)(BLUE_HANDLE hFindFile) ;
+  OFC_BOOL (*FindClose)(BLUE_HANDLE hFindFile) ;
   /**
    * Write all buffered data to the file and clear any buffer cache
    *
@@ -166,9 +166,9 @@ typedef struct
    * A handle to the open file.
    *
    * \returns
-   * BLUE_TRUE if the call succeeded, BLUE_FALSE otherwise
+   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*FlushFileBuffers)(BLUE_HANDLE hFile) ;
+  OFC_BOOL (*FlushFileBuffers)(BLUE_HANDLE hFile) ;
   /**
    * Retrieves Attributes for a specified file or directory
    *
@@ -176,18 +176,18 @@ typedef struct
    * The name of the file or directory
    *
    * \param fInfoLevelId
-   * The information class to retrieve.  Must be BlueGetFileExInfoStandard
+   * The information class to retrieve.  Must be OfcGetFileExInfoStandard
    *
    * \param lpFileInformation
    * A pointer to the buffer that received the attribute info.  Must be
-   * a pointer to a BLUE_WIN32_FILE_ATTRIBUTE_DATA structure
+   * a pointer to a OFC_WIN32_FILE_ATTRIBUTE_DATA structure
    *
    * \returns
-   * BLUE_TRUE if the function succeeded, BLUE_FALSE otherwise
+   * OFC_TRUE if the function succeeded, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*GetFileAttributesEx)(BLUE_LPCTSTR lpFileName,
-				   BLUE_GET_FILEEX_INFO_LEVELS fInfoLevelId,
-				   BLUE_LPVOID lpFileInformation) ;
+  OFC_BOOL (*GetFileAttributesEx)(OFC_LPCTSTR lpFileName,
+								  OFC_GET_FILEEX_INFO_LEVELS fInfoLevelId,
+								  OFC_LPVOID lpFileInformation) ;
   /**
    * Retrieves Attribute Infor for a file by File Handle
    *
@@ -199,25 +199,25 @@ typedef struct
    *
    * \param lpFileInformation
    * Pointer to buffer that receives the requested file informaiton
-   * BLUE_FILE_BASIC_INFO 
-   * BLUE_FILE_STANDARD_INFO 
-   * BLUE_FILE_NAME_INFO
-   * BLUE_FILE_STREAM_INFO
-   * BLUE_FILE_COMPRESSION_INFO
-   * BLUE_FILE_ATTRIBUTE_TAG_INFO
-   * BLUE_FILE_ID_BOTH_DIR_INFO
+   * OFC_FILE_BASIC_INFO
+   * OFC_FILE_STANDARD_INFO
+   * OFC_FILE_NAME_INFO
+   * OFC_FILE_STREAM_INFO
+   * OFC_FILE_COMPRESSION_INFO
+   * OFC_FILE_ATTRIBUTE_TAG_INFO
+   * OFC_FILE_ID_BOTH_DIR_INFO
    *
    * \param dwBufferSize
    * Size of the lpFileInformation buffer
    *
    * \returns
-   * BLUE_TRUE if the call succeeded, BLUE_FALSE otherwise
+   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*GetFileInformationByHandleEx)(BLUE_HANDLE hFile,
-					    BLUE_FILE_INFO_BY_HANDLE_CLASS
+  OFC_BOOL (*GetFileInformationByHandleEx)(BLUE_HANDLE hFile,
+										   OFC_FILE_INFO_BY_HANDLE_CLASS
 					    FileInformatClass,
-					    BLUE_LPVOID lpFileInformation,
-					    BLUE_DWORD dwBuferSize) ;
+										   OFC_LPVOID lpFileInformation,
+										   OFC_DWORD dwBuferSize) ;
   /**
    * Moves an existing file or directory
    *
@@ -228,10 +228,10 @@ typedef struct
    * The new name for the file or directory
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FAIL otherwise
+   * OFC_TRUE if success, BLUE_FAIL otherwise
    */
-  BLUE_BOOL (*MoveFile)(BLUE_LPCTSTR lpExistingFileName,
-			 BLUE_LPCTSTR lpNewFileName) ;
+  OFC_BOOL (*MoveFile)(OFC_LPCTSTR lpExistingFileName,
+					   OFC_LPCTSTR lpNewFileName) ;
   /**
    * Retrieves the results of an overlapped operation on the specified file
    *
@@ -249,12 +249,12 @@ typedef struct
    * is false, and the operation is not complete, the call returns false.
    *
    * \returns
-   * BLUE_TRUE if the function succeeds, BLUE_FALSE otherwise
+   * OFC_TRUE if the function succeeds, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*GetOverlappedResult)(BLUE_HANDLE hFile,
-				   BLUE_HANDLE hOverlapped,
-				   BLUE_LPDWORD lpNumberOfBytesTransferred,
-				   BLUE_BOOL bWait) ;
+  OFC_BOOL (*GetOverlappedResult)(BLUE_HANDLE hFile,
+								  BLUE_HANDLE hOverlapped,
+								  OFC_LPDWORD lpNumberOfBytesTransferred,
+								  OFC_BOOL bWait) ;
   /**
    * Create an Overlapped I/O Structure for the desired platform
    *
@@ -265,14 +265,14 @@ typedef struct
    * \returns
    * Handle to the Overlapped I/O Context
    */
-  BLUE_HANDLE (*CreateOverlapped)(BLUE_VOID) ;
+  BLUE_HANDLE (*CreateOverlapped)(OFC_VOID) ;
   /**
    * Destroy an Overlapped I/O context
    *
    * \param hOverlapped
    * The overlapped context to destroy
    */
-  BLUE_VOID (*DestroyOverlapped)(BLUE_HANDLE hOverlapped) ;
+  OFC_VOID (*DestroyOverlapped)(BLUE_HANDLE hOverlapped) ;
   /**
    * Set the offset at which an overlapped I/O should occur
    *
@@ -288,8 +288,8 @@ typedef struct
    *
    * \returns Nothing
    */
-  BLUE_VOID (*SetOverlappedOffset)(BLUE_HANDLE hOverlapped,
-				   BLUE_OFFT offset) ;
+  OFC_VOID (*SetOverlappedOffset)(BLUE_HANDLE hOverlapped,
+                                  OFC_OFFT offset) ;
   /**
    * Sets the physical file size for the specified file to the current position
    *
@@ -297,9 +297,9 @@ typedef struct
    * Handle to the file
    *
    * \returns 
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*SetEndOfFile)(BLUE_HANDLE hFile) ;
+  OFC_BOOL (*SetEndOfFile)(BLUE_HANDLE hFile) ;
   /**
    * Sets the attributes for a file or directory
    *
@@ -310,10 +310,10 @@ typedef struct
    * The file attributes to set for the file
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*SetFileAttributes)(BLUE_LPCTSTR lpFileName,
-				 BLUE_DWORD dwFileAttributes) ;
+  OFC_BOOL (*SetFileAttributes)(OFC_LPCTSTR lpFileName,
+								OFC_DWORD dwFileAttributes) ;
   /**
    * Set the file information for the specified file
    *
@@ -325,21 +325,21 @@ typedef struct
    *
    * \param lpFileInformation
    * A pointer to the buffer that contains the information to be set
-   * BLUE_FILE_BASIC_INFO, BLUE_FILE_RENAME_INFO, BLUE_FILE_DISPOSITION_INFO,
-   * BLUE_FILE_ALLOCATION_INFO, BLUE_FILE_END_OF_FILE_INFO,
-   * BLUE_FILE_IO_PRIORITY_HINT_INFO
+   * OFC_FILE_BASIC_INFO, OFC_FILE_RENAME_INFO, OFC_FILE_DISPOSITION_INFO,
+   * OFC_FILE_ALLOCATION_INFO, OFC_FILE_END_OF_FILE_INFO,
+   * OFC_FILE_IO_PRIORITY_HINT_INFO
    *
    * \param dwBufferSize
    * The size of the lpFileInformation
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*SetFileInformationByHandle)(BLUE_HANDLE hFile,
-					  BLUE_FILE_INFO_BY_HANDLE_CLASS
+  OFC_BOOL (*SetFileInformationByHandle)(BLUE_HANDLE hFile,
+										 OFC_FILE_INFO_BY_HANDLE_CLASS
 					  FileInformationClass,
-					  BLUE_LPVOID lpFileInformation,
-					  BLUE_DWORD dwBufferSize) ;
+										 OFC_LPVOID lpFileInformation,
+										 OFC_DWORD dwBufferSize) ;
   /**
    * Moves the file pointer of the specified file
    *
@@ -360,15 +360,15 @@ typedef struct
    * (FILE_BEGIN, FILE_CURRENT, FILE_END)
    *
    * \returns
-   * BLUE_INVALID_SET_FILE_POINTER if Failed, low order file pointer 
-   * if success.  Since BLUE_INVALID_SET_FILE_POINTER
+   * OFC_INVALID_SET_FILE_POINTER if Failed, low order file pointer
+   * if success.  Since OFC_INVALID_SET_FILE_POINTER
    * may also be interpreted as a valid low order file pointer, care should
    * be taken not to get false negatives.
    */
-  BLUE_DWORD (*SetFilePointer)(BLUE_HANDLE hFile,
-			       BLUE_LONG lDistanceToMove,
-			       BLUE_PLONG lpDistanceToMoveHigh,
-			       BLUE_DWORD dwMoveMethod) ;
+  OFC_DWORD (*SetFilePointer)(BLUE_HANDLE hFile,
+							  OFC_LONG lDistanceToMove,
+							  OFC_PLONG lpDistanceToMoveHigh,
+							  OFC_DWORD dwMoveMethod) ;
   /**
    * Writes Data to the specified file
    *
@@ -388,10 +388,10 @@ typedef struct
    * Pointer to the overlapped structure for asynchronous I/O
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE if failed
+   * OFC_TRUE if success, OFC_FALSE if failed
    */
-  BLUE_BOOL (*WriteFile)(BLUE_HANDLE, BLUE_LPCVOID, BLUE_DWORD,
-			 BLUE_LPDWORD, BLUE_HANDLE) ;
+  OFC_BOOL (*WriteFile)(BLUE_HANDLE, OFC_LPCVOID, OFC_DWORD,
+						OFC_LPDWORD, BLUE_HANDLE) ;
   /**
    * Reads data from a file
    *
@@ -412,10 +412,10 @@ typedef struct
    * FILE_FLAG_OVERLAPPED.
    *
    * \returns
-   * BLUE_FALSE if the function fails, BLUE_TRUE otherwise
+   * OFC_FALSE if the function fails, OFC_TRUE otherwise
    */
-  BLUE_BOOL (*ReadFile)(BLUE_HANDLE, BLUE_LPVOID, BLUE_DWORD,
-			BLUE_LPDWORD, BLUE_HANDLE) ;
+  OFC_BOOL (*ReadFile)(BLUE_HANDLE, OFC_LPVOID, OFC_DWORD,
+					   OFC_LPDWORD, BLUE_HANDLE) ;
   /**
    * Close A File Handle
    *
@@ -425,9 +425,9 @@ typedef struct
    * The handle to close
    *
    * \returns
-   * BLUE_TRUE if the function succeeded, BLUE_FALSE if failure
+   * OFC_TRUE if the function succeeded, OFC_FALSE if failure
    */
-  BLUE_BOOL (*CloseHandle)(BLUE_HANDLE) ;
+  OFC_BOOL (*CloseHandle)(BLUE_HANDLE) ;
   /**
    * Perform a transaction on a named pipe
    *
@@ -453,16 +453,16 @@ typedef struct
    * Handle to the overlapped context if this is asynchronous
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE if failure.  On failure, GetLastError
+   * OFC_TRUE if success, OFC_FALSE if failure.  On failure, GetLastError
    * will return the error code
    */
-  BLUE_BOOL (*TransactNamedPipe)(BLUE_HANDLE hFile, 
-				 BLUE_LPVOID lpInBuffer, 
-				 BLUE_DWORD nInBufferSize, 
-				 BLUE_LPVOID lpOutBuffer, 
-				 BLUE_DWORD nOutBufferSize,
-				 BLUE_LPDWORD lpBytesRead, 
-				 BLUE_HANDLE hOverlapped) ;
+  OFC_BOOL (*TransactNamedPipe)(BLUE_HANDLE hFile,
+								OFC_LPVOID lpInBuffer,
+								OFC_DWORD nInBufferSize,
+								OFC_LPVOID lpOutBuffer,
+								OFC_DWORD nOutBufferSize,
+								OFC_LPDWORD lpBytesRead,
+								BLUE_HANDLE hOverlapped) ;
   /**
    * Get the amount of free space for the disk 
    *
@@ -484,13 +484,13 @@ typedef struct
    * Pointer to where to return the total number of clusters
    *
    * \returns
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*GetDiskFreeSpace)(BLUE_LPCTSTR lpRootPathName,
-				BLUE_LPDWORD lpSectorsPerCluster,
-				BLUE_LPDWORD lpBytesPerSector,
-				BLUE_LPDWORD lpNumberOfFreeClusters,
-				BLUE_LPDWORD lpTotalNumberOfClusters) ;
+  OFC_BOOL (*GetDiskFreeSpace)(OFC_LPCTSTR lpRootPathName,
+							   OFC_LPDWORD lpSectorsPerCluster,
+							   OFC_LPDWORD lpBytesPerSector,
+							   OFC_LPDWORD lpNumberOfFreeClusters,
+							   OFC_LPDWORD lpTotalNumberOfClusters) ;
   /**
    * Get Volume Information for the volume
    *
@@ -519,16 +519,16 @@ typedef struct
    * Size of the file system name buffer
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*GetVolumeInformation)(BLUE_LPCTSTR lpRootPathName,
-				    BLUE_LPTSTR lpVolumeNameBuffer,
-				    BLUE_DWORD nVolumeNameSize,
-				    BLUE_LPDWORD lpVolumeSerialNumber,
-				    BLUE_LPDWORD lpMaximumComponentLength,
-				    BLUE_LPDWORD lpFileSystemFlags,
-				    BLUE_LPTSTR lpFileSystemName,
-				    BLUE_DWORD nFileSystemName) ;
+  OFC_BOOL (*GetVolumeInformation)(OFC_LPCTSTR lpRootPathName,
+								   OFC_LPTSTR lpVolumeNameBuffer,
+								   OFC_DWORD nVolumeNameSize,
+								   OFC_LPDWORD lpVolumeSerialNumber,
+								   OFC_LPDWORD lpMaximumComponentLength,
+								   OFC_LPDWORD lpFileSystemFlags,
+								   OFC_LPTSTR lpFileSystemName,
+								   OFC_DWORD nFileSystemName) ;
   /**
    * Create a directory
    *
@@ -539,10 +539,10 @@ typedef struct
    * Security Attributes for the directory
    * 
    * \returns 
-   * BLUE_TRUE if success, BLUE_FALSE otherwise
+   * OFC_TRUE if success, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*CreateDirectory)(BLUE_LPCTSTR lpPathName,
-			       BLUE_LPSECURITY_ATTRIBUTES lpSecurityAttr) ;
+  OFC_BOOL (*CreateDirectory)(OFC_LPCTSTR lpPathName,
+							  OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr) ;
   /**
    * Deletes a directory
    *
@@ -550,9 +550,9 @@ typedef struct
    * The name of the file in UNC or SMB URL format
    *
    * \returns
-   * If success, returns BLUE_TRUE, if failure returns BLUE_FALSE
+   * If success, returns OFC_TRUE, if failure returns OFC_FALSE
    */
-  BLUE_BOOL (*RemoveDirectory)(BLUE_LPCTSTR lpPathName) ;
+  OFC_BOOL (*RemoveDirectory)(OFC_LPCTSTR lpPathName) ;
   /**
    * Unlock a region in a file
    * 
@@ -569,11 +569,11 @@ typedef struct
    * The overlapped structure which specifies the offset
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*UnlockFileEx)(BLUE_HANDLE hFile, 
-			    BLUE_UINT32 length_low, BLUE_UINT32 length_high,
-			    BLUE_HANDLE overlapped) ;
+  OFC_BOOL (*UnlockFileEx)(BLUE_HANDLE hFile,
+						   OFC_UINT32 length_low, OFC_UINT32 length_high,
+						   BLUE_HANDLE overlapped) ;
   /**
    * Lock a region of a file
    * 
@@ -593,21 +593,21 @@ typedef struct
    * Pointer to overlapped structure containing offset of region
    *
    * \returns
-   * BLUE_TRUE if successful, BLUE_FALSE otherwise
+   * OFC_TRUE if successful, OFC_FALSE otherwise
    */
-  BLUE_BOOL (*LockFileEx)(BLUE_HANDLE hFile, BLUE_DWORD flags,
-			  BLUE_DWORD length_low, BLUE_DWORD length_high,
-			  BLUE_HANDLE overlapped) ;
-  BLUE_BOOL (*Dismount)(BLUE_LPCTSTR lpFileName) ;
+  OFC_BOOL (*LockFileEx)(BLUE_HANDLE hFile, OFC_DWORD flags,
+						 OFC_DWORD length_low, OFC_DWORD length_high,
+						 BLUE_HANDLE overlapped) ;
+  OFC_BOOL (*Dismount)(OFC_LPCTSTR lpFileName) ;
 
-  BLUE_BOOL (*DeviceIoControl)(BLUE_HANDLE hFile, 
-			       BLUE_DWORD dwIoControlCode,
-			       BLUE_LPVOID lpInBuffer, 
-			       BLUE_DWORD nInBufferSize, 
-			       BLUE_LPVOID lpOutBuffer, 
-			       BLUE_DWORD nOutBufferSize,
-			       BLUE_LPDWORD lpBytesReturned,
-			       BLUE_HANDLE hOverlapped) ;
+  OFC_BOOL (*DeviceIoControl)(BLUE_HANDLE hFile,
+							  OFC_DWORD dwIoControlCode,
+							  OFC_LPVOID lpInBuffer,
+							  OFC_DWORD nInBufferSize,
+							  OFC_LPVOID lpOutBuffer,
+							  OFC_DWORD nOutBufferSize,
+							  OFC_LPDWORD lpBytesReturned,
+							  BLUE_HANDLE hOverlapped) ;
 } BLUE_FILE_FSINFO ;
 
 #if defined(__cplusplus)
@@ -619,10 +619,10 @@ extern "C"
    *
    * This should only be called by BlueInit
    */
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueFSInit (BLUE_VOID) ;
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueFSDestroy (BLUE_VOID);
+  OFC_CORE_LIB OFC_VOID
+  BlueFSInit (OFC_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  BlueFSDestroy (OFC_VOID);
   /**
    * Register a File System Handler
    *
@@ -632,133 +632,133 @@ extern "C"
    * \param fsInfo
    * File Systems Information and Dispatch Table
    */
-  BLUE_CORE_LIB BLUE_VOID 
+  OFC_CORE_LIB OFC_VOID
   BlueFSRegister (BLUE_FS_TYPE fsType, BLUE_FILE_FSINFO *fsInfo) ;
   /**
    * \latexonly
    */
   BLUE_HANDLE BlueFSCreateFile (BLUE_FS_TYPE fsType,
-				BLUE_LPCTSTR lpFileName,
-				BLUE_DWORD dwDesiredAccess,
-				BLUE_DWORD dwShareMode,
-				BLUE_LPSECURITY_ATTRIBUTES lpSecAttributes,
-				BLUE_DWORD dwCreationDisposition,
-				BLUE_DWORD dwFlagsAndAttributes,
-				BLUE_HANDLE hTemplateFile) ;
-  BLUE_BOOL BlueFSCreateDirectory (BLUE_FS_TYPE fsType,
-				   BLUE_LPCTSTR lpPathName,
-				   BLUE_LPSECURITY_ATTRIBUTES lpSecurityAttr) ;
-  BLUE_BOOL BlueFSDeleteFile (BLUE_FS_TYPE fsType, BLUE_LPCTSTR lpFileName) ;
-  BLUE_BOOL BlueFSRemoveDirectory (BLUE_FS_TYPE fsType, 
-				   BLUE_LPCTSTR lpPathName) ;
+                                OFC_LPCTSTR lpFileName,
+                                OFC_DWORD dwDesiredAccess,
+                                OFC_DWORD dwShareMode,
+                                OFC_LPSECURITY_ATTRIBUTES lpSecAttributes,
+                                OFC_DWORD dwCreationDisposition,
+                                OFC_DWORD dwFlagsAndAttributes,
+                                BLUE_HANDLE hTemplateFile) ;
+  OFC_BOOL BlueFSCreateDirectory (BLUE_FS_TYPE fsType,
+								  OFC_LPCTSTR lpPathName,
+								  OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr) ;
+  OFC_BOOL BlueFSDeleteFile (BLUE_FS_TYPE fsType, OFC_LPCTSTR lpFileName) ;
+  OFC_BOOL BlueFSRemoveDirectory (BLUE_FS_TYPE fsType,
+								  OFC_LPCTSTR lpPathName) ;
   BLUE_HANDLE BlueFSFindFirstFile (BLUE_FS_TYPE fsType,
-				   BLUE_LPCTSTR lpFileName,
-				   BLUE_LPWIN32_FIND_DATAW lpFindFileData,
-				   BLUE_BOOL *more) ;
-  BLUE_BOOL BlueFSFindNextFile (BLUE_FS_TYPE fsType,
-				BLUE_HANDLE hFindFile,
-				BLUE_LPWIN32_FIND_DATAW lpFindFileData,
-				BLUE_BOOL *more) ;
-  BLUE_BOOL BlueFSFindClose (BLUE_FS_TYPE fsType, BLUE_HANDLE hFindFile) ;
-  BLUE_BOOL BlueFSFlushFileBuffers (BLUE_FS_TYPE fsType, BLUE_HANDLE hFile) ;
-  BLUE_BOOL BlueFSGetFileAttributesEx (BLUE_FS_TYPE fsType, 
-				       BLUE_LPCTSTR lpFileName,
-				       BLUE_GET_FILEEX_INFO_LEVELS 
+								   OFC_LPCTSTR lpFileName,
+								   OFC_LPWIN32_FIND_DATAW lpFindFileData,
+								   OFC_BOOL *more) ;
+  OFC_BOOL BlueFSFindNextFile (BLUE_FS_TYPE fsType,
+							   BLUE_HANDLE hFindFile,
+							   OFC_LPWIN32_FIND_DATAW lpFindFileData,
+							   OFC_BOOL *more) ;
+  OFC_BOOL BlueFSFindClose (BLUE_FS_TYPE fsType, BLUE_HANDLE hFindFile) ;
+  OFC_BOOL BlueFSFlushFileBuffers (BLUE_FS_TYPE fsType, BLUE_HANDLE hFile) ;
+  OFC_BOOL BlueFSGetFileAttributesEx (BLUE_FS_TYPE fsType,
+									  OFC_LPCTSTR lpFileName,
+									  OFC_GET_FILEEX_INFO_LEVELS
 				       fInfoLevelId,
-				       BLUE_LPVOID lpFileInformation) ;
-  BLUE_BOOL BlueFSGetFileInformationByHandleEx (BLUE_FS_TYPE fsType,
-						BLUE_HANDLE hFile,
-						BLUE_FILE_INFO_BY_HANDLE_CLASS
+									  OFC_LPVOID lpFileInformation) ;
+  OFC_BOOL BlueFSGetFileInformationByHandleEx (BLUE_FS_TYPE fsType,
+											   BLUE_HANDLE hFile,
+											   OFC_FILE_INFO_BY_HANDLE_CLASS
 						FileInformatClass,
-						BLUE_LPVOID lpFileInformation,
-						BLUE_DWORD dwBuferSize) ;
-  BLUE_BOOL BlueFSMoveFile (BLUE_FS_TYPE fsType,
-			    BLUE_LPCTSTR lpExistingFileName,
-			    BLUE_LPCTSTR lpNewFileName) ;
+											   OFC_LPVOID lpFileInformation,
+											   OFC_DWORD dwBuferSize) ;
+  OFC_BOOL BlueFSMoveFile (BLUE_FS_TYPE fsType,
+						   OFC_LPCTSTR lpExistingFileName,
+						   OFC_LPCTSTR lpNewFileName) ;
   BLUE_HANDLE BlueFSCreateOverlapped (BLUE_FS_TYPE fsType) ;
-  BLUE_VOID BlueFSDestroyOverlapped (BLUE_FS_TYPE fsType, 
-				     BLUE_HANDLE hOverlapped) ;
-  BLUE_VOID BlueFSSetOverlappedOffset (BLUE_FS_TYPE fsType, 
-				       BLUE_HANDLE hOverlapped,
-				       BLUE_OFFT offset) ;
-  BLUE_BOOL BlueFSGetOverlappedResult (BLUE_FS_TYPE fsType,
-				       BLUE_HANDLE hFile,
-				       BLUE_HANDLE hOverlapped,
-				       BLUE_LPDWORD lpNumberOfBytesTransferred,
-				       BLUE_BOOL bWait) ;
-  BLUE_BOOL BlueFSSetEndOfFile (BLUE_FS_TYPE fsType, BLUE_HANDLE hFile) ;
-  BLUE_BOOL BlueFSSetFileAttributes (BLUE_FS_TYPE fsTYpe, 
-				     BLUE_LPCTSTR lpFileName,
-				     BLUE_DWORD dwFileAttributes) ;
-  BLUE_BOOL BlueFSSetFileInformationByHandle (BLUE_FS_TYPE fsTYpe, 
-					      BLUE_HANDLE hFile,
-					      BLUE_FILE_INFO_BY_HANDLE_CLASS
+  OFC_VOID BlueFSDestroyOverlapped (BLUE_FS_TYPE fsType,
+									BLUE_HANDLE hOverlapped) ;
+  OFC_VOID BlueFSSetOverlappedOffset (BLUE_FS_TYPE fsType,
+                                      BLUE_HANDLE hOverlapped,
+                                      OFC_OFFT offset) ;
+  OFC_BOOL BlueFSGetOverlappedResult (BLUE_FS_TYPE fsType,
+									  BLUE_HANDLE hFile,
+									  BLUE_HANDLE hOverlapped,
+									  OFC_LPDWORD lpNumberOfBytesTransferred,
+									  OFC_BOOL bWait) ;
+  OFC_BOOL BlueFSSetEndOfFile (BLUE_FS_TYPE fsType, BLUE_HANDLE hFile) ;
+  OFC_BOOL BlueFSSetFileAttributes (BLUE_FS_TYPE fsTYpe,
+									OFC_LPCTSTR lpFileName,
+									OFC_DWORD dwFileAttributes) ;
+  OFC_BOOL BlueFSSetFileInformationByHandle (BLUE_FS_TYPE fsTYpe,
+											 BLUE_HANDLE hFile,
+											 OFC_FILE_INFO_BY_HANDLE_CLASS
 					      FileInformationClass,
-					      BLUE_LPVOID lpFileInformation,
-					      BLUE_DWORD dwBufferSize) ;
-  BLUE_DWORD BlueFSSetFilePointer (BLUE_FS_TYPE fsTYpe,
-				   BLUE_HANDLE hFile,
-				   BLUE_LONG lDistanceToMove,
-				   BLUE_PLONG lpDistanceToMoveHigh,
-				   BLUE_DWORD dwMoveMethod) ;
-  BLUE_BOOL BlueFSWriteFile (BLUE_FS_TYPE fsType,
-			     BLUE_HANDLE hFile,
-			     BLUE_LPCVOID lpBuffer,
-			     BLUE_DWORD nNumberOfBytesToWrite,
-			     BLUE_LPDWORD lpNumberOfBytesWritten,
-			     BLUE_HANDLE hOverlapped) ;
-  BLUE_BOOL BlueFSReadFile (BLUE_FS_TYPE fsType,
-			    BLUE_HANDLE hFile,
-			    BLUE_LPVOID lpBuffer,
-			    BLUE_DWORD nNumberOfBytesToRead,
-			    BLUE_LPDWORD lpNumberOfBytesRead,
-			    BLUE_HANDLE hOverlapped) ;
-  BLUE_BOOL BlueFSTransactNamedPipe (BLUE_FS_TYPE fsType,
-				     BLUE_HANDLE hFile,
-				     BLUE_LPVOID lpInBuffer,
-				     BLUE_DWORD nInBufferSize,
-				     BLUE_LPVOID lpOutBuffer,
-				     BLUE_DWORD nOutBufferSize,
-				     BLUE_LPDWORD lpBytesRead,
-				     BLUE_HANDLE hOverlapped) ;
-  BLUE_BOOL BlueFSGetDiskFreeSpace (BLUE_FS_TYPE fsType,
-				    BLUE_LPCTSTR lpRootPathName,
-				    BLUE_LPDWORD lpSectorsPerCluster,
-				    BLUE_LPDWORD lpBytesPerSector,
-				    BLUE_LPDWORD lpNumberOfFreeClusters,
-				    BLUE_LPDWORD lpTotalNumberOfClusters) ;
-  BLUE_BOOL BlueFSGetVolumeInformation (BLUE_FS_TYPE fsType,
-					BLUE_LPCTSTR lpRootPathName,
-					BLUE_LPTSTR lpVolumeNameBuffer,
-					BLUE_DWORD nVolumeNameSize,
-					BLUE_LPDWORD lpVolumeSerialNumber,
-					BLUE_LPDWORD lpMaximumComponentLength,
-					BLUE_LPDWORD lpFileSystemFlags,
-					BLUE_LPTSTR lpFileSystemName,
-					BLUE_DWORD nFileSystemName) ;
-  BLUE_BOOL BlueFSUnlockFileEx (BLUE_FS_TYPE fsType,
-				BLUE_HANDLE hFile, 
-				BLUE_UINT32 length_low, 
-				BLUE_UINT32 length_high,
-				BLUE_HANDLE hOverlapped) ;
-  BLUE_BOOL BlueFSLockFileEx (BLUE_FS_TYPE fsType,
-			      BLUE_HANDLE hFile, BLUE_DWORD flags,
-			      BLUE_DWORD length_low, BLUE_DWORD length_high,
-			      BLUE_HANDLE hOverlapped) ;
+											 OFC_LPVOID lpFileInformation,
+											 OFC_DWORD dwBufferSize) ;
+  OFC_DWORD BlueFSSetFilePointer (BLUE_FS_TYPE fsTYpe,
+								  BLUE_HANDLE hFile,
+								  OFC_LONG lDistanceToMove,
+								  OFC_PLONG lpDistanceToMoveHigh,
+								  OFC_DWORD dwMoveMethod) ;
+  OFC_BOOL BlueFSWriteFile (BLUE_FS_TYPE fsType,
+							BLUE_HANDLE hFile,
+							OFC_LPCVOID lpBuffer,
+							OFC_DWORD nNumberOfBytesToWrite,
+							OFC_LPDWORD lpNumberOfBytesWritten,
+							BLUE_HANDLE hOverlapped) ;
+  OFC_BOOL BlueFSReadFile (BLUE_FS_TYPE fsType,
+						   BLUE_HANDLE hFile,
+						   OFC_LPVOID lpBuffer,
+						   OFC_DWORD nNumberOfBytesToRead,
+						   OFC_LPDWORD lpNumberOfBytesRead,
+						   BLUE_HANDLE hOverlapped) ;
+  OFC_BOOL BlueFSTransactNamedPipe (BLUE_FS_TYPE fsType,
+									BLUE_HANDLE hFile,
+									OFC_LPVOID lpInBuffer,
+									OFC_DWORD nInBufferSize,
+									OFC_LPVOID lpOutBuffer,
+									OFC_DWORD nOutBufferSize,
+									OFC_LPDWORD lpBytesRead,
+									BLUE_HANDLE hOverlapped) ;
+  OFC_BOOL BlueFSGetDiskFreeSpace (BLUE_FS_TYPE fsType,
+								   OFC_LPCTSTR lpRootPathName,
+								   OFC_LPDWORD lpSectorsPerCluster,
+								   OFC_LPDWORD lpBytesPerSector,
+								   OFC_LPDWORD lpNumberOfFreeClusters,
+								   OFC_LPDWORD lpTotalNumberOfClusters) ;
+  OFC_BOOL BlueFSGetVolumeInformation (BLUE_FS_TYPE fsType,
+									   OFC_LPCTSTR lpRootPathName,
+									   OFC_LPTSTR lpVolumeNameBuffer,
+									   OFC_DWORD nVolumeNameSize,
+									   OFC_LPDWORD lpVolumeSerialNumber,
+									   OFC_LPDWORD lpMaximumComponentLength,
+									   OFC_LPDWORD lpFileSystemFlags,
+									   OFC_LPTSTR lpFileSystemName,
+									   OFC_DWORD nFileSystemName) ;
+  OFC_BOOL BlueFSUnlockFileEx (BLUE_FS_TYPE fsType,
+							   BLUE_HANDLE hFile,
+							   OFC_UINT32 length_low,
+							   OFC_UINT32 length_high,
+							   BLUE_HANDLE hOverlapped) ;
+  OFC_BOOL BlueFSLockFileEx (BLUE_FS_TYPE fsType,
+							 BLUE_HANDLE hFile, OFC_DWORD flags,
+							 OFC_DWORD length_low, OFC_DWORD length_high,
+							 BLUE_HANDLE hOverlapped) ;
 
-  BLUE_BOOL BlueFSCloseHandle (BLUE_FS_TYPE fsType,
-			       BLUE_HANDLE hFile) ;
-  BLUE_BOOL BlueFSDismount (BLUE_FS_TYPE fsType,
-			    BLUE_LPCTSTR lpFileName) ;
-  BLUE_BOOL BlueFSDeviceIoControl (BLUE_FS_TYPE fsType,
-				   BLUE_HANDLE hFile, 
-				   BLUE_DWORD dwIoControlCode,
-				   BLUE_LPVOID lpInBuffer, 
-				   BLUE_DWORD nInBufferSize, 
-				   BLUE_LPVOID lpOutBuffer, 
-				   BLUE_DWORD nOutBufferSize,
-				   BLUE_LPDWORD lpBytesReturned,
-				   BLUE_HANDLE hOverlapped) ;
+  OFC_BOOL BlueFSCloseHandle (BLUE_FS_TYPE fsType,
+							  BLUE_HANDLE hFile) ;
+  OFC_BOOL BlueFSDismount (BLUE_FS_TYPE fsType,
+						   OFC_LPCTSTR lpFileName) ;
+  OFC_BOOL BlueFSDeviceIoControl (BLUE_FS_TYPE fsType,
+								  BLUE_HANDLE hFile,
+								  OFC_DWORD dwIoControlCode,
+								  OFC_LPVOID lpInBuffer,
+								  OFC_DWORD nInBufferSize,
+								  OFC_LPVOID lpOutBuffer,
+								  OFC_DWORD nOutBufferSize,
+								  OFC_LPDWORD lpBytesReturned,
+								  BLUE_HANDLE hOverlapped) ;
 /**
  * \endlatexonly
  */
