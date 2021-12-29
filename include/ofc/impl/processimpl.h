@@ -14,16 +14,24 @@
 extern "C"
 {
 #endif
-  OFC_PROCESS_ID ofc_process_get_impl (OFC_VOID) ;
-  OFC_HANDLE ofc_process_exec_impl (OFC_CTCHAR *name,
-                                    OFC_TCHAR *uname,
-                                    OFC_INT argc,
-                                    OFC_CHAR **argv) ;
-  OFC_VOID ofc_process_term_impl (OFC_HANDLE hProcess) ;
-  OFC_BOOL ofc_process_term_trap_impl (OFC_PROCESS_TRAP_HANDLER trap) ;
-  OFC_VOID ofc_process_kill_impl (OFC_PROCESS_ID id) ;
-  OFC_PROCESS_ID ofc_process_get_id_impl (OFC_HANDLE hProcess) ;
-  OFC_VOID ofc_process_crash_impl (OFC_CCHAR *obuf) ;
+
+OFC_PROCESS_ID ofc_process_get_impl(OFC_VOID);
+
+OFC_HANDLE ofc_process_exec_impl(OFC_CTCHAR *name,
+                                 OFC_TCHAR *uname,
+                                 OFC_INT argc,
+                                 OFC_CHAR **argv);
+
+OFC_VOID ofc_process_term_impl(OFC_HANDLE hProcess);
+
+OFC_BOOL ofc_process_term_trap_impl(OFC_PROCESS_TRAP_HANDLER trap);
+
+OFC_VOID ofc_process_kill_impl(OFC_PROCESS_ID id);
+
+OFC_PROCESS_ID ofc_process_get_id_impl(OFC_HANDLE hProcess);
+
+OFC_VOID ofc_process_crash_impl(OFC_CCHAR *obuf);
+
 #if defined(__cplusplus)
 }
 #endif

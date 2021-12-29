@@ -89,56 +89,63 @@
 extern "C"
 {
 #endif
-  /**
-   * Initialize the Heap
-   *
-   * This function is only called by ofc_init.  It will initialize the
-   * heap for use.  This may be a noop on many platforms
-   */
-  OFC_VOID ofc_heap_init_impl (OFC_VOID) ;
-  /**
-   * Unload the heap implementation
-   */
-  OFC_VOID ofc_heap_unload_impl (OFC_VOID) ;
-  /**
-   * Deallocate a chunk of memory
-   *
-   * This may be mapped to a free on many platforms.
-   *
-   * \param mem
-   * A pointer to the memory to deallocate.
-   */
-  OFC_VOID ofc_free_impl (OFC_LPVOID mem) ;
-  OFC_VOID ofc_heap_check_alloc_impl (OFC_LPCVOID mem) ;
-  /**
-   * Allocate a chunk of memory
-   *
-   * This may be mapped to a malloc on many platforms
-   *
-   * \param size
-   * size of the memory block to allocate
-   */
-  OFC_LPVOID ofc_malloc_impl (OFC_SIZET size) ;
-  /**
-   * Change the size (reallocate) a chunk of memory
-   *
-   * This may be mapped to a realloc on many platforms
-   *
-   * \param ptr
-   * Pointer to the initial chunk of memory
-   *
-   * \param size
-   * size of the new memory block
-   *
-   * \returns
-   * Pointer to the new memory block.
-   *
-   * \remarks
-   * Reallocating a chunk of memory to a size within the same power of two
-   * 2^x to the 2^(x+1) will return the pointer passed in.
-   */
-  OFC_LPVOID ofc_realloc_impl (OFC_LPVOID ptr,
-                               OFC_SIZET size) ;
+
+/**
+ * Initialize the Heap
+ *
+ * This function is only called by ofc_init.  It will initialize the
+ * heap for use.  This may be a noop on many platforms
+ */
+OFC_VOID ofc_heap_init_impl(OFC_VOID);
+
+/**
+ * Unload the heap implementation
+ */
+OFC_VOID ofc_heap_unload_impl(OFC_VOID);
+
+/**
+ * Deallocate a chunk of memory
+ *
+ * This may be mapped to a free on many platforms.
+ *
+ * \param mem
+ * A pointer to the memory to deallocate.
+ */
+OFC_VOID ofc_free_impl(OFC_LPVOID mem);
+
+OFC_VOID ofc_heap_check_alloc_impl(OFC_LPCVOID mem);
+
+/**
+ * Allocate a chunk of memory
+ *
+ * This may be mapped to a malloc on many platforms
+ *
+ * \param size
+ * size of the memory block to allocate
+ */
+OFC_LPVOID ofc_malloc_impl(OFC_SIZET size);
+
+/**
+ * Change the size (reallocate) a chunk of memory
+ *
+ * This may be mapped to a realloc on many platforms
+ *
+ * \param ptr
+ * Pointer to the initial chunk of memory
+ *
+ * \param size
+ * size of the new memory block
+ *
+ * \returns
+ * Pointer to the new memory block.
+ *
+ * \remarks
+ * Reallocating a chunk of memory to a size within the same power of two
+ * 2^x to the 2^(x+1) will return the pointer passed in.
+ */
+OFC_LPVOID ofc_realloc_impl(OFC_LPVOID ptr,
+                            OFC_SIZET size);
+
 #if defined(__cplusplus)
 }
 #endif

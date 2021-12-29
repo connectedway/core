@@ -12,7 +12,6 @@
 
 
 OFC_CORE_LIB OFC_BOOL
-ofc_env_get (OFC_ENV_VALUE value, OFC_TCHAR *ptr, OFC_SIZET len)
-{
-  return (ofc_env_get_impl (value, ptr, len)) ;
+ofc_env_get(OFC_ENV_VALUE value, OFC_TCHAR *ptr, OFC_SIZET len) {
+    return (ofc_env_get_impl(value, ptr, len));
 }

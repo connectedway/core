@@ -10,26 +10,22 @@
 #include "ofc/impl/consoleimpl.h"
 
 OFC_CORE_LIB OFC_VOID
-ofc_write_stdout (OFC_CCHAR *obuf, OFC_SIZET len)
-{
-  ofc_write_stdout_impl (obuf, len) ;
+ofc_write_stdout(OFC_CCHAR *obuf, OFC_SIZET len) {
+    ofc_write_stdout_impl(obuf, len);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_write_console (OFC_CCHAR *obuf)
-{
-  ofc_write_console_impl (obuf) ;
+ofc_write_console(OFC_CCHAR *obuf) {
+    ofc_write_console_impl(obuf);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_read_line (OFC_CHAR *inbuf, OFC_SIZET len)
-{
-  ofc_read_stdin_impl (inbuf, len) ;
+ofc_read_line(OFC_CHAR *inbuf, OFC_SIZET len) {
+    ofc_read_stdin_impl(inbuf, len);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_read_password (OFC_CHAR *inbuf, OFC_SIZET len)
-{
-  ofc_read_password_impl (inbuf, len) ;
+ofc_read_password(OFC_CHAR *inbuf, OFC_SIZET len) {
+    ofc_read_password_impl(inbuf, len);
 }
 

@@ -35,8 +35,7 @@
 /**
 * Socket Types Supported by Open Files.
 */
-typedef enum
-  {
+typedef enum {
     /**
      * Unspecified Socket Type (Do not use)
      */
@@ -65,7 +64,7 @@ typedef enum
      * Number of Socket Types Supported
      */
     SOCKET_TYPE_NUM
-  } OFC_SOCKET_TYPE ;
+} OFC_SOCKET_TYPE;
 
 /**
  * Socket Event Types
@@ -76,8 +75,7 @@ typedef enum
  *
  * Not all these event types will be genererated in the current implementation
  */
-typedef enum
-  {
+typedef enum {
     /**
      * The socket has been closed
      */
@@ -108,246 +106,248 @@ typedef enum
      * Buffer space is available to write data for transmission
      */
     OFC_SOCKET_EVENT_WRITE = 0x40,
-  } OFC_SOCKET_EVENT_TYPE ;
+} OFC_SOCKET_EVENT_TYPE;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-  OFC_CORE_LIB OFC_VOID
-  ofc_socket_source_address (const OFC_IPADDR *dest,
-                             OFC_IPADDR *source) ;
-  /**
-   * Create a Stream socket and connect to a remote target
-   *
-   * This call will create a TCP connection to the specified port on the
-   * remote IP.  All sockets are set as non-blocking.  All parameters should
-   * be specified using the platform endianess.
-   *
-   * \param ip
-   * Pointer to the remote IP to connect to.
-   *
-   * \param port
-   * The port on the remote to connect to.
-   *
-   * \returns
-   * Handle to the created socket or OFC_HANDLE_NULL if creation failed.
-   * This call is non-blocking so on return, the connection may not be
-   * complete.  When the socket is connected, an event will be set for the 
-   * handle and a call to ofc_socket_connected will return success.
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  ofc_socket_connect (const OFC_IPADDR *ip, OFC_UINT16 port) ;
-  /**
-   * Create a TCP socket and listen for incoming connections
-   * 
-   * This call will listen for incoming connections on the interface
-   * specified by the ip address and on the port specified by the port.
-   * All arguments are specified in the platform endianess.
-   *
-   * \param ip
-   * The ip for the interface to listen for connections on.  Can be
-   * OFC_INADDR_ANY to listen for connections on any interface.
-   *
-   * \param port
-   * The port to listen for incoming connections on.
-   *
-   * \returns
-   * A handle to the created socket.  If OFC_HANDLE_NULL, socket creation
-   * failed.  The call is non-blocking so it will return immediately.
-   * When an incoming connection arrives, a socket event will be generated.
-   * A subsequent call to ofc_socket_accept can then be issued.
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  ofc_socket_listen (const OFC_IPADDR *ip, OFC_UINT16 port) ;
-  /**
-   * Create a datagram socket
-   *
-   * This call will create a UDP datagram socket and assign it to the interface
-   * of the specified ip address with the specified port.
-   *
-   * \param ip
-   * IP of the interface that the datagram socket should be assigned to. The
-   * datagram socket will receive incoming datagrams from this interface.  If
-   * the ip is OFC_INADDR_ANY, then this socket will accept datagrams from
-   * any interface.
-   *
-   * \param port
-   * Port to accept incoming datagrams from
-   *
-   * \returns
-   * A handle to the created datagram socket.  If OFC_HANDLE_NULL is
-   * returned, then the datagram creation failed.  The socket is non-blocking
-   * so this will return immediately.  Events will be generated when 
-   * traffic arrives or buffer space is available.
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  ofc_socket_datagram (const OFC_IPADDR *ip, OFC_UINT16 port) ;
-  OFC_CORE_LIB OFC_HANDLE
-  ofc_socket_raw (const OFC_IPADDR *ip, OFC_SOCKET_TYPE socktype) ;
-  /**
-   * Accept an incoming TCP connection
-   *
-   * This call will accept an incoming connection that has been signalled
-   * for a 'listening' socket.
-   *
-   * \param hMasterSocket
-   * The handle to the listening socket
-   *
-   * \returns
-   * A handle to the newly accepted connection
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  ofc_socket_accept (OFC_HANDLE hMasterSocket) ;
-  /**
-   * Destroy a previously created socket.
-   * 
-   * The socket can be a datagram or stream socket created through any of
-   * the socket creation calls (ofc_socket_connect, ofc_socket_listen,
-   * ofc_socket_datagram, ofc_socket_accept).
-   *
-   * \param hSock
-   * The handle to the socket to destroy
-   *
-   */
-  OFC_CORE_LIB OFC_VOID
-  ofc_socket_destroy (OFC_HANDLE hSock) ;
-  /**
-   * Write data on a socket
-   *
-   * This call will write data on a stream or datagram socket.
-   *
-   * \param hSocket
-   * Socket to write the data on.
-   *
-   * \param msg
-   * The message to write.  See OFC_MESSAGE for a description of the format
-   * of this parameter.
-   *
-   * \returns
-   * True if we made progress on a write, false otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  ofc_socket_write (OFC_HANDLE hSocket, OFC_MESSAGE *msg) ;
-  /**
-   * Read Data from a socket
-   * 
-   * Read data from a datagram or stream socket.  Any received data will
-   * be reflected in the specified message.  See OFC_MESSAGE for more
-   * detail.
-   *
-   * \param hSocket
-   * Socket to read data from
-   *
-   * \param msg
-   * The message to receive data into.
-   *
-   * \returns
-   * True if we made progress on a read, false otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  ofc_socket_read (OFC_HANDLE hSocket, OFC_MESSAGE *msg) ;
-  /**
-   * Test if a socket is connected or not
-   *
-   * \param hSocket
-   * Socket to test
-   *
-   * \returns
-   * OFC_TRUE if the socket is connected, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  ofc_socket_connected (OFC_HANDLE hSocket) ;
-  /**
-   * Test for a particular event on the socket
-   *
-   * \param hSocket
-   * Socket to test
-   *
-   * \returns
-   * bit mask of events set
-   */
-  OFC_CORE_LIB OFC_SOCKET_EVENT_TYPE
-  ofc_socket_test (OFC_HANDLE hSocket) ;
-  /**
-   * Enable an event on the socket
-   *
-   * \param hSocket
-   * Socket to enable event (mask) on
-   *
-   * \param type
-   * Event Mask (events ORd together)
-   *
-   * \returns
-   * OFC_TRUE if successful
-   */
-  OFC_CORE_LIB OFC_BOOL
-  ofc_socket_enable (OFC_HANDLE hSocket, OFC_SOCKET_EVENT_TYPE type)  ;
-  /**
-   * Set the send buffer size of the lower socket layers
-   * 
-   * This call normally does not need to be used, but may improve
-   * performance.
-   *
-   * \param hSocket
-   * Socket to set the send size for
-   * 
-   * \param size
-   * size to set the send buffer to.
-   */
-  OFC_CORE_LIB OFC_VOID
-  ofc_socket_set_send_size (OFC_HANDLE hSocket, OFC_INT size) ;
-  /**
-   * Set the receive buffer size of the lower socket layers
-   * 
-   * This call normally does not need to be used, but may improve
-   * performance.
-   *
-   * \param hSocket
-   * Socket to set the receive size for
-   * 
-   * \param size
-   * size to set the receive buffer to.
-   */
-  OFC_CORE_LIB OFC_VOID
-  ofc_socket_set_recv_size (OFC_HANDLE hSocket, OFC_INT size) ;
-  /**
-   * Get the ip and ports of a tcp connection
-   *
-   * \param hSock
-   * The socket of the connection
-   *
-   * \param local
-   * Pointer to the returned sockaddress structure for the local side
-   *
-   * \param remote
-   * Poitner to the returned socketaddress structure for the remote side
-   *
-   * \returns
-   * OFC_TRUE if success, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  ofc_socket_get_addresses (OFC_HANDLE hSock, OFC_SOCKADDR *local,
-                            OFC_SOCKADDR *remote) ;
+OFC_CORE_LIB OFC_VOID
+ofc_socket_source_address(const OFC_IPADDR *dest,
+                          OFC_IPADDR *source);
+/**
+ * Create a Stream socket and connect to a remote target
+ *
+ * This call will create a TCP connection to the specified port on the
+ * remote IP.  All sockets are set as non-blocking.  All parameters should
+ * be specified using the platform endianess.
+ *
+ * \param ip
+ * Pointer to the remote IP to connect to.
+ *
+ * \param port
+ * The port on the remote to connect to.
+ *
+ * \returns
+ * Handle to the created socket or OFC_HANDLE_NULL if creation failed.
+ * This call is non-blocking so on return, the connection may not be
+ * complete.  When the socket is connected, an event will be set for the
+ * handle and a call to ofc_socket_connected will return success.
+ */
+OFC_CORE_LIB OFC_HANDLE
+ofc_socket_connect(const OFC_IPADDR *ip, OFC_UINT16 port);
+/**
+ * Create a TCP socket and listen for incoming connections
+ *
+ * This call will listen for incoming connections on the interface
+ * specified by the ip address and on the port specified by the port.
+ * All arguments are specified in the platform endianess.
+ *
+ * \param ip
+ * The ip for the interface to listen for connections on.  Can be
+ * OFC_INADDR_ANY to listen for connections on any interface.
+ *
+ * \param port
+ * The port to listen for incoming connections on.
+ *
+ * \returns
+ * A handle to the created socket.  If OFC_HANDLE_NULL, socket creation
+ * failed.  The call is non-blocking so it will return immediately.
+ * When an incoming connection arrives, a socket event will be generated.
+ * A subsequent call to ofc_socket_accept can then be issued.
+ */
+OFC_CORE_LIB OFC_HANDLE
+ofc_socket_listen(const OFC_IPADDR *ip, OFC_UINT16 port);
+/**
+ * Create a datagram socket
+ *
+ * This call will create a UDP datagram socket and assign it to the interface
+ * of the specified ip address with the specified port.
+ *
+ * \param ip
+ * IP of the interface that the datagram socket should be assigned to. The
+ * datagram socket will receive incoming datagrams from this interface.  If
+ * the ip is OFC_INADDR_ANY, then this socket will accept datagrams from
+ * any interface.
+ *
+ * \param port
+ * Port to accept incoming datagrams from
+ *
+ * \returns
+ * A handle to the created datagram socket.  If OFC_HANDLE_NULL is
+ * returned, then the datagram creation failed.  The socket is non-blocking
+ * so this will return immediately.  Events will be generated when
+ * traffic arrives or buffer space is available.
+ */
+OFC_CORE_LIB OFC_HANDLE
+ofc_socket_datagram(const OFC_IPADDR *ip, OFC_UINT16 port);
 
-  /**
-   * Get a handle to the socket implementation.
-   * 
-   * This call is only used by the platform handling within Open Files and
-   * should be considered private.  It is needed to determine the platform
-   * specific event to wait on in platform select or WaitForObject calls.
-   * Any port of this layer will possibly create a different interface
-   *
-   * \param hSocket
-   * Socket to get the implementation details for
-   *
-   * \returns
-   * a handle to the implementation specific layer.  A different interface
-   * may return the event to wait for or some other information
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  ofc_socket_get_impl (OFC_HANDLE hSocket) ;
+OFC_CORE_LIB OFC_HANDLE
+ofc_socket_raw(const OFC_IPADDR *ip, OFC_SOCKET_TYPE socktype);
+/**
+ * Accept an incoming TCP connection
+ *
+ * This call will accept an incoming connection that has been signalled
+ * for a 'listening' socket.
+ *
+ * \param hMasterSocket
+ * The handle to the listening socket
+ *
+ * \returns
+ * A handle to the newly accepted connection
+ */
+OFC_CORE_LIB OFC_HANDLE
+ofc_socket_accept(OFC_HANDLE hMasterSocket);
+/**
+ * Destroy a previously created socket.
+ *
+ * The socket can be a datagram or stream socket created through any of
+ * the socket creation calls (ofc_socket_connect, ofc_socket_listen,
+ * ofc_socket_datagram, ofc_socket_accept).
+ *
+ * \param hSock
+ * The handle to the socket to destroy
+ *
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_socket_destroy(OFC_HANDLE hSock);
+/**
+ * Write data on a socket
+ *
+ * This call will write data on a stream or datagram socket.
+ *
+ * \param hSocket
+ * Socket to write the data on.
+ *
+ * \param msg
+ * The message to write.  See OFC_MESSAGE for a description of the format
+ * of this parameter.
+ *
+ * \returns
+ * True if we made progress on a write, false otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg);
+/**
+ * Read Data from a socket
+ *
+ * Read data from a datagram or stream socket.  Any received data will
+ * be reflected in the specified message.  See OFC_MESSAGE for more
+ * detail.
+ *
+ * \param hSocket
+ * Socket to read data from
+ *
+ * \param msg
+ * The message to receive data into.
+ *
+ * \returns
+ * True if we made progress on a read, false otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+ofc_socket_read(OFC_HANDLE hSocket, OFC_MESSAGE *msg);
+/**
+ * Test if a socket is connected or not
+ *
+ * \param hSocket
+ * Socket to test
+ *
+ * \returns
+ * OFC_TRUE if the socket is connected, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+ofc_socket_connected(OFC_HANDLE hSocket);
+/**
+ * Test for a particular event on the socket
+ *
+ * \param hSocket
+ * Socket to test
+ *
+ * \returns
+ * bit mask of events set
+ */
+OFC_CORE_LIB OFC_SOCKET_EVENT_TYPE
+ofc_socket_test(OFC_HANDLE hSocket);
+/**
+ * Enable an event on the socket
+ *
+ * \param hSocket
+ * Socket to enable event (mask) on
+ *
+ * \param type
+ * Event Mask (events ORd together)
+ *
+ * \returns
+ * OFC_TRUE if successful
+ */
+OFC_CORE_LIB OFC_BOOL
+ofc_socket_enable(OFC_HANDLE hSocket, OFC_SOCKET_EVENT_TYPE type);
+/**
+ * Set the send buffer size of the lower socket layers
+ *
+ * This call normally does not need to be used, but may improve
+ * performance.
+ *
+ * \param hSocket
+ * Socket to set the send size for
+ *
+ * \param size
+ * size to set the send buffer to.
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_socket_set_send_size(OFC_HANDLE hSocket, OFC_INT size);
+/**
+ * Set the receive buffer size of the lower socket layers
+ *
+ * This call normally does not need to be used, but may improve
+ * performance.
+ *
+ * \param hSocket
+ * Socket to set the receive size for
+ *
+ * \param size
+ * size to set the receive buffer to.
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_socket_set_recv_size(OFC_HANDLE hSocket, OFC_INT size);
+/**
+ * Get the ip and ports of a tcp connection
+ *
+ * \param hSock
+ * The socket of the connection
+ *
+ * \param local
+ * Pointer to the returned sockaddress structure for the local side
+ *
+ * \param remote
+ * Poitner to the returned socketaddress structure for the remote side
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+ofc_socket_get_addresses(OFC_HANDLE hSock, OFC_SOCKADDR *local,
+                         OFC_SOCKADDR *remote);
+
+/**
+ * Get a handle to the socket implementation.
+ *
+ * This call is only used by the platform handling within Open Files and
+ * should be considered private.  It is needed to determine the platform
+ * specific event to wait on in platform select or WaitForObject calls.
+ * Any port of this layer will possibly create a different interface
+ *
+ * \param hSocket
+ * Socket to get the implementation details for
+ *
+ * \returns
+ * a handle to the implementation specific layer.  A different interface
+ * may return the event to wait for or some other information
+ */
+OFC_CORE_LIB OFC_HANDLE
+ofc_socket_get_impl(OFC_HANDLE hSocket);
+
 #if defined(__cplusplus)
 }
 #endif

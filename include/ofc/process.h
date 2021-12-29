@@ -6,70 +6,70 @@
 #if !defined(__OFC_PROCESS_H__)
 #define __OFC_PROCESS_H__
 
-typedef OFC_VOID (OFC_PROCESS_TRAP_HANDLER) (OFC_INT signal) ;
+typedef OFC_VOID (OFC_PROCESS_TRAP_HANDLER)(OFC_INT signal);
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
 
-typedef enum
-  {
+typedef enum {
     OFC_PROCESS_PRIORITY_APP = 0,
     OFC_PROCESS_PRIORITY_CLIENT,
     OFC_PROCESS_PRIORITY_SERVER,
     OFC_PROCESS_PRIORITY_SESSION,
     OFC_PROCESS_PRIORITY_NUM
-  } OFC_PROCESS_PRIORITY ;
+} OFC_PROCESS_PRIORITY;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  OFC_CORE_LIB OFC_PROCESS_ID
-  ofc_process_get (OFC_VOID) ;
+OFC_CORE_LIB OFC_PROCESS_ID
+ofc_process_get(OFC_VOID);
 
-  OFC_CORE_LIB OFC_VOID
-  ofc_process_block_signal (OFC_INT signal) ;
+OFC_CORE_LIB OFC_VOID
+ofc_process_block_signal(OFC_INT signal);
 
-  OFC_CORE_LIB OFC_VOID
-  ofc_process_unblock_signal (OFC_INT signal) ;
+OFC_CORE_LIB OFC_VOID
+ofc_process_unblock_signal(OFC_INT signal);
 
-  OFC_CORE_LIB OFC_HANDLE
-  ofc_process_exec (OFC_CTCHAR *name, OFC_TCHAR *uname,
-                    OFC_INT arg_count, OFC_CHAR **argv) ;
+OFC_CORE_LIB OFC_HANDLE
+ofc_process_exec(OFC_CTCHAR *name, OFC_TCHAR *uname,
+                 OFC_INT arg_count, OFC_CHAR **argv);
 
-  OFC_CORE_LIB OFC_VOID
-  ofc_process_term (OFC_HANDLE hProcess) ;
+OFC_CORE_LIB OFC_VOID
+ofc_process_term(OFC_HANDLE hProcess);
 
-  OFC_CORE_LIB OFC_BOOL
-  ofc_process_term_trap (OFC_PROCESS_TRAP_HANDLER trap) ;
+OFC_CORE_LIB OFC_BOOL
+ofc_process_term_trap(OFC_PROCESS_TRAP_HANDLER trap);
 
-  OFC_CORE_LIB OFC_VOID
-  ofc_process_set_priority (OFC_PROCESS_PRIORITY prio) ;
-  /**
-   * Kill a process.
-   *
-   * Essentially the same as ofc_process_term, but accepts a process id rather
-   * than a handle.  This is good for interprocess control
-   * 
-   * \param id
-   * Process id of process to kill
-   */
-  OFC_CORE_LIB OFC_VOID
-  ofc_process_kill (OFC_PROCESS_ID id) ;
-  /**
-   * Get the process id of a process given it's process handle
-   *
-   * \param hProcess
-   * Process Handle
-   *
-   * \returns
-   * Process Id
-   */
-  OFC_CORE_LIB OFC_PROCESS_ID
-  ofc_process_get_id (OFC_HANDLE hProcess) ;
-  OFC_CORE_LIB OFC_VOID
-  ofc_process_crash (OFC_CCHAR *obuf) ;
+OFC_CORE_LIB OFC_VOID
+ofc_process_set_priority(OFC_PROCESS_PRIORITY prio);
+/**
+ * Kill a process.
+ *
+ * Essentially the same as ofc_process_term, but accepts a process id rather
+ * than a handle.  This is good for interprocess control
+ *
+ * \param id
+ * Process id of process to kill
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_process_kill(OFC_PROCESS_ID id);
+/**
+ * Get the process id of a process given it's process handle
+ *
+ * \param hProcess
+ * Process Handle
+ *
+ * \returns
+ * Process Id
+ */
+OFC_CORE_LIB OFC_PROCESS_ID
+ofc_process_get_id(OFC_HANDLE hProcess);
+
+OFC_CORE_LIB OFC_VOID
+ofc_process_crash(OFC_CCHAR *obuf);
 
 #if defined(__cplusplus)
 }

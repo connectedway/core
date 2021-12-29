@@ -11,36 +11,31 @@
 #include "ofc/impl/lockimpl.h"
 
 OFC_CORE_LIB OFC_VOID
-ofc_lock_destroy (OFC_LOCK lock)
-{
-  ofc_lock_destroy_impl (lock) ;
+ofc_lock_destroy(OFC_LOCK lock) {
+    ofc_lock_destroy_impl(lock);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_lock_try (OFC_LOCK lock)
-{
-  return (ofc_lock_try_impl (lock)) ;
+ofc_lock_try(OFC_LOCK lock) {
+    return (ofc_lock_try_impl(lock));
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_lock (OFC_LOCK pLock)
-{
-  if (pLock != OFC_NULL)
-    ofc_lock_impl (pLock) ;
+ofc_lock(OFC_LOCK pLock) {
+    if (pLock != OFC_NULL)
+        ofc_lock_impl(pLock);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_unlock (OFC_LOCK pLock)
-{
-  if (pLock != OFC_NULL)
-    ofc_unlock_impl (pLock) ;
+ofc_unlock(OFC_LOCK pLock) {
+    if (pLock != OFC_NULL)
+        ofc_unlock_impl(pLock);
 }
 
 OFC_CORE_LIB OFC_LOCK
-ofc_lock_init (OFC_VOID)
-{
-  OFC_LOCK plock;
-  plock = ofc_lock_init_impl () ;
-  return (plock);
+ofc_lock_init(OFC_VOID) {
+    OFC_LOCK plock;
+    plock = ofc_lock_init_impl();
+    return (plock);
 }
 

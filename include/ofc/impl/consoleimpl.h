@@ -22,27 +22,32 @@
 extern "C"
 {
 #endif
-  /**
-   * Output a buffer to the console
-   *
-   * This routine should implement a write to the console.  Whether the
-   * console is STDOUT or a physical console or a log file is platform
-   * dependent
-   *
-   * \param obuf
-   * Pointer to output buffer
-   *
-   * \param len
-   * Number of characters to output
-   */
-  OFC_VOID
-  ofc_write_stdout_impl (OFC_CCHAR *obuf, OFC_SIZET len) ;
-  OFC_CORE_LIB OFC_VOID
-  ofc_write_console_impl (OFC_CCHAR *obuf) ;
-  OFC_VOID
-  ofc_read_stdin_impl (OFC_CHAR *inbuf, OFC_SIZET len) ;
-  OFC_VOID
-  ofc_read_password_impl (OFC_CHAR *inbuf, OFC_SIZET len) ;
+
+/**
+ * Output a buffer to the console
+ *
+ * This routine should implement a write to the console.  Whether the
+ * console is STDOUT or a physical console or a log file is platform
+ * dependent
+ *
+ * \param obuf
+ * Pointer to output buffer
+ *
+ * \param len
+ * Number of characters to output
+ */
+OFC_VOID
+ofc_write_stdout_impl(OFC_CCHAR *obuf, OFC_SIZET len);
+
+OFC_CORE_LIB OFC_VOID
+ofc_write_console_impl(OFC_CCHAR *obuf);
+
+OFC_VOID
+ofc_read_stdin_impl(OFC_CHAR *inbuf, OFC_SIZET len);
+
+OFC_VOID
+ofc_read_password_impl(OFC_CHAR *inbuf, OFC_SIZET len);
+
 #if defined(__cplusplus)
 }
 #endif

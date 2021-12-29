@@ -45,17 +45,15 @@
 /**
  * The 64 bit representation of a file time
  */
-typedef struct _OFC_FILETIME
-{
-  OFC_DWORD dwLowDateTime ;	/**< The Low 32 bits  */
-  OFC_DWORD dwHighDateTime ;	/**< The High 32 bits  */
-} OFC_FILETIME ;
+typedef struct _OFC_FILETIME {
+    OFC_DWORD dwLowDateTime;    /**< The Low 32 bits  */
+    OFC_DWORD dwHighDateTime;    /**< The High 32 bits  */
+} OFC_FILETIME;
 
 /**
  * Valid Access Rights for Files and Directories
  */
-enum 
-  {
+enum {
     /**
      * The right to create a file in the directory
      */
@@ -137,13 +135,12 @@ enum
      OFC_FILE_WRITE_ATTRIBUTES |
      OFC_FILE_WRITE_DATA |
      OFC_FILE_WRITE_EA),
-  } ;
+};
 
 /**
  * The Sharing Mode of an object
  */
-enum 
-  {
+enum {
     /**
      * Open file for exclusive access
      */
@@ -163,13 +160,12 @@ enum
      * file previously opened with read access
      */
     OFC_FILE_SHARE_READ = 0x01
-  } ;
+};
 
 /**
  * A action to take on files whether they exist or not.
  */
-enum
-  {
+enum {
     /**
      * Create a New File.  Fail if file already exists
      */
@@ -190,14 +186,13 @@ enum
      * Open a file and truncate.  If the file doesn't exist, fail.
      */
     OFC_TRUNCATE_EXISTING = 5
-  } ;
+};
 
 
 /**
  * File Attributes and Flags
  */
-enum
-  {
+enum {
     /**
      * The file is read only
      */
@@ -309,13 +304,12 @@ enum
      * Write Caching should not occur
      */
     OFC_FILE_FLAG_WRITE_THROUGH = 0x80000000
-  } ;
+};
 
 /*
  * Create Options
  */
-enum 
-  {
+enum {
     /**
      * Create a directory
      */
@@ -356,13 +350,12 @@ enum
      * Delete this file when closed
      */
     OFC_FILE_CREATE_DELONCLOSE = 0x1000
-  } ;
+};
 
 /*
  * Open Actions
  */
-enum 
-  {
+enum {
     /**
      * The file was opened
      */
@@ -375,14 +368,13 @@ enum
      * The file was truncated
      */
     OFC_FILE_OPEN_ACTION_TRUNCATED
-  } ;
+};
 
 /**
  * Identifies the type of file information for the 
  * GetFileInformationByHandleEx or SetFileInformationByHandleEx call
  */
-typedef enum _OFC_FILE_INFO_BY_HANDLE_CLASS
-  {
+typedef enum _OFC_FILE_INFO_BY_HANDLE_CLASS {
     /**
      * Minimal Information
      */
@@ -462,197 +454,190 @@ typedef enum _OFC_FILE_INFO_BY_HANDLE_CLASS
      * Maximum Value
      */
     OfcMaximumFileInfoByHandlesClass
-  } OFC_FILE_INFO_BY_HANDLE_CLASS ;
+} OFC_FILE_INFO_BY_HANDLE_CLASS;
 
-typedef enum _OFC_FILEFS_INFO_BY_HANDLE_CLASS
-  {
+typedef enum _OFC_FILEFS_INFO_BY_HANDLE_CLASS {
     OfcFileFSAttributeInformation,
     OfcFileFSSizeInformation,
     OfcFileFSVolumeInformation,
     OfcFileFSFullSizeInformation,
     OfcFileFSDeviceInformation
-  } OFC_FILEFS_INFO_BY_HANDLE_CLASS ;
+} OFC_FILEFS_INFO_BY_HANDLE_CLASS;
 
-typedef enum _OFC_FILE_INFO_BY_HANDLE_TYPE
-  {
+typedef enum _OFC_FILE_INFO_BY_HANDLE_TYPE {
     OfcFileInfoTypeFile,
     OfcFileInfoTypeFS,
     OfcFileInfoTypeSecurity,
     OfcFileInfoTypeQuota
-  } OFC_FILE_INFO_BY_HANDLE_TYPE ;
+} OFC_FILE_INFO_BY_HANDLE_TYPE;
 
 /**
  * Security Attributes for files
  *
  * This is not used but is here for completeness
  */
-typedef struct _OFC_SECURITY_ATTRIBUTES
-{
-  /**
-   * The length of the security descriptor
-   */
-  OFC_DWORD nLength;
-  /**
-   * A pointer to the security descriptor
-   */
-  OFC_LPVOID lpSecurityDescriptor;
-  /**
-   * Whether this security descriptor can be inherited
-   */
-  OFC_BOOL bInheritHandle;
-} OFC_SECURITY_ATTRIBUTES ;
+typedef struct _OFC_SECURITY_ATTRIBUTES {
+    /**
+     * The length of the security descriptor
+     */
+    OFC_DWORD nLength;
+    /**
+     * A pointer to the security descriptor
+     */
+    OFC_LPVOID lpSecurityDescriptor;
+    /**
+     * Whether this security descriptor can be inherited
+     */
+    OFC_BOOL bInheritHandle;
+} OFC_SECURITY_ATTRIBUTES;
 
 /**
  * A pointer to a security descriptor
  */
-typedef OFC_VOID *OFC_PSECURITY_DESCRIPTOR ;
+typedef OFC_VOID *OFC_PSECURITY_DESCRIPTOR;
 /**
  * A pointer to the security attributes
  */
-typedef OFC_SECURITY_ATTRIBUTES *OFC_LPSECURITY_ATTRIBUTES ;
+typedef OFC_SECURITY_ATTRIBUTES *OFC_LPSECURITY_ATTRIBUTES;
 
 /**
  * Contains information about the file that is found by OfcFindFirstFile,
  * OfcFindFirstFileEx or OfcFindNextFile
  */
-typedef struct _OFC_WIN32_FIND_DATAW
-{
-  /**
-   * The attributes of the file
-   */
-  OFC_DWORD dwFileAttributes ;
-  /**
-   * The create time of the file
-   */
-  OFC_FILETIME ftCreateTime ;
-  /**
-   * The time the file was last accessed
-   */
-  OFC_FILETIME ftLastAccessTime ;
-  /**
-   * The time the file was last written
-   */
-  OFC_FILETIME ftLastWriteTime ;
-  /**
-   * The upper Dword value of the file size
-   */
-  OFC_DWORD nFileSizeHigh ;
-  /**
-   * The low order value of the file size
-   */
-  OFC_DWORD nFileSizeLow ;
-  /**
-   * Unused
-   */
-  OFC_DWORD dwReserved0 ;
-  /**
-   * Unused
-   */
-  OFC_DWORD dwReserved1 ;
-  /**
-   * The name of the file
-   */
-  OFC_TCHAR cFileName[OFC_MAX_PATH] ;
-  /**
-   * The 8.3 name of the file
-   */
-  OFC_TCHAR cAlternateFileName[14] ;
-} OFC_WIN32_FIND_DATAW ;
+typedef struct _OFC_WIN32_FIND_DATAW {
+    /**
+     * The attributes of the file
+     */
+    OFC_DWORD dwFileAttributes;
+    /**
+     * The create time of the file
+     */
+    OFC_FILETIME ftCreateTime;
+    /**
+     * The time the file was last accessed
+     */
+    OFC_FILETIME ftLastAccessTime;
+    /**
+     * The time the file was last written
+     */
+    OFC_FILETIME ftLastWriteTime;
+    /**
+     * The upper Dword value of the file size
+     */
+    OFC_DWORD nFileSizeHigh;
+    /**
+     * The low order value of the file size
+     */
+    OFC_DWORD nFileSizeLow;
+    /**
+     * Unused
+     */
+    OFC_DWORD dwReserved0;
+    /**
+     * Unused
+     */
+    OFC_DWORD dwReserved1;
+    /**
+     * The name of the file
+     */
+    OFC_TCHAR cFileName[OFC_MAX_PATH];
+    /**
+     * The 8.3 name of the file
+     */
+    OFC_TCHAR cAlternateFileName[14];
+} OFC_WIN32_FIND_DATAW;
 /**
  * A pointer to the Win32 Find data
  */
-typedef OFC_WIN32_FIND_DATAW *OFC_LPWIN32_FIND_DATAW ;
+typedef OFC_WIN32_FIND_DATAW *OFC_LPWIN32_FIND_DATAW;
 
-typedef struct _OFC_WIN32_FIND_DATAA
-{
-  /**
-   * The attributes of the file
-   */
-  OFC_DWORD dwFileAttributes ;
-  /**
-   * The create time of the file
-   */
-  OFC_FILETIME ftCreateTime ;
-  /**
-   * The time the file was last accessed
-   */
-  OFC_FILETIME ftLastAccessTime ;
-  /**
-   * The time the file was last written
-   */
-  OFC_FILETIME ftLastWriteTime ;
-  /**
-   * The upper Dword value of the file size
-   */
-  OFC_DWORD nFileSizeHigh ;
-  /**
-   * The low order value of the file size
-   */
-  OFC_DWORD nFileSizeLow ;
-  /**
-   * Unused
-   */
-  OFC_DWORD dwReserved0 ;
-  /**
-   * Unused
-   */
-  OFC_DWORD dwReserved1 ;
-  /**
-   * The name of the file
-   */
-  OFC_CHAR cFileName[OFC_MAX_PATH] ;
-  /**
-   * The 8.3 name of the file
-   */
-  OFC_CHAR cAlternateFileName[14] ;
-} OFC_WIN32_FIND_DATAA ;
+typedef struct _OFC_WIN32_FIND_DATAA {
+    /**
+     * The attributes of the file
+     */
+    OFC_DWORD dwFileAttributes;
+    /**
+     * The create time of the file
+     */
+    OFC_FILETIME ftCreateTime;
+    /**
+     * The time the file was last accessed
+     */
+    OFC_FILETIME ftLastAccessTime;
+    /**
+     * The time the file was last written
+     */
+    OFC_FILETIME ftLastWriteTime;
+    /**
+     * The upper Dword value of the file size
+     */
+    OFC_DWORD nFileSizeHigh;
+    /**
+     * The low order value of the file size
+     */
+    OFC_DWORD nFileSizeLow;
+    /**
+     * Unused
+     */
+    OFC_DWORD dwReserved0;
+    /**
+     * Unused
+     */
+    OFC_DWORD dwReserved1;
+    /**
+     * The name of the file
+     */
+    OFC_CHAR cFileName[OFC_MAX_PATH];
+    /**
+     * The 8.3 name of the file
+     */
+    OFC_CHAR cAlternateFileName[14];
+} OFC_WIN32_FIND_DATAA;
 /**
  * A pointer to the Win32 Find data
  */
-typedef OFC_WIN32_FIND_DATAA *OFC_LPWIN32_FIND_DATAA ;
+typedef OFC_WIN32_FIND_DATAA *OFC_LPWIN32_FIND_DATAA;
 
 /**
  * Contains information about the file that is found by OfcFindFirstFile,
  * OfcFindFirstFileEx or OfcFindNextFile
  */
-typedef struct _OFC_WIN32_FILE_ATTRIBUTE_DATA
-{
-  /**
-   * The attributes of the file
-   */
-  OFC_DWORD dwFileAttributes ;
-  /**
-   * The create time of the file
-   */
-  OFC_FILETIME ftCreateTime ;
-  /**
-   * The time the file was last accessed
-   */
-  OFC_FILETIME ftLastAccessTime ;
-  /**
-   * The time the file was last written
-   */
-  OFC_FILETIME ftLastWriteTime ;
-  /**
-   * The upper Dword value of the file size
-   */
-  OFC_DWORD nFileSizeHigh ;
-  /**
-   * The low order value of the file size
-   */
-  OFC_DWORD nFileSizeLow ;
-} OFC_WIN32_FILE_ATTRIBUTE_DATA ;
+typedef struct _OFC_WIN32_FILE_ATTRIBUTE_DATA {
+    /**
+     * The attributes of the file
+     */
+    OFC_DWORD dwFileAttributes;
+    /**
+     * The create time of the file
+     */
+    OFC_FILETIME ftCreateTime;
+    /**
+     * The time the file was last accessed
+     */
+    OFC_FILETIME ftLastAccessTime;
+    /**
+     * The time the file was last written
+     */
+    OFC_FILETIME ftLastWriteTime;
+    /**
+     * The upper Dword value of the file size
+     */
+    OFC_DWORD nFileSizeHigh;
+    /**
+     * The low order value of the file size
+     */
+    OFC_DWORD nFileSizeLow;
+} OFC_WIN32_FILE_ATTRIBUTE_DATA;
 
 /**
  * A pointer to the Win32 File Attribute Data
  */
-typedef OFC_WIN32_FILE_ATTRIBUTE_DATA *OFC_LPWIN32_FILE_ATTRIBUTE_DATA ;
+typedef OFC_WIN32_FILE_ATTRIBUTE_DATA *OFC_LPWIN32_FILE_ATTRIBUTE_DATA;
 
 /**
  * Values for the OfcGetFileAttributesEx Call
  */
-typedef enum _OFC_GET_FILEEX_INFO_LEVELS
-  {
+typedef enum _OFC_GET_FILEEX_INFO_LEVELS {
     /**
      * Standard Information
      */
@@ -667,49 +652,47 @@ typedef enum _OFC_GET_FILEEX_INFO_LEVELS
 /**
  * Contains information used in asynchrous I/O
  */
-typedef struct _OFC_OVERLAPPED
-{
-  OFC_BOOL status ;
-  OFC_HANDLE hFile ;
-  OFC_DWORD dwLen ;
-  OFC_OFFT offset ;
-  OFC_HANDLE hContext ;
-  OFC_HANDLE hUser ;
+typedef struct _OFC_OVERLAPPED {
+    OFC_BOOL status;
+    OFC_HANDLE hFile;
+    OFC_DWORD dwLen;
+    OFC_OFFT offset;
+    OFC_HANDLE hContext;
+    OFC_HANDLE hUser;
 #if defined(OFC_PERF_STATS)
-  OFC_INT perf_id ;
-  OFC_MSTIME stamp ;
+    OFC_INT perf_id;
+    OFC_MSTIME stamp;
 #endif
-} OFC_OVERLAPPED ;
+} OFC_OVERLAPPED;
 
-typedef OFC_OVERLAPPED *OFC_LPOVERLAPPED ;
+typedef OFC_OVERLAPPED *OFC_LPOVERLAPPED;
 /** \endlatexonly */
 
 /**
  * Basic Information for a file
  */
-typedef struct _OFC_FILE_BASIC_INFO
-{
-  /**
-   * The time fthe file was created
-   */
-  OFC_LARGE_INTEGER CreationTime ;
-  /**
-   * The time the file was last accessed
-   */
-  OFC_LARGE_INTEGER LastAccessTime ;
-  /**
-   * The time the file was last written to
-   */
-  OFC_LARGE_INTEGER LastWriteTime ;
-  /**
-   * The time the file was changed
-   */
-  OFC_LARGE_INTEGER ChangeTime ;
-  /**
-   * The File Attributes
-   */
-  OFC_DWORD FileAttributes ;
-} OFC_FILE_BASIC_INFO ;
+typedef struct _OFC_FILE_BASIC_INFO {
+    /**
+     * The time fthe file was created
+     */
+    OFC_LARGE_INTEGER CreationTime;
+    /**
+     * The time the file was last accessed
+     */
+    OFC_LARGE_INTEGER LastAccessTime;
+    /**
+     * The time the file was last written to
+     */
+    OFC_LARGE_INTEGER LastWriteTime;
+    /**
+     * The time the file was changed
+     */
+    OFC_LARGE_INTEGER ChangeTime;
+    /**
+     * The File Attributes
+     */
+    OFC_DWORD FileAttributes;
+} OFC_FILE_BASIC_INFO;
 
 #define OFC_FILE_BASIC_CREATION_TIME 0
 #define OFC_FILE_BASIC_LAST_ACCESS_TIME 8
@@ -718,97 +701,89 @@ typedef struct _OFC_FILE_BASIC_INFO
 #define OFC_FILE_BASIC_ATTRIBUTES 32
 #define OFC_FILE_BASIC_SIZE 36
 
-typedef struct _OFC_FILE_INTERNAL_INFO
-{
-  OFC_LARGE_INTEGER IndexNumber ;
-} OFC_FILE_INTERNAL_INFO ;
+typedef struct _OFC_FILE_INTERNAL_INFO {
+    OFC_LARGE_INTEGER IndexNumber;
+} OFC_FILE_INTERNAL_INFO;
 
-typedef struct _OFC_FILE_EA_INFO
-{
-  OFC_DWORD EaSize ;
-} OFC_FILE_EA_INFO ;
+typedef struct _OFC_FILE_EA_INFO {
+    OFC_DWORD EaSize;
+} OFC_FILE_EA_INFO;
 
-typedef struct _OFC_FILE_ACCESS_INFO
-{
-  OFC_DWORD AccessFlags ;
-} OFC_FILE_ACCESS_INFO ;
+typedef struct _OFC_FILE_ACCESS_INFO {
+    OFC_DWORD AccessFlags;
+} OFC_FILE_ACCESS_INFO;
 
-typedef struct _OFC_FILE_POSITION_INFO
-{
-  OFC_LARGE_INTEGER CurrentByteOffset ;
-} OFC_FILE_POSITION_INFO ;
+typedef struct _OFC_FILE_POSITION_INFO {
+    OFC_LARGE_INTEGER CurrentByteOffset;
+} OFC_FILE_POSITION_INFO;
 
-typedef struct _OFC_FILE_MODE_INFO
-{
-  OFC_DWORD Mode ;
-} OFC_FILE_MODE_INFO ;
+typedef struct _OFC_FILE_MODE_INFO {
+    OFC_DWORD Mode;
+} OFC_FILE_MODE_INFO;
 
-typedef struct _OFC_FILE_ALIGNMENT_INFO
-{
-  OFC_DWORD AlignmentRequirement ;
-} OFC_FILE_ALIGNMENT_INFO ;
+typedef struct _OFC_FILE_ALIGNMENT_INFO {
+    OFC_DWORD AlignmentRequirement;
+} OFC_FILE_ALIGNMENT_INFO;
 
 /**
  * Network Open Information for a file
  */
-typedef struct _OFC_FILE_NETWORK_OPEN_INFO
-{
-  /**
-   * The time fthe file was created
-   */
-  OFC_LARGE_INTEGER CreationTime ;
-  /**
-   * The time the file was last accessed
-   */
-  OFC_LARGE_INTEGER LastAccessTime ;
-  /**
-   * The time the file was last written to
-   */
-  OFC_LARGE_INTEGER LastWriteTime ;
-  /**
-   * The time the file was changed
-   */
-  OFC_LARGE_INTEGER ChangeTime ;
-  /**
-   * The Alloction Size
-   */
-  OFC_LARGE_INTEGER AllocationSize ;
-  /**
-   * The End of File
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-  /**
-   * The File Attributes
-   */
-  OFC_DWORD FileAttributes ;
-} OFC_FILE_NETWORK_OPEN_INFO ;
+typedef struct _OFC_FILE_NETWORK_OPEN_INFO {
+    /**
+     * The time fthe file was created
+     */
+    OFC_LARGE_INTEGER CreationTime;
+    /**
+     * The time the file was last accessed
+     */
+    OFC_LARGE_INTEGER LastAccessTime;
+    /**
+     * The time the file was last written to
+     */
+    OFC_LARGE_INTEGER LastWriteTime;
+    /**
+     * The time the file was changed
+     */
+    OFC_LARGE_INTEGER ChangeTime;
+    /**
+     * The Alloction Size
+     */
+    OFC_LARGE_INTEGER AllocationSize;
+    /**
+     * The End of File
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+    /**
+     * The File Attributes
+     */
+    OFC_DWORD FileAttributes;
+} OFC_FILE_NETWORK_OPEN_INFO;
 
 /**
  * Extended Information for a file
  */
-typedef struct _OFC_FILE_STANDARD_INFO
-{
-  /**
-   * The amount of space that is allocated for the file
-   */
-  OFC_LARGE_INTEGER AllocationSize ;
-  /**
-   * The end of the file
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-  /**
-   * The number of links to the file
-   */
-  OFC_DWORD NumberOfLinks ;
-  /**
-   * OFC_TRUE if the file is being deleted
-   */
-  OFC_BOOL DeletePending ;
-  /**
-   * OFC_TRUE if the file is a directory
-   */
-  OFC_BOOL Directory ;
-} OFC_FILE_STANDARD_INFO ;
+typedef struct _OFC_FILE_STANDARD_INFO {
+    /**
+     * The amount of space that is allocated for the file
+     */
+    OFC_LARGE_INTEGER AllocationSize;
+    /**
+     * The end of the file
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+    /**
+     * The number of links to the file
+     */
+    OFC_DWORD NumberOfLinks;
+    /**
+     * OFC_TRUE if the file is being deleted
+     */
+    OFC_BOOL DeletePending;
+    /**
+     * OFC_TRUE if the file is a directory
+     */
+    OFC_BOOL Directory;
+} OFC_FILE_STANDARD_INFO;
 
 #define OFC_FILE_STANDARD_ALLOCATION_SIZE 0
 #define OFC_FILE_STANDARD_END_OF_FILE 8
@@ -820,442 +795,428 @@ typedef struct _OFC_FILE_STANDARD_INFO
 /**
  * Receives the File Name
  */
-typedef struct _OFC_FILE_NAME_INFO
-{
-  /**
-   * The size of the FileName string
-   */
-  OFC_DWORD FileNameLength ;
-  /**
-   * The file name
-   */
-  OFC_WCHAR FileName[1] ;
-} OFC_FILE_NAME_INFO ;
+typedef struct _OFC_FILE_NAME_INFO {
+    /**
+     * The size of the FileName string
+     */
+    OFC_DWORD FileNameLength;
+    /**
+     * The file name
+     */
+    OFC_WCHAR FileName[1];
+} OFC_FILE_NAME_INFO;
 
 /**
  * Contains the name to which the file should be renamed
  */
-typedef struct _OFC_FILE_RENAME_INFO
-{
-  /**
-   * OFC_TRUE to replace an existing file if it exists
-   */
-  OFC_BOOL ReplaceIfExists ;
-  /**
-   * A Handle to the root directory of the file to be renamed
-   */
-  OFC_HANDLE RootDirectory ;
-  /**
-   * The size of the FileName
-   */
-  OFC_DWORD FileNameLength ;
-  /**
-   * The New File Name
-   */
-  OFC_WCHAR FileName[1] ;
-} OFC_FILE_RENAME_INFO ;
+typedef struct _OFC_FILE_RENAME_INFO {
+    /**
+     * OFC_TRUE to replace an existing file if it exists
+     */
+    OFC_BOOL ReplaceIfExists;
+    /**
+     * A Handle to the root directory of the file to be renamed
+     */
+    OFC_HANDLE RootDirectory;
+    /**
+     * The size of the FileName
+     */
+    OFC_DWORD FileNameLength;
+    /**
+     * The New File Name
+     */
+    OFC_WCHAR FileName[1];
+} OFC_FILE_RENAME_INFO;
 
 /** 
  * Indicates whether a file should be deleted
  */
-typedef struct _OFC_FILE_DISPOSITION_INFO
-{
-  /**
-   * Indicates whether the file should be deleted.  OFC_TRUE if it should
-   */
-  OFC_BOOL DeleteFile ;
-} OFC_FILE_DISPOSITION_INFO ;
+typedef struct _OFC_FILE_DISPOSITION_INFO {
+    /**
+     * Indicates whether the file should be deleted.  OFC_TRUE if it should
+     */
+    OFC_BOOL DeleteFile;
+} OFC_FILE_DISPOSITION_INFO;
 
 /**
  * Contains the total number of bytes that should be allocated for a file
  */
-typedef struct _OFC_FILE_ALLOCATION_INFO
-{
-  /**
-   * The new file allocation size
-   */
-  OFC_LARGE_INTEGER AllocationSize ;
-} OFC_FILE_ALLOCATION_INFO ;
+typedef struct _OFC_FILE_ALLOCATION_INFO {
+    /**
+     * The new file allocation size
+     */
+    OFC_LARGE_INTEGER AllocationSize;
+} OFC_FILE_ALLOCATION_INFO;
 
 /** 
  * Contains the specified value to which the end of file should be set
  */
-typedef struct _OFC_FILE_END_OF_FILE_INFO
-{
-  /**
-   * The specified value for the new end of file
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-} OFC_FILE_END_OF_FILE_INFO ;
+typedef struct _OFC_FILE_END_OF_FILE_INFO {
+    /**
+     * The specified value for the new end of file
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+} OFC_FILE_END_OF_FILE_INFO;
 
 /**
  * Receives file stream info for the file
  */
-typedef struct _OFC_FILE_STREAM_INFO
-{
-  /**
-   * The offset for the next FILE_STREAM_INFO entry
-   */
-  OFC_DWORD NextEntryOffset ;
-  /**
-   * The length in bytes of the Stream Name
-   */
-  OFC_DWORD StreamNameLength ;
-  /**
-   * The size of the data stream
-   */
-  OFC_LARGE_INTEGER StreamSize ;
-  /**
-   * The amount of space allocated for the stream
-   */
-  OFC_LARGE_INTEGER StreamAllocationSize ;
-  /**
-   * The Stream Name
-   */
-  OFC_WCHAR StreamName[1] ;
-} OFC_FILE_STREAM_INFO ;
+typedef struct _OFC_FILE_STREAM_INFO {
+    /**
+     * The offset for the next FILE_STREAM_INFO entry
+     */
+    OFC_DWORD NextEntryOffset;
+    /**
+     * The length in bytes of the Stream Name
+     */
+    OFC_DWORD StreamNameLength;
+    /**
+     * The size of the data stream
+     */
+    OFC_LARGE_INTEGER StreamSize;
+    /**
+     * The amount of space allocated for the stream
+     */
+    OFC_LARGE_INTEGER StreamAllocationSize;
+    /**
+     * The Stream Name
+     */
+    OFC_WCHAR StreamName[1];
+} OFC_FILE_STREAM_INFO;
 
 /**
  * Receives file compression information
  */
-typedef struct _OFC_FILE_COMPRESSION_INFO
-{
-  /**
-   * The file size of the compressed file
-   */
-  OFC_LARGE_INTEGER CompressedFileSize ;
-  /**
-   * The compression format
-   */
-  OFC_WORD CompressionFormat ;
-  /**
-   * The factor that the compression uses
-   */
-  OFC_UCHAR CompressionUnitShift ;
-  /**
-   * The number of chuncks that are shifted by compression
-   */
-  OFC_UCHAR ChunkShift ;
-  /**
-   * The number of clusters that are shifted
-   */
-  OFC_UCHAR ClusterShift ;
-  /**
-   * Reserved
-   */
-  OFC_UCHAR Reserved[3] ;
-} OFC_FILE_COMPRESSION_INFO ;
+typedef struct _OFC_FILE_COMPRESSION_INFO {
+    /**
+     * The file size of the compressed file
+     */
+    OFC_LARGE_INTEGER CompressedFileSize;
+    /**
+     * The compression format
+     */
+    OFC_WORD CompressionFormat;
+    /**
+     * The factor that the compression uses
+     */
+    OFC_UCHAR CompressionUnitShift;
+    /**
+     * The number of chuncks that are shifted by compression
+     */
+    OFC_UCHAR ChunkShift;
+    /**
+     * The number of clusters that are shifted
+     */
+    OFC_UCHAR ClusterShift;
+    /**
+     * Reserved
+     */
+    OFC_UCHAR Reserved[3];
+} OFC_FILE_COMPRESSION_INFO;
 
 /**
  * Receives the requested file attribute information
  */
-typedef struct _OFC_FILE_ATTRIBUTE_TAG_INFO
-{
-  /**
-   * The file attribute information
-   */
-  OFC_DWORD FileAttributes ;
-  /**
-   * The reparse tag
-   */
-  OFC_DWORD ReparseTag ;
-} OFC_FILE_ATTRIBUTE_TAG_INFO ;
+typedef struct _OFC_FILE_ATTRIBUTE_TAG_INFO {
+    /**
+     * The file attribute information
+     */
+    OFC_DWORD FileAttributes;
+    /**
+     * The reparse tag
+     */
+    OFC_DWORD ReparseTag;
+} OFC_FILE_ATTRIBUTE_TAG_INFO;
 
 /**
  * Contains Information about files in a specified directory
  */
-typedef struct _OFC_FILE_DIR_INFO
-{
-  /**
-   * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
-   */
-  OFC_DWORD NextEntryOffset ;
-  /**
-   * The byte offset of the file within the parent directory
-   */
-  OFC_DWORD FileIndex ;
-  /**
-   * The time that the file was created
-   */
-  OFC_LARGE_INTEGER CreationTime ;
-  /**
-   * The time that the file was last accessed
-   */
-  OFC_LARGE_INTEGER LastAccessTime ;
-  /**
-   * The time that the file was last written to
-   */
-  OFC_LARGE_INTEGER LastWriteTime ;
-  /**
-   * The time that the file was last changed 
-   */
-  OFC_LARGE_INTEGER ChangeTime ;
-  /**
-   * The absolute end of file position.
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-} OFC_FILE_DIR_INFO ;
+typedef struct _OFC_FILE_DIR_INFO {
+    /**
+     * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
+     */
+    OFC_DWORD NextEntryOffset;
+    /**
+     * The byte offset of the file within the parent directory
+     */
+    OFC_DWORD FileIndex;
+    /**
+     * The time that the file was created
+     */
+    OFC_LARGE_INTEGER CreationTime;
+    /**
+     * The time that the file was last accessed
+     */
+    OFC_LARGE_INTEGER LastAccessTime;
+    /**
+     * The time that the file was last written to
+     */
+    OFC_LARGE_INTEGER LastWriteTime;
+    /**
+     * The time that the file was last changed
+     */
+    OFC_LARGE_INTEGER ChangeTime;
+    /**
+     * The absolute end of file position.
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+} OFC_FILE_DIR_INFO;
 
 /**
  * Contains Information about files in a specified directory
  */
-typedef struct _OFC_FILE_FULL_DIR_INFO
-{
-  /**
-   * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
-   */
-  OFC_DWORD NextEntryOffset ;
-  /**
-   * The byte offset of the file within the parent directory
-   */
-  OFC_DWORD FileIndex ;
-  /**
-   * The time that the file was created
-   */
-  OFC_LARGE_INTEGER CreationTime ;
-  /**
-   * The time that the file was last accessed
-   */
-  OFC_LARGE_INTEGER LastAccessTime ;
-  /**
-   * The time that the file was last written to
-   */
-  OFC_LARGE_INTEGER LastWriteTime ;
-  /**
-   * The time that the file was last changed 
-   */
-  OFC_LARGE_INTEGER ChangeTime ;
-  /**
-   * The absolute end of file position.
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-  /**
-   * The number of bytes allocated for the file
-   */
-  OFC_LARGE_INTEGER AllocationSize ;
-  /**
-   * The file attributes
-   */
-  OFC_DWORD FileAttributes ;
-  /**
-   * The length of the file name
-   */
-  OFC_DWORD FileNameLength ;
-  /**
-   * The size of the extended attributes for the file
-   */
-  OFC_DWORD EaSize ;
-} OFC_FILE_FULL_DIR_INFO ;
+typedef struct _OFC_FILE_FULL_DIR_INFO {
+    /**
+     * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
+     */
+    OFC_DWORD NextEntryOffset;
+    /**
+     * The byte offset of the file within the parent directory
+     */
+    OFC_DWORD FileIndex;
+    /**
+     * The time that the file was created
+     */
+    OFC_LARGE_INTEGER CreationTime;
+    /**
+     * The time that the file was last accessed
+     */
+    OFC_LARGE_INTEGER LastAccessTime;
+    /**
+     * The time that the file was last written to
+     */
+    OFC_LARGE_INTEGER LastWriteTime;
+    /**
+     * The time that the file was last changed
+     */
+    OFC_LARGE_INTEGER ChangeTime;
+    /**
+     * The absolute end of file position.
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+    /**
+     * The number of bytes allocated for the file
+     */
+    OFC_LARGE_INTEGER AllocationSize;
+    /**
+     * The file attributes
+     */
+    OFC_DWORD FileAttributes;
+    /**
+     * The length of the file name
+     */
+    OFC_DWORD FileNameLength;
+    /**
+     * The size of the extended attributes for the file
+     */
+    OFC_DWORD EaSize;
+} OFC_FILE_FULL_DIR_INFO;
 
 /**
  * Contains Information about files in a specified directory
  */
-typedef struct _OFC_FILE_ID_FULL_DIR_INFO
-{
-  /**
-   * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
-   */
-  OFC_DWORD NextEntryOffset ;
-  /**
-   * The byte offset of the file within the parent directory
-   */
-  OFC_DWORD FileIndex ;
-  /**
-   * The time that the file was created
-   */
-  OFC_LARGE_INTEGER CreationTime ;
-  /**
-   * The time that the file was last accessed
-   */
-  OFC_LARGE_INTEGER LastAccessTime ;
-  /**
-   * The time that the file was last written to
-   */
-  OFC_LARGE_INTEGER LastWriteTime ;
-  /**
-   * The time that the file was last changed 
-   */
-  OFC_LARGE_INTEGER ChangeTime ;
-  /**
-   * The absolute end of file position.
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-  /**
-   * The number of bytes allocated for the file
-   */
-  OFC_LARGE_INTEGER AllocationSize ;
-  /**
-   * The file attributes
-   */
-  OFC_DWORD FileAttributes ;
-  /**
-   * The length of the file name
-   */
-  OFC_DWORD FileNameLength ;
-  /**
-   * The size of the extended attributes for the file
-   */
-  OFC_DWORD EaSize ;
-  /**
-   * Reserved
-   */
-  OFC_DWORD Reserved ;
-  /**
-   * The File ID
-   */
-  OFC_LARGE_INTEGER FileId ;
-  /**
-   * The File Name
-   */
-  OFC_WCHAR FileName[1] ;
-} OFC_FILE_ID_FULL_DIR_INFO ;
+typedef struct _OFC_FILE_ID_FULL_DIR_INFO {
+    /**
+     * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
+     */
+    OFC_DWORD NextEntryOffset;
+    /**
+     * The byte offset of the file within the parent directory
+     */
+    OFC_DWORD FileIndex;
+    /**
+     * The time that the file was created
+     */
+    OFC_LARGE_INTEGER CreationTime;
+    /**
+     * The time that the file was last accessed
+     */
+    OFC_LARGE_INTEGER LastAccessTime;
+    /**
+     * The time that the file was last written to
+     */
+    OFC_LARGE_INTEGER LastWriteTime;
+    /**
+     * The time that the file was last changed
+     */
+    OFC_LARGE_INTEGER ChangeTime;
+    /**
+     * The absolute end of file position.
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+    /**
+     * The number of bytes allocated for the file
+     */
+    OFC_LARGE_INTEGER AllocationSize;
+    /**
+     * The file attributes
+     */
+    OFC_DWORD FileAttributes;
+    /**
+     * The length of the file name
+     */
+    OFC_DWORD FileNameLength;
+    /**
+     * The size of the extended attributes for the file
+     */
+    OFC_DWORD EaSize;
+    /**
+     * Reserved
+     */
+    OFC_DWORD Reserved;
+    /**
+     * The File ID
+     */
+    OFC_LARGE_INTEGER FileId;
+    /**
+     * The File Name
+     */
+    OFC_WCHAR FileName[1];
+} OFC_FILE_ID_FULL_DIR_INFO;
 
 /**
  * Contains Information about files in a specified directory
  */
-typedef struct _OFC_FILE_BOTH_DIR_INFO
-{
-  /**
-   * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
-   */
-  OFC_DWORD NextEntryOffset ;
-  /**
-   * The byte offset of the file within the parent directory
-   */
-  OFC_DWORD FileIndex ;
-  /**
-   * The time that the file was created
-   */
-  OFC_LARGE_INTEGER CreationTime ;
-  /**
-   * The time that the file was last accessed
-   */
-  OFC_LARGE_INTEGER LastAccessTime ;
-  /**
-   * The time that the file was last written to
-   */
-  OFC_LARGE_INTEGER LastWriteTime ;
-  /**
-   * The time that the file was last changed 
-   */
-  OFC_LARGE_INTEGER ChangeTime ;
-  /**
-   * The absolute end of file position.
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-  /**
-   * The number of bytes allocated for the file
-   */
-  OFC_LARGE_INTEGER AllocationSize ;
-  /**
-   * The file attributes
-   */
-  OFC_DWORD FileAttributes ;
-  /**
-   * The length of the file name
-   */
-  OFC_DWORD FileNameLength ;
-  /**
-   * The size of the extended attributes for the file
-   */
-  OFC_DWORD EaSize ;
-  /**
-   * The length of the short name (8.3 name)
-   */
-  OFC_CHAR ShortNameLength ;
-  /**
-   * Reserved
-   */
-  OFC_CHAR Reserved ;
-  /**
-   * The short 8.3 file name
-   */
-  OFC_WCHAR ShortName[12] ;
-  /**
-   * The File Name
-   */
-  OFC_WCHAR FileName[1] ;
-} OFC_FILE_BOTH_DIR_INFO ;
+typedef struct _OFC_FILE_BOTH_DIR_INFO {
+    /**
+     * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
+     */
+    OFC_DWORD NextEntryOffset;
+    /**
+     * The byte offset of the file within the parent directory
+     */
+    OFC_DWORD FileIndex;
+    /**
+     * The time that the file was created
+     */
+    OFC_LARGE_INTEGER CreationTime;
+    /**
+     * The time that the file was last accessed
+     */
+    OFC_LARGE_INTEGER LastAccessTime;
+    /**
+     * The time that the file was last written to
+     */
+    OFC_LARGE_INTEGER LastWriteTime;
+    /**
+     * The time that the file was last changed
+     */
+    OFC_LARGE_INTEGER ChangeTime;
+    /**
+     * The absolute end of file position.
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+    /**
+     * The number of bytes allocated for the file
+     */
+    OFC_LARGE_INTEGER AllocationSize;
+    /**
+     * The file attributes
+     */
+    OFC_DWORD FileAttributes;
+    /**
+     * The length of the file name
+     */
+    OFC_DWORD FileNameLength;
+    /**
+     * The size of the extended attributes for the file
+     */
+    OFC_DWORD EaSize;
+    /**
+     * The length of the short name (8.3 name)
+     */
+    OFC_CHAR ShortNameLength;
+    /**
+     * Reserved
+     */
+    OFC_CHAR Reserved;
+    /**
+     * The short 8.3 file name
+     */
+    OFC_WCHAR ShortName[12];
+    /**
+     * The File Name
+     */
+    OFC_WCHAR FileName[1];
+} OFC_FILE_BOTH_DIR_INFO;
 
 /**
  * Contains Information about files in a specified directory
  */
-typedef struct _OFC_FILE_ID_BOTH_DIR_INFO
-{
-  /**
-   * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
-   */
-  OFC_DWORD NextEntryOffset ;
-  /**
-   * The byte offset of the file within the parent directory
-   */
-  OFC_DWORD FileIndex ;
-  /**
-   * The time that the file was created
-   */
-  OFC_LARGE_INTEGER CreationTime ;
-  /**
-   * The time that the file was last accessed
-   */
-  OFC_LARGE_INTEGER LastAccessTime ;
-  /**
-   * The time that the file was last written to
-   */
-  OFC_LARGE_INTEGER LastWriteTime ;
-  /**
-   * The time that the file was last changed 
-   */
-  OFC_LARGE_INTEGER ChangeTime ;
-  /**
-   * The absolute end of file position.
-   */
-  OFC_LARGE_INTEGER EndOfFile ;
-  /**
-   * The number of bytes allocated for the file
-   */
-  OFC_LARGE_INTEGER AllocationSize ;
-  /**
-   * The file attributes
-   */
-  OFC_DWORD FileAttributes ;
-  /**
-   * The length of the file name
-   */
-  OFC_DWORD FileNameLength ;
-  /**
-   * The size of the extended attributes for the file
-   */
-  OFC_DWORD EaSize ;
-  /**
-   * The length of the short name (8.3 name)
-   */
-  OFC_CHAR ShortNameLength ;
-  /**
-   * The short 8.3 file name
-   */
-  OFC_WCHAR ShortName[12] ;
-  /**
-   * The File ID
-   */
-  OFC_LARGE_INTEGER FileId ;
-  /**
-   * The File Name
-   */
-  OFC_WCHAR FileName[1] ;
-} OFC_FILE_ID_BOTH_DIR_INFO ;
+typedef struct _OFC_FILE_ID_BOTH_DIR_INFO {
+    /**
+     * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
+     */
+    OFC_DWORD NextEntryOffset;
+    /**
+     * The byte offset of the file within the parent directory
+     */
+    OFC_DWORD FileIndex;
+    /**
+     * The time that the file was created
+     */
+    OFC_LARGE_INTEGER CreationTime;
+    /**
+     * The time that the file was last accessed
+     */
+    OFC_LARGE_INTEGER LastAccessTime;
+    /**
+     * The time that the file was last written to
+     */
+    OFC_LARGE_INTEGER LastWriteTime;
+    /**
+     * The time that the file was last changed
+     */
+    OFC_LARGE_INTEGER ChangeTime;
+    /**
+     * The absolute end of file position.
+     */
+    OFC_LARGE_INTEGER EndOfFile;
+    /**
+     * The number of bytes allocated for the file
+     */
+    OFC_LARGE_INTEGER AllocationSize;
+    /**
+     * The file attributes
+     */
+    OFC_DWORD FileAttributes;
+    /**
+     * The length of the file name
+     */
+    OFC_DWORD FileNameLength;
+    /**
+     * The size of the extended attributes for the file
+     */
+    OFC_DWORD EaSize;
+    /**
+     * The length of the short name (8.3 name)
+     */
+    OFC_CHAR ShortNameLength;
+    /**
+     * The short 8.3 file name
+     */
+    OFC_WCHAR ShortName[12];
+    /**
+     * The File ID
+     */
+    OFC_LARGE_INTEGER FileId;
+    /**
+     * The File Name
+     */
+    OFC_WCHAR FileName[1];
+} OFC_FILE_ID_BOTH_DIR_INFO;
 
-typedef struct _OFC_FILE_ALL_INFO
-{
-  OFC_FILE_BASIC_INFO BasicInfo ;
-  OFC_FILE_STANDARD_INFO StandardInfo ;
-  OFC_FILE_INTERNAL_INFO InternalInfo ;
-  OFC_FILE_EA_INFO EAInfo ;
-  OFC_FILE_ACCESS_INFO AccessInfo ;
-  OFC_FILE_POSITION_INFO PositionInfo ;
-  OFC_FILE_MODE_INFO ModeInfo ;
-  OFC_FILE_ALIGNMENT_INFO AlignmentInfo ;
-  OFC_FILE_NAME_INFO NameInfo ;
-} OFC_FILE_ALL_INFO ;
+typedef struct _OFC_FILE_ALL_INFO {
+    OFC_FILE_BASIC_INFO BasicInfo;
+    OFC_FILE_STANDARD_INFO StandardInfo;
+    OFC_FILE_INTERNAL_INFO InternalInfo;
+    OFC_FILE_EA_INFO EAInfo;
+    OFC_FILE_ACCESS_INFO AccessInfo;
+    OFC_FILE_POSITION_INFO PositionInfo;
+    OFC_FILE_MODE_INFO ModeInfo;
+    OFC_FILE_ALIGNMENT_INFO AlignmentInfo;
+    OFC_FILE_NAME_INFO NameInfo;
+} OFC_FILE_ALL_INFO;
 
 /*
  * Access Mask Encodings
@@ -1277,58 +1238,54 @@ typedef struct _OFC_FILE_ALL_INFO
 /**
  * Contains Information about files in a specified directory
  */
-typedef struct _OFC_FILE_NAMES_INFO
-{
-  /**
-   * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
-   */
-  OFC_DWORD NextEntryOffset ;
-  /**
-   * The byte offset of the file within the parent directory
-   */
-  OFC_DWORD FileIndex ;
-  /**
-   * The length of the file name
-   */
-  OFC_DWORD FileNameLength ;
-  /**
-   * The File Name
-   */
-  OFC_WCHAR FileName[1] ;
-} OFC_FILE_NAMES_INFO ;
+typedef struct _OFC_FILE_NAMES_INFO {
+    /**
+     * The offset for the next FILE_ID_BOTH_DIR_INFO structure in the buffer
+     */
+    OFC_DWORD NextEntryOffset;
+    /**
+     * The byte offset of the file within the parent directory
+     */
+    OFC_DWORD FileIndex;
+    /**
+     * The length of the file name
+     */
+    OFC_DWORD FileNameLength;
+    /**
+     * The File Name
+     */
+    OFC_WCHAR FileName[1];
+} OFC_FILE_NAMES_INFO;
 
 /**
  * Defines values for File I/O Priority
  */
-typedef enum _OFC_PRIORITY_HINT
-  {
+typedef enum _OFC_PRIORITY_HINT {
     OfcIoPriorityHintVeryLow = 0,
     OfcIoPriorityHintLow,
     OfcIoPriorityHintNormal,
     OfcMaximumIoPriorityHintType
-  } OFC_PRIORITY_HINT ;
+} OFC_PRIORITY_HINT;
 
 /**
  * Specifies the priority hint for a file I/O operation
  */
-typedef struct _OFC_FILE_IO_PRIORITY_HINT_INFO
-{
-  /**
-   * The pirority hint
-   */
-  OFC_PRIORITY_HINT PriorityHint ;
-} OFC_FILE_IO_PRIORITY_HINT_INFO ;
+typedef struct _OFC_FILE_IO_PRIORITY_HINT_INFO {
+    /**
+     * The pirority hint
+     */
+    OFC_PRIORITY_HINT PriorityHint;
+} OFC_FILE_IO_PRIORITY_HINT_INFO;
 
 /* The MS-FSCC spec defines the following.  For some reason, I get
  * something different back
  */
-typedef struct _OFC_FILEFS_SIZE_INFO
-{
-  OFC_LARGE_INTEGER TotalAllocationUnits ;
-  OFC_LARGE_INTEGER AvailableAllocationUnits ;
-  OFC_UINT32 SectorsPerAllocationUnit ;
-  OFC_UINT32 BytesPerSector ;
-} OFC_FILEFS_SIZE_INFO ;
+typedef struct _OFC_FILEFS_SIZE_INFO {
+    OFC_LARGE_INTEGER TotalAllocationUnits;
+    OFC_LARGE_INTEGER AvailableAllocationUnits;
+    OFC_UINT32 SectorsPerAllocationUnit;
+    OFC_UINT32 BytesPerSector;
+} OFC_FILEFS_SIZE_INFO;
 
 #define FILEFS_SIZE_TOTAL_ALLOCATION_UNITS 0
 #define FILEFS_SIZE_AVAILABLE_ALLOCATION_UNITS 8
@@ -1336,35 +1293,32 @@ typedef struct _OFC_FILEFS_SIZE_INFO
 #define FILEFS_SIZE_BYTES_PER_SECTOR 20
 #define FILEFS_SIZE_SIZE 24
 
-typedef struct _OFC_FILEFS_FULL_SIZE_INFO
-{
-  OFC_LARGE_INTEGER TotalAllocationUnits ;
-  OFC_LARGE_INTEGER CallerAvailableAllocationUnits ;
-  OFC_LARGE_INTEGER ActualAvailableAllocationUnits ;
-  OFC_UINT32 SectorsPerAllocationUnit ;
-  OFC_UINT32 BytesPerSector ;
-} OFC_FILEFS_FULL_SIZE_INFO ;
+typedef struct _OFC_FILEFS_FULL_SIZE_INFO {
+    OFC_LARGE_INTEGER TotalAllocationUnits;
+    OFC_LARGE_INTEGER CallerAvailableAllocationUnits;
+    OFC_LARGE_INTEGER ActualAvailableAllocationUnits;
+    OFC_UINT32 SectorsPerAllocationUnit;
+    OFC_UINT32 BytesPerSector;
+} OFC_FILEFS_FULL_SIZE_INFO;
 
-typedef struct _OFC_FILEFS_ATTRIBUTE_INFO
-{
-  OFC_UINT32 FileSystemAttributes ;
-  OFC_UINT32 MaximumComponentNameLength ;
-  OFC_UINT32 FileSystemNameLength ;
-} OFC_FILEFS_ATTRIBUTE_INFO ;
+typedef struct _OFC_FILEFS_ATTRIBUTE_INFO {
+    OFC_UINT32 FileSystemAttributes;
+    OFC_UINT32 MaximumComponentNameLength;
+    OFC_UINT32 FileSystemNameLength;
+} OFC_FILEFS_ATTRIBUTE_INFO;
 
 #define OFC_FILEFS_FILE_SYSTEM_ATTRIBUTES 0
 #define OFC_FILEFS_MAX_COMPONENT_NAME_LENGTH 4
 #define OFC_FILEFS_FILE_SYSTEM_NAME_LENGTH 8
 #define OFC_FILEFS_FILE_SYSTEM_NAME 12
 
-typedef struct _OFC_FILEFS_VOLUME_INFO
-{
-  OFC_LARGE_INTEGER VolumeCreationTime ;
-  OFC_UINT32 VolumeSerialNumber ;
-  OFC_UINT32 VolumeLabelLength ;
-  OFC_UINT8 SupportsObjects ;
-  OFC_UINT8 Reserved ;
-} OFC_FILEFS_VOLUME_INFO ;
+typedef struct _OFC_FILEFS_VOLUME_INFO {
+    OFC_LARGE_INTEGER VolumeCreationTime;
+    OFC_UINT32 VolumeSerialNumber;
+    OFC_UINT32 VolumeLabelLength;
+    OFC_UINT8 SupportsObjects;
+    OFC_UINT8 Reserved;
+} OFC_FILEFS_VOLUME_INFO;
 
 #define OFC_FILEFS_VOLUME_CREATION_TIME 0
 #define OFC_FILEFS_VOLUME_SERIAL_NUMBER 8
@@ -1373,11 +1327,10 @@ typedef struct _OFC_FILEFS_VOLUME_INFO
 #define OFC_FILEFS_RESERVED 17
 #define OFC_FILEFS_VOLUME_LABEL 18
 
-typedef struct _OFC_FILEFS_DEVICE_INFO
-{
-  OFC_UINT32 DeviceType ;
-  OFC_UINT32 Characteristics ;
-} OFC_FILEFS_DEVICE_INFO ;
+typedef struct _OFC_FILEFS_DEVICE_INFO {
+    OFC_UINT32 DeviceType;
+    OFC_UINT32 Characteristics;
+} OFC_FILEFS_DEVICE_INFO;
 
 #define OFC_FILE_DEVICE_CD_ROM 2
 #define OFC_FILE_DEVICE_DISK 7
@@ -1398,8 +1351,7 @@ typedef struct _OFC_FILEFS_DEVICE_INFO
 /**
  * Enumerator for Move Method
  */
-enum
-  {
+enum {
     /**
      * Move relative from the beginning of the file
      */
@@ -1412,16 +1364,15 @@ enum
      * Move relative to EOF
      */
     OFC_FILE_END = 2
-  } ;
+};
 
 /**
  * Flags for OfcLockFileEx
  */
-enum 
-  {
+enum {
     OFC_LOCKFILE_FAIL_IMMEDIATELY = 0x01,
     OFC_LOCKFILE_EXCLUSIVE_LOCK = 0x02
-  } ;
+};
 
 /**
  * Value returned to OfcSetFilePointer function when the pointer could not
@@ -1432,8 +1383,7 @@ enum
 /**
  * Error Codes that can be returned by File APIs
  */
-typedef enum
-  {
+typedef enum {
     OFC_ERROR_SUCCESS = 0,
     OFC_ERROR_INVALID_FUNCTION = 1,
     OFC_ERROR_FILE_NOT_FOUND = 2,
@@ -1450,7 +1400,7 @@ typedef enum
     OFC_ERROR_NO_MORE_FILES = 18,
     OFC_ERROR_WRITE_PROTECT = 19,
     OFC_ERROR_NOT_READY = 21,
-    OFC_ERROR_CRC = 23, 
+    OFC_ERROR_CRC = 23,
     OFC_ERROR_BAD_LENGTH = 24,
     OFC_ERROR_SEEK = 25,
     OFC_ERROR_WRITE_FAULT = 29,
@@ -1530,7 +1480,7 @@ typedef enum
     OFC_ERROR_INVALID_PASSWORDNAME = 1215,
     OFC_ERROR_LOGON_FAILURE = 1326,
     OFC_ERROR_NOT_ENOUGH_QUOTA = 1816
-  } OFC_FILE_ERRORS ;
+} OFC_FILE_ERRORS;
 
 /**
  * \defgroup OfcFileCall A Open Files Call application for the Open File API
@@ -1538,8 +1488,7 @@ typedef enum
  * \{ 
  */
 
-enum
-  {
+enum {
     FILE_CALL_TAG_CREATE,
     FILE_CALL_TAG_CLOSE,
     FILE_CALL_TAG_DELETE,
@@ -1565,1031 +1514,1018 @@ enum
     FILE_CALL_TAG_DISMOUNT,
     FILE_CALL_TAG_DEVICE_IO_CONTROL,
     FILE_CALL_TAG_QUERY_DIRECTORY
-  } ;
+};
 
 /*
  * Overlapped I/O Complete Notification
  */
-typedef struct
-{
-  OFC_DWORD nNumberOfBytesTransferred ; /**< The number of bytes xferred */
-  OFC_UINT32 offset ;
-} FILE_NOTIFY_COMPLETE ;
+typedef struct {
+    OFC_DWORD nNumberOfBytesTransferred; /**< The number of bytes xferred */
+    OFC_UINT32 offset;
+} FILE_NOTIFY_COMPLETE;
 
 /*
  * Security attributes descriptor is pushed
  */
-typedef struct 
-{
-  OFC_DWORD dwDesiredAccess ;
-  OFC_DWORD dwShareMode ;
-  OFC_DWORD secLength ;
-  OFC_BOOL secInherit ;
-  OFC_DWORD dwCreationDisposition ;
-  OFC_DWORD dwFlagsAndAttributes ;
-  OFC_DWORD dwCreateOptions ;
-  OFC_UINT32 createAction ;
-  OFC_UINT64 CreationTime ;
-  OFC_UINT64 LastAccessTime ;
-  OFC_UINT64 LastWriteTime ;
-  OFC_UINT64 LastChangeTime ;
-  OFC_UINT32 dwExtAttributes ;
-  OFC_UINT64 AllocationSize ;
-  OFC_UINT64 EndOfFile ;
-  OFC_UINT16 fileType ;
-  OFC_UINT16 deviceState ;
-  OFC_UINT16 Directory ;
-} FILE_CALL_CREATE ;
+typedef struct {
+    OFC_DWORD dwDesiredAccess;
+    OFC_DWORD dwShareMode;
+    OFC_DWORD secLength;
+    OFC_BOOL secInherit;
+    OFC_DWORD dwCreationDisposition;
+    OFC_DWORD dwFlagsAndAttributes;
+    OFC_DWORD dwCreateOptions;
+    OFC_UINT32 createAction;
+    OFC_UINT64 CreationTime;
+    OFC_UINT64 LastAccessTime;
+    OFC_UINT64 LastWriteTime;
+    OFC_UINT64 LastChangeTime;
+    OFC_UINT32 dwExtAttributes;
+    OFC_UINT64 AllocationSize;
+    OFC_UINT64 EndOfFile;
+    OFC_UINT16 fileType;
+    OFC_UINT16 deviceState;
+    OFC_UINT16 Directory;
+} FILE_CALL_CREATE;
 
-typedef struct
-{
-  OFC_HANDLE find_file ;
-} FILE_CALL_CLOSE ;
+typedef struct {
+    OFC_HANDLE find_file;
+} FILE_CALL_CLOSE;
 
-typedef struct
-{
-  OFC_INT empty ;
-} FILE_CALL_DELETE ;
+typedef struct {
+    OFC_INT empty;
+} FILE_CALL_DELETE;
 
-typedef struct
-{
-  OFC_INT empty ;
-} FILE_CALL_REMOVE_DIR ;
+typedef struct {
+    OFC_INT empty;
+} FILE_CALL_REMOVE_DIR;
 
 /* Find data is pushed */
-typedef struct
-{
-  OFC_BOOL more ;
-  OFC_BOOL close_after ;
-  OFC_BOOL close_eos ;
-  OFC_UINT16 search_count ;
-  OFC_SIZET nFindFileDataSize ;
-} FILE_CALL_FIND ;
+typedef struct {
+    OFC_BOOL more;
+    OFC_BOOL close_after;
+    OFC_BOOL close_eos;
+    OFC_UINT16 search_count;
+    OFC_SIZET nFindFileDataSize;
+} FILE_CALL_FIND;
 
 /* Query Directory data is pushed */
-typedef struct
-{
-  OFC_BOOL more ;
-  OFC_UINT32 name_length ;
-  OFC_UINT32 buffer_length ;
-  OFC_HANDLE find_file ;
-  OFC_BOOL reopen ;
-} FILE_CALL_QUERY_DIRECTORY ;
+typedef struct {
+    OFC_BOOL more;
+    OFC_UINT32 name_length;
+    OFC_UINT32 buffer_length;
+    OFC_HANDLE find_file;
+    OFC_BOOL reopen;
+} FILE_CALL_QUERY_DIRECTORY;
 
-typedef struct
-{
-  OFC_INT empty ;
-} FILE_CALL_FIND_CLOSE ;
+typedef struct {
+    OFC_INT empty;
+} FILE_CALL_FIND_CLOSE;
 
 
-typedef struct
-{
-  OFC_INT empty ;
-} FILE_CALL_FLUSH_BUFFERS ;
+typedef struct {
+    OFC_INT empty;
+} FILE_CALL_FLUSH_BUFFERS;
 
 /* lpFileInformation is pushed */
-typedef struct
-{
-  OFC_FILE_INFO_BY_HANDLE_CLASS FileInformationClass ;
-  OFC_DWORD dwBufferSize ;
-} FILE_CALL_GET_FILEEX ;
+typedef struct {
+    OFC_FILE_INFO_BY_HANDLE_CLASS FileInformationClass;
+    OFC_DWORD dwBufferSize;
+} FILE_CALL_GET_FILEEX;
 
 /* lpFileInformation is pushed */
-typedef struct
-{
-  OFC_FILE_INFO_BY_HANDLE_TYPE FileInformationType ;
-  OFC_DWORD FileInformationClass ;
-  OFC_DWORD dwBufferSize ;
-} FILE_CALL_QUERY_INFO ;
+typedef struct {
+    OFC_FILE_INFO_BY_HANDLE_TYPE FileInformationType;
+    OFC_DWORD FileInformationClass;
+    OFC_DWORD dwBufferSize;
+} FILE_CALL_QUERY_INFO;
 
 /* new file name is pushed for move */
 
-typedef struct
-{
-  OFC_OFFT offBuffer ;
-  OFC_DWORD nNumberOfBytesToRead ;
-  OFC_DWORD nNumberOfBytesRead ;
-  OFC_HANDLE msgqOverlapped ;
-  /*
-   * These are added to help the CIFS write call.  Others that call write
-   * should set distance to move to 0 and move method to FILE_CURRENT.
-   */
-  OFC_LONG lDistanceToMove ;
-  OFC_LONG lDistanceToMoveHigh ;
-  OFC_DWORD dwMoveMethod ;
-  OFC_DWORD nLowOffset ;
-  OFC_DWORD nHighOffset ;
-} FILE_CALL_READ ;
+typedef struct {
+    OFC_OFFT offBuffer;
+    OFC_DWORD nNumberOfBytesToRead;
+    OFC_DWORD nNumberOfBytesRead;
+    OFC_HANDLE msgqOverlapped;
+    /*
+     * These are added to help the CIFS write call.  Others that call write
+     * should set distance to move to 0 and move method to FILE_CURRENT.
+     */
+    OFC_LONG lDistanceToMove;
+    OFC_LONG lDistanceToMoveHigh;
+    OFC_DWORD dwMoveMethod;
+    OFC_DWORD nLowOffset;
+    OFC_DWORD nHighOffset;
+} FILE_CALL_READ;
 
-typedef struct
-{
-  OFC_OFFT offBuffer ;
-  OFC_DWORD nNumberOfBytesToWrite ;
-  OFC_DWORD nNumberOfBytesWritten ;
-  OFC_HANDLE msgqOverlapped ;
-  /*
-   * These are added to help the CIFS write call.  Others that call write
-   * should set distance to move to 0 and move method to FILE_CURRENT.
-   */
-  OFC_LONG lDistanceToMove ;
-  OFC_LONG lDistanceToMoveHigh ;
-  OFC_DWORD dwMoveMethod ;
-  OFC_DWORD nLowOffset ;
-  OFC_DWORD nHighOffset ;
-} FILE_CALL_WRITE ;
+typedef struct {
+    OFC_OFFT offBuffer;
+    OFC_DWORD nNumberOfBytesToWrite;
+    OFC_DWORD nNumberOfBytesWritten;
+    OFC_HANDLE msgqOverlapped;
+    /*
+     * These are added to help the CIFS write call.  Others that call write
+     * should set distance to move to 0 and move method to FILE_CURRENT.
+     */
+    OFC_LONG lDistanceToMove;
+    OFC_LONG lDistanceToMoveHigh;
+    OFC_DWORD dwMoveMethod;
+    OFC_DWORD nLowOffset;
+    OFC_DWORD nHighOffset;
+} FILE_CALL_WRITE;
 
-typedef struct
-{
-  OFC_INT empty ;
-} FILE_CALL_SET_EOF ;
+typedef struct {
+    OFC_INT empty;
+} FILE_CALL_SET_EOF;
 
 /* lpFileInformation is pushed */
-typedef struct
-{
-  OFC_FILE_INFO_BY_HANDLE_CLASS FileInformationClass ;
-  OFC_DWORD dwBufferSize ;
-} FILE_CALL_SET_FILEEX ;
+typedef struct {
+    OFC_FILE_INFO_BY_HANDLE_CLASS FileInformationClass;
+    OFC_DWORD dwBufferSize;
+} FILE_CALL_SET_FILEEX;
 
 /* lpFileInformation is pushed */
-typedef struct
-{
-  OFC_FILE_INFO_BY_HANDLE_CLASS FileInformationClass ;
-  OFC_DWORD dwBufferSize ;
-} FILE_CALL_SET_HFILEEX ;
+typedef struct {
+    OFC_FILE_INFO_BY_HANDLE_CLASS FileInformationClass;
+    OFC_DWORD dwBufferSize;
+} FILE_CALL_SET_HFILEEX;
 
-typedef struct
-{
-  OFC_LONG lDistanceToMove ;
-  OFC_LONG lDistanceToMoveHigh ;
-  OFC_DWORD dwMoveMethod ;
-  OFC_DWORD dwPosition ;
-} FILE_CALL_SET_FILE_POINTER ;
+typedef struct {
+    OFC_LONG lDistanceToMove;
+    OFC_LONG lDistanceToMoveHigh;
+    OFC_DWORD dwMoveMethod;
+    OFC_DWORD dwPosition;
+} FILE_CALL_SET_FILE_POINTER;
 
-typedef struct
-{
-  OFC_DWORD nInBufferSize ;
-  OFC_DWORD nOutBufferSize ;
-  OFC_DWORD nBytesRead ;
-  OFC_HANDLE msgqOverlapped ;
-} FILE_CALL_TRANSACT2_NAMED_PIPE ;
+typedef struct {
+    OFC_DWORD nInBufferSize;
+    OFC_DWORD nOutBufferSize;
+    OFC_DWORD nBytesRead;
+    OFC_HANDLE msgqOverlapped;
+} FILE_CALL_TRANSACT2_NAMED_PIPE;
 
-typedef struct
-{
-  OFC_DWORD dwIoControlCode ;
-  OFC_DWORD nInBufferSize ;
-  OFC_DWORD nOutBufferSize ;
-  OFC_DWORD nBytesReturned ;
-  OFC_HANDLE msgqOverlapped ;
-} FILE_CALL_DEVICE_IO_CONTROL ;
+typedef struct {
+    OFC_DWORD dwIoControlCode;
+    OFC_DWORD nInBufferSize;
+    OFC_DWORD nOutBufferSize;
+    OFC_DWORD nBytesReturned;
+    OFC_HANDLE msgqOverlapped;
+} FILE_CALL_DEVICE_IO_CONTROL;
 
-typedef struct
-{
-  OFC_DWORD nInParamSize ;
-  OFC_DWORD nInDataSize ;
-  OFC_DWORD nOutParamSize ;
-  OFC_DWORD nOutParamRead ;
-  OFC_DWORD nOutDataSize ;
-  OFC_DWORD nOutDataRead ;
-} FILE_CALL_TRANSACT_LANMAN ;
+typedef struct {
+    OFC_DWORD nInParamSize;
+    OFC_DWORD nInDataSize;
+    OFC_DWORD nOutParamSize;
+    OFC_DWORD nOutParamRead;
+    OFC_DWORD nOutDataSize;
+    OFC_DWORD nOutDataRead;
+} FILE_CALL_TRANSACT_LANMAN;
 
 /* volume name buffer is pushed */
-typedef struct
-{
-  OFC_DWORD dwSectorsPerCluster ;
-  OFC_DWORD dwBytesPerSector ;
-  OFC_DWORD dwNumberOfFreeClusters ;
-  OFC_DWORD dwTotalNumberOfClusters ;
-  OFC_DWORD nVolumeNameSize ;
-  OFC_DWORD dwVolumeSerialNumber ;
-  OFC_DWORD dwMaximumComponentLength ;
-  OFC_DWORD dwFileSystemFlags ;
-  OFC_DWORD nFileSystemNameSize ;
-} FILE_CALL_GET_VOLUME_INFO ;
+typedef struct {
+    OFC_DWORD dwSectorsPerCluster;
+    OFC_DWORD dwBytesPerSector;
+    OFC_DWORD dwNumberOfFreeClusters;
+    OFC_DWORD dwTotalNumberOfClusters;
+    OFC_DWORD nVolumeNameSize;
+    OFC_DWORD dwVolumeSerialNumber;
+    OFC_DWORD dwMaximumComponentLength;
+    OFC_DWORD dwFileSystemFlags;
+    OFC_DWORD nFileSystemNameSize;
+} FILE_CALL_GET_VOLUME_INFO;
 
-typedef struct
-{
-  OFC_UINT32 offset_high ;
-  OFC_UINT32 offset_low ;
-  OFC_UINT32 length_high ;
-  OFC_UINT32 length_low ;
-} FILE_CALL_LOCK_RANGE ;
+typedef struct {
+    OFC_UINT32 offset_high;
+    OFC_UINT32 offset_low;
+    OFC_UINT32 length_high;
+    OFC_UINT32 length_low;
+} FILE_CALL_LOCK_RANGE;
 
-typedef enum
-  {
+typedef enum {
     FileCallLockLevelShared,
     FileCallLockLevelExclusive
-  } FILE_CALL_LOCK_LEVEL ;
+} FILE_CALL_LOCK_LEVEL;
 
 /* ranges are pushed */
-typedef struct
-{
-  FILE_CALL_LOCK_LEVEL lock_level ;
-  OFC_BOOL change_level ;
-  OFC_UINT16 num_unlocks ;
-  OFC_UINT16 num_locks ;
-} FILE_CALL_LOCK ;
+typedef struct {
+    FILE_CALL_LOCK_LEVEL lock_level;
+    OFC_BOOL change_level;
+    OFC_UINT16 num_unlocks;
+    OFC_UINT16 num_locks;
+} FILE_CALL_LOCK;
 
-typedef struct
-{
-  OFC_INT empty ;
-} FILE_CALL_DISMOUNT ;
+typedef struct {
+    OFC_INT empty;
+} FILE_CALL_DISMOUNT;
 
 /* file name is pushed */
-typedef struct
-{
-  OFC_BOOL status ;
-  OFC_DWORD dwLastError ;
-  OFC_HANDLE hFile ;
-  OFC_MSTIME stamp ;
-  union 
-  {
-    FILE_CALL_CREATE create ;
-    FILE_CALL_CLOSE close ;
-    FILE_CALL_DELETE del ;
-    FILE_CALL_FIND find ;
-    FILE_CALL_FIND_CLOSE find_close ;
-    FILE_CALL_FLUSH_BUFFERS flush_buffers ;
-    FILE_CALL_GET_FILEEX get_fileex ;
-    FILE_CALL_QUERY_INFO query_info ;
-    FILE_CALL_READ read ;
-    FILE_CALL_WRITE write ;
-    FILE_CALL_SET_EOF set_eof ;
-    FILE_CALL_SET_FILEEX set_fileex ;
-    FILE_CALL_SET_HFILEEX set_hfileex ;
-    FILE_CALL_SET_FILE_POINTER set_file_pointer ;
-    FILE_CALL_TRANSACT2_NAMED_PIPE transact2_named_pipe ;
-    FILE_CALL_TRANSACT_LANMAN transact_lanman ;
-    FILE_CALL_GET_VOLUME_INFO get_volume_info ;
-    FILE_CALL_REMOVE_DIR remove_dir ;
-    FILE_CALL_LOCK lock ;
-    FILE_NOTIFY_COMPLETE complete ;
-    FILE_CALL_DISMOUNT dismount ;
-    FILE_CALL_DEVICE_IO_CONTROL device_io_control ;
-    FILE_CALL_QUERY_DIRECTORY query_directory ;
-  } u ;
-} FILE_CALL ;
+typedef struct {
+    OFC_BOOL status;
+    OFC_DWORD dwLastError;
+    OFC_HANDLE hFile;
+    OFC_MSTIME stamp;
+    union {
+        FILE_CALL_CREATE create;
+        FILE_CALL_CLOSE close;
+        FILE_CALL_DELETE del;
+        FILE_CALL_FIND find;
+        FILE_CALL_FIND_CLOSE find_close;
+        FILE_CALL_FLUSH_BUFFERS flush_buffers;
+        FILE_CALL_GET_FILEEX get_fileex;
+        FILE_CALL_QUERY_INFO query_info;
+        FILE_CALL_READ read;
+        FILE_CALL_WRITE write;
+        FILE_CALL_SET_EOF set_eof;
+        FILE_CALL_SET_FILEEX set_fileex;
+        FILE_CALL_SET_HFILEEX set_hfileex;
+        FILE_CALL_SET_FILE_POINTER set_file_pointer;
+        FILE_CALL_TRANSACT2_NAMED_PIPE transact2_named_pipe;
+        FILE_CALL_TRANSACT_LANMAN transact_lanman;
+        FILE_CALL_GET_VOLUME_INFO get_volume_info;
+        FILE_CALL_REMOVE_DIR remove_dir;
+        FILE_CALL_LOCK lock;
+        FILE_NOTIFY_COMPLETE complete;
+        FILE_CALL_DISMOUNT dismount;
+        FILE_CALL_DEVICE_IO_CONTROL device_io_control;
+        FILE_CALL_QUERY_DIRECTORY query_directory;
+    } u;
+} FILE_CALL;
 
 /**
  * File System Global Last Error
  */
-extern OFC_DWORD OfcLastError ;
+extern OFC_DWORD OfcLastError;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  /**
-   * Initialize the Open File Redirector
-   *
-   * This should only be called by the Framework Init Layer
-   */  
-  OFC_CORE_LIB OFC_VOID
-  OfcFileInit (OFC_VOID) ;
-  OFC_CORE_LIB OFC_VOID
-  OfcFileDestroy (OFC_VOID);
-  /**
-   * Close A File Handle
-   *
-   * Use this call to release a file handle obtained from the Create call
-   *
-   * \param hObject
-   * The handle to close
-   *
-   * \returns
-   * OFC_TRUE if the function succeeded, OFC_FALSE if failure
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcCloseHandle (OFC_HANDLE hObject) ;
-  /**
-   * Create or Open a File
-   *
-   * Use this call to obtain a file handle for a new or existing file
-   *
-   * \param lpFileName
-   * The name of the object to be crated or opened.  
-   *
-   * \param dwDesiredAccess
-   * The access to the object, which can be read, write, or both.
-   *
-   * \param dwShareMode
-   * The sharing mode of an object which can be read, write, both or none.
-   *
-   * \param lpSecurityAttributes
-   * This parameter is ignored and should be NULL.
-   *
-   * \param dwCreationDisposition
-   *  An action to take on files that exist or do not exist.
-   *
-   * \param dwFlagsAndAttributes
-   * The file attributes and flag.  The flags used by Win32 are accepted.
-   * 
-   * \param hTemplateFile
-   * This parameter is ignored and should be OFC_HANDLE_NULL
-   *
-   * \returns
-   * If the function fails, the return valid is OFC_INVALID_HANDLE_VALUE
-   * If it succeeds, it will return a file handle.
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  OfcCreateFileW (OFC_LPCTSTR lpFileName,
-                  OFC_DWORD dwDesiredAccess,
-                  OFC_DWORD dwShareMode,
-                  OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-                  OFC_DWORD dwCreationDisposition,
-                  OFC_DWORD dwFlagsAndAttributes,
-                  OFC_HANDLE hTemplateFile) ;
-  OFC_CORE_LIB OFC_HANDLE
-  OfcCreateFileA (OFC_LPCSTR lpFileName,
-                  OFC_DWORD dwDesiredAccess,
-                  OFC_DWORD dwShareMode,
-                  OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-                  OFC_DWORD dwCreationDisposition,
-                  OFC_DWORD dwFlagsAndAttributes,
-                  OFC_HANDLE hTemplateFile) ;
-  /**
-   * Create a directory
-   *
-   * \param lpPathName
-   * Path to the directory to create
-   *
-   * \param lpSecurityAttr
-   * Security Attributes for the directory
-   * 
-   * \returns 
-   * OFC_TRUE if success, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcCreateDirectoryW (OFC_LPCTSTR lpPathName,
-                       OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcCreateDirectoryA (OFC_LPCSTR lpPathName,
-                       OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr) ;
-  /**
-   * Deletes an existing file
-   *
-   * \param lpFileName
-   * The name of the file in UNC or SMB URL format
-   *
-   * \returns
-   * If success, returns OFC_TRUE, if failure returns OFC_FALSE
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcDeleteFileW(OFC_LPCTSTR lpFileName) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcDeleteFileA(OFC_LPCSTR lpFileName) ;
-  /**
-   * Deletes a directory
-   *
-   * \param lpPathName
-   * The name of the file in UNC or SMB URL format
-   *
-   * \returns
-   * If success, returns OFC_TRUE, if failure returns OFC_FALSE
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcRemoveDirectoryW(OFC_LPCTSTR lpPathName) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcRemoveDirectoryA(OFC_LPCSTR lpPathName) ;
-  /**
-   * Searches a director for a file or subdirectory that matches the name
-   * or pattern.
-   *
-   * \param lpFileName
-   * The file name or pattern.  The file name can contain '?' characters which
-   * will specified a wildcard for that particular character, or '*' which 
-   * specifies a wildcard for all characters up to the next text pattern or
-   * the next directory level.  For instance File*me would match FileName and
-   * FileGnome.  Direct* would match Direct, Directory, DirectDeposit
-   *
-   * \param lpFindFileData
-   * A pointer to the OFC_WIN32_FIND_DATA structure.
-   *
-   * \param more
-   * Pointer to where to return more indication.  OFC_TRUE says more files are
-   * available.  OFC_FALSE says this is the last one
-   *
-   * \returns
-   * If the function succeeds, it will return a handle that can be used
-   * in subsequent OfcFindNextFile or OfcFindClose call.
-   * If the function failed, it will return OFC_INVALID_HANDLE_VALUE.
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  OfcFindFirstFileW (OFC_LPCTSTR lpFileName,
-                     OFC_LPWIN32_FIND_DATAW lpFindFileData,
-                     OFC_BOOL *more) ;
-  OFC_CORE_LIB OFC_HANDLE
-  OfcFindFirstFileA (OFC_LPCSTR lpFileName,
-                     OFC_LPWIN32_FIND_DATAA lpFindFileData,
-                     OFC_BOOL *more) ;
-  /**
-   * Continues a search from a previous call to OfcFindFirstFile
-   *
-   * \param hFindFile
-   * The search handle returned from OfcFindFirstFile
-   *
-   * \param lpFindFileData
-   * A pointer to the OFC_WIN32_FIND_DATA structure.  See
-   * http://msdn2.microsoft.com/en-us/library/aa365247.aspx
-   *
-   * \param more
-   * Pointer to where to return more indication.  OFC_TRUE says more files are
-   * available.  OFC_FALSE says this is the last one
-   *
-   * \returns
-   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcFindNextFileW (OFC_HANDLE hFindFile,
-                    OFC_LPWIN32_FIND_DATAW lpFindFileData,
-                    OFC_BOOL *more) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcFindNextFileA (OFC_HANDLE hFindFile,
-                    OFC_LPWIN32_FIND_DATAA lpFindFileData,
-                    OFC_BOOL *more) ;
-  /**
-   * Closes a file search handle opened by a call to OfcFindFirstFile
-   *
-   * \param hFindFile
-   * The file search handle
-   *
-   * \returns
-   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcFindClose (OFC_HANDLE hFindFile) ;
-  /**
-   * Write all buffered data to the file and clear any buffer cache
-   *
-   * \param hFile
-   * A handle to the open file.
-   *
-   * \returns
-   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcFlushFileBuffers (OFC_HANDLE hFile) ;
-  /**
-   * Retrieves Attributes for a specified file or directory
-   *
-   * \param lpFileName
-   * The name of the file or directory
-   *
-   * \param fInfoLevelId
-   * The information class to retrieve.  Must be OfcGetFileExInfoStandard
-   *
-   * \param lpFileInformation
-   * A pointer to the buffer that received the attribute info.  Must be
-   * a pointer to a OFC_WIN32_FILE_ATTRIBUTE_DATA structure
-   * see http://msdn2.microsoft.com/en-us/library/aa365739.aspx
-   *
-   * \returns
-   * OFC_TRUE if the function succeeded, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetFileAttributesExW (OFC_LPCTSTR lpFileName,
-                           OFC_GET_FILEEX_INFO_LEVELS fInfoLevelId,
-                           OFC_LPVOID lpFileInformation) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetFileAttributesExA (OFC_LPCSTR lpFileName,
-                           OFC_GET_FILEEX_INFO_LEVELS fInfoLevelId,
-                           OFC_LPVOID lpFileInformation) ;
-  /**
-   * Retrieves Attribute Infor for a file by File Handle
-   *
-   * \param hFile
-   * Handle to the file
-   *
-   * \param FileInformationClass
-   * Value that specifies the type of info to return
-   *
-   * \param lpFileInformation
-   * Pointer to buffer that receives the requested file informaiton
-   * OFC_FILE_BASIC_INFO
-   * OFC_FILE_STANDARD_INFO
-   * OFC_FILE_NAME_INFO
-   * OFC_FILE_STREAM_INFO
-   * OFC_FILE_COMPRESSION_INFO
-   * OFC_FILE_ATTRIBUTE_TAG_INFO
-   * OFC_FILE_ID_BOTH_DIR_INFO
-   *
-   * \param dwBufferSize
-   * Size of the lpFileInformation buffer
-   *
-   * \returns
-   * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetFileInformationByHandleEx (OFC_HANDLE hFile,
-                                   OFC_FILE_INFO_BY_HANDLE_CLASS
-				    FileInformationClass,
-                                   OFC_LPVOID lpFileInformation,
-                                   OFC_DWORD dwBufferSize) ;
+/**
+ * Initialize the Open File Redirector
+ *
+ * This should only be called by the Framework Init Layer
+ */
+OFC_CORE_LIB OFC_VOID
+OfcFileInit(OFC_VOID);
 
-  /**
-   * Moves an existing file or directory
-   *
-   * \param lpExistingFileName
-   * The current name of the file or directory
-   *
-   * \param lpNewFileName
-   * The new name for the file or directory
-   *
-   * \returns
-   * OFC_TRUE if success, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcMoveFileW (OFC_LPCTSTR lpExistingFileName,
-                OFC_LPCTSTR lpNewFileName) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcMoveFileA (OFC_LPCSTR lpExistingFileName,
-                OFC_LPCSTR lpNewFileName) ;
-  /**
-   * Reads data from a file
-   *
-   * \param hFile
-   * A Handle to the file to be read
-   *
-   * \param lpBuffer
-   * A pointer to the buffer that receives the data read from a file
-   *
-   * \param nNumberOfBytesToRead
-   * The Maximum numer of bytes to be read
-   *
-   * \param lpNumberOfBytesRead
-   * A pointer to a variable to receive the number of bytes read
-   *
-   * \param hOverlapped
-   * Handle to the overlapped structure
-   *
-   * \returns
-   * OFC_FALSE if the function fails, OFC_TRUE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcReadFile (OFC_HANDLE hFile,
-               OFC_LPVOID lpBuffer,
-               OFC_DWORD nNumberOfBytesToRead,
-               OFC_LPDWORD lpNumberOfBytesRead,
-               OFC_HANDLE hOverlapped) ;
-  /**
-   * Create an Overlapped I/O Structure for the desired platform
-   *
-   * This is used by Read and Write calls to schedule overlapped I/O.
-   * The implementation of Overlapped I/O is platform specific so the
-   * context for an overlapped I/O is also platform specific
-   *
-   * \returns
-   * Handle to the Overlapped I/O Context
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  OfcCreateOverlapped (OFC_HANDLE hFile) ;
-  /**
-   * Destroy an Overlapped I/O context
-   *
-   * \param hFile
-   * File handle that overlapped context handle is for
-   * 
-   * \param hOverlapped
-   * The overlapped context to destroy
-   */
-  OFC_CORE_LIB OFC_VOID
-  OfcDestroyOverlapped (OFC_HANDLE hFile, OFC_HANDLE hOverlapped) ;
-  /**
-   * Set the offset at which an overlapped I/O should occur
-   *
-   * Since Overlapped I/O is platform specific, this abstraction
-   * is provided to communicate to the File handler the file offset
-   * to perform the I/O at
-   *
-   * \param hFile
-   * File to set the offset for
-   *
-   * \param hOverlapped
-   * The handle to the overlapped context
-   *
-   * \param offset
-   * The file offset to set
-   */
-  OFC_CORE_LIB OFC_VOID
-  OfcSetOverlappedOffset (OFC_HANDLE hFile, OFC_HANDLE hOverlapped,
-                          OFC_OFFT offset) ;
-  /**
-   * Retrieves the results of an overlapped operation on the specified file
-   *
-   * \param hFile
-   * A handle to the file
-   *
-   * \param hOverlapped
-   * Handle to the overlapped structure
-   *
-   * \param lpNumberOfBytesTransferred
-   * Number of bytes read or written during the operation
-   *
-   * \param bWait
-   * Whether this function should block until the operation completes.  If this
-   * is false, and the operation is not complete, the call returns false.
-   *
-   * \returns
-   * OFC_TRUE if the function succeeds, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetOverlappedResult (OFC_HANDLE hFile,
-                          OFC_HANDLE hOverlapped,
-                          OFC_LPDWORD lpNumberOfBytesTransferred,
-                          OFC_BOOL bWait) ;
-  /**
-   * Sets the physical file size for the specified file to the current position
-   *
-   * \param hFile
-   * Handle to the file
-   *
-   * \returns 
-   * OFC_TRUE if success, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcSetEndOfFile (OFC_HANDLE hFile) ;
-  /**
-   * Sets the attributes for a file or directory
-   *
-   * \param lpFileName 
-   * Name of the file
-   *
-   * \param dwFileAttributes
-   * The file attributes to set for the file
-   *
-   * \returns
-   * OFC_TRUE if success, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcSetFileAttributesW (OFC_LPCTSTR lpFileName,
-                         OFC_DWORD dwFileAttributes) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcSetFileAttributesA (OFC_LPCSTR lpFileName,
-                         OFC_DWORD dwFileAttributes) ;
-  /**
-   * Set the file information for the specified file
-   *
-   * \param hFile
-   * Handle to the file
-   *
-   * \param FileInformationClass
-   * An enumeration that specifies the type of information to be changed
-   *
-   * \param lpFileInformation
-   * A pointer to the buffer that contains the information to be set
-   * OFC_FILE_BASIC_INFO, OFC_FILE_RENAME_INFO, OFC_FILE_DISPOSITION_INFO,
-   * OFC_FILE_ALLOCATION_INFO, OFC_FILE_END_OF_FILE_INFO,
-   * OFC_FILE_IO_PRIORITY_HINT_INFO
-   *
-   * \param dwBufferSize
-   * The size of the lpFileInformation
-   *
-   * \returns
-   * OFC_TRUE if success, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcSetFileInformationByHandle (OFC_HANDLE hFile,
-                                 OFC_FILE_INFO_BY_HANDLE_CLASS
-				  FileInformationClass,
-                                 OFC_LPVOID lpFileInformation,
-                                 OFC_DWORD dwBufferSize) ;
-  /**
-   * Moves the file pointer of the specified file
-   *
-   * \param hFile
-   * File Handle
-   * 
-   * \param lDistanceToMove
-   * The lower order 32 bits of a signed value that specifies the number
-   * of bytes to move relative to the move method
-   *
-   * \param lpDistanceToMoveHigh
-   *  pointer to the high order 32 bits.  This may be NULL.  If not NULL
-   * it also returns the high order 32 bits of the resulting pointer.
-   * (the function's return value returns the low order 32 bits)
-   *
-   * \param dwMoveMethod
-   * The starting point for the file pointer move
-   * (FILE_BEGIN, FILE_CURRENT, FILE_END)
-   *
-   * \returns
-   * OFC_INVALID_SET_FILE_POINTER if Failed, low order file pointer
-   * if success.  Since OFC_INVALID_SET_FILE_POINTER
-   * may also be interpreted as a valid low order file pointer, care should
-   * be taken not to get false negatives.
-   */
-  OFC_CORE_LIB OFC_DWORD
-  OfcSetFilePointer (OFC_HANDLE hFile, OFC_LONG lDistanceToMove,
-                     OFC_PLONG lpDistanceToMoveHigh,
-                     OFC_DWORD dwMoveMethod) ;
+OFC_CORE_LIB OFC_VOID
+OfcFileDestroy(OFC_VOID);
+/**
+ * Close A File Handle
+ *
+ * Use this call to release a file handle obtained from the Create call
+ *
+ * \param hObject
+ * The handle to close
+ *
+ * \returns
+ * OFC_TRUE if the function succeeded, OFC_FALSE if failure
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcCloseHandle(OFC_HANDLE hObject);
+/**
+ * Create or Open a File
+ *
+ * Use this call to obtain a file handle for a new or existing file
+ *
+ * \param lpFileName
+ * The name of the object to be crated or opened.
+ *
+ * \param dwDesiredAccess
+ * The access to the object, which can be read, write, or both.
+ *
+ * \param dwShareMode
+ * The sharing mode of an object which can be read, write, both or none.
+ *
+ * \param lpSecurityAttributes
+ * This parameter is ignored and should be NULL.
+ *
+ * \param dwCreationDisposition
+ *  An action to take on files that exist or do not exist.
+ *
+ * \param dwFlagsAndAttributes
+ * The file attributes and flag.  The flags used by Win32 are accepted.
+ *
+ * \param hTemplateFile
+ * This parameter is ignored and should be OFC_HANDLE_NULL
+ *
+ * \returns
+ * If the function fails, the return valid is OFC_INVALID_HANDLE_VALUE
+ * If it succeeds, it will return a file handle.
+ */
+OFC_CORE_LIB OFC_HANDLE
+OfcCreateFileW(OFC_LPCTSTR lpFileName,
+               OFC_DWORD dwDesiredAccess,
+               OFC_DWORD dwShareMode,
+               OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+               OFC_DWORD dwCreationDisposition,
+               OFC_DWORD dwFlagsAndAttributes,
+               OFC_HANDLE hTemplateFile);
 
-  /**
-   * Writes Data to the specified file
-   *
-   * \param hFile
-   * Handle to the file
-   *
-   * \param lpBuffer
-   * Pointer to buffer containing data to write
-   *
-   * \param nNumberOfBytesToWrite
-   * The number of bytes to write
-   *
-   * \param lpNumberOfBytesWritten
-   * A pointer to a long to contain number of bytes written
-   *
-   * \param hOverlapped
-   * Handle to the overlapped structure for asynchronous I/O
-   *
-   * \returns
-   * OFC_TRUE if success, OFC_FALSE if failed
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcWriteFile (OFC_HANDLE hFile,
-                OFC_LPCVOID lpBuffer,
-                OFC_DWORD nNumberOfBytesToWrite,
-                OFC_LPDWORD lpNumberOfBytesWritten,
-                OFC_HANDLE hOverlapped) ;
-  /**
-   * Perform a transaction on a named pipe
-   *
-   * \param hFile
-   * File handle of named pipe
-   *
-   * \param lpInBuffer
-   * Pointer to the buffer to send to the pipe
-   *
-   * \param nInBufferSize
-   * Size of the input buffer
-   * 
-   * \param lpOutBuffer
-   * Pointer to the buffer to receive the response
-   *
-   * \param nOutBufferSize
-   * Size of the output buffer
-   * 
-   * \param lpBytesRead
-   * Pointer to where to return the number of bytes read
-   *
-   * \param hOverlapped
-   * Handle to the overlapped context if this is asynchronous
-   *
-   * \returns
-   * OFC_TRUE if success, OFC_FALSE if failure.  On failure, GetLastError
-   * will return the error code
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcTransactNamedPipe (OFC_HANDLE hFile,
-                        OFC_LPVOID lpInBuffer,
-                        OFC_DWORD nInBufferSize,
-                        OFC_LPVOID lpOutBuffer,
-                        OFC_DWORD nOutBufferSize,
-                        OFC_LPDWORD lpBytesRead,
-                        OFC_HANDLE hOverlapped) ;
-  /**
-   * Get the last file error that occured in this file handler for
-   * this thread
-   *
-   * \returns
-   * Last File Error
-   *
-   * NOTE: Use OfcGetLastError instead.
-   */
-  OFC_CORE_LIB OFC_UINT32
-  OfcGetLastFileError (OFC_HANDLE hHandle) ;
-  /**
-   * Get the last error encountered by the File Component of 
-   * Open Files
-   *
-   * \returns
-   * Error Code
-   */
-  OFC_CORE_LIB OFC_DWORD
-  OfcGetLastError (OFC_VOID) ;
+OFC_CORE_LIB OFC_HANDLE
+OfcCreateFileA(OFC_LPCSTR lpFileName,
+               OFC_DWORD dwDesiredAccess,
+               OFC_DWORD dwShareMode,
+               OFC_LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+               OFC_DWORD dwCreationDisposition,
+               OFC_DWORD dwFlagsAndAttributes,
+               OFC_HANDLE hTemplateFile);
+/**
+ * Create a directory
+ *
+ * \param lpPathName
+ * Path to the directory to create
+ *
+ * \param lpSecurityAttr
+ * Security Attributes for the directory
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcCreateDirectoryW(OFC_LPCTSTR lpPathName,
+                    OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr);
 
-  OFC_CORE_LIB const OFC_CHAR *OfcGetErrorString(OFC_DWORD dwerr) ;
-  /**
-   * Get the last file error that occured in the file handler for a 
-   * specified file in this thread's context
-   *
-   * \param lpFileName
-   * Name of the file to map to a file handler
-   *
-   * \returns
-   * Last File Error
-   *
-   * NOTE: Use OfcGetLastError instead.
-   */
-  OFC_CORE_LIB OFC_UINT32
-  OfcGetLastFileNameErrorW (OFC_LPCTSTR lpFileName) ;
-  OFC_CORE_LIB OFC_UINT32
-  OfcGetLastFileNameErrorA (OFC_LPCSTR lpFileName) ;
-  /**
-   * Get the amount of free space for the disk 
-   *
-   * \param lpRootPathName
-   * The path name to the disk or share
-   * 
-   * \param lpSectorsPerCluster
-   * Pointer to where to return the number of sectors per cluster for the
-   * volume
-   *
-   * \param lpBytesPerSector
-   * Pointer to where to return the number of bytes per sector for the
-   * volume
-   *
-   * \param lpNumberOfFreeClusters
-   * Pointer to where to return the number of free clusters
-   *
-   * \param lpTotalNumberOfClusters
-   * Pointer to where to return the total number of clusters
-   *
-   * \returns
-   * OFC_TRUE if success, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetDiskFreeSpaceW (OFC_LPCTSTR lpRootPathName,
-                        OFC_LPDWORD lpSectorsPerCluster,
-                        OFC_LPDWORD lpBytesPerSector,
-                        OFC_LPDWORD lpNumberOfFreeClusters,
-                        OFC_LPDWORD lpTotalNumberOfClusters) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetDiskFreeSpaceA (OFC_LPCSTR lpRootPathName,
-                        OFC_LPDWORD lpSectorsPerCluster,
-                        OFC_LPDWORD lpBytesPerSector,
-                        OFC_LPDWORD lpNumberOfFreeClusters,
-                        OFC_LPDWORD lpTotalNumberOfClusters) ;
-  /**
-   * Get Volume Information for the volume
-   *
-   * \param lpRootPathName
-   * Path to the volume or share
-   *
-   * \param lpVolumeNameBuffer
-   * Pointer to buffer where to store the Volume Name
-   *
-   * \param nVolumeNameSize
-   * Size of the Volume Name Buffer
-   *
-   * \param lpVolumeSerialNumber
-   * Pointer to where to store the volume serial number
-   * 
-   * \param lpMaximumComponentLength
-   * Pointer to where to store the max size of a file name path
-   *
-   * \param lpFileSystemFlags
-   * Pointer to where to store the file system flags
-   *
-   * \param lpFileSystemName
-   * Pointer to where to store the file system name (i.e. NTFS)
-   *
-   * \param nFileSystemName
-   * Size of the file system name buffer
-   *
-   * \returns
-   * OFC_TRUE if successful, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetVolumeInformationW (OFC_LPCTSTR lpRootPathName,
-                            OFC_LPTSTR lpVolumeNameBuffer,
-                            OFC_DWORD nVolumeNameSize,
-                            OFC_LPDWORD lpVolumeSerialNumber,
-                            OFC_LPDWORD lpMaximumComponentLength,
-                            OFC_LPDWORD lpFileSystemFlags,
-                            OFC_LPTSTR lpFileSystemName,
-                            OFC_DWORD nFileSystemName) ;
+OFC_CORE_LIB OFC_BOOL
+OfcCreateDirectoryA(OFC_LPCSTR lpPathName,
+                    OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr);
+/**
+ * Deletes an existing file
+ *
+ * \param lpFileName
+ * The name of the file in UNC or SMB URL format
+ *
+ * \returns
+ * If success, returns OFC_TRUE, if failure returns OFC_FALSE
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcDeleteFileW(OFC_LPCTSTR lpFileName);
 
-  OFC_CORE_LIB OFC_BOOL
-  OfcGetVolumeInformationA (OFC_LPCSTR lpRootPathName,
-                            OFC_LPSTR lpVolumeNameBuffer,
-                            OFC_DWORD nVolumeNameSize,
-                            OFC_LPDWORD lpVolumeSerialNumber,
-                            OFC_LPDWORD lpMaximumComponentLength,
-                            OFC_LPDWORD lpFileSystemFlags,
-                            OFC_LPSTR lpFileSystemName,
-                            OFC_DWORD nFileSystemName) ;
-  /**
-   * Return the type of file system that a file is on
-   *
-   * \param hHandle
-   * Handle to the file
-   *
-   * \returns
-   * The type of file system
-   */  
-  OFC_CORE_LIB OFC_FST_TYPE
-  OfcFileGetFSType (OFC_HANDLE hHandle) ;
-  /**
-   * An internal call to return the native file system handle
-   *
-   * \param hHandle
-   * Handle to the file
-   *
-   * \returns
-   * A handle to the lower file system specific file
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  OfcFileGetFSHandle (OFC_HANDLE hHandle) ;
-  /**
-   * Unlock a region in a file
-   * 
-   * \param hFile
-   * File Handle to unlock 
-   *
-   * \param length_low
-   * the low order 32 bits of the length of the region
-   *
-   * \param length_high
-   * the high order 32 bits of the length of the region
-   *
-   * \param hOverlapped
-   * The overlapped structure which specifies the offset
-   *
-   * \returns
-   * OFC_TRUE if successful, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcUnlockFileEx (OFC_HANDLE hFile,
-                   OFC_UINT32 length_low,
-                   OFC_UINT32 length_high,
-                   OFC_HANDLE hOverlapped) ;
-  /**
-   * Lock a region of a file
-   * 
-   * \param hFile
-   * Handle to file to unlock region in 
-   *
-   * \param flags
-   * Flags for lock
-   *
-   * \param length_low
-   * Low order 32 bits of length of region
-   *
-   * \param length_high
-   * High order 32 bits of length of region
-   *
-   * \param hOverlapped
-   * Handle to the overlapped structure
-   *
-   * \returns
-   * OFC_TRUE if successful, OFC_FALSE otherwise
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcLockFileEx (OFC_HANDLE hFile, OFC_DWORD flags,
-                 OFC_DWORD length_low, OFC_DWORD length_high,
-                 OFC_HANDLE hOverlapped) ;
-  /**
-   * Get the event handle of the overlapped event (deprecated)
-   *
-   * \param hOverlapped
-   * The overlapped event
-   *
-   * \returns
-   * The event handle
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  OfcFileGetOverlappedEvent (OFC_HANDLE hOverlapped) ;
-  /**
-   * Get the Message Queue of the overlapped event
-   *
-   * \param hOverlapped
-   * The overlapped event
-   *
-   * \returns
-   * The msgq handle
-   */
-  OFC_CORE_LIB OFC_HANDLE
-  OfcFileGetOverlappedWaitQ (OFC_HANDLE hOverlapped) ;
-  /**
-   * Dismount an SMB client connection
-   *
-   * This is a non-standard and optional API for those that wish to
-   * ensure that a client connection to a server is disconnected.
-   * Under normal operation, client connections are disconnected after
-   * idle for a period of time.  
-   *
-   * \param lpFileName
-   * A path that includes the server URL
-   *
-   * \returns
-   * Status
-   */
-  OFC_CORE_LIB OFC_BOOL
-  OfcDismountW (OFC_LPCTSTR lpFileName) ;
-  OFC_CORE_LIB OFC_BOOL
-  OfcDismountA (OFC_LPCSTR lpFileName) ;
-  /**
-   * Perform a Device IOCTL
-   *
-   * This is an internal API that is used for DFS resolution
-   */
-  OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl (OFC_HANDLE hFile,
-                                            OFC_DWORD dwIoControlCode,
-                                            OFC_LPVOID lpInBuffer,
-                                            OFC_DWORD nInBufferSize,
-                                            OFC_LPVOID lpOutBuffer,
-                                            OFC_DWORD nOutBufferSize,
-                                            OFC_LPDWORD lpBytesReturned,
-                                            OFC_HANDLE hOverlapped) ;
+OFC_CORE_LIB OFC_BOOL
+OfcDeleteFileA(OFC_LPCSTR lpFileName);
+/**
+ * Deletes a directory
+ *
+ * \param lpPathName
+ * The name of the file in UNC or SMB URL format
+ *
+ * \returns
+ * If success, returns OFC_TRUE, if failure returns OFC_FALSE
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcRemoveDirectoryW(OFC_LPCTSTR lpPathName);
+
+OFC_CORE_LIB OFC_BOOL
+OfcRemoveDirectoryA(OFC_LPCSTR lpPathName);
+/**
+ * Searches a director for a file or subdirectory that matches the name
+ * or pattern.
+ *
+ * \param lpFileName
+ * The file name or pattern.  The file name can contain '?' characters which
+ * will specified a wildcard for that particular character, or '*' which
+ * specifies a wildcard for all characters up to the next text pattern or
+ * the next directory level.  For instance File*me would match FileName and
+ * FileGnome.  Direct* would match Direct, Directory, DirectDeposit
+ *
+ * \param lpFindFileData
+ * A pointer to the OFC_WIN32_FIND_DATA structure.
+ *
+ * \param more
+ * Pointer to where to return more indication.  OFC_TRUE says more files are
+ * available.  OFC_FALSE says this is the last one
+ *
+ * \returns
+ * If the function succeeds, it will return a handle that can be used
+ * in subsequent OfcFindNextFile or OfcFindClose call.
+ * If the function failed, it will return OFC_INVALID_HANDLE_VALUE.
+ */
+OFC_CORE_LIB OFC_HANDLE
+OfcFindFirstFileW(OFC_LPCTSTR lpFileName,
+                  OFC_LPWIN32_FIND_DATAW lpFindFileData,
+                  OFC_BOOL *more);
+
+OFC_CORE_LIB OFC_HANDLE
+OfcFindFirstFileA(OFC_LPCSTR lpFileName,
+                  OFC_LPWIN32_FIND_DATAA lpFindFileData,
+                  OFC_BOOL *more);
+/**
+ * Continues a search from a previous call to OfcFindFirstFile
+ *
+ * \param hFindFile
+ * The search handle returned from OfcFindFirstFile
+ *
+ * \param lpFindFileData
+ * A pointer to the OFC_WIN32_FIND_DATA structure.  See
+ * http://msdn2.microsoft.com/en-us/library/aa365247.aspx
+ *
+ * \param more
+ * Pointer to where to return more indication.  OFC_TRUE says more files are
+ * available.  OFC_FALSE says this is the last one
+ *
+ * \returns
+ * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcFindNextFileW(OFC_HANDLE hFindFile,
+                 OFC_LPWIN32_FIND_DATAW lpFindFileData,
+                 OFC_BOOL *more);
+
+OFC_CORE_LIB OFC_BOOL
+OfcFindNextFileA(OFC_HANDLE hFindFile,
+                 OFC_LPWIN32_FIND_DATAA lpFindFileData,
+                 OFC_BOOL *more);
+/**
+ * Closes a file search handle opened by a call to OfcFindFirstFile
+ *
+ * \param hFindFile
+ * The file search handle
+ *
+ * \returns
+ * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcFindClose(OFC_HANDLE hFindFile);
+/**
+ * Write all buffered data to the file and clear any buffer cache
+ *
+ * \param hFile
+ * A handle to the open file.
+ *
+ * \returns
+ * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcFlushFileBuffers(OFC_HANDLE hFile);
+/**
+ * Retrieves Attributes for a specified file or directory
+ *
+ * \param lpFileName
+ * The name of the file or directory
+ *
+ * \param fInfoLevelId
+ * The information class to retrieve.  Must be OfcGetFileExInfoStandard
+ *
+ * \param lpFileInformation
+ * A pointer to the buffer that received the attribute info.  Must be
+ * a pointer to a OFC_WIN32_FILE_ATTRIBUTE_DATA structure
+ * see http://msdn2.microsoft.com/en-us/library/aa365739.aspx
+ *
+ * \returns
+ * OFC_TRUE if the function succeeded, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcGetFileAttributesExW(OFC_LPCTSTR lpFileName,
+                        OFC_GET_FILEEX_INFO_LEVELS fInfoLevelId,
+                        OFC_LPVOID lpFileInformation);
+
+OFC_CORE_LIB OFC_BOOL
+OfcGetFileAttributesExA(OFC_LPCSTR lpFileName,
+                        OFC_GET_FILEEX_INFO_LEVELS fInfoLevelId,
+                        OFC_LPVOID lpFileInformation);
+/**
+ * Retrieves Attribute Infor for a file by File Handle
+ *
+ * \param hFile
+ * Handle to the file
+ *
+ * \param FileInformationClass
+ * Value that specifies the type of info to return
+ *
+ * \param lpFileInformation
+ * Pointer to buffer that receives the requested file informaiton
+ * OFC_FILE_BASIC_INFO
+ * OFC_FILE_STANDARD_INFO
+ * OFC_FILE_NAME_INFO
+ * OFC_FILE_STREAM_INFO
+ * OFC_FILE_COMPRESSION_INFO
+ * OFC_FILE_ATTRIBUTE_TAG_INFO
+ * OFC_FILE_ID_BOTH_DIR_INFO
+ *
+ * \param dwBufferSize
+ * Size of the lpFileInformation buffer
+ *
+ * \returns
+ * OFC_TRUE if the call succeeded, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcGetFileInformationByHandleEx(OFC_HANDLE hFile,
+                                OFC_FILE_INFO_BY_HANDLE_CLASS
+                                FileInformationClass,
+                                OFC_LPVOID lpFileInformation,
+                                OFC_DWORD dwBufferSize);
+
+/**
+ * Moves an existing file or directory
+ *
+ * \param lpExistingFileName
+ * The current name of the file or directory
+ *
+ * \param lpNewFileName
+ * The new name for the file or directory
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcMoveFileW(OFC_LPCTSTR lpExistingFileName,
+             OFC_LPCTSTR lpNewFileName);
+
+OFC_CORE_LIB OFC_BOOL
+OfcMoveFileA(OFC_LPCSTR lpExistingFileName,
+             OFC_LPCSTR lpNewFileName);
+/**
+ * Reads data from a file
+ *
+ * \param hFile
+ * A Handle to the file to be read
+ *
+ * \param lpBuffer
+ * A pointer to the buffer that receives the data read from a file
+ *
+ * \param nNumberOfBytesToRead
+ * The Maximum numer of bytes to be read
+ *
+ * \param lpNumberOfBytesRead
+ * A pointer to a variable to receive the number of bytes read
+ *
+ * \param hOverlapped
+ * Handle to the overlapped structure
+ *
+ * \returns
+ * OFC_FALSE if the function fails, OFC_TRUE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcReadFile(OFC_HANDLE hFile,
+            OFC_LPVOID lpBuffer,
+            OFC_DWORD nNumberOfBytesToRead,
+            OFC_LPDWORD lpNumberOfBytesRead,
+            OFC_HANDLE hOverlapped);
+/**
+ * Create an Overlapped I/O Structure for the desired platform
+ *
+ * This is used by Read and Write calls to schedule overlapped I/O.
+ * The implementation of Overlapped I/O is platform specific so the
+ * context for an overlapped I/O is also platform specific
+ *
+ * \returns
+ * Handle to the Overlapped I/O Context
+ */
+OFC_CORE_LIB OFC_HANDLE
+OfcCreateOverlapped(OFC_HANDLE hFile);
+/**
+ * Destroy an Overlapped I/O context
+ *
+ * \param hFile
+ * File handle that overlapped context handle is for
+ *
+ * \param hOverlapped
+ * The overlapped context to destroy
+ */
+OFC_CORE_LIB OFC_VOID
+OfcDestroyOverlapped(OFC_HANDLE hFile, OFC_HANDLE hOverlapped);
+/**
+ * Set the offset at which an overlapped I/O should occur
+ *
+ * Since Overlapped I/O is platform specific, this abstraction
+ * is provided to communicate to the File handler the file offset
+ * to perform the I/O at
+ *
+ * \param hFile
+ * File to set the offset for
+ *
+ * \param hOverlapped
+ * The handle to the overlapped context
+ *
+ * \param offset
+ * The file offset to set
+ */
+OFC_CORE_LIB OFC_VOID
+OfcSetOverlappedOffset(OFC_HANDLE hFile, OFC_HANDLE hOverlapped,
+                       OFC_OFFT offset);
+/**
+ * Retrieves the results of an overlapped operation on the specified file
+ *
+ * \param hFile
+ * A handle to the file
+ *
+ * \param hOverlapped
+ * Handle to the overlapped structure
+ *
+ * \param lpNumberOfBytesTransferred
+ * Number of bytes read or written during the operation
+ *
+ * \param bWait
+ * Whether this function should block until the operation completes.  If this
+ * is false, and the operation is not complete, the call returns false.
+ *
+ * \returns
+ * OFC_TRUE if the function succeeds, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcGetOverlappedResult(OFC_HANDLE hFile,
+                       OFC_HANDLE hOverlapped,
+                       OFC_LPDWORD lpNumberOfBytesTransferred,
+                       OFC_BOOL bWait);
+/**
+ * Sets the physical file size for the specified file to the current position
+ *
+ * \param hFile
+ * Handle to the file
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcSetEndOfFile(OFC_HANDLE hFile);
+/**
+ * Sets the attributes for a file or directory
+ *
+ * \param lpFileName
+ * Name of the file
+ *
+ * \param dwFileAttributes
+ * The file attributes to set for the file
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcSetFileAttributesW(OFC_LPCTSTR lpFileName,
+                      OFC_DWORD dwFileAttributes);
+
+OFC_CORE_LIB OFC_BOOL
+OfcSetFileAttributesA(OFC_LPCSTR lpFileName,
+                      OFC_DWORD dwFileAttributes);
+/**
+ * Set the file information for the specified file
+ *
+ * \param hFile
+ * Handle to the file
+ *
+ * \param FileInformationClass
+ * An enumeration that specifies the type of information to be changed
+ *
+ * \param lpFileInformation
+ * A pointer to the buffer that contains the information to be set
+ * OFC_FILE_BASIC_INFO, OFC_FILE_RENAME_INFO, OFC_FILE_DISPOSITION_INFO,
+ * OFC_FILE_ALLOCATION_INFO, OFC_FILE_END_OF_FILE_INFO,
+ * OFC_FILE_IO_PRIORITY_HINT_INFO
+ *
+ * \param dwBufferSize
+ * The size of the lpFileInformation
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcSetFileInformationByHandle(OFC_HANDLE hFile,
+                              OFC_FILE_INFO_BY_HANDLE_CLASS
+                              FileInformationClass,
+                              OFC_LPVOID lpFileInformation,
+                              OFC_DWORD dwBufferSize);
+/**
+ * Moves the file pointer of the specified file
+ *
+ * \param hFile
+ * File Handle
+ *
+ * \param lDistanceToMove
+ * The lower order 32 bits of a signed value that specifies the number
+ * of bytes to move relative to the move method
+ *
+ * \param lpDistanceToMoveHigh
+ *  pointer to the high order 32 bits.  This may be NULL.  If not NULL
+ * it also returns the high order 32 bits of the resulting pointer.
+ * (the function's return value returns the low order 32 bits)
+ *
+ * \param dwMoveMethod
+ * The starting point for the file pointer move
+ * (FILE_BEGIN, FILE_CURRENT, FILE_END)
+ *
+ * \returns
+ * OFC_INVALID_SET_FILE_POINTER if Failed, low order file pointer
+ * if success.  Since OFC_INVALID_SET_FILE_POINTER
+ * may also be interpreted as a valid low order file pointer, care should
+ * be taken not to get false negatives.
+ */
+OFC_CORE_LIB OFC_DWORD
+OfcSetFilePointer(OFC_HANDLE hFile, OFC_LONG lDistanceToMove,
+                  OFC_PLONG lpDistanceToMoveHigh,
+                  OFC_DWORD dwMoveMethod);
+
+/**
+ * Writes Data to the specified file
+ *
+ * \param hFile
+ * Handle to the file
+ *
+ * \param lpBuffer
+ * Pointer to buffer containing data to write
+ *
+ * \param nNumberOfBytesToWrite
+ * The number of bytes to write
+ *
+ * \param lpNumberOfBytesWritten
+ * A pointer to a long to contain number of bytes written
+ *
+ * \param hOverlapped
+ * Handle to the overlapped structure for asynchronous I/O
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE if failed
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcWriteFile(OFC_HANDLE hFile,
+             OFC_LPCVOID lpBuffer,
+             OFC_DWORD nNumberOfBytesToWrite,
+             OFC_LPDWORD lpNumberOfBytesWritten,
+             OFC_HANDLE hOverlapped);
+/**
+ * Perform a transaction on a named pipe
+ *
+ * \param hFile
+ * File handle of named pipe
+ *
+ * \param lpInBuffer
+ * Pointer to the buffer to send to the pipe
+ *
+ * \param nInBufferSize
+ * Size of the input buffer
+ *
+ * \param lpOutBuffer
+ * Pointer to the buffer to receive the response
+ *
+ * \param nOutBufferSize
+ * Size of the output buffer
+ *
+ * \param lpBytesRead
+ * Pointer to where to return the number of bytes read
+ *
+ * \param hOverlapped
+ * Handle to the overlapped context if this is asynchronous
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE if failure.  On failure, GetLastError
+ * will return the error code
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcTransactNamedPipe(OFC_HANDLE hFile,
+                     OFC_LPVOID lpInBuffer,
+                     OFC_DWORD nInBufferSize,
+                     OFC_LPVOID lpOutBuffer,
+                     OFC_DWORD nOutBufferSize,
+                     OFC_LPDWORD lpBytesRead,
+                     OFC_HANDLE hOverlapped);
+/**
+ * Get the last file error that occured in this file handler for
+ * this thread
+ *
+ * \returns
+ * Last File Error
+ *
+ * NOTE: Use OfcGetLastError instead.
+ */
+OFC_CORE_LIB OFC_UINT32
+OfcGetLastFileError(OFC_HANDLE hHandle);
+/**
+ * Get the last error encountered by the File Component of
+ * Open Files
+ *
+ * \returns
+ * Error Code
+ */
+OFC_CORE_LIB OFC_DWORD
+OfcGetLastError(OFC_VOID);
+
+OFC_CORE_LIB const OFC_CHAR *OfcGetErrorString(OFC_DWORD dwerr);
+/**
+ * Get the last file error that occured in the file handler for a
+ * specified file in this thread's context
+ *
+ * \param lpFileName
+ * Name of the file to map to a file handler
+ *
+ * \returns
+ * Last File Error
+ *
+ * NOTE: Use OfcGetLastError instead.
+ */
+OFC_CORE_LIB OFC_UINT32
+OfcGetLastFileNameErrorW(OFC_LPCTSTR lpFileName);
+
+OFC_CORE_LIB OFC_UINT32
+OfcGetLastFileNameErrorA(OFC_LPCSTR lpFileName);
+/**
+ * Get the amount of free space for the disk
+ *
+ * \param lpRootPathName
+ * The path name to the disk or share
+ *
+ * \param lpSectorsPerCluster
+ * Pointer to where to return the number of sectors per cluster for the
+ * volume
+ *
+ * \param lpBytesPerSector
+ * Pointer to where to return the number of bytes per sector for the
+ * volume
+ *
+ * \param lpNumberOfFreeClusters
+ * Pointer to where to return the number of free clusters
+ *
+ * \param lpTotalNumberOfClusters
+ * Pointer to where to return the total number of clusters
+ *
+ * \returns
+ * OFC_TRUE if success, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcGetDiskFreeSpaceW(OFC_LPCTSTR lpRootPathName,
+                     OFC_LPDWORD lpSectorsPerCluster,
+                     OFC_LPDWORD lpBytesPerSector,
+                     OFC_LPDWORD lpNumberOfFreeClusters,
+                     OFC_LPDWORD lpTotalNumberOfClusters);
+
+OFC_CORE_LIB OFC_BOOL
+OfcGetDiskFreeSpaceA(OFC_LPCSTR lpRootPathName,
+                     OFC_LPDWORD lpSectorsPerCluster,
+                     OFC_LPDWORD lpBytesPerSector,
+                     OFC_LPDWORD lpNumberOfFreeClusters,
+                     OFC_LPDWORD lpTotalNumberOfClusters);
+/**
+ * Get Volume Information for the volume
+ *
+ * \param lpRootPathName
+ * Path to the volume or share
+ *
+ * \param lpVolumeNameBuffer
+ * Pointer to buffer where to store the Volume Name
+ *
+ * \param nVolumeNameSize
+ * Size of the Volume Name Buffer
+ *
+ * \param lpVolumeSerialNumber
+ * Pointer to where to store the volume serial number
+ *
+ * \param lpMaximumComponentLength
+ * Pointer to where to store the max size of a file name path
+ *
+ * \param lpFileSystemFlags
+ * Pointer to where to store the file system flags
+ *
+ * \param lpFileSystemName
+ * Pointer to where to store the file system name (i.e. NTFS)
+ *
+ * \param nFileSystemName
+ * Size of the file system name buffer
+ *
+ * \returns
+ * OFC_TRUE if successful, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcGetVolumeInformationW(OFC_LPCTSTR lpRootPathName,
+                         OFC_LPTSTR lpVolumeNameBuffer,
+                         OFC_DWORD nVolumeNameSize,
+                         OFC_LPDWORD lpVolumeSerialNumber,
+                         OFC_LPDWORD lpMaximumComponentLength,
+                         OFC_LPDWORD lpFileSystemFlags,
+                         OFC_LPTSTR lpFileSystemName,
+                         OFC_DWORD nFileSystemName);
+
+OFC_CORE_LIB OFC_BOOL
+OfcGetVolumeInformationA(OFC_LPCSTR lpRootPathName,
+                         OFC_LPSTR lpVolumeNameBuffer,
+                         OFC_DWORD nVolumeNameSize,
+                         OFC_LPDWORD lpVolumeSerialNumber,
+                         OFC_LPDWORD lpMaximumComponentLength,
+                         OFC_LPDWORD lpFileSystemFlags,
+                         OFC_LPSTR lpFileSystemName,
+                         OFC_DWORD nFileSystemName);
+/**
+ * Return the type of file system that a file is on
+ *
+ * \param hHandle
+ * Handle to the file
+ *
+ * \returns
+ * The type of file system
+ */
+OFC_CORE_LIB OFC_FST_TYPE
+OfcFileGetFSType(OFC_HANDLE hHandle);
+/**
+ * An internal call to return the native file system handle
+ *
+ * \param hHandle
+ * Handle to the file
+ *
+ * \returns
+ * A handle to the lower file system specific file
+ */
+OFC_CORE_LIB OFC_HANDLE
+OfcFileGetFSHandle(OFC_HANDLE hHandle);
+/**
+ * Unlock a region in a file
+ *
+ * \param hFile
+ * File Handle to unlock
+ *
+ * \param length_low
+ * the low order 32 bits of the length of the region
+ *
+ * \param length_high
+ * the high order 32 bits of the length of the region
+ *
+ * \param hOverlapped
+ * The overlapped structure which specifies the offset
+ *
+ * \returns
+ * OFC_TRUE if successful, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcUnlockFileEx(OFC_HANDLE hFile,
+                OFC_UINT32 length_low,
+                OFC_UINT32 length_high,
+                OFC_HANDLE hOverlapped);
+/**
+ * Lock a region of a file
+ *
+ * \param hFile
+ * Handle to file to unlock region in
+ *
+ * \param flags
+ * Flags for lock
+ *
+ * \param length_low
+ * Low order 32 bits of length of region
+ *
+ * \param length_high
+ * High order 32 bits of length of region
+ *
+ * \param hOverlapped
+ * Handle to the overlapped structure
+ *
+ * \returns
+ * OFC_TRUE if successful, OFC_FALSE otherwise
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcLockFileEx(OFC_HANDLE hFile, OFC_DWORD flags,
+              OFC_DWORD length_low, OFC_DWORD length_high,
+              OFC_HANDLE hOverlapped);
+/**
+ * Get the event handle of the overlapped event (deprecated)
+ *
+ * \param hOverlapped
+ * The overlapped event
+ *
+ * \returns
+ * The event handle
+ */
+OFC_CORE_LIB OFC_HANDLE
+OfcFileGetOverlappedEvent(OFC_HANDLE hOverlapped);
+/**
+ * Get the Message Queue of the overlapped event
+ *
+ * \param hOverlapped
+ * The overlapped event
+ *
+ * \returns
+ * The msgq handle
+ */
+OFC_CORE_LIB OFC_HANDLE
+OfcFileGetOverlappedWaitQ(OFC_HANDLE hOverlapped);
+/**
+ * Dismount an SMB client connection
+ *
+ * This is a non-standard and optional API for those that wish to
+ * ensure that a client connection to a server is disconnected.
+ * Under normal operation, client connections are disconnected after
+ * idle for a period of time.
+ *
+ * \param lpFileName
+ * A path that includes the server URL
+ *
+ * \returns
+ * Status
+ */
+OFC_CORE_LIB OFC_BOOL
+OfcDismountW(OFC_LPCTSTR lpFileName);
+
+OFC_CORE_LIB OFC_BOOL
+OfcDismountA(OFC_LPCSTR lpFileName);
+/**
+ * Perform a Device IOCTL
+ *
+ * This is an internal API that is used for DFS resolution
+ */
+OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl(OFC_HANDLE hFile,
+                                         OFC_DWORD dwIoControlCode,
+                                         OFC_LPVOID lpInBuffer,
+                                         OFC_DWORD nInBufferSize,
+                                         OFC_LPVOID lpOutBuffer,
+                                         OFC_DWORD nOutBufferSize,
+                                         OFC_LPDWORD lpBytesReturned,
+                                         OFC_HANDLE hOverlapped);
+
 #if defined(__cplusplus)
 }
 #endif

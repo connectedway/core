@@ -20,20 +20,20 @@
 /*
 * Forward Delcarations
 */
-typedef struct 
-{
-  OFC_HANDLE impl ;
-  OFC_BOOL connected ;
-  OFC_SOCKET_TYPE type ;
-  OFC_IPADDR ip ;		/* For input stream sockets */
-  OFC_UINT16 port ;		/* ... */
-  OFC_SIZET write_count ;
-  OFC_INT write_offset ;
-  OFC_HANDLE send_queue ;
-} OFC_SOCKET ;
+typedef struct {
+    OFC_HANDLE impl;
+    OFC_BOOL connected;
+    OFC_SOCKET_TYPE type;
+    OFC_IPADDR ip;        /* For input stream sockets */
+    OFC_UINT16 port;        /* ... */
+    OFC_SIZET write_count;
+    OFC_INT write_offset;
+    OFC_HANDLE send_queue;
+} OFC_SOCKET;
 
-static OFC_SOCKET *ofc_socket_alloc (OFC_VOID) ;
-static OFC_VOID ofc_socket_free (OFC_SOCKET *sock) ;
+static OFC_SOCKET *ofc_socket_alloc(OFC_VOID);
+
+static OFC_VOID ofc_socket_free(OFC_SOCKET *sock);
 
 /*
  * SOCKET_create - Create a socket
@@ -47,21 +47,19 @@ static OFC_VOID ofc_socket_free (OFC_SOCKET *sock) ;
  * This is an internal routine to create a socket structure
  */
 static OFC_SOCKET *
-ofc_socket_alloc (OFC_VOID)
-{
-  OFC_SOCKET *sock ;
+ofc_socket_alloc(OFC_VOID) {
+    OFC_SOCKET *sock;
 
-  sock = ofc_malloc (sizeof (OFC_SOCKET)) ;
-  sock->impl = OFC_HANDLE_NULL ;
-  sock->type = SOCKET_TYPE_NONE;
+    sock = ofc_malloc(sizeof(OFC_SOCKET));
+    sock->impl = OFC_HANDLE_NULL;
+    sock->type = SOCKET_TYPE_NONE;
 
-  return (sock) ;
+    return (sock);
 }
 
 static OFC_VOID
-ofc_socket_free (OFC_SOCKET *sock) 
-{
-  ofc_free (sock) ;
+ofc_socket_free(OFC_SOCKET *sock) {
+    ofc_free(sock);
 }
 
 /*
@@ -74,118 +72,106 @@ ofc_socket_free (OFC_SOCKET *sock)
  *    nothing
  */
 OFC_CORE_LIB OFC_VOID
-ofc_socket_destroy (OFC_HANDLE hSock)
-{
-  OFC_SOCKET *sock ;
+ofc_socket_destroy(OFC_HANDLE hSock) {
+    OFC_SOCKET *sock;
 
-  sock = ofc_handle_lock (hSock) ;
-  if (sock != OFC_NULL)
-    {
-      ofc_socket_impl_close (sock->impl) ;
+    sock = ofc_handle_lock(hSock);
+    if (sock != OFC_NULL) {
+        ofc_socket_impl_close(sock->impl);
 
-      ofc_socket_impl_destroy (sock->impl) ;
-      ofc_socket_free (sock) ;
-      ofc_handle_destroy (hSock) ;
-      ofc_handle_unlock (hSock) ;
+        ofc_socket_impl_destroy(sock->impl);
+        ofc_socket_free(sock);
+        ofc_handle_destroy(hSock);
+        ofc_handle_unlock(hSock);
     }
 }
 
-static OFC_INT ofc_ipv6_get_scope (const OFC_IPADDR *ip)
-{
-  OFC_INT scope ;
+static OFC_INT ofc_ipv6_get_scope(const OFC_IPADDR *ip) {
+    OFC_INT scope;
 
-  if (OFC_IN6_IS_ADDR_LOOPBACK (ip->u.ipv6._s6_addr))
-    scope = 0x01 ;
-  else if ((OFC_IN6_IS_ADDR_LINKLOCAL (ip->u.ipv6._s6_addr)) ||
-	   (OFC_IN6_IS_ADDR_MC_LINKLOCAL (ip->u.ipv6._s6_addr)))
-    scope = 0x02 ;
-  else if ((OFC_IN6_IS_ADDR_SITELOCAL (ip->u.ipv6._s6_addr)) ||
-	   (OFC_IN6_IS_ADDR_MC_SITELOCAL (ip->u.ipv6._s6_addr)))
-    scope = 0x05 ;
-  else
-    scope = 0x0e ;
+    if (OFC_IN6_IS_ADDR_LOOPBACK (ip->u.ipv6._s6_addr))
+        scope = 0x01;
+    else if ((OFC_IN6_IS_ADDR_LINKLOCAL (ip->u.ipv6._s6_addr)) ||
+             (OFC_IN6_IS_ADDR_MC_LINKLOCAL (ip->u.ipv6._s6_addr)))
+        scope = 0x02;
+    else if ((OFC_IN6_IS_ADDR_SITELOCAL (ip->u.ipv6._s6_addr)) ||
+             (OFC_IN6_IS_ADDR_MC_SITELOCAL (ip->u.ipv6._s6_addr)))
+        scope = 0x05;
+    else
+        scope = 0x0e;
 
-  return (scope) ;
+    return (scope);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_socket_source_address (const OFC_IPADDR *dest,
-                           OFC_IPADDR *source)
-{
-  OFC_INT count ;
-  OFC_INT i ;
-  OFC_IPADDR ifip ;
-  OFC_IPADDR ifmask ;
+ofc_socket_source_address(const OFC_IPADDR *dest,
+                          OFC_IPADDR *source) {
+    OFC_INT count;
+    OFC_INT i;
+    OFC_IPADDR ifip;
+    OFC_IPADDR ifmask;
 
-  count = ofc_net_interface_count () ;
-  /*
-   * Start with a default
-   */
-  source->ip_version = dest->ip_version ;
-  if (dest->ip_version == OFC_FAMILY_IP)
-    {
-      source->u.ipv4.addr = OFC_INADDR_ANY ;
-      /* try to match by subnet */
+    count = ofc_net_interface_count();
+    /*
+     * Start with a default
+     */
+    source->ip_version = dest->ip_version;
+    if (dest->ip_version == OFC_FAMILY_IP) {
+        source->u.ipv4.addr = OFC_INADDR_ANY;
+        /* try to match by subnet */
 
-      for (i = 0 ; i < count && source->u.ipv4.addr == OFC_INADDR_ANY ; i++)
-	{
-	  ofc_net_interface_addr (i, &ifip, OFC_NULL, &ifmask) ;
-	  if (ifip.ip_version == OFC_FAMILY_IP)
-	    {
-	      if ((ifip.u.ipv4.addr & ifmask.u.ipv4.addr) ==
-		  (dest->u.ipv4.addr & ifmask.u.ipv4.addr))
-		*source = ifip ;
-	    }
-	}
-    }
-  else
-    {
+        for (i = 0; i < count && source->u.ipv4.addr == OFC_INADDR_ANY; i++) {
+            ofc_net_interface_addr(i, &ifip, OFC_NULL, &ifmask);
+            if (ifip.ip_version == OFC_FAMILY_IP) {
+                if ((ifip.u.ipv4.addr & ifmask.u.ipv4.addr) ==
+                    (dest->u.ipv4.addr & ifmask.u.ipv4.addr))
+                    *source = ifip;
+            }
+        }
+    } else {
 #if defined(OFC_SOCKET_SCOPE_ALGORITHM)
-      source->u.ipv6 = ofc_in6addr_any ;
-      for (i = 0 ; i < count ; i++)
-	{
-	  ofc_net_interface_addr (i, &ifip, OFC_NULL, OFC_NULL) ;
-	  /*
-	   * Rule 1, prefer same address
-	   */
-	  if (OFC_IN6_ARE_ADDR_EQUAL (ifip.u.ipv6.s6_addr,
-				       dest->u.ipv6.s6_addr))
-	    *source = ifip ;
-	  /*
-	   * Rule 2, Prefer scope
-	   */
-	  else if (ofc_ipv6_get_scope (&ifip) <= ofc_ipv6_get_scope (source))
-	    {
-	      if (ofc_ipv6_get_scope (&ifip) >=  ofc_ipv6_get_scope (dest))
-		*source = ifip ;
-	    }
-	  else
-	    {
-	      if (ofc_ipv6_get_scope (source) <= ofc_ipv6_get_scope (dest))
-		*source = ifip ;
-	    }
-	}
+        source->u.ipv6 = ofc_in6addr_any ;
+        for (i = 0 ; i < count ; i++)
+      {
+        ofc_net_interface_addr (i, &ifip, OFC_NULL, OFC_NULL) ;
+        /*
+         * Rule 1, prefer same address
+         */
+        if (OFC_IN6_ARE_ADDR_EQUAL (ifip.u.ipv6.s6_addr,
+                         dest->u.ipv6.s6_addr))
+          *source = ifip ;
+        /*
+         * Rule 2, Prefer scope
+         */
+        else if (ofc_ipv6_get_scope (&ifip) <= ofc_ipv6_get_scope (source))
+          {
+            if (ofc_ipv6_get_scope (&ifip) >=  ofc_ipv6_get_scope (dest))
+          *source = ifip ;
+          }
+        else
+          {
+            if (ofc_ipv6_get_scope (source) <= ofc_ipv6_get_scope (dest))
+          *source = ifip ;
+          }
+      }
 #else
-      OFC_INT dscope ;
-      OFC_INT ifscope ;
-      OFC_INT sscope ;
+        OFC_INT dscope;
+        OFC_INT ifscope;
+        OFC_INT sscope;
 
-      dscope = ofc_ipv6_get_scope(dest) ;
-      source->u.ipv6 = ofc_in6addr_any ;
-      sscope = ofc_ipv6_get_scope (source) ;
-      for (i = 0 ; i < count ; i++)
-	{
-	  ofc_net_interface_addr (i, &ifip, OFC_NULL, OFC_NULL) ;
-	  if (ifip.ip_version == OFC_FAMILY_IPV6)
-	    {
-	      ifscope = ofc_ipv6_get_scope(&ifip) ;
-	      if (dscope <= ifscope && ifscope <= sscope)
-		{
-		  *source = ifip ;
-		  sscope = ifscope ;
-		}
-	    }
-	}
+        dscope = ofc_ipv6_get_scope(dest);
+        source->u.ipv6 = ofc_in6addr_any;
+        sscope = ofc_ipv6_get_scope(source);
+        for (i = 0; i < count; i++) {
+            ofc_net_interface_addr(i, &ifip, OFC_NULL, OFC_NULL);
+            if (ifip.ip_version == OFC_FAMILY_IPV6) {
+                ifscope = ofc_ipv6_get_scope(&ifip);
+                if (dscope <= ifscope && ifscope <= sscope) {
+                    *source = ifip;
+                    sscope = ifscope;
+                }
+            }
+        }
 #endif
     }
 }
@@ -201,66 +187,60 @@ ofc_socket_source_address (const OFC_IPADDR *dest,
  *    socket structure for connection
  */
 OFC_CORE_LIB OFC_HANDLE
-ofc_socket_connect (const OFC_IPADDR *ip, OFC_UINT16 port)
-{
-  OFC_HANDLE hSocket ;
-  OFC_SOCKET *pSock ;
-  OFC_IPADDR myinaddr ;
-  OFC_IPADDR dip ;
+ofc_socket_connect(const OFC_IPADDR *ip, OFC_UINT16 port) {
+    OFC_HANDLE hSocket;
+    OFC_SOCKET *pSock;
+    OFC_IPADDR myinaddr;
+    OFC_IPADDR dip;
 
-  /*
-   * Create a socket
-   */
-  hSocket = OFC_HANDLE_NULL ;
-  pSock = ofc_socket_alloc() ;
-  pSock->type = SOCKET_TYPE_STREAM;
+    /*
+     * Create a socket
+     */
+    hSocket = OFC_HANDLE_NULL;
+    pSock = ofc_socket_alloc();
+    pSock->type = SOCKET_TYPE_STREAM;
 
-  dip = *ip ;
-  /*
-   * Yes, open a stream
-   */
-  pSock->impl = ofc_socket_impl_create (dip.ip_version, SOCKET_TYPE_STREAM) ;
-  if (pSock->impl != OFC_HANDLE_NULL)
-    {
-      ofc_socket_impl_reuse_addr (pSock->impl, OFC_TRUE) ;
+    dip = *ip;
+    /*
+     * Yes, open a stream
+     */
+    pSock->impl = ofc_socket_impl_create(dip.ip_version, SOCKET_TYPE_STREAM);
+    if (pSock->impl != OFC_HANDLE_NULL) {
+        ofc_socket_impl_reuse_addr(pSock->impl, OFC_TRUE);
 
-      ofc_socket_source_address (&dip, &myinaddr) ;
-      if (ofc_socket_impl_bind (pSock->impl, &myinaddr, 0))
-	{
-	  ofc_socket_impl_no_block (pSock->impl, OFC_TRUE) ;
-	  if (dip.ip_version == OFC_FAMILY_IPV6)
-	    dip.u.ipv6.scope = myinaddr.u.ipv6.scope ;
+        ofc_socket_source_address(&dip, &myinaddr);
+        if (ofc_socket_impl_bind(pSock->impl, &myinaddr, 0)) {
+            ofc_socket_impl_no_block(pSock->impl, OFC_TRUE);
+            if (dip.ip_version == OFC_FAMILY_IPV6)
+                dip.u.ipv6.scope = myinaddr.u.ipv6.scope;
 
-	  if (ofc_socket_impl_connect (pSock->impl, &dip, port))
-	    {
-	      hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, pSock) ;
-	    }
-	}
+            if (ofc_socket_impl_connect(pSock->impl, &dip, port)) {
+                hSocket = ofc_handle_create(OFC_HANDLE_SOCKET, pSock);
+            }
+        }
 
-      if (hSocket == OFC_HANDLE_NULL)
-	ofc_socket_impl_destroy (pSock->impl) ;
+        if (hSocket == OFC_HANDLE_NULL)
+            ofc_socket_impl_destroy(pSock->impl);
     }
 
-  if (hSocket == OFC_HANDLE_NULL)
-    ofc_socket_free (pSock) ;
-    
-  return (hSocket) ;
+    if (hSocket == OFC_HANDLE_NULL)
+        ofc_socket_free(pSock);
+
+    return (hSocket);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_socket_connected (OFC_HANDLE hSocket)
-{
-  OFC_SOCKET *pSocket ;
-  OFC_BOOL connected ;
+ofc_socket_connected(OFC_HANDLE hSocket) {
+    OFC_SOCKET *pSocket;
+    OFC_BOOL connected;
 
-  connected = OFC_FALSE ;
-  pSocket = ofc_handle_lock (hSocket) ;
-  if (pSocket != OFC_NULL)
-    {
-      connected = ofc_socket_impl_connected (pSocket->impl) ;
-      ofc_handle_unlock (hSocket) ;
+    connected = OFC_FALSE;
+    pSocket = ofc_handle_lock(hSocket);
+    if (pSocket != OFC_NULL) {
+        connected = ofc_socket_impl_connected(pSocket->impl);
+        ofc_handle_unlock(hSocket);
     }
-  return (connected) ;
+    return (connected);
 }
 
 /*
@@ -274,39 +254,35 @@ ofc_socket_connected (OFC_HANDLE hSocket)
  *    listening socket
  */
 OFC_CORE_LIB OFC_HANDLE
-ofc_socket_listen (const OFC_IPADDR *ip, OFC_UINT16 port)
-{
-  OFC_HANDLE hSocket ;
-  OFC_SOCKET *pSock ;
+ofc_socket_listen(const OFC_IPADDR *ip, OFC_UINT16 port) {
+    OFC_HANDLE hSocket;
+    OFC_SOCKET *pSock;
 
-  /*
-   * Create a socket
-   */
-  hSocket = OFC_HANDLE_NULL ;
-  pSock = ofc_socket_alloc() ;
-  pSock->type = SOCKET_TYPE_STREAM;
+    /*
+     * Create a socket
+     */
+    hSocket = OFC_HANDLE_NULL;
+    pSock = ofc_socket_alloc();
+    pSock->type = SOCKET_TYPE_STREAM;
 
-  pSock->impl = ofc_socket_impl_create (ip->ip_version, SOCKET_TYPE_STREAM) ;
-  if (pSock->impl != OFC_HANDLE_NULL)
-    {
-      ofc_socket_impl_reuse_addr (pSock->impl, OFC_TRUE) ;
-      if (ofc_socket_impl_bind (pSock->impl, ip, port))
-	{
-	  ofc_socket_impl_no_block (pSock->impl, OFC_TRUE) ;
-	  if (ofc_socket_impl_listen (pSock->impl, 5))
-	    {
-	      hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, pSock) ;
-	    }
-	}
+    pSock->impl = ofc_socket_impl_create(ip->ip_version, SOCKET_TYPE_STREAM);
+    if (pSock->impl != OFC_HANDLE_NULL) {
+        ofc_socket_impl_reuse_addr(pSock->impl, OFC_TRUE);
+        if (ofc_socket_impl_bind(pSock->impl, ip, port)) {
+            ofc_socket_impl_no_block(pSock->impl, OFC_TRUE);
+            if (ofc_socket_impl_listen(pSock->impl, 5)) {
+                hSocket = ofc_handle_create(OFC_HANDLE_SOCKET, pSock);
+            }
+        }
 
-      if (hSocket == OFC_HANDLE_NULL)
-	ofc_socket_impl_destroy (pSock->impl) ;
+        if (hSocket == OFC_HANDLE_NULL)
+            ofc_socket_impl_destroy(pSock->impl);
     }
 
-  if (hSocket == OFC_HANDLE_NULL)
-    ofc_socket_free (pSock) ;
+    if (hSocket == OFC_HANDLE_NULL)
+        ofc_socket_free(pSock);
 
-  return (hSocket) ;
+    return (hSocket);
 }
 
 
@@ -321,45 +297,41 @@ ofc_socket_listen (const OFC_IPADDR *ip, OFC_UINT16 port)
 *    datagram socket
 */
 OFC_CORE_LIB OFC_HANDLE
-ofc_socket_datagram (const OFC_IPADDR *ip, OFC_UINT16 port)
-{
-  OFC_SOCKET *sock ;
-  OFC_HANDLE hSocket ;
-  OFC_BOOL status ;
+ofc_socket_datagram(const OFC_IPADDR *ip, OFC_UINT16 port) {
+    OFC_SOCKET *sock;
+    OFC_HANDLE hSocket;
+    OFC_BOOL status;
 
-  /*
-   * Create the socket
-   */
-  sock = ofc_socket_alloc() ;
-  sock->type = SOCKET_TYPE_DGRAM;
-  /*
-   * Yes, open up a datagram socket
-   */
-  hSocket = OFC_HANDLE_NULL ;
-  sock->impl = ofc_socket_impl_create (ip->ip_version, SOCKET_TYPE_DGRAM) ;
-  /*
-   * Is it open?
-   */
-  if (sock->impl != OFC_HANDLE_NULL)
-    {
-      /*
-       * Yes, bind to the ip and port we want to accept datagrams on
-       */
-      ofc_socket_impl_reuse_addr (sock->impl, OFC_TRUE) ;
-      status = ofc_socket_impl_bind (sock->impl, ip, port) ;
-      if (status == OFC_TRUE)
-	{
-	  ofc_socket_impl_no_block (sock->impl, OFC_TRUE) ;
-	  hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, sock) ;
-	}
-      else
-	ofc_socket_impl_destroy (sock->impl) ;
+    /*
+     * Create the socket
+     */
+    sock = ofc_socket_alloc();
+    sock->type = SOCKET_TYPE_DGRAM;
+    /*
+     * Yes, open up a datagram socket
+     */
+    hSocket = OFC_HANDLE_NULL;
+    sock->impl = ofc_socket_impl_create(ip->ip_version, SOCKET_TYPE_DGRAM);
+    /*
+     * Is it open?
+     */
+    if (sock->impl != OFC_HANDLE_NULL) {
+        /*
+         * Yes, bind to the ip and port we want to accept datagrams on
+         */
+        ofc_socket_impl_reuse_addr(sock->impl, OFC_TRUE);
+        status = ofc_socket_impl_bind(sock->impl, ip, port);
+        if (status == OFC_TRUE) {
+            ofc_socket_impl_no_block(sock->impl, OFC_TRUE);
+            hSocket = ofc_handle_create(OFC_HANDLE_SOCKET, sock);
+        } else
+            ofc_socket_impl_destroy(sock->impl);
     }
 
-  if (hSocket == OFC_HANDLE_NULL)
-    ofc_socket_free (sock) ;
+    if (hSocket == OFC_HANDLE_NULL)
+        ofc_socket_free(sock);
 
-  return (hSocket) ;
+    return (hSocket);
 }
 
 
@@ -374,35 +346,32 @@ ofc_socket_datagram (const OFC_IPADDR *ip, OFC_UINT16 port)
 *    datagram socket
 */
 OFC_CORE_LIB OFC_HANDLE
-ofc_socket_raw (const OFC_IPADDR *ip, OFC_SOCKET_TYPE socktype)
-{
-  OFC_SOCKET *sock ;
-  OFC_HANDLE hSocket ;
+ofc_socket_raw(const OFC_IPADDR *ip, OFC_SOCKET_TYPE socktype) {
+    OFC_SOCKET *sock;
+    OFC_HANDLE hSocket;
 
-  /*
-   * Create the socket
-   */
-  hSocket = OFC_HANDLE_NULL ;
+    /*
+     * Create the socket
+     */
+    hSocket = OFC_HANDLE_NULL;
 
-  sock = ofc_socket_alloc() ;
-  sock->type = socktype ;
-  /*
-   * Yes, open up a datagram socket
-   */
-  hSocket = OFC_HANDLE_NULL ;
-  sock->impl = ofc_socket_impl_create (ip->ip_version, socktype) ;
-  /*
-   * Is it open?
-   */
-  if (sock->impl != OFC_HANDLE_NULL)
-    {
-      ofc_socket_impl_no_block (sock->impl, OFC_TRUE) ;
-      hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, sock) ;
-    }
-  else 
-    ofc_socket_free (sock) ;
+    sock = ofc_socket_alloc();
+    sock->type = socktype;
+    /*
+     * Yes, open up a datagram socket
+     */
+    hSocket = OFC_HANDLE_NULL;
+    sock->impl = ofc_socket_impl_create(ip->ip_version, socktype);
+    /*
+     * Is it open?
+     */
+    if (sock->impl != OFC_HANDLE_NULL) {
+        ofc_socket_impl_no_block(sock->impl, OFC_TRUE);
+        hSocket = ofc_handle_create(OFC_HANDLE_SOCKET, sock);
+    } else
+        ofc_socket_free(sock);
 
-  return (hSocket) ;
+    return (hSocket);
 }
 
 /*
@@ -415,41 +384,36 @@ ofc_socket_raw (const OFC_IPADDR *ip, OFC_SOCKET_TYPE socktype)
  *    socket structure
  */
 OFC_CORE_LIB OFC_HANDLE
-ofc_socket_accept (OFC_HANDLE hMasterSocket)
-{
-  OFC_SOCKET *socket ;
-  OFC_SOCKET *master_socket ;
-  OFC_HANDLE hSocket ;
-  
-  hSocket = OFC_HANDLE_NULL ;
-  master_socket = ofc_handle_lock (hMasterSocket) ;
-  if (master_socket != OFC_NULL)
-    {
-      /*
-       * Create a new socket
-       */
-      socket = ofc_socket_alloc () ;
-      socket->type = SOCKET_TYPE_STREAM;
+ofc_socket_accept(OFC_HANDLE hMasterSocket) {
+    OFC_SOCKET *socket;
+    OFC_SOCKET *master_socket;
+    OFC_HANDLE hSocket;
 
-      socket->impl = ofc_socket_impl_accept (master_socket->impl,
-                                             &socket->ip, &socket->port) ;
+    hSocket = OFC_HANDLE_NULL;
+    master_socket = ofc_handle_lock(hMasterSocket);
+    if (master_socket != OFC_NULL) {
+        /*
+         * Create a new socket
+         */
+        socket = ofc_socket_alloc();
+        socket->type = SOCKET_TYPE_STREAM;
 
-      if (socket->impl == OFC_HANDLE_NULL)
-	{
-	  ofc_socket_free (socket) ;
-	}
-      else
-	{
-	  ofc_socket_impl_no_block (socket->impl, OFC_TRUE) ;
+        socket->impl = ofc_socket_impl_accept(master_socket->impl,
+                                              &socket->ip, &socket->port);
 
-	  hSocket = ofc_handle_create (OFC_HANDLE_SOCKET, socket) ;
-	  if (hSocket == OFC_HANDLE_NULL)
-	    ofc_socket_free (socket) ;
-	}
-      ofc_handle_unlock (hMasterSocket) ;
+        if (socket->impl == OFC_HANDLE_NULL) {
+            ofc_socket_free(socket);
+        } else {
+            ofc_socket_impl_no_block(socket->impl, OFC_TRUE);
+
+            hSocket = ofc_handle_create(OFC_HANDLE_SOCKET, socket);
+            if (hSocket == OFC_HANDLE_NULL)
+                ofc_socket_free(socket);
+        }
+        ofc_handle_unlock(hMasterSocket);
     }
 
-  return (hSocket) ;
+    return (hSocket);
 }
 
 
@@ -466,77 +430,67 @@ ofc_socket_accept (OFC_HANDLE hMasterSocket)
  *   True if we wrote something, false otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-ofc_socket_write (OFC_HANDLE hSocket, OFC_MESSAGE *msg)
-{
-  OFC_SIZET nbytes ;
-  OFC_SOCKET *socket ;
-  OFC_BOOL progress ;
+ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg) {
+    OFC_SIZET nbytes;
+    OFC_SOCKET *socket;
+    OFC_BOOL progress;
 
-  socket = ofc_handle_lock (hSocket) ;
-  nbytes = -1 ;
-  progress = OFC_FALSE ;
-  if (socket != OFC_NULL)
-    {
-      /*
-       * Do we have bytes to send?
-       */
-      if (msg->count > 0)
-	{
-	  /*
-	   * Yes, so try to send it
-	   */
-	  if (socket->type == SOCKET_TYPE_STREAM)
-	    {
-	      nbytes = ofc_socket_impl_send (socket->impl,
-					   msg->msg + msg->offset,
-                                         msg->count) ;
-	    }
-	  else if (socket->type == SOCKET_TYPE_DGRAM ||
-		   socket->type == SOCKET_TYPE_ICMP)
-	    {
-	      nbytes = ofc_socket_impl_sendto (socket->impl,
-					     msg->msg + msg->offset,
-                                           msg->count,
-                                           &msg->ip,
-                                           msg->port) ;
-	    }
-	}
-      else
-	nbytes = 0 ;
+    socket = ofc_handle_lock(hSocket);
+    nbytes = -1;
+    progress = OFC_FALSE;
+    if (socket != OFC_NULL) {
+        /*
+         * Do we have bytes to send?
+         */
+        if (msg->count > 0) {
+            /*
+             * Yes, so try to send it
+             */
+            if (socket->type == SOCKET_TYPE_STREAM) {
+                nbytes = ofc_socket_impl_send(socket->impl,
+                                              msg->msg + msg->offset,
+                                              msg->count);
+            } else if (socket->type == SOCKET_TYPE_DGRAM ||
+                       socket->type == SOCKET_TYPE_ICMP) {
+                nbytes = ofc_socket_impl_sendto(socket->impl,
+                                                msg->msg + msg->offset,
+                                                msg->count,
+                                                &msg->ip,
+                                                msg->port);
+            }
+        } else
+            nbytes = 0;
 
-      if (nbytes > 0)
-	{
-	  if (nbytes > msg->count)
-	    {
-	      ofc_printf ("nbytes %d is greater then count %d\n",
-                      nbytes, msg->count) ;
-	      nbytes = msg->count ;
-	    }
-	  msg->count -= nbytes ;
-	  msg->offset += nbytes ;
-	  progress = OFC_TRUE ;
-	}
-      if ((nbytes < 0) ||
-	  ((socket->type == SOCKET_TYPE_DGRAM) && (nbytes ==0)))
-	{
-	  OFC_VOID *handle ;
+        if (nbytes > 0) {
+            if (nbytes > msg->count) {
+                ofc_printf("nbytes %d is greater then count %d\n",
+                           nbytes, msg->count);
+                nbytes = msg->count;
+            }
+            msg->count -= nbytes;
+            msg->offset += nbytes;
+            progress = OFC_TRUE;
+        }
+        if ((nbytes < 0) ||
+            ((socket->type == SOCKET_TYPE_DGRAM) && (nbytes == 0))) {
+            OFC_VOID *handle;
 
-	  handle = ofc_handle_lock (socket->impl) ;
+            handle = ofc_handle_lock(socket->impl);
 
-	  ofc_printf ("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
-                  socket->type, socket->impl, handle, msg->count) ;
-	  /*
-	   * Force message to retire
-	   */
-	  msg->count = 0 ;
+            ofc_printf("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
+                       socket->type, socket->impl, handle, msg->count);
+            /*
+             * Force message to retire
+             */
+            msg->count = 0;
 
-	  if (handle != OFC_NULL)
-	    ofc_handle_unlock (socket->impl) ;
-	}
+            if (handle != OFC_NULL)
+                ofc_handle_unlock(socket->impl);
+        }
 
-      ofc_handle_unlock (hSocket) ;
+        ofc_handle_unlock(hSocket);
     }
-  return (progress) ;
+    return (progress);
 }
 
 /*
@@ -550,143 +504,124 @@ ofc_socket_write (OFC_HANDLE hSocket, OFC_MESSAGE *msg)
  *
  */
 OFC_CORE_LIB OFC_BOOL
-ofc_socket_read (OFC_HANDLE hSocket, OFC_MESSAGE *msg)
-{
-  OFC_SOCKET *socket ;
-  OFC_SIZET len ;
-  OFC_BOOL progress ;
+ofc_socket_read(OFC_HANDLE hSocket, OFC_MESSAGE *msg) {
+    OFC_SOCKET *socket;
+    OFC_SIZET len;
+    OFC_BOOL progress;
 
-  socket = ofc_handle_lock (hSocket) ;
-  progress = OFC_FALSE ;
-  if (socket != OFC_HANDLE_NULL)
-    {
-      len = 0 ;
-      if (msg->count > 0)
-	{
-	  /*
-	   * Yes, so try to receive it.
-	   */
-	  if (socket->type == SOCKET_TYPE_STREAM)
-	    {
-	      len = ofc_socket_impl_recv (socket->impl,
-					msg->msg + msg->offset,
-                                      msg->count) ;
-	      msg->ip = socket->ip;
-	      msg->port = socket->port;
-	    }
-	  else if (socket->type == SOCKET_TYPE_DGRAM ||
-		   socket->type == SOCKET_TYPE_ICMP)
-	    {
-	      len = ofc_socket_impl_recv_from (socket->impl,
-					    msg->msg + msg->offset,
-                                           msg->count,
-                                           &msg->ip, &msg->port) ;
-	    }
-	}
+    socket = ofc_handle_lock(hSocket);
+    progress = OFC_FALSE;
+    if (socket != OFC_HANDLE_NULL) {
+        len = 0;
+        if (msg->count > 0) {
+            /*
+             * Yes, so try to receive it.
+             */
+            if (socket->type == SOCKET_TYPE_STREAM) {
+                len = ofc_socket_impl_recv(socket->impl,
+                                           msg->msg + msg->offset,
+                                           msg->count);
+                msg->ip = socket->ip;
+                msg->port = socket->port;
+            } else if (socket->type == SOCKET_TYPE_DGRAM ||
+                       socket->type == SOCKET_TYPE_ICMP) {
+                len = ofc_socket_impl_recv_from(socket->impl,
+                                                msg->msg + msg->offset,
+                                                msg->count,
+                                                &msg->ip, &msg->port);
+            }
+        }
 
-      if (len > 0)
-	{
-	  msg->offset += len ;
-	  msg->count -= len ;
-	  progress = OFC_TRUE ;
-	}
+        if (len > 0) {
+            msg->offset += len;
+            msg->count -= len;
+            progress = OFC_TRUE;
+        }
 
-      ofc_handle_unlock (hSocket) ;
+        ofc_handle_unlock(hSocket);
     }
-  return (progress) ;
+    return (progress);
 }
 
 OFC_CORE_LIB OFC_HANDLE
-ofc_socket_get_impl (OFC_HANDLE hSocket)
-{
-  OFC_SOCKET *sock ;
-  OFC_HANDLE impl ;
+ofc_socket_get_impl(OFC_HANDLE hSocket) {
+    OFC_SOCKET *sock;
+    OFC_HANDLE impl;
 
-  impl = OFC_HANDLE_NULL ;
-  sock = ofc_handle_lock (hSocket) ;
-  if (sock != OFC_NULL)
-    {
-      impl = sock->impl ;
-      ofc_handle_unlock (hSocket) ;
+    impl = OFC_HANDLE_NULL;
+    sock = ofc_handle_lock(hSocket);
+    if (sock != OFC_NULL) {
+        impl = sock->impl;
+        ofc_handle_unlock(hSocket);
     }
-  return (impl) ;
+    return (impl);
 }
 
 OFC_CORE_LIB OFC_SOCKET_EVENT_TYPE
-ofc_socket_test (OFC_HANDLE hSocket)
-{
-  OFC_SOCKET_EVENT_TYPE ret ;
-  OFC_HANDLE impl ;
-  OFC_SOCKET *sock ;
+ofc_socket_test(OFC_HANDLE hSocket) {
+    OFC_SOCKET_EVENT_TYPE ret;
+    OFC_HANDLE impl;
+    OFC_SOCKET *sock;
 
-  ret = OFC_FALSE ;
-  impl = OFC_HANDLE_NULL ;
-  sock = ofc_handle_lock (hSocket) ;
-  if (sock != OFC_NULL)
-    {
-      ret = ofc_socket_impl_test (sock->impl) ;
-      ofc_handle_unlock (hSocket) ;
+    ret = OFC_FALSE;
+    impl = OFC_HANDLE_NULL;
+    sock = ofc_handle_lock(hSocket);
+    if (sock != OFC_NULL) {
+        ret = ofc_socket_impl_test(sock->impl);
+        ofc_handle_unlock(hSocket);
     }
-  return (ret) ;
+    return (ret);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_socket_enable (OFC_HANDLE hSocket, OFC_SOCKET_EVENT_TYPE type)
-{
-  OFC_BOOL ret ;
-  OFC_HANDLE impl ;
-  OFC_SOCKET *sock ;
+ofc_socket_enable(OFC_HANDLE hSocket, OFC_SOCKET_EVENT_TYPE type) {
+    OFC_BOOL ret;
+    OFC_HANDLE impl;
+    OFC_SOCKET *sock;
 
-  ret = OFC_FALSE ;
-  impl = OFC_HANDLE_NULL ;
-  sock = ofc_handle_lock (hSocket) ;
-  if (sock != OFC_NULL)
-    {
-      ret = ofc_socket_impl_enable (sock->impl, type) ;
-      ofc_handle_unlock (hSocket) ;
+    ret = OFC_FALSE;
+    impl = OFC_HANDLE_NULL;
+    sock = ofc_handle_lock(hSocket);
+    if (sock != OFC_NULL) {
+        ret = ofc_socket_impl_enable(sock->impl, type);
+        ofc_handle_unlock(hSocket);
     }
-  return (ret) ;
+    return (ret);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_socket_set_send_size (OFC_HANDLE hSocket, OFC_INT size)
-{
-  OFC_SOCKET *sock ;
+ofc_socket_set_send_size(OFC_HANDLE hSocket, OFC_INT size) {
+    OFC_SOCKET *sock;
 
-  sock = ofc_handle_lock (hSocket) ;
-  if (sock != OFC_NULL)
-    {
-      ofc_socket_impl_set_send_size (sock->impl, size) ;
-      ofc_handle_unlock (hSocket) ;
+    sock = ofc_handle_lock(hSocket);
+    if (sock != OFC_NULL) {
+        ofc_socket_impl_set_send_size(sock->impl, size);
+        ofc_handle_unlock(hSocket);
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_socket_set_recv_size (OFC_HANDLE hSocket, OFC_INT size)
-{
-  OFC_SOCKET *sock ;
+ofc_socket_set_recv_size(OFC_HANDLE hSocket, OFC_INT size) {
+    OFC_SOCKET *sock;
 
-  sock = ofc_handle_lock (hSocket) ;
-  if (sock != OFC_NULL)
-    {
-      ofc_socket_impl_set_recv_size (sock->impl, size) ;
-      ofc_handle_unlock (hSocket) ;
+    sock = ofc_handle_lock(hSocket);
+    if (sock != OFC_NULL) {
+        ofc_socket_impl_set_recv_size(sock->impl, size);
+        ofc_handle_unlock(hSocket);
     }
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_socket_get_addresses (OFC_HANDLE hSock, OFC_SOCKADDR *local,
-                          OFC_SOCKADDR *remote)
-{
-  OFC_SOCKET *sock ;
-  OFC_BOOL ret ;
+ofc_socket_get_addresses(OFC_HANDLE hSock, OFC_SOCKADDR *local,
+                         OFC_SOCKADDR *remote) {
+    OFC_SOCKET *sock;
+    OFC_BOOL ret;
 
-  ret = OFC_FALSE ;
-  sock = ofc_handle_lock (hSock) ;
-  if (sock != OFC_NULL)
-    {
-      ret = ofc_socket_impl_get_addresses (sock->impl, local, remote) ;
-      ofc_handle_unlock (hSock) ;
+    ret = OFC_FALSE;
+    sock = ofc_handle_lock(hSock);
+    if (sock != OFC_NULL) {
+        ret = ofc_socket_impl_get_addresses(sock->impl, local, remote);
+        ofc_handle_unlock(hSock);
     }
-  return (ret) ;
+    return (ret);
 }

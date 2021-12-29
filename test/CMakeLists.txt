@@ -1,44 +1,44 @@
 include(FetchContent)
 FetchContent_Declare(unity
-  URL ${openfiles_SOURCE_DIR}/Unity
-  )
+        URL ${openfiles_SOURCE_DIR}/Unity
+        )
 FetchContent_MakeAvailable(unity)
 
 add_library(unityextras INTERFACE)
 target_link_libraries(unityextras INTERFACE unity)
 target_include_directories(unityextras INTERFACE
-    ${unity_SOURCE_DIR}/extras/fixture/src
-    ${unity_SOURCE_DIR}/extras/memory/src
-    )
+        ${unity_SOURCE_DIR}/extras/fixture/src
+        ${unity_SOURCE_DIR}/extras/memory/src
+        )
 
 target_sources(unityextras INTERFACE
-    ${unity_SOURCE_DIR}/extras/fixture/src/unity_fixture.c
-    ${unity_SOURCE_DIR}/extras/memory/src/unity_memory.c
-    )
+        ${unity_SOURCE_DIR}/extras/fixture/src/unity_fixture.c
+        ${unity_SOURCE_DIR}/extras/memory/src/unity_memory.c
+        )
 
 
 add_executable(test_all
-    test_all.c
-    test_timer.c
-    test_event.c
-    test_waitq.c
-    test_thread.c
-    test_dg.c
-    test_stream.c
-    test_path.c
-    test_file.c
-    test_fs_darwin.c
-    )
+        test_all.c
+        test_timer.c
+        test_event.c
+        test_waitq.c
+        test_thread.c
+        test_dg.c
+        test_stream.c
+        test_path.c
+        test_file.c
+        test_fs_darwin.c
+        )
 target_compile_definitions(test_all PUBLIC NO_MAIN ON)
 target_link_libraries(test_all PRIVATE of_core_shared unityextras)
 
 include_directories(
-	${of_core_SOURCE_DIR}/include
-	${unity_SOURCE_DIR}/src
-	${unity_SOURCE_DIR}/extras/fixture/src
-	${unity_SOURCE_DIR}/extras/memory/src
-	${CMAKE_CURRENT_SOURCE_DIR}
-	)
+        ${of_core_SOURCE_DIR}/include
+        ${unity_SOURCE_DIR}/src
+        ${unity_SOURCE_DIR}/extras/fixture/src
+        ${unity_SOURCE_DIR}/extras/memory/src
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 
 add_executable(test_timer test_timer.c)

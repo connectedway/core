@@ -14,40 +14,34 @@
 #include "ofc/framework.h"
 #include "test_file.h"
 
-static OFC_INT test_startup(OFC_VOID)
-{
-  ofc_framework_init();
-  return(0);
+static OFC_INT test_startup(OFC_VOID) {
+    ofc_framework_init();
+    return (0);
 }
 
-static OFC_VOID test_shutdown(OFC_VOID)
-{
-  ofc_framework_shutdown();
-  ofc_framework_destroy();
+static OFC_VOID test_shutdown(OFC_VOID) {
+    ofc_framework_shutdown();
+    ofc_framework_destroy();
 }
 
 TEST_GROUP(fs_darwin);
 
-TEST_SETUP(fs_darwin)
-{
-  TEST_ASSERT_FALSE_MESSAGE(test_startup(), "Failed to Startup Framework");
+TEST_SETUP(fs_darwin) {
+    TEST_ASSERT_FALSE_MESSAGE(test_startup(), "Failed to Startup Framework");
 }
 
-TEST_TEAR_DOWN(fs_darwin)
-{
-  test_shutdown();
-}  
+TEST_TEAR_DOWN(fs_darwin) {
+    test_shutdown();
+}
 
-TEST(fs_darwin, test_fs_darwin)
-{
-  OFC_INT ret ;
-  ret = test_file(OFC_TEST_FS_DARWIN_PATH);
-  TEST_ASSERT_FALSE_MESSAGE(ret, "File Test Failed");
-}	  
+TEST(fs_darwin, test_fs_darwin) {
+    OFC_INT ret;
+    ret = test_file(OFC_TEST_FS_DARWIN_PATH);
+    TEST_ASSERT_FALSE_MESSAGE(ret, "File Test Failed");
+}
 
-TEST_GROUP_RUNNER(fs_darwin)
-{
-  RUN_TEST_CASE(fs_darwin, test_fs_darwin);
+TEST_GROUP_RUNNER(fs_darwin) {
+    RUN_TEST_CASE(fs_darwin, test_fs_darwin);
 }
 
 #if !defined(NO_MAIN)

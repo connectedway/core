@@ -18,14 +18,13 @@
 /**
  * The Application Descriptor
  */
-typedef struct _OFC_APP
-{
-  OFC_APP_TEMPLATE *def ;	/* Pointer to app definition */
-  OFC_HANDLE scheduler ;	/* Scheduler Hanlder */
-  OFC_BOOL destroy ;		/* Flag to destroy app */
-  OFC_VOID *app_data ;
-  OFC_HANDLE hNotify ;
-} OFC_APP ;
+typedef struct _OFC_APP {
+    OFC_APP_TEMPLATE *def;    /* Pointer to app definition */
+    OFC_HANDLE scheduler;    /* Scheduler Hanlder */
+    OFC_BOOL destroy;        /* Flag to destroy app */
+    OFC_VOID *app_data;
+    OFC_HANDLE hNotify;
+} OFC_APP;
 
 /*
  * STATE_create - Create an application
@@ -38,40 +37,39 @@ typedef struct _OFC_APP
  *    The application created (Null if error)
  */
 OFC_CORE_LIB OFC_HANDLE
-ofc_app_create (OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
-                OFC_VOID *app_data)
-{
-  OFC_APP *app ;
-  OFC_HANDLE hApp ;
+ofc_app_create(OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
+               OFC_VOID *app_data) {
+    OFC_APP *app;
+    OFC_HANDLE hApp;
 
-  /*
-   * Allocate structure for app
-   */
-  app = ofc_malloc (sizeof (OFC_APP)) ;
+    /*
+     * Allocate structure for app
+     */
+    app = ofc_malloc(sizeof(OFC_APP));
 
-  /*
-   * Initialize the application
-   */
-  app->def = templatep;
-  app->scheduler = scheduler ;
-  app->destroy = OFC_FALSE ;
-  app->app_data = app_data;
-  app->hNotify = OFC_HANDLE_NULL ;
+    /*
+     * Initialize the application
+     */
+    app->def = templatep;
+    app->scheduler = scheduler;
+    app->destroy = OFC_FALSE;
+    app->app_data = app_data;
+    app->hNotify = OFC_HANDLE_NULL;
 
-  hApp = ofc_handle_create (OFC_HANDLE_APP, app) ;
-  /*
-   * Application was initialized, add to scheduler
-   */
-  ofc_sched_add (scheduler, hApp) ;
+    hApp = ofc_handle_create(OFC_HANDLE_APP, app);
+    /*
+     * Application was initialized, add to scheduler
+     */
+    ofc_sched_add(scheduler, hApp);
 #if defined(OFC_PRESELECT_PASS)
-  ofc_app_event_sig(hApp) ;
+    ofc_app_event_sig(hApp) ;
 #else
-  ofc_app_preselect (hApp) ;
+    ofc_app_preselect(hApp);
 #endif
-  /*
-   * Return the application pointer
-   */
-  return (hApp) ;
+    /*
+     * Return the application pointer
+     */
+    return (hApp);
 }
 
 /*
@@ -83,35 +81,31 @@ ofc_app_create (OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
  * The application will be killed by the scheduler
  */
 OFC_CORE_LIB OFC_VOID
-ofc_app_kill (OFC_HANDLE hApp)
-{
-  OFC_APP *app ;
+ofc_app_kill(OFC_HANDLE hApp) {
+    OFC_APP *app;
 
-  app = ofc_handle_lock (hApp) ;
-  if (app != OFC_NULL)
-    {
-      /*
-       * Set the flag to kill the app
-       */
-      app->destroy = OFC_TRUE ;
-      /*
-       * And notify the scheduler
-       */
-      ofc_handle_unlock (hApp) ;
-      ofc_app_sig_event (hApp) ;
+    app = ofc_handle_lock(hApp);
+    if (app != OFC_NULL) {
+        /*
+         * Set the flag to kill the app
+         */
+        app->destroy = OFC_TRUE;
+        /*
+         * And notify the scheduler
+         */
+        ofc_handle_unlock(hApp);
+        ofc_app_sig_event(hApp);
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_app_set_wait (OFC_HANDLE hApp, OFC_HANDLE hNotify)
-{
-  OFC_APP *app ;
+ofc_app_set_wait(OFC_HANDLE hApp, OFC_HANDLE hNotify) {
+    OFC_APP *app;
 
-  app = ofc_handle_lock (hApp) ;
-  if (app != OFC_NULL)
-    {
-      app->hNotify = hNotify ;
-      ofc_handle_unlock (hApp) ;
+    app = ofc_handle_lock(hApp);
+    if (app != OFC_NULL) {
+        app->hNotify = hNotify;
+        ofc_handle_unlock(hApp);
     }
 }
 
@@ -124,24 +118,22 @@ ofc_app_set_wait (OFC_HANDLE hApp, OFC_HANDLE hNotify)
  * This should only be called by the scheduler
  */
 OFC_CORE_LIB OFC_VOID
-ofc_app_destroy (OFC_HANDLE hApp)
-{
-  OFC_APP *app ;
+ofc_app_destroy(OFC_HANDLE hApp) {
+    OFC_APP *app;
 
-  app = ofc_handle_lock (hApp) ;
-  if (app != OFC_NULL)
-    {
-      /*
-       * Call the application specific routine
-       */
-      (*app->def->destroy)(hApp) ;
+    app = ofc_handle_lock(hApp);
+    if (app != OFC_NULL) {
+        /*
+         * Call the application specific routine
+         */
+        (*app->def->destroy)(hApp);
 
-      if (app->hNotify != OFC_HANDLE_NULL)
-	ofc_event_set  (app->hNotify) ;
+        if (app->hNotify != OFC_HANDLE_NULL)
+            ofc_event_set(app->hNotify);
 
-      ofc_handle_destroy (hApp) ;
-      ofc_handle_unlock (hApp) ;
-      ofc_free (app) ;
+        ofc_handle_destroy(hApp);
+        ofc_handle_unlock(hApp);
+        ofc_free(app);
     }
 }
 
@@ -151,18 +143,15 @@ ofc_app_destroy (OFC_HANDLE hApp)
  * Accepts: hApp - The handle of the app to do the preselect for
  */
 OFC_CORE_LIB OFC_VOID
-ofc_app_preselect (OFC_HANDLE hApp)
-{
-  OFC_APP *app ;
+ofc_app_preselect(OFC_HANDLE hApp) {
+    OFC_APP *app;
 
-  app = ofc_handle_lock (hApp) ;
-  if (app != OFC_NULL)
-    {
-      if (!app->destroy)
-	{
-	  (*app->def->preselect)(hApp) ;
-	}
-      ofc_handle_unlock (hApp) ;
+    app = ofc_handle_lock(hApp);
+    if (app != OFC_NULL) {
+        if (!app->destroy) {
+            (*app->def->preselect)(hApp);
+        }
+        ofc_handle_unlock(hApp);
     }
 }
 
@@ -174,22 +163,19 @@ ofc_app_preselect (OFC_HANDLE hApp)
  *    events - The events that have occured
  */
 OFC_CORE_LIB OFC_HANDLE
-ofc_app_postselect (OFC_HANDLE hApp, OFC_HANDLE hEvent)
-{
-  OFC_APP *app ;
-  OFC_HANDLE ret ;
+ofc_app_postselect(OFC_HANDLE hApp, OFC_HANDLE hEvent) {
+    OFC_APP *app;
+    OFC_HANDLE ret;
 
-  ret = OFC_HANDLE_NULL ;
-  app = ofc_handle_lock (hApp) ;
-  if (app != OFC_NULL)
-    {
-      if (!app->destroy)
-	{
-	  ret = (*app->def->postselect)(hApp, hEvent) ;
-	}
-      ofc_handle_unlock (hApp) ;
+    ret = OFC_HANDLE_NULL;
+    app = ofc_handle_lock(hApp);
+    if (app != OFC_NULL) {
+        if (!app->destroy) {
+            ret = (*app->def->postselect)(hApp, hEvent);
+        }
+        ofc_handle_unlock(hApp);
     }
-  return (ret) ;
+    return (ret);
 }
 
 /*
@@ -199,18 +185,16 @@ ofc_app_postselect (OFC_HANDLE hApp, OFC_HANDLE hEvent)
  *    Handle to app that has generated a significant event
  */
 OFC_CORE_LIB OFC_VOID
-ofc_app_sig_event (OFC_HANDLE hApp)
-{
-  OFC_APP *app ;
+ofc_app_sig_event(OFC_HANDLE hApp) {
+    OFC_APP *app;
 
-  app = ofc_handle_lock (hApp) ;
-  if (app != OFC_NULL)
-    {
-      /*
-       * Pass the significant event on to the scheduler
-       */
-      ofc_sched_significant_event (app->scheduler) ;
-      ofc_handle_unlock (hApp) ;
+    app = ofc_handle_lock(hApp);
+    if (app != OFC_NULL) {
+        /*
+         * Pass the significant event on to the scheduler
+         */
+        ofc_sched_significant_event(app->scheduler);
+        ofc_handle_unlock(hApp);
     }
 }
 
@@ -224,35 +208,31 @@ ofc_app_sig_event (OFC_HANDLE hApp)
  *    whether we're destroying it or not
  */
 OFC_CORE_LIB OFC_BOOL
-ofc_app_destroying (OFC_HANDLE hApp)
-{
-  OFC_APP *app ;
-  OFC_BOOL ret ;
+ofc_app_destroying(OFC_HANDLE hApp) {
+    OFC_APP *app;
+    OFC_BOOL ret;
 
-  app = ofc_handle_lock (hApp) ;
-  ret = OFC_FALSE ;
-  if (app != OFC_NULL)
-    {
-      ret = app->destroy ;
-      ofc_handle_unlock (hApp) ;
+    app = ofc_handle_lock(hApp);
+    ret = OFC_FALSE;
+    if (app != OFC_NULL) {
+        ret = app->destroy;
+        ofc_handle_unlock(hApp);
     }
-  return (ret) ;
+    return (ret);
 }
 
 OFC_CORE_LIB OFC_VOID *
-ofc_app_get_data (OFC_HANDLE hApp)
-{
-  OFC_APP *app ;
-  OFC_VOID *ret ;
+ofc_app_get_data(OFC_HANDLE hApp) {
+    OFC_APP *app;
+    OFC_VOID *ret;
 
-  ret = OFC_NULL ;
-  app = ofc_handle_lock (hApp) ;
-  if (app != OFC_NULL)
-    {
-      ret = app->app_data ;
-      ofc_handle_unlock (hApp) ;
+    ret = OFC_NULL;
+    app = ofc_handle_lock(hApp);
+    if (app != OFC_NULL) {
+        ret = app->app_data;
+        ofc_handle_unlock(hApp);
     }
-  return (ret) ;
+    return (ret);
 }
 
 #if defined(OFC_APP_DEBUG)
@@ -265,7 +245,7 @@ ofc_app_dump(OFC_HANDLE hApp)
   if (app != OFC_NULL)
     {
       if (*app->def->dump != OFC_NULL)
-	(*app->def->dump)(hApp) ;
+    (*app->def->dump)(hApp) ;
       ofc_handle_unlock(hApp) ;
     }
 }

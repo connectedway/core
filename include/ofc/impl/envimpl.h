@@ -23,8 +23,10 @@
 extern "C"
 {
 #endif
-  OFC_BOOL
-  ofc_env_get_impl (OFC_ENV_VALUE value, OFC_TCHAR *ptr, OFC_SIZET len) ;
+
+OFC_BOOL
+ofc_env_get_impl(OFC_ENV_VALUE value, OFC_TCHAR *ptr, OFC_SIZET len);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -24,11 +24,12 @@
 extern "C"
 {
 #endif
-  OFC_CORE_LIB OFC_VOID
-    ofc_core_load (OFC_VOID) ;
+OFC_CORE_LIB OFC_VOID
+ofc_core_load(OFC_VOID);
 
-  OFC_CORE_LIB OFC_VOID
-    ofc_core_unload (OFC_VOID) ;
+OFC_CORE_LIB OFC_VOID
+ofc_core_unload(OFC_VOID);
+
 #if defined(__cplusplus)
 }
 #endif
