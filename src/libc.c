@@ -1968,7 +1968,7 @@ ofc_trace_init (OFC_VOID)
 	{
 	  ofc_memset (trace, '\0', sizeof (struct trace_t)) ;
 	  trace->trace_offset = 0 ;
-	  trace->trace_lock = BlueLockInit() ;
+	  trace->trace_lock = ofc_lock_init() ;
 	  ofc_set_trace (trace) ;
 	  ofc_trace ("Trace Buffer Initialized\n") ;
 	}
@@ -1983,7 +1983,7 @@ ofc_trace_destroy (OFC_VOID)
   trace = ofc_get_trace() ;
   if (trace != OFC_NULL)
     {
-      BlueLockDestroy(trace->trace_lock);
+      ofc_lock_destroy(trace->trace_lock);
       ofc_set_trace(OFC_NULL);
       ofc_free (trace);
     }
@@ -1997,7 +1997,7 @@ ofc_trace(OFC_CCHAR *fmt,...)
   OFC_SIZET len ;
   OFC_SIZET olen ;
   struct trace_t *trace ;
-  BLUE_PROCESS_ID pid ;
+  OFC_PROCESS_ID pid ;
 
   va_list ap ;
 
@@ -2013,7 +2013,7 @@ ofc_trace(OFC_CCHAR *fmt,...)
   /*
    * prepend process id
    */
-  pid = BlueProcessGet() ;
+  pid = ofc_process_get() ;
   obuf2 = ofc_saprintf ("%8d: %s\n", pid, obuf) ;
   len = ofc_strlen (obuf2) ;
   ofc_free (obuf) ;
@@ -2021,7 +2021,7 @@ ofc_trace(OFC_CCHAR *fmt,...)
   trace = ofc_get_trace() ;
   if (trace != OFC_NULL && ((len + 1) < OFC_TRACE_LEN))
     {
-      BlueLock (trace->trace_lock) ;
+      ofc_lock (trace->trace_lock) ;
       olen = OFC_MIN (len, OFC_TRACE_LEN - 
 			 trace->trace_offset - 1) ;
       ofc_memcpy (trace->trace_buf + trace->trace_offset, 
@@ -2041,7 +2041,7 @@ ofc_trace(OFC_CCHAR *fmt,...)
 	    '\0' ;
 	  trace->trace_offset += (len + 1) ;
 	}
-      BlueUnlock (trace->trace_lock) ;
+      ofc_unlock (trace->trace_lock) ;
     }
   ofc_free (obuf2) ;
 }

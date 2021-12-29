@@ -3,16 +3,16 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_QUEUE_H__)
-#define __BLUE_QUEUE_H__
+#if !defined(__OFC_QUEUE_H__)
+#define __OFC_QUEUE_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
 
 /**
- * \defgroup BlueQueue Queue Management Facility
- * \ingroup BlueInternal
+ * \defgroup Open Files Queue Management Facility
+ * \ingroup internal
  *
  * Routines that provide for queue management
  * \{ 
@@ -29,7 +29,7 @@ extern "C"
    * Handle to the linked list
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueQcreate (OFC_VOID) ;
+  ofc_queue_create (OFC_VOID) ;
   /**
    * Destroy a queue
    *
@@ -37,7 +37,7 @@ extern "C"
    * Head of queue
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQdestroy (OFC_HANDLE qHead) ;
+  ofc_queue_destroy (OFC_HANDLE qHead) ;
   /**
    * Add an element to the end of the list
    *
@@ -48,7 +48,7 @@ extern "C"
    * Pointer to element to add to list
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQenqueue (OFC_HANDLE qHead, OFC_VOID *qElement) ;
+  ofc_enqueue (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Remove an element from the front of the list
    *
@@ -59,7 +59,7 @@ extern "C"
    * Item at the front or OFC_NULL
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueQdequeue (OFC_HANDLE qHead) ;
+  ofc_dequeue (OFC_HANDLE qHead) ;
   /**
    * See if queue is empty
    *
@@ -70,7 +70,7 @@ extern "C"
    * OFC_TRUE if empty, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueQempty (OFC_HANDLE qHead) ;
+  ofc_queue_empty (OFC_HANDLE qHead) ;
   /**
    * Return the head of the linked list
    *
@@ -81,7 +81,7 @@ extern "C"
    * Element that was at the front of the list
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueQfirst (OFC_HANDLE qHead) ;
+  ofc_queue_first (OFC_HANDLE qHead) ;
   /**
    * Return the next element on the list
    *
@@ -95,7 +95,7 @@ extern "C"
    * Pointer to the next element
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueQnext (OFC_HANDLE qHead, OFC_VOID *qElement) ;
+  ofc_queue_next (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Unlink the current element from the list
    *
@@ -106,7 +106,7 @@ extern "C"
    * Pointer to the current element
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQunlink (OFC_HANDLE qHead, OFC_VOID *qElement) ;
+  ofc_queue_unlink (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Clear the contents of a linked list
    *
@@ -121,7 +121,7 @@ extern "C"
    * information is freed someother way.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueQclear (OFC_HANDLE qHandle) ;
+  ofc_queue_clear (OFC_HANDLE qHandle) ;
 
 #if defined(__cplusplus)
 }

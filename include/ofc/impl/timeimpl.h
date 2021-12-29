@@ -3,16 +3,16 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_TIME_IMPL_H__)
-#define __BLUE_TIME_IMPL_H__
+#if !defined(__OFC_TIME_IMPL_H__)
+#define __OFC_TIME_IMPL_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/file.h"
 
 /**
- * \defgroup BlueTimeImpl Time Management Implementation
- * \ingroup BluePort
+ * \defgroup time_impl Time Management Implementation
+ * \ingroup port
  *
  * This facility provides the platform dependent implementation of time
  * functions
@@ -30,21 +30,21 @@ extern "C"
    * \returns
    * A Millisecond Tick Count
    */
-  OFC_MSTIME BlueTimeGetNowImpl(OFC_VOID) ;
+  OFC_MSTIME ofc_time_get_now_impl(OFC_VOID) ;
   /**
    * Get Time of Day in OFC_FILETIME format
    *
    * \param now
    * Pointer to where to store the current file time
    */
-  OFC_VOID BlueTimeGetFileTimeImpl (OFC_FILETIME *now) ;
+  OFC_VOID ofc_time_get_file_time_impl (OFC_FILETIME *now) ;
   /**
    * Get The local time zone offset from UTC
    *
    * \returns
    * The number of minutes from UTC that this timezone is in
    */
-  OFC_UINT16 BlueTimeGetTimeZoneImpl (OFC_VOID) ;
+  OFC_UINT16 ofc_time_get_timezone_impl (OFC_VOID) ;
   /**
    * Convert a File Time to a DOS Date Time
    *
@@ -61,9 +61,9 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueFileTimeToDosDateTimeImpl (const OFC_FILETIME *lpFileTime,
-                                 OFC_WORD *lpFatDate,
-                                 OFC_WORD *lpFatTime) ;
+  ofc_file_time_to_dos_date_time_impl (const OFC_FILETIME *lpFileTime,
+                                       OFC_WORD *lpFatDate,
+                                       OFC_WORD *lpFatTime) ;
   /**
    * Convert a DOS Date Time to a File Time
    *
@@ -80,16 +80,16 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueDosDateTimeToFileTimeImpl (OFC_WORD FatDate,
-                                 OFC_WORD FatTime,
-                                 OFC_FILETIME *lpFileTime) ;
+  ofc_dos_date_time_to_file_time_impl (OFC_WORD FatDate,
+                                       OFC_WORD FatTime,
+                                       OFC_FILETIME *lpFileTime) ;
   /**
    * Returns Number of US of runtime
    *
    * \returns
    * Runtime in us
    */
-  OFC_MSTIME BlueTimeGetRuntimeImpl (OFC_VOID) ;
+  OFC_MSTIME ofc_get_runtime_impl (OFC_VOID) ;
 
 #if defined(__cplusplus)
 }

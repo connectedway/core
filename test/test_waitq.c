@@ -46,11 +46,11 @@ static OFC_INT test_startup_default(OFC_VOID)
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
     } ;
 
-  BlueConfigDefault();
-  BlueConfigSetInterfaceType(BLUE_CONFIG_ICONFIG_AUTO);
-  BlueConfigSetNodeName(TSTR("localhost"), TSTR("WORKGROUP"),
-			TSTR("OpenFiles Unit Test"));
-  BlueConfigSetUUID(&uuid);
+  ofc_persist_default();
+  ofc_persist_set_interface_type(OFC_CONFIG_ICONFIG_AUTO);
+  ofc_persist_set_node_name(TSTR("localhost"), TSTR("WORKGROUP"),
+                            TSTR("OpenFiles Unit Test"));
+  ofc_persist_set_uuid(&uuid);
   return(0);
 }
 
@@ -63,7 +63,7 @@ static OFC_INT test_startup(OFC_VOID)
 #else
   ret = test_startup_default();
 #endif
-  hScheduler = BlueSchedCreate();
+  hScheduler = ofc_sched_create();
   hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
@@ -72,7 +72,7 @@ static OFC_INT test_startup(OFC_VOID)
 static OFC_VOID test_shutdown(OFC_VOID)
 {
   ofc_event_destroy(hDone);
-  BlueSchedQuit(hScheduler);
+  ofc_sched_quit(hScheduler);
   ofc_framework_shutdown();
   ofc_framework_destroy();
 }
@@ -94,7 +94,7 @@ typedef struct
   OFC_HANDLE hWaitQueue ;
   OFC_HANDLE scheduler ;
   OFC_INT count ;
-} BLUE_WAITQ_TEST ;
+} OFC_WAITQ_TEST ;
 
 static OFC_VOID WaitQueueTestPreSelect (OFC_HANDLE app) ;
 static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
@@ -108,13 +108,13 @@ static OFC_APP_TEMPLATE WaitQueueTestAppDef =
     &WaitQueueTestPostSelect,
     &WaitQueueTestDestroy,
 #if defined(OFC_APP_DEBUG)
-    BLUE_NULL
+    OFC_NULL
 #endif
   } ;
 
 static OFC_VOID WaitQueueTestPreSelect (OFC_HANDLE app)
 {
-  BLUE_WAITQ_TEST *waitqTest ;
+  OFC_WAITQ_TEST *waitqTest ;
   WAITQ_TEST_STATE entry_state ;
 
   waitqTest = ofc_app_get_data (app) ;
@@ -123,31 +123,31 @@ static OFC_VOID WaitQueueTestPreSelect (OFC_HANDLE app)
       do /* while waitqTest->state != entry_state */
 	{
 	  entry_state = waitqTest->state ;
-	  BlueSchedClearWait (waitqTest->scheduler, app) ;
+	  ofc_sched_clear_wait (waitqTest->scheduler, app) ;
 
 	  switch (waitqTest->state)
 	    {
 	    default:
 	    case WAITQ_TEST_STATE_IDLE:
-	      waitqTest->hWaitQueue = BlueWaitQcreate() ;
+	      waitqTest->hWaitQueue = ofc_waitq_create() ;
 	      if (waitqTest->hWaitQueue != OFC_HANDLE_NULL)
 		{
-		  waitqTest->hTimer = BlueTimerCreate("WQ TEST") ;
+		  waitqTest->hTimer = ofc_timer_create("WQ TEST") ;
 		  if (waitqTest->hTimer != OFC_HANDLE_NULL)
 		    {
-		      BlueTimerSet (waitqTest->hTimer, WAITQ_TEST_INTERVAL) ;
+		      ofc_timer_set (waitqTest->hTimer, WAITQ_TEST_INTERVAL) ;
 		      waitqTest->state = WAITQ_TEST_STATE_RUNNING ;
-		      BlueSchedAddWait (waitqTest->scheduler, app, 
-					waitqTest->hTimer) ;
+		      ofc_sched_add_wait (waitqTest->scheduler, app,
+                                  waitqTest->hTimer) ;
 		    }
 		}
 	      break ;
 
 	    case WAITQ_TEST_STATE_RUNNING:
-	      BlueSchedAddWait (waitqTest->scheduler, app, 
-				waitqTest->hWaitQueue) ;
-	      BlueSchedAddWait (waitqTest->scheduler, app, 
-				waitqTest->hTimer) ;
+	      ofc_sched_add_wait (waitqTest->scheduler, app,
+                              waitqTest->hWaitQueue) ;
+	      ofc_sched_add_wait (waitqTest->scheduler, app,
+                              waitqTest->hTimer) ;
 	      break ;
 	    }
 	}
@@ -158,7 +158,7 @@ static OFC_VOID WaitQueueTestPreSelect (OFC_HANDLE app)
 static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
                                            OFC_HANDLE hWaitQueue)
 {
-  BLUE_WAITQ_TEST *waitqTest ;
+  OFC_WAITQ_TEST *waitqTest ;
   OFC_CHAR *msg ;
   OFC_HANDLE hNext ;
   OFC_BOOL progress ;
@@ -180,7 +180,7 @@ static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
 	    case WAITQ_TEST_STATE_RUNNING:
 	      if (hWaitQueue == waitqTest->hWaitQueue)
 		{
-		  msg = BlueWaitQdequeue (waitqTest->hWaitQueue) ;
+		  msg = ofc_waitq_dequeue (waitqTest->hWaitQueue) ;
 		  if (msg != OFC_NULL)
 		    {
 		      progress = OFC_TRUE ;
@@ -194,8 +194,8 @@ static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
 		    {
 		      msg = ofc_malloc (ofc_strlen (WAITQ_MESSAGE) + 1) ;
 		      ofc_strcpy (msg, WAITQ_MESSAGE) ;
-		      BlueWaitQenqueue (waitqTest->hWaitQueue, msg) ;
-		      BlueTimerSet (waitqTest->hTimer, WAITQ_TEST_INTERVAL) ;
+		      ofc_waitq_enqueue (waitqTest->hWaitQueue, msg) ;
+		      ofc_timer_set (waitqTest->hTimer, WAITQ_TEST_INTERVAL) ;
 		      ofc_printf ("Wait Queue Timer Triggered\n") ;
 		      hNext = waitqTest->hWaitQueue ;
 		    }
@@ -214,7 +214,7 @@ static OFC_HANDLE WaitQueueTestPostSelect (OFC_HANDLE app,
 
 static OFC_VOID WaitQueueTestDestroy (OFC_HANDLE app)
 {
-  BLUE_WAITQ_TEST *waitqTest ;
+  OFC_WAITQ_TEST *waitqTest ;
 
   waitqTest = ofc_app_get_data (app) ;
   if (waitqTest != OFC_NULL)
@@ -226,8 +226,8 @@ static OFC_VOID WaitQueueTestDestroy (OFC_HANDLE app)
 	  break ;
 
 	case WAITQ_TEST_STATE_RUNNING:
-	  BlueTimerDestroy (waitqTest->hTimer) ;
-	  BlueWaitQdestroy (waitqTest->hWaitQueue) ;
+	  ofc_timer_destroy (waitqTest->hTimer) ;
+	  ofc_waitq_destroy (waitqTest->hWaitQueue) ;
 	  break ;
 	}
       ofc_free (waitqTest) ;
@@ -248,10 +248,10 @@ TEST_TEAR_DOWN(waitq)
 
 TEST(waitq, test_waitq)
 {
-  BLUE_WAITQ_TEST *waitqTest ;
+  OFC_WAITQ_TEST *waitqTest ;
   OFC_HANDLE hApp ;
 
-  waitqTest = ofc_malloc (sizeof (BLUE_WAITQ_TEST)) ;
+  waitqTest = ofc_malloc (sizeof (OFC_WAITQ_TEST)) ;
   waitqTest->count = 0 ;
   waitqTest->state = WAITQ_TEST_STATE_IDLE ;
   waitqTest->scheduler = hScheduler ;

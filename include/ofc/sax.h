@@ -3,17 +3,17 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_SAX_H__)
-#define __BLUE_SAX_H__
+#if !defined(__OFC_SAX_H__)
+#define __OFC_SAX_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/persist.h"
 
 /**
- * \defgroup BlueSax SAX Parser
+ * \defgroup Open Files SAX Parser
  *
- * \ingroup BlueConfig
+ * \ingroup persist
  */
 
 /** \{ */
@@ -34,35 +34,35 @@ typedef OFC_VOID (XMLHANDLER)(OFC_VOID *state,
                               OFC_CCHAR *encoding,
                               OFC_INT standalone) ;
 
-typedef OFC_VOID *BLUE_XML_PARSER ;
-#define BLUE_XML_STATUS_ERROR -1 
+typedef OFC_VOID *OFC_XML_PARSER ;
+#define OFC_XML_STATUS_ERROR -1
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  OFC_CORE_LIB BLUE_XML_PARSER
-  BlueXMLparserCreate (OFC_VOID *p) ;
+  OFC_CORE_LIB OFC_XML_PARSER
+  ofc_xml_parser_create (OFC_VOID *p) ;
 
   OFC_CORE_LIB OFC_VOID
-  BlueXMLparserFree (OFC_VOID *parsertoken) ;
+  ofc_xml_parser_free (OFC_VOID *parsertoken) ;
 
   OFC_CORE_LIB OFC_VOID
-  BlueXMLsetUserData (OFC_VOID *parsertoken, OFC_VOID *state) ;
+  ofc_xml_set_user_data (OFC_VOID *parsertoken, OFC_VOID *state) ;
 
   OFC_CORE_LIB OFC_VOID
-  BlueXMLsetElementHandler (OFC_VOID *parsertoken,
-                            STARTHANDLER startelement,
-                            ENDHANDLER endelement) ;
+  ofc_xml_set_element_handler (OFC_VOID *parsertoken,
+                               STARTHANDLER startelement,
+                               ENDHANDLER endelement) ;
   OFC_CORE_LIB OFC_VOID
-  BlueXMLsetCharacterDataHandler (OFC_VOID *parsertoken,
-                                  CHARHANDLER chardata) ;
+  ofc_xml_set_character_data_handler (OFC_VOID *parsertoken,
+                                      CHARHANDLER chardata) ;
   OFC_CORE_LIB OFC_VOID
-  BlueXMLsetXmlDeclHandler (OFC_VOID *parsertoken,
-                            XMLHANDLER xmldata) ;
+  ofc_xml_set_xml_decl_handler (OFC_VOID *parsertoken,
+                                XMLHANDLER xmldata) ;
   OFC_CORE_LIB OFC_INT
-  BlueXMLparse (OFC_VOID *parsertoken, OFC_CHAR *buf,
-                OFC_SIZET len, OFC_INT done) ;
+  ofc_xml_parse (OFC_VOID *parsertoken, OFC_CHAR *buf,
+                 OFC_SIZET len, OFC_INT done) ;
 #if defined(__cplusplus)
 }
 #endif

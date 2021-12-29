@@ -617,7 +617,7 @@ extern "C"
   /**
    * Initialize the File System Redirector
    *
-   * This should only be called by BlueInit
+   * This should only be called by ofc_init
    */
   OFC_CORE_LIB OFC_VOID
   ofc_fs_init (OFC_VOID) ;

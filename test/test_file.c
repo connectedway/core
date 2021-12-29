@@ -77,7 +77,7 @@ static OFC_DWORD OfcFSTestApp (OFC_PATH *path) ;
 /*
  * And the number of buffers
  */
-#define NUM_FILE_BUFFERS 1
+#define NUM_FILE_BUFFERS 4
 /*
  * Define buffer states.  
  */
@@ -157,7 +157,7 @@ AsyncRead (OFC_HANDLE wait_set, OFC_HANDLE read_file,
   /*
    * Add the buffer to the wait set
    */
-  BlueWaitSetAdd (wait_set, (OFC_HANDLE) buffer, buffer->readOverlapped) ;
+  ofc_waitset_add (wait_set, (OFC_HANDLE) buffer, buffer->readOverlapped) ;
   /*
    * Issue the read (this will be non blocking)
    */
@@ -193,7 +193,7 @@ AsyncRead (OFC_HANDLE wait_set, OFC_HANDLE read_file,
 	   * It's not pending
 	   */
 	  buffer->state = BUFFER_STATE_IDLE ;
-	  BlueWaitSetRemove (wait_set, buffer->readOverlapped) ;
+	  ofc_waitset_remove (wait_set, buffer->readOverlapped) ;
 	}
     }
       
@@ -275,7 +275,7 @@ static ASYNC_RESULT AsyncReadResult (OFC_HANDLE wait_set,
        * Finish up the buffer if the I/O is no longer pending
        */
       buffer->state = BUFFER_STATE_IDLE ;
-      BlueWaitSetRemove (wait_set, buffer->readOverlapped) ;
+      ofc_waitset_remove (wait_set, buffer->readOverlapped) ;
     }
     
   return (result) ;
@@ -294,7 +294,7 @@ static OFC_BOOL AsyncWrite (OFC_HANDLE wait_set, OFC_HANDLE write_file,
                           buffer->offset) ;
     
   buffer->state = BUFFER_STATE_WRITE ;
-  BlueWaitSetAdd (wait_set, (OFC_HANDLE) buffer, buffer->writeOverlapped) ;
+  ofc_waitset_add (wait_set, (OFC_HANDLE) buffer, buffer->writeOverlapped) ;
     
   status = OfcWriteFile (write_file, buffer->data, dwLen, OFC_NULL,
                          buffer->writeOverlapped) ;
@@ -309,7 +309,7 @@ static OFC_BOOL AsyncWrite (OFC_HANDLE wait_set, OFC_HANDLE write_file,
       else
 	{
 	  buffer->state = BUFFER_STATE_IDLE ;
-	  BlueWaitSetRemove (wait_set, buffer->writeOverlapped) ;
+	  ofc_waitset_remove (wait_set, buffer->writeOverlapped) ;
 	}
     }
   return (status) ;
@@ -344,7 +344,7 @@ static ASYNC_RESULT AsyncWriteResult (OFC_HANDLE wait_set,
   if (result != ASYNC_RESULT_PENDING)
     {
       buffer->state = BUFFER_STATE_IDLE ;
-      BlueWaitSetRemove (wait_set, buffer->writeOverlapped) ;
+      ofc_waitset_remove (wait_set, buffer->writeOverlapped) ;
     }
     
   return (result) ;
@@ -399,9 +399,9 @@ static OFC_BOOL OfcCreateFileTest (OFC_CTCHAR *device)
    * Get the time for simple performance analysis
    */
   status = OFC_TRUE ;
-  start_time = BlueTimeGetNow() ;
+  start_time = ofc_time_get_now() ;
 #if defined(OFC_PERF_STATS) 
-  BlueTimePerfReset() ;
+  ofc_perf_reset() ;
 #endif
   /*
    * Open up our write file.  If it exists, it will be deleted
@@ -471,11 +471,11 @@ static OFC_BOOL OfcCreateFileTest (OFC_CTCHAR *device)
   ofc_free (wfilename) ;
 
 #if defined(OFC_PERF_STATS)
-  BlueTimePerfDump() ;
+  ofc_perf_dump() ;
 #endif
   if (ret == OFC_TRUE)
     ofc_printf ("Create File Done, Elapsed Time %dms\n",
-		 BlueTimeGetNow() - start_time) ;
+                ofc_time_get_now() - start_time) ;
   else
     ofc_printf ("Create File Test Failed\n") ;
   return (ret) ;
@@ -533,9 +533,9 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
    * Get the time for simple performance analysis
    */
   status = OFC_TRUE ;
-  start_time = BlueTimeGetNow() ;
+  start_time = ofc_time_get_now() ;
 #if defined(OFC_PERF_STATS) 
-  BlueTimePerfReset() ;
+  ofc_perf_reset() ;
 #endif
   /*
    * Open up our read file.  This file should
@@ -581,11 +581,11 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	  /*
 	   * Now, create a wait set that we will wait for
 	   */
-	  wait_set = BlueWaitSetCreate() ;
+	  wait_set = ofc_waitset_create() ;
 	  /*
 	   * And create our own buffer list that we will manage
 	   */
-	  buffer_list = BlueQcreate () ;
+	  buffer_list = ofc_queue_create () ;
 	  /*
 	   * Set some flags
 	   */
@@ -604,7 +604,7 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	      buffer = ofc_malloc (sizeof (OFC_FILE_BUFFER)) ;
 	      if (buffer == OFC_NULL)
 		{
-		  ofc_printf ("BlueFSTest: Failed to alloc buffer context\n") ;
+		  ofc_printf ("test_file: Failed to alloc buffer context\n") ;
 		  ret = OFC_FALSE ;
 		}
 	      else
@@ -612,7 +612,7 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 		  buffer->data = ofc_malloc (BUFFER_SIZE) ;
 		  if (buffer->data == OFC_NULL)
 		    {
-		      ofc_printf ("BlueFSTest: Failed to allocate "
+		      ofc_printf ("test_file: Failed to allocate "
 				   "memory buffer\n") ;
 		      ofc_free (buffer) ;
 		      buffer = OFC_NULL ;
@@ -632,11 +632,11 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 			OfcCreateOverlapped(write_file) ;
 		      if (buffer->readOverlapped == OFC_HANDLE_NULL ||
                   buffer->writeOverlapped == OFC_HANDLE_NULL)
-			BlueProcessCrash("An Overlapped Handle is NULL");
+			ofc_process_crash("An Overlapped Handle is NULL");
 		      /*
 		       * Add it to our buffer list
 		       */
-		      BlueQenqueue (buffer_list, buffer) ;
+		      ofc_enqueue (buffer_list, buffer) ;
 		      dwLen = BUFFER_SIZE ;
 		      /*
 		       * Issue the read (pre increment the pending to 
@@ -682,7 +682,7 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	       * just finished priming, but it may be a write also if
 	       * we've been in this loop a bit
 	       */
-	      hEvent = BlueWaitSetWait (wait_set) ;
+	      hEvent = ofc_waitset_wait (wait_set) ;
 	      if (hEvent != OFC_HANDLE_NULL)
 		{
 		  /*
@@ -789,9 +789,9 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	   * either due to errors or eof on all of our outstanding
 	   * reads and writes.
 	   */
-	  for (buffer = BlueQdequeue (buffer_list) ;
+	  for (buffer = ofc_dequeue (buffer_list) ;
            buffer != OFC_NULL ;
-	       buffer = BlueQdequeue (buffer_list))
+	       buffer = ofc_dequeue (buffer_list))
 	    {
 	      /*
 	       * Destroy the overlapped I/O handle for each buffer
@@ -807,11 +807,11 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
 	  /*
 	   * Destroy the buffer list
 	   */
-	  BlueQdestroy (buffer_list) ;
+	  ofc_queue_destroy (buffer_list) ;
 	  /*
 	   * And destroy the wait list
 	   */
-	  BlueWaitSetDestroy (wait_set) ;
+	  ofc_waitset_destroy (wait_set) ;
 	  /*
 	   * Now close the write file
 	   */
@@ -827,11 +827,11 @@ static OFC_BOOL OfcCopyFileTest (OFC_CTCHAR *device)
   ofc_free (wfilename) ;
 
 #if defined(OFC_PERF_STATS)
-  BlueTimePerfDump() ;
+  ofc_perf_dump() ;
 #endif
   if (ret == OFC_TRUE)
     ofc_printf ("Copy Done, Elapsed Time %dms\n",
-		 BlueTimeGetNow() - start_time) ;
+                ofc_time_get_now() - start_time) ;
   else
     ofc_printf ("Copy Test Failed\n") ;
   return (ret) ;
@@ -1255,14 +1255,14 @@ static OFC_BOOL OfcRenameTest (OFC_CTCHAR *device)
 
 		      newlen = ofc_tstrlen (tofilename) ;
 		      rename_info_len = sizeof (OFC_FILE_RENAME_INFO) +
-                                (newlen * sizeof (BLUE_WCHAR)) ;
+                                (newlen * sizeof (OFC_WCHAR)) ;
 
 		      rename_info = ofc_malloc (rename_info_len) ;
 		  
 		      rename_info->ReplaceIfExists = OFC_FALSE ;
 		      rename_info->RootDirectory = OFC_HANDLE_NULL ;
 		      rename_info->FileNameLength =
-                      (OFC_DWORD) newlen * sizeof (BLUE_WCHAR) ;
+                      (OFC_DWORD) newlen * sizeof (OFC_WCHAR) ;
 		      ofc_tstrncpy (rename_info->FileName,
                             tofilename, newlen) ;
 		      status = 
@@ -1685,7 +1685,7 @@ static OFC_BOOL OfcSetEOFTest (OFC_CTCHAR *device)
 				  ofc_printf 
 				    ("End Of File Doesn't Match.  Expected %d, Got %d\n",
 				     BUFFER_SIZE / 2,
-				     (BLUE_INT) standard_info.EndOfFile) ;
+				     (OFC_INT) standard_info.EndOfFile) ;
 				  ret = OFC_FALSE ;
 				}
 			    }
@@ -1789,24 +1789,24 @@ static OFC_VOID OfcFSPrintFindData (OFC_WIN32_FIND_DATA *find_data)
   
   ofc_printf ("    %s\n", str) ;
 
-  BlueFileTimeToDosDateTime (&find_data->ftCreateTime,
-			     &fat_date, &fat_time) ;
+  ofc_file_time_to_dos_date_time (&find_data->ftCreateTime,
+                                  &fat_date, &fat_time) ;
 
-  BlueTimeDosDateTimeToElements (fat_date, fat_time,
-				 &month, &day, &year, &hour, &min, &sec) ;
+  ofc_dos_date_time_to_elements (fat_date, fat_time,
+                                 &month, &day, &year, &hour, &min, &sec) ;
   ofc_printf ("Create Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
               month, day, year, hour, min, sec) ;
-  BlueFileTimeToDosDateTime (&find_data->ftLastAccessTime,
-			     &fat_date, &fat_time) ;
+  ofc_file_time_to_dos_date_time (&find_data->ftLastAccessTime,
+                                  &fat_date, &fat_time) ;
 
-  BlueTimeDosDateTimeToElements (fat_date, fat_time,
-				 &month, &day, &year, &hour, &min, &sec) ;
+  ofc_dos_date_time_to_elements (fat_date, fat_time,
+                                 &month, &day, &year, &hour, &min, &sec) ;
   ofc_printf ("Last Access Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
               month, day, year, hour, min, sec) ;
-  BlueFileTimeToDosDateTime (&find_data->ftLastWriteTime,
-			     &fat_date, &fat_time) ;
-  BlueTimeDosDateTimeToElements (fat_date, fat_time,
-				 &month, &day, &year, &hour, &min, &sec) ;
+  ofc_file_time_to_dos_date_time (&find_data->ftLastWriteTime,
+                                  &fat_date, &fat_time) ;
+  ofc_dos_date_time_to_elements (fat_date, fat_time,
+                                 &month, &day, &year, &hour, &min, &sec) ;
   ofc_printf ("Last Write Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
               month, day, year, hour, min, sec) ;
 
@@ -1857,24 +1857,24 @@ OfcFSPrintFileAttributeData (OFC_WIN32_FILE_ATTRIBUTE_DATA *file_data)
   
   ofc_printf ("    %s\n", str) ;
 
-  BlueFileTimeToDosDateTime (&file_data->ftCreateTime,
-			     &fat_date, &fat_time) ;
+  ofc_file_time_to_dos_date_time (&file_data->ftCreateTime,
+                                  &fat_date, &fat_time) ;
 
-  BlueTimeDosDateTimeToElements (fat_date, fat_time,
-				 &month, &day, &year, &hour, &min, &sec) ;
+  ofc_dos_date_time_to_elements (fat_date, fat_time,
+                                 &month, &day, &year, &hour, &min, &sec) ;
   ofc_printf ("Create Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
               month, day, year, hour, min, sec) ;
-  BlueFileTimeToDosDateTime (&file_data->ftLastAccessTime,
-			     &fat_date, &fat_time) ;
+  ofc_file_time_to_dos_date_time (&file_data->ftLastAccessTime,
+                                  &fat_date, &fat_time) ;
 
-  BlueTimeDosDateTimeToElements (fat_date, fat_time,
-				 &month, &day, &year, &hour, &min, &sec) ;
+  ofc_dos_date_time_to_elements (fat_date, fat_time,
+                                 &month, &day, &year, &hour, &min, &sec) ;
   ofc_printf ("Last Access Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
               month, day, year, hour, min, sec) ;
-  BlueFileTimeToDosDateTime (&file_data->ftLastWriteTime,
-			     &fat_date, &fat_time) ;
-  BlueTimeDosDateTimeToElements (fat_date, fat_time,
-				 &month, &day, &year, &hour, &min, &sec) ;
+  ofc_file_time_to_dos_date_time (&file_data->ftLastWriteTime,
+                                  &fat_date, &fat_time) ;
+  ofc_dos_date_time_to_elements (fat_date, fat_time,
+                                 &month, &day, &year, &hour, &min, &sec) ;
   ofc_printf ("Last Write Time: %02d/%02d/%04d %02d:%02d:%02d GMT\n",
               month, day, year, hour, min, sec) ;
 
@@ -2229,50 +2229,50 @@ static struct _test_path test_paths[] =
     /* Test 0, Good case */
     {
       "Valid Path",
-      "rschmitt", "holy0grail", "workgroup", 
-      "tester", "blueshare", "mydir",
+      "user", "password", "workgroup", 
+      "tester", "openfiles", "mydir",
       OFC_ERROR_SUCCESS, OFC_ERROR_SUCCESS
     }, 
     /* Test 1, SMB server is wrong */
     {
       "Non-existent SMB Server",
-      "rschmitt", "holy0grail", "workgroup", 
-      "bogus", "blueshare", "mydir",
+      "user", "password", "workgroup", 
+      "bogus", "openfiles", "mydir",
       OFC_ERROR_BAD_NET_NAME, OFC_ERROR_BAD_NET_NAME
     }, 
     /* Test 2, Share folder is wrong */
     {
       "Non-existent SMB Share",
-      "rschmitt", "holy0grail", "workgroup", 
+      "user", "password", "workgroup", 
       "tester", "bogus", "mydir",
       OFC_ERROR_BAD_NETPATH, OFC_ERROR_BAD_NETPATH
     }, 
     /* Test 3, Password is wrong */
     {
       "Bad Passwowrd",
-      "rschmitt", "bogus", "workgroup", 
-      "tester", "blueshare", "mydir",
+      "user", "bogus", "workgroup", 
+      "tester", "openfiles", "mydir",
       OFC_ERROR_LOGON_FAILURE, OFC_ERROR_INVALID_PASSWORD
     }, 
     /* Test 4, Subdirectory is wrong */
     {
       "Non-existent Subdirectory",
-      "rschmitt", "holy0grail", "workgroup", 
-      "tester", "blueshare", "bogus",
+      "user", "password", "workgroup", 
+      "tester", "openfiles", "bogus",
       OFC_ERROR_FILE_NOT_FOUND, OFC_ERROR_PATH_NOT_FOUND
     }, 
     /* Test 5, Share folder doesn't have write permission */
     {
       "Read-Only Share",
-      "rschmitt", "holy0grail", "workgroup", 
+      "user", "password", "workgroup", 
       "tester", "roshare", "mydir",
       OFC_ERROR_ACCESS_DENIED, OFC_ERROR_PATH_NOT_FOUND
     }, 
     /* Test 6, Subdirectory doesn't have write permission */
     {
       "Read-Only Subdirectory",
-      "rschmitt", "holy0grail", "workgroup", 
-      "tester", "blueshare", "rodir",
+      "user", "password", "workgroup", 
+      "tester", "openfiles", "rodir",
       OFC_ERROR_ACCESS_DENIED, OFC_ERROR_ACCESS_DENIED
     },
     /* end of list */
@@ -2423,8 +2423,8 @@ OFC_INT test_file (OFC_LPCSTR test_root)
    */
   ofc_printf ("Starting File Test with %s\n", test_root);
 
-  BlueSleep (3000) ;
-  BlueThreadCreateLocalStorage() ;
+  ofc_sleep (3000) ;
+  ofc_thread_create_local_storage() ;
 
   count = 0;
 
@@ -2549,7 +2549,7 @@ OFC_INT test_file (OFC_LPCSTR test_root)
       count++ ;
 
       if (count != OFC_FILE_TEST_COUNT)
-	BlueSleep (OFC_FS_TEST_INTERVAL) ;
+	ofc_sleep (OFC_FS_TEST_INTERVAL) ;
     }
 
   ofc_free (device);

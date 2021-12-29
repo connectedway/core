@@ -25,7 +25,7 @@ static OFC_LPTSTR config_filename = OFC_NULL ;
 #endif
 
 /**
- * \defgroup BlueInit Initialization
+ * \defgroup init Initialization
  * \ingroup Applications
  */
 
@@ -35,7 +35,7 @@ OFC_CORE_LIB OFC_VOID
 ofc_framework_init (OFC_VOID)
 {
   /*
-   * Load Blue Share if not done as part of library load
+   * Load Open Files if not done as part of library load
    */
 #if !defined(INIT_ON_LOAD)
   of_core_load();
@@ -53,9 +53,6 @@ ofc_framework_init (OFC_VOID)
 OFC_CORE_LIB OFC_VOID
 ofc_framework_destroy (OFC_VOID)
 {
-  /*
-   * Load Blue Share if not done as part of library load
-   */
 #if defined(OFC_PERSIST)
   if (config_filename != OFC_NULL)
     {
@@ -73,7 +70,7 @@ ofc_framework_startup (OFC_VOID)
 {
   OFC_HANDLE hScheduler ;
 
-  hScheduler = BlueSchedCreate() ;
+  hScheduler = ofc_sched_create() ;
     ofc_framework_startup_ev(hScheduler, OFC_HANDLE_NULL);
 }
 
@@ -84,7 +81,7 @@ ofc_framework_startup_ev (OFC_HANDLE hScheduler, OFC_HANDLE hEvent)
    * Configuration is complete.  Start up the stack
    */
 #if defined(OFC_NETMON)
-  BlueNetMonStartup (hScheduler, BLUE_HANDLE_NULL) ;
+  ofc_netmon_startup (hScheduler, OFC_HANDLE_NULL) ;
 #endif
 
 }
@@ -94,7 +91,7 @@ ofc_framework_shutdown (OFC_VOID)
 {
 #if defined(OFC_NETMON)
 #if 0
-  BlueNetMonShutdown (hScheduler, BLUE_HANDLE_NULL) ;
+  ofc_netmon_shutdown (hScheduler, OFC_HANDLE_NULL) ;
 #endif
 #endif
 }
@@ -105,9 +102,9 @@ OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)
   ofc_printf ("Loading %S\n", filename) ;
   if (config_filename == OFC_NULL)
     config_filename = ofc_tstrdup (filename) ;
-  BlueConfigLoad (filename) ;
+  ofc_persist_load (filename) ;
 #else
-  BlueCprintf ("Configuration Files Disabled\n") ;
+  ofc_printf("Configuration Files Disabled\n") ;
 #endif
 }
 
@@ -119,10 +116,10 @@ OFC_CORE_LIB OFC_VOID ofc_framework_save (OFC_LPCTSTR filename)
   if (filename != OFC_NULL)
     {
       ofc_printf ("Saving %S\n", filename) ;
-      BlueConfigSave (filename) ;
+      ofc_persist_save (filename) ;
     }
 #else
-  BlueCprintf ("Configuration Files Disabled\n") ;
+  ofc_printf("Configuration Files Disabled\n") ;
 #endif
 }
 
@@ -130,7 +127,7 @@ OFC_CORE_LIB OFC_VOID
 ofc_framework_set_host_name (OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
                              OFC_LPCTSTR desc)
 {
-  BlueConfigSetNodeName (name, workgroup, desc) ;
+  ofc_persist_set_node_name (name, workgroup, desc) ;
 }
 
 OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_host_name (OFC_VOID)
@@ -140,7 +137,7 @@ OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_host_name (OFC_VOID)
   OFC_LPCTSTR desc ;
   OFC_LPTSTR tstrName ;
 
-  BlueConfigNodeName (&name, &workgroup, &desc) ;
+  ofc_persist_node_name (&name, &workgroup, &desc) ;
 
   tstrName = ofc_tstrdup (name) ;
 
@@ -159,7 +156,7 @@ OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_workgroup (OFC_VOID)
   OFC_LPCTSTR desc ;
   OFC_LPTSTR tstrWorkgroup ;
 
-  BlueConfigNodeName (&name, &workgroup, &desc) ;
+  ofc_persist_node_name (&name, &workgroup, &desc) ;
 
   tstrWorkgroup = ofc_tstrdup (workgroup) ;
 
@@ -178,7 +175,7 @@ OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_description (OFC_VOID)
   OFC_LPCTSTR desc ;
   OFC_LPTSTR tstrDesc ;
 
-  BlueConfigNodeName (&name, &workgroup, &desc) ;
+  ofc_persist_node_name (&name, &workgroup, &desc) ;
 
   tstrDesc = ofc_tstrdup (desc) ;
 
@@ -195,7 +192,7 @@ OFC_VOID ofc_framework_set_uuid (const OFC_CHAR *cuuid)
   OFC_UUID uuid ;
 
   ofc_atouuid (cuuid, uuid) ;
-  BlueConfigSetUUID (&uuid) ;
+  ofc_persist_set_uuid (&uuid) ;
 }
 
 OFC_CHAR *ofc_framework_get_uuid (OFC_VOID)
@@ -203,7 +200,7 @@ OFC_CHAR *ofc_framework_get_uuid (OFC_VOID)
   OFC_UUID uuid ;
   OFC_CHAR *cuuid ;
 
-  BlueConfigUUID (&uuid) ;
+  ofc_persist_uuid (&uuid) ;
 
   cuuid = ofc_malloc (UUID_STR_LEN + 1) ;
   ofc_uuidtoa (uuid, cuuid) ;
@@ -231,13 +228,13 @@ OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir (OFC_LPTSTR str)
 
 OFC_VOID ofc_framework_set_interface_discovery (OFC_BOOL on)
 {
-  BLUE_CONFIG_ICONFIG_TYPE itype ;
+  OFC_CONFIG_ICONFIG_TYPE itype ;
 
-  itype = BLUE_CONFIG_ICONFIG_MANUAL ;
+  itype = OFC_CONFIG_ICONFIG_MANUAL ;
   if (on)
-    itype = BLUE_CONFIG_ICONFIG_AUTO ;
+    itype = OFC_CONFIG_ICONFIG_AUTO ;
 
-  BlueConfigSetInterfaceType (itype) ;
+  ofc_persist_set_interface_type (itype) ;
 }
 
 OFC_BOOL ofc_framework_get_interface_discovery (OFC_VOID)
@@ -245,7 +242,7 @@ OFC_BOOL ofc_framework_get_interface_discovery (OFC_VOID)
   OFC_BOOL ret ;
 
   ret = OFC_FALSE ;
-  if (BlueConfigInterfaceConfig() == BLUE_CONFIG_ICONFIG_AUTO)
+  if (ofc_persist_interface_config() == OFC_CONFIG_ICONFIG_AUTO)
     ret = OFC_TRUE ;
   return (ret) ;
 }
@@ -258,24 +255,24 @@ OFC_VOID ofc_framework_add_interface (OFC_FRAMEWORK_INTERFACE *iface)
 
   cstr = ofc_strdup (iface->lmb) ;
 
-  old_count = BlueConfigInterfaceCount() ;
+  old_count = ofc_persist_interface_count() ;
   new_count = old_count + 1 ;
-  BlueConfigSetInterfaceCount(new_count) ;
+  ofc_persist_set_interface_count(new_count) ;
 
-  BlueConfigSetInterfaceConfig (old_count,
-				iface->netBiosMode,
-				&iface->ip,
-				&iface->bcast,
-				&iface->mask,
-				cstr,
-				iface->wins.num_wins,
-				iface->wins.winsaddr) ;
+  ofc_persist_set_interface_config (old_count,
+                                    iface->netBiosMode,
+                                    &iface->ip,
+                                    &iface->bcast,
+                                    &iface->mask,
+                                    cstr,
+                                    iface->wins.num_wins,
+                                    iface->wins.winsaddr) ;
   ofc_free (cstr) ;
 }
 
 OFC_VOID ofc_framework_remove_interface (OFC_IPADDR *ip)
 {
-  BlueConfigRemoveInterfaceConfig (ip) ;
+  ofc_persist_remove_interface_config (ip) ;
 }
 
 OFC_FRAMEWORK_INTERFACES *ofc_framework_get_interfaces (OFC_VOID)
@@ -287,18 +284,18 @@ OFC_FRAMEWORK_INTERFACES *ofc_framework_get_interfaces (OFC_VOID)
   ifaces = ofc_malloc (sizeof (OFC_FRAMEWORK_INTERFACES)) ;
   if (ifaces != OFC_NULL)
     {
-      ifaces->num_interfaces = BlueConfigInterfaceCount() ;
+      ifaces->num_interfaces = ofc_persist_interface_count() ;
       ifaces->iface = ofc_malloc (sizeof (OFC_FRAMEWORK_INTERFACE) *
                                   ifaces->num_interfaces) ;
       for (i = 0 ; i < ifaces->num_interfaces ; i++)
 	{
 	  ifaces->iface[i].netBiosMode = 
-	    BlueConfigInterfaceMode (i, &ifaces->iface[i].wins.num_wins,
-				     &ifaces->iface[i].wins.winsaddr) ;
-	  BlueConfigInterfaceAddr (i, &ifaces->iface[i].ip,
-				   &ifaces->iface[i].bcast,
-				   &ifaces->iface[i].mask) ;
-	  BlueConfigLocalMaster (i, &ifaces->iface[i].lmb) ;
+	    ofc_persist_interface_mode (i, &ifaces->iface[i].wins.num_wins,
+                                    &ifaces->iface[i].wins.winsaddr) ;
+	  ofc_persist_interface_addr (i, &ifaces->iface[i].ip,
+                                  &ifaces->iface[i].bcast,
+                                  &ifaces->iface[i].mask) ;
+	  ofc_persist_local_master (i, &ifaces->iface[i].lmb) ;
 	}
     }
   return (ifaces) ;
@@ -384,14 +381,14 @@ OFC_VOID ofc_framework_add_map (OFC_FRAMEWORK_MAP *map)
   ofc_path_add_mapW (map->prefix, map->desc, path, map->type, map->thumbnail) ;
 }
 
-OFC_VOID BlueFrameworkRemoveMap (OFC_LPCTSTR tszPrefix)
+OFC_VOID ofc_framework_remove_map (OFC_LPCTSTR tszPrefix)
 {
   ofc_path_delete_mapW (tszPrefix) ;
 }
 
 OFC_VOID ofc_framework_update (OFC_VOID)
 {
-  BlueConfigUpdate() ;
+  ofc_persist_update() ;
 }
 
 OFC_VOID ofc_framework_dump_heap (OFC_VOID)

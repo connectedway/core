@@ -3,16 +3,16 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_WAIT_QUEUE_H__)
-#define __BLUE_WAIT_QUEUE_H__
+#if !defined(__OFC_WAIT_QUEUE_H__)
+#define __OFC_WAIT_QUEUE_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
 
 /**
- * \defgroup BlueWaitQueue Wait Queue Facility
- * \ingroup BlueInternal
+ * \defgroup waitq Wait Queue Facility
+ * \ingroup internal
  */
 
 /** \{ */
@@ -28,7 +28,7 @@ extern "C"
    * Handle to the wait queue
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueWaitQcreate (OFC_VOID) ;
+  ofc_waitq_create (OFC_VOID) ;
   /**
    * Destroy a queue
    *
@@ -36,7 +36,7 @@ extern "C"
    * Head of queue
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitQdestroy (OFC_HANDLE qHead) ;
+  ofc_waitq_destroy (OFC_HANDLE qHead) ;
   /**
    * Add an element to the end of the list
    *
@@ -47,7 +47,7 @@ extern "C"
    * Pointer to element to add to list
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitQenqueue (OFC_HANDLE qHead, OFC_VOID *qElement) ;
+  ofc_waitq_enqueue (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Remove an element from the front of the list
    *
@@ -58,7 +58,7 @@ extern "C"
    * Item at the front or NB_NULL
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueWaitQdequeue (OFC_HANDLE qHead) ;
+  ofc_waitq_dequeue (OFC_HANDLE qHead) ;
   /**
    * See if queue is empty
    *
@@ -69,7 +69,7 @@ extern "C"
    * OFC_TRUE if empty, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueWaitQempty (OFC_HANDLE qHead) ;
+  ofc_waitq_empty (OFC_HANDLE qHead) ;
   /**
    * Return the head of the linked list
    *
@@ -80,7 +80,7 @@ extern "C"
    * Pointer to the first element on the queue 
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueWaitQfirst (OFC_HANDLE qHead) ;
+  ofc_waitq_first (OFC_HANDLE qHead) ;
   /**
    * Return the next element on the list
    *
@@ -94,7 +94,7 @@ extern "C"
    * Pointer to the next element on the queue.
    */
   OFC_CORE_LIB OFC_VOID *
-  BlueWaitQnext (OFC_HANDLE qHead, OFC_VOID *qElement) ;
+  ofc_waitq_next (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Unlink the current element from the list
    *
@@ -105,7 +105,7 @@ extern "C"
    * Pointer to the current element
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitQunlink (OFC_HANDLE qHead, OFC_VOID *qElement) ;
+  ofc_waitq_unlink (OFC_HANDLE qHead, OFC_VOID *qElement) ;
   /**
    * Clear the contents of a wait queue
    *
@@ -113,7 +113,7 @@ extern "C"
    * Handle to the waitqueue to destroy
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitQclear (OFC_HANDLE qHandle) ;
+  ofc_waitq_clear (OFC_HANDLE qHandle) ;
   /**
    * Get the event handle that the wait queue waits on
    *
@@ -124,7 +124,7 @@ extern "C"
    * Handle to the event for the queue
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueWaitQGetEventHandle (OFC_HANDLE qHandle) ;
+  ofc_waitq_get_event_handle (OFC_HANDLE qHandle) ;
   /**
    * Wait for an element to be placed on the wait queue
    *
@@ -136,7 +136,7 @@ extern "C"
    * be woken
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitQBlock (OFC_HANDLE waitq) ;
+  ofc_waitq_block (OFC_HANDLE waitq) ;
 
 #if defined(__cplusplus)
 }

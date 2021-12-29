@@ -3,16 +3,16 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_TIME_H__)
-#define __BLUE_TIME_H__
+#if !defined(__OFC_TIME_H__)
+#define __OFC_TIME_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/file.h"
 
 /**
- * \defgroup BlueTime Time Management
- * \ingroup BlueInternal
+ * \defgroup Open Files Time Management
+ * \ingroup internal
  *
  * This facility provides Time conversion functions
  */
@@ -25,102 +25,102 @@
  */
 typedef enum
   {
-    BLUE_TIME_PERF_FSCIFS_READ = 0,
-    BLUE_TIME_PERF_FSCIFS_WRITE = 1,
-    BLUE_TIME_PERF_CLIENT_READ = 2,
-    BLUE_TIME_PERF_CLIENT_WRITE = 3,
-    BLUE_TIME_PERF_SERVER_READ = 4,
-    BLUE_TIME_PERF_SERVER_WRITE = 5,
-    BLUE_TIME_PERF_SESSION_READ = 6,
-    BLUE_TIME_PERF_SESSION_WRITE = 7,
-    BLUE_TIME_PERF_NUM = 8
-  } BLUE_TIME_PERF_ID ;
+    OFC_PERF_FSCIFS_READ = 0,
+    OFC_PERF_FSCIFS_WRITE = 1,
+    OFC_PERF_CLIENT_READ = 2,
+    OFC_PERF_CLIENT_WRITE = 3,
+    OFC_PERF_SERVER_READ = 4,
+    OFC_PERF_SERVER_WRITE = 5,
+    OFC_PERF_SESSION_READ = 6,
+    OFC_PERF_SESSION_WRITE = 7,
+    OFC_PERF_NUM = 8
+  } OFC_TIME_PERF_ID ;
 
 typedef struct
 {
-  BLUE_TIME_PERF_ID id ;	/**< This perf id */
-  BLUE_MSTIME elapsed ;		/**< The total wait time  */
-  BLUE_LONG depthsum ;		/**< The cumulative queue depth  */
-  BLUE_LONG depth ;		/**< The current queue depth  */
-  BLUE_LONG count ;		/**< The number of I/Os */
-  BLUE_LONG totalbytes ;	/**< Sum of bytes  */
-  BLUE_MSTIME runtime_start ;	/**< Runtime at the last reset */
-  BLUE_MSTIME runtime_end ;	/**< Runtime at the last measurement */
-} BLUE_TIME_PERF_STAT ;
+  OFC_TIME_PERF_ID id ;	/**< This perf id */
+  OFC_MSTIME elapsed ;		/**< The total wait time  */
+  OFC_TIME_PERF_ID  depthsum ;		/**< The cumulative queue depth  */
+  OFC_TIME_PERF_ID  depth ;		/**< The current queue depth  */
+  OFC_TIME_PERF_ID  count ;		/**< The number of I/Os */
+  OFC_LONG totalbytes ;	/**< Sum of bytes  */
+  OFC_MSTIME runtime_start ;	/**< Runtime at the last reset */
+  OFC_MSTIME runtime_end ;	/**< Runtime at the last measurement */
+} OFC_PERF_STAT ;
 #endif
 
 /**
  * Definition for DOS Day Field in DOS Day Word
  */
-#define BLUE_DOS_DAY 0x001F
+#define OFC_DOS_DAY 0x001F
 /**
  * Bit position for DOS Day Field
  */
-#define BLUE_DOS_DAY_SHIFT 0
+#define OFC_DOS_DAY_SHIFT 0
 /**
  * Definition for DOS Month Field in DOS Day Word
  */
-#define BLUE_DOS_MONTH 0x01E0
+#define OFC_DOS_MONTH 0x01E0
 /**
  * Bit position for DOS Month Field
  */
-#define BLUE_DOS_MONTH_SHIFT 5
+#define OFC_DOS_MONTH_SHIFT 5
 /**
  * Definition for DOS Year Field in DOS Day Word
  */
-#define BLUE_DOS_YEAR 0xFE00
+#define OFC_DOS_YEAR 0xFE00
 /**
  * Bit Position for DOS Year Field
  */
-#define BLUE_DOS_YEAR_SHIFT 9
+#define OFC_DOS_YEAR_SHIFT 9
 /**
  * Relative Offset of DOS Year
  */
-#define BLUE_DOS_YEAR_BASE 1980
+#define OFC_DOS_YEAR_BASE 1980
 /**
  * Defition of DOS Seconds Field in DOS Seconds Word
  */
-#define BLUE_DOS_SECS 0x001F
+#define OFC_DOS_SECS 0x001F
 /**
  * Bit position of DOS Seconds Field
  */
-#define BLUE_DOS_SECS_SHIFT 0
+#define OFC_DOS_SECS_SHIFT 0
 /**
  * Definition of DOS Minute Field in DOS Seconds Word
  */
-#define BLUE_DOS_MINS 0x07E0
+#define OFC_DOS_MINS 0x07E0
 /**
  * Bit Position of DOS Minute Field
  */
-#define BLUE_DOS_MINS_SHIFT 5
+#define OFC_DOS_MINS_SHIFT 5
 /**
  * Definition of DOS Hours Field in DOS Seconds Word
  */
-#define BLUE_DOS_HRS 0xF800
+#define OFC_DOS_HRS 0xF800
 /**
  * Bit position of DOS Hours Field
  */
-#define BLUE_DOS_HRS_SHIFT 11
+#define OFC_DOS_HRS_SHIFT 11
 
 /*
  * This brings us to 1900
  */
-#define BLUE_TIME_S_EPOCH_OFFSET_1900 11644473600LL
+#define OFC_TIME_S_EPOCH_OFFSET_1900 11644473600LL
 /*
  * This brings us to 1970
  */
-#define BLUE_TIME_S_EPOCH_OFFSET_1970 9435484800LL
+#define OFC_TIME_S_EPOCH_OFFSET_1970 9435484800LL
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-  OFC_VOID EpochTimeToFileTime (const OFC_ULONG tv_sec,
-                                const OFC_ULONG tv_nsec,
-                                OFC_FILETIME *filetime) ;
-  OFC_VOID FileTimeToEpochTime (const OFC_FILETIME *filetime,
-                                OFC_ULONG *tv_sec,
-                                OFC_ULONG *tv_nsec) ;
+  OFC_VOID epoch_time_to_file_time (const OFC_ULONG tv_sec,
+                                    const OFC_ULONG tv_nsec,
+                                    OFC_FILETIME *filetime) ;
+  OFC_VOID file_time_to_epoch_time (const OFC_FILETIME *filetime,
+                                    OFC_ULONG *tv_sec,
+                                    OFC_ULONG *tv_nsec) ;
   /**
    * Get a millisecond tick count
    *
@@ -128,7 +128,7 @@ extern "C"
    * A Millisecond Tick Count
    */
   OFC_CORE_LIB OFC_MSTIME
-  BlueTimeGetNow(OFC_VOID) ;
+  ofc_time_get_now(OFC_VOID) ;
   /**
    * Get Time of Day in OFC_FILETIME format
    *
@@ -136,7 +136,7 @@ extern "C"
    * Pointer to where to store the current file time
    */
   OFC_CORE_LIB OFC_VOID
-  BlueTimeGetFileTime(OFC_FILETIME *now) ;
+  ofc_time_get_file_time(OFC_FILETIME *now) ;
   /**
    * Get The local time zone offset from UTC
    *
@@ -144,7 +144,7 @@ extern "C"
    * The number of minutes from UTC that this timezone is in
    */
   OFC_CORE_LIB OFC_UINT16
-  BlueTimeGetTimeZone(OFC_VOID) ;
+  ofc_time_get_time_zone(OFC_VOID) ;
   /**
    * Convert a File Time to a DOS Date Time
    *
@@ -161,9 +161,9 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueFileTimeToDosDateTime (const OFC_FILETIME *lpFileTime,
-                             OFC_WORD *lpFatDate,
-                             OFC_WORD *lpFatTime) ;
+  ofc_file_time_to_dos_date_time (const OFC_FILETIME *lpFileTime,
+                                  OFC_WORD *lpFatDate,
+                                  OFC_WORD *lpFatTime) ;
   /**
    * Convert a DOS Date Time to a File Time
    *
@@ -180,8 +180,8 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueDosDateTimeToFileTime (OFC_WORD FatDate, OFC_WORD FatTime,
-                             OFC_FILETIME *lpFileTime) ;
+  ofc_dos_date_time_to_file_time (OFC_WORD FatDate, OFC_WORD FatTime,
+                                  OFC_FILETIME *lpFileTime) ;
   /**
    * Build A DOS Date Time from components
    *
@@ -210,12 +210,12 @@ extern "C"
    * A pointer to where to store the Time in DOS format
    */
   OFC_CORE_LIB OFC_VOID
-  BlueTimeElementsToDosDateTime (OFC_UINT16 month, OFC_UINT16 day,
-                                 OFC_UINT16 year, OFC_UINT16 hour,
-                                 OFC_UINT16 min, OFC_UINT16 sec,
-                                 OFC_WORD *lpFatDate, OFC_WORD *lpFatTime) ;
+  ofc_time_elements_to_dos_date_time (OFC_UINT16 month, OFC_UINT16 day,
+                                      OFC_UINT16 year, OFC_UINT16 hour,
+                                      OFC_UINT16 min, OFC_UINT16 sec,
+                                      OFC_WORD *lpFatDate, OFC_WORD *lpFatTime) ;
   /**
-   * BlueTimeDosDateTimeToElements
+   * ofc_dos_date_time_to_elements
    *
    * Convert a DOS Date and Time to various elements
    *
@@ -244,7 +244,7 @@ extern "C"
    * Pointer to where to store the sec (0-59)
    */
   OFC_CORE_LIB OFC_VOID
-  BlueTimeDosDateTimeToElements (OFC_WORD FatDate, OFC_WORD FatTime,
+  ofc_dos_date_time_to_elements (OFC_WORD FatDate, OFC_WORD FatTime,
                                  OFC_UINT16 *month, OFC_UINT16 *day,
                                  OFC_UINT16 *year, OFC_UINT16 *hour,
                                  OFC_UINT16 *min, OFC_UINT16 *sec) ;
@@ -255,25 +255,25 @@ extern "C"
    * Returns the number of us of runtime
    */
   OFC_CORE_LIB OFC_MSTIME
-  BlueTimeGetRuntime (OFC_VOID) ;
+  ofc_get_runtime (OFC_VOID) ;
 #if defined(OFC_PERF_STATS)
-  BLUE_CORE_LIB BLUE_MSTIME 
-  BlueTimePerfStart (BLUE_TIME_PERF_ID id) ;
+  OFC_CORE_LIB OFC_MSTIME
+  ofc_perf_start (OFC_TIME_PERF_ID id) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimePerfStop (BLUE_TIME_PERF_ID id, BLUE_MSTIME stamp, BLUE_LONG bytes) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_perf_stop (OFC_TIME_PERF_ID id, OFC_MSTIME stamp, OFC_LONG bytes) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimePerfInit (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_perf_init (OFC_VOID) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimePerfDestroy (BLUE_VOID);
+  OFC_CORE_LIB OFC_VOID
+  ofc_perf_destroy (OFC_VOID);
   
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimePerfReset(BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_perf_reset(OFC_VOID) ;
 
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueTimePerfDump (BLUE_VOID) ;
+  OFC_CORE_LIB OFC_VOID
+  ofc_perf_dump (OFC_VOID) ;
 #endif
 
 #if defined(__cplusplus)

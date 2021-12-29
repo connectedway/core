@@ -22,7 +22,7 @@ typedef struct
 
 typedef struct 
 {
-  BLUE_CONFIG_MODE netBiosMode ;
+  OFC_CONFIG_MODE netBiosMode ;
   OFC_IPADDR ip ;
   OFC_IPADDR bcast ;
   OFC_IPADDR mask ;

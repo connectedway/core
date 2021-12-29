@@ -41,8 +41,8 @@ typedef struct
   OFC_INT standalone ;
 } XML_PARSER_CONTEXT ;
 
-OFC_CORE_LIB BLUE_XML_PARSER
-BlueXMLparserCreate (OFC_VOID *p)
+OFC_CORE_LIB OFC_XML_PARSER
+ofc_xml_parser_create (OFC_VOID *p)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -57,7 +57,7 @@ BlueXMLparserCreate (OFC_VOID *p)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueXMLparserFree (OFC_VOID *parsertoken)
+ofc_xml_parser_free (OFC_VOID *parsertoken)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -66,7 +66,7 @@ BlueXMLparserFree (OFC_VOID *parsertoken)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueXMLsetUserData (OFC_VOID *parsertoken, OFC_VOID *state)
+ofc_xml_set_user_data (OFC_VOID *parsertoken, OFC_VOID *state)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -75,9 +75,9 @@ BlueXMLsetUserData (OFC_VOID *parsertoken, OFC_VOID *state)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueXMLsetElementHandler (OFC_VOID *parsertoken,
-                          STARTHANDLER startelement,
-                          ENDHANDLER endelement)
+ofc_xml_set_element_handler (OFC_VOID *parsertoken,
+							 STARTHANDLER startelement,
+							 ENDHANDLER endelement)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -87,8 +87,8 @@ BlueXMLsetElementHandler (OFC_VOID *parsertoken,
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueXMLsetCharacterDataHandler (OFC_VOID *parsertoken,
-                                CHARHANDLER chardata)
+ofc_xml_set_character_data_handler (OFC_VOID *parsertoken,
+                                    CHARHANDLER chardata)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -97,7 +97,7 @@ BlueXMLsetCharacterDataHandler (OFC_VOID *parsertoken,
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueXMLsetXmlDeclHandler (OFC_VOID *parsertoken, XMLHANDLER xmldata)
+ofc_xml_set_xml_decl_handler (OFC_VOID *parsertoken, XMLHANDLER xmldata)
 {
   XML_PARSER_CONTEXT *parser ;
 
@@ -240,8 +240,8 @@ XML_ParseTagAtts (XML_PARSER_CONTEXT *parser)
 }
 
 OFC_CORE_LIB OFC_INT
-BlueXMLparse (OFC_VOID *parsertoken, OFC_CHAR *buf,
-              OFC_SIZET len, OFC_INT done)
+ofc_xml_parse (OFC_VOID *parsertoken, OFC_CHAR *buf,
+               OFC_SIZET len, OFC_INT done)
 {
   XML_PARSER_CONTEXT *parser ;
   OFC_CHAR *p ;

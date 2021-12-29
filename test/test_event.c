@@ -46,11 +46,11 @@ static OFC_INT test_startup_default(OFC_VOID)
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
     } ;
 
-  BlueConfigDefault();
-  BlueConfigSetInterfaceType(BLUE_CONFIG_ICONFIG_AUTO);
-  BlueConfigSetNodeName(TSTR("localhost"), TSTR("WORKGROUP"),
-			TSTR("OpenFiles Unit Test"));
-  BlueConfigSetUUID(&uuid);
+  ofc_persist_default();
+  ofc_persist_set_interface_type(OFC_CONFIG_ICONFIG_AUTO);
+  ofc_persist_set_node_name(TSTR("localhost"), TSTR("WORKGROUP"),
+                            TSTR("OpenFiles Unit Test"));
+  ofc_persist_set_uuid(&uuid);
   return(0);
 }
 
@@ -63,7 +63,7 @@ static OFC_INT test_startup(OFC_VOID)
 #else
   ret = test_startup_default();
 #endif
-  hScheduler = BlueSchedCreate();
+  hScheduler = ofc_sched_create();
   hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
@@ -72,7 +72,7 @@ static OFC_INT test_startup(OFC_VOID)
 static OFC_VOID test_shutdown(OFC_VOID)
 {
   ofc_event_destroy(hDone);
-  BlueSchedQuit(hScheduler);
+  ofc_sched_quit(hScheduler);
   ofc_framework_shutdown();
   ofc_framework_destroy();
 }
@@ -92,13 +92,13 @@ typedef struct
   OFC_HANDLE hEvent ;
   OFC_HANDLE scheduler ;
   OFC_INT count ;
-} BLUE_EVENT_TEST ;
+} OFC_EVENT_TEST ;
 
 static OFC_VOID EventTestPreSelect (OFC_HANDLE app) ;
 static OFC_HANDLE EventTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent) ;
 static OFC_VOID EventTestDestroy (OFC_HANDLE app) ;
 #if defined(OFC_APP_DEBUG)
-static BLUE_VOID EventTestDump (BLUE_HANDLE app) ;
+static OFC_VOID EventTestDump (OFC_HANDLE app) ;
 #endif
 
 static OFC_APP_TEMPLATE EventTestAppDef =
@@ -115,23 +115,23 @@ static OFC_APP_TEMPLATE EventTestAppDef =
   } ;
 
 #if defined(OFC_APP_DEBUG)
-static BLUE_VOID EventTestDump (BLUE_HANDLE app)
+static OFC_VOID EventTestDump (OFC_HANDLE app)
 {
-  BLUE_EVENT_TEST *eventTest ;
+  OFC_EVENT_TEST *eventTest ;
 
-  eventTest = BlueAppGetData (app) ;
-  if (eventTest != BLUE_NULL)
+  eventTest = ofc_app_get_data (app) ;
+  if (eventTest != OFC_NULL)
     {
-      BlueCprintf ("%-20s : %d\n", "Event Test State", 
-		   (BLUE_UINT16) eventTest->state) ;
-      BlueCprintf ("\n") ;
+      ofc_printf ("%-20s : %d\n", "Event Test State", 
+		   (OFC_UINT16) eventTest->state) ;
+      ofc_printf ("\n") ;
     }
 }
 #endif
 
 static OFC_VOID EventTestPreSelect (OFC_HANDLE app)
 {
-  BLUE_EVENT_TEST *eventTest ;
+  OFC_EVENT_TEST *eventTest ;
   EVENT_TEST_STATE entry_state ;
 
   eventTest = ofc_app_get_data (app) ;
@@ -140,7 +140,7 @@ static OFC_VOID EventTestPreSelect (OFC_HANDLE app)
       do /* while eventTest->state != entry_state */
 	{
 	  entry_state = eventTest->state ;
-	  BlueSchedClearWait (eventTest->scheduler, app) ;
+	  ofc_sched_clear_wait (eventTest->scheduler, app) ;
 	  
 	  switch (eventTest->state)
 	    {
@@ -149,22 +149,22 @@ static OFC_VOID EventTestPreSelect (OFC_HANDLE app)
 	      eventTest->hEvent = ofc_event_create(OFC_EVENT_AUTO) ;
 	      if (eventTest->hEvent != OFC_HANDLE_NULL)
 		{
-		  BlueSchedAddWait (eventTest->scheduler, app, 
-				    eventTest->hEvent) ;
-		  eventTest->hTimer = BlueTimerCreate("EVENT") ;
+		  ofc_sched_add_wait (eventTest->scheduler, app,
+                              eventTest->hEvent) ;
+		  eventTest->hTimer = ofc_timer_create("EVENT") ;
 		  if (eventTest->hTimer != OFC_HANDLE_NULL)
 		    {
-		      BlueTimerSet (eventTest->hTimer, EVENT_TEST_INTERVAL) ;
-		      BlueSchedAddWait (eventTest->scheduler, app, 
-					eventTest->hTimer) ;
+		      ofc_timer_set (eventTest->hTimer, EVENT_TEST_INTERVAL) ;
+		      ofc_sched_add_wait (eventTest->scheduler, app,
+                                  eventTest->hTimer) ;
 		      eventTest->state = EVENT_TEST_STATE_RUNNING ;
 		    }
 		}
 	      break ;
 
 	    case EVENT_TEST_STATE_RUNNING:
-	      BlueSchedAddWait (eventTest->scheduler, app, eventTest->hEvent) ;
-	      BlueSchedAddWait (eventTest->scheduler, app, eventTest->hTimer) ;
+	      ofc_sched_add_wait (eventTest->scheduler, app, eventTest->hEvent) ;
+	      ofc_sched_add_wait (eventTest->scheduler, app, eventTest->hTimer) ;
 	      break ;
 	    }
 	}
@@ -174,7 +174,7 @@ static OFC_VOID EventTestPreSelect (OFC_HANDLE app)
 
 static OFC_HANDLE EventTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 {
-  BLUE_EVENT_TEST *eventTest ;
+  OFC_EVENT_TEST *eventTest ;
   OFC_BOOL progress ;
 
   eventTest = ofc_app_get_data (app) ;
@@ -202,7 +202,7 @@ static OFC_HANDLE EventTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 	      else if (hEvent == eventTest->hTimer)
 		{
 		  ofc_event_set (eventTest->hEvent) ;
-		  BlueTimerSet (eventTest->hTimer, EVENT_TEST_INTERVAL) ;
+		  ofc_timer_set (eventTest->hTimer, EVENT_TEST_INTERVAL) ;
 		  ofc_printf ("Timer Triggered\n") ;
 		}
 	      break ;
@@ -214,7 +214,7 @@ static OFC_HANDLE EventTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 
 static OFC_VOID EventTestDestroy (OFC_HANDLE app)
 {
-  BLUE_EVENT_TEST *eventTest ;
+  OFC_EVENT_TEST *eventTest ;
 
   eventTest = ofc_app_get_data (app) ;
   if (eventTest != OFC_NULL)
@@ -226,7 +226,7 @@ static OFC_VOID EventTestDestroy (OFC_HANDLE app)
 	  break ;
 
 	case EVENT_TEST_STATE_RUNNING:
-	  BlueTimerDestroy (eventTest->hTimer) ;
+	  ofc_timer_destroy (eventTest->hTimer) ;
 	  ofc_event_destroy (eventTest->hEvent) ;
 	  break ;
 	}
@@ -249,10 +249,10 @@ TEST_TEAR_DOWN(event)
 
 TEST(event, test_event)
 {
-  BLUE_EVENT_TEST *eventTest ;
+  OFC_EVENT_TEST *eventTest ;
   OFC_HANDLE hApp ;
 
-  eventTest = ofc_malloc (sizeof (BLUE_EVENT_TEST)) ;
+  eventTest = ofc_malloc (sizeof (OFC_EVENT_TEST)) ;
   eventTest->count = 0 ;
   eventTest->state = EVENT_TEST_STATE_IDLE ;
   eventTest->scheduler = hScheduler ;

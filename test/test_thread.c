@@ -46,11 +46,11 @@ static OFC_INT test_startup_default(OFC_VOID)
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
     } ;
 
-  BlueConfigDefault();
-  BlueConfigSetInterfaceType(BLUE_CONFIG_ICONFIG_AUTO);
-  BlueConfigSetNodeName(TSTR("localhost"), TSTR("WORKGROUP"),
-			TSTR("OpenFiles Unit Test"));
-  BlueConfigSetUUID(&uuid);
+  ofc_persist_default();
+  ofc_persist_set_interface_type(OFC_CONFIG_ICONFIG_AUTO);
+  ofc_persist_set_node_name(TSTR("localhost"), TSTR("WORKGROUP"),
+                            TSTR("OpenFiles Unit Test"));
+  ofc_persist_set_uuid(&uuid);
   return(0);
 }
 
@@ -63,7 +63,7 @@ static OFC_INT test_startup(OFC_VOID)
 #else
   ret = test_startup_default();
 #endif
-  hScheduler = BlueSchedCreate();
+  hScheduler = ofc_sched_create();
   hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
@@ -72,7 +72,7 @@ static OFC_INT test_startup(OFC_VOID)
 static OFC_VOID test_shutdown(OFC_VOID)
 {
   ofc_event_destroy(hDone);
-  BlueSchedQuit(hScheduler);
+  ofc_sched_quit(hScheduler);
   ofc_framework_shutdown();
   ofc_framework_destroy();
 }
@@ -85,8 +85,8 @@ static OFC_VOID test_shutdown(OFC_VOID)
 /*
  * Forward Declaration of a Daemon App for the test thread
  *
- * Daemon apps are internal constructs to Blue Share that are leveraged
- * by the BlueThreadTest.  It may be educational to review the deamon
+ * Daemon apps are internal constructs to Open Files that are leveraged
+ * by the thread test.  It may be educational to review the deamon
  * code structure, but it is not necessarily required to understand it
  * unless you will be writing daemon apps.
  */
@@ -129,7 +129,7 @@ static OFC_VOID ThreadTestDestroy (OFC_HANDLE app) ;
 /*
  * Forward declearation to the deamon apps dump routine
  */
-static BLUE_VOID ThreadTestDump (BLUE_HANDLE app) ;
+static OFC_VOID thread_test_dump (OFC_HANDLE app) ;
 #endif
 
 /*
@@ -142,7 +142,7 @@ static OFC_APP_TEMPLATE ThreadTestAppDef =
     &ThreadTestPostSelect,	/* The post select routine */
     &ThreadTestDestroy,		/* The destroy routine */
 #if defined(OFC_APP_DEBUG)
-    &ThreadTestDump		/* The dump routine */
+    &thread_test_dump		/* The dump routine */
 #else
           OFC_NULL
 #endif
@@ -158,21 +158,21 @@ static OFC_APP_TEMPLATE ThreadTestAppDef =
  * The dump callback is given a handle to the app.  The context variable
  * can be obtained from this handle
  */
-static BLUE_VOID ThreadTestDump (BLUE_HANDLE app)
+static OFC_VOID thread_test_dump (OFC_HANDLE app)
 {
   THREAD_TEST_APP *ThreadApp ;	/* The deamon's context */
 
   /*
    * Get the deamon context from the application
    */
-  ThreadApp = BlueAppGetData (app) ;
-  if (ThreadApp != BLUE_NULL)
+  ThreadApp = ofc_app_get_data (app) ;
+  if (ThreadApp != OFC_NULL)
     {
       /*
        * Just dump it's state
        */
-      BlueCprintf ("%-20s : %d\n", "Thread Test State", 
-		   (BLUE_UINT16) ThreadApp->state) ;
+      ofc_printf ("%-20s : %d\n", "Thread Test State", 
+		   (OFC_UINT16) ThreadApp->state) ;
     }
 }
 #endif
@@ -194,13 +194,13 @@ static OFC_DWORD ThreadTestApp (OFC_HANDLE hThread, OFC_VOID *context)
   /*
    * The test thread should continue running until it is deleted
    */
-  while (!BlueThreadIsDeleting (hThread))
+  while (!ofc_thread_is_deleting (hThread))
     {
       ofc_printf ("Test Thread is Running\n") ;
       /*
        * Wait for a second
        */
-      BlueSleep (1000) ;
+      ofc_sleep (1000) ;
     }
   ofc_printf ("Test Thread is Exiting\n") ;
   return (0) ;
@@ -228,7 +228,7 @@ static OFC_VOID ThreadTestPreSelect (OFC_HANDLE app)
       do /* while ThreadApp->state != entry_state */
 	{
 	  entry_state = ThreadApp->state ;
-	  BlueSchedClearWait (ThreadApp->hScheduler, app) ;
+	  ofc_sched_clear_wait (ThreadApp->hScheduler, app) ;
 	  /*
 	   * dispatch on the deamon's state
 	   */
@@ -244,12 +244,12 @@ static OFC_VOID ThreadTestPreSelect (OFC_HANDLE app)
 	       * Create a timer event for the deamon.  We use this timer
 	       * event to send a delete to the test thread
 	       */
-	      BlueTimerSet (ThreadApp->hTimer, THREAD_TEST_RUN_INTERVAL) ;
+	      ofc_timer_set (ThreadApp->hTimer, THREAD_TEST_RUN_INTERVAL) ;
 	      /*
 	       * Add the timer event to scheduler for our deamon
 	       */
-	      BlueSchedAddWait (ThreadApp->hScheduler, app, 
-				ThreadApp->hTimer) ;
+	      ofc_sched_add_wait (ThreadApp->hScheduler, app,
+                              ThreadApp->hTimer) ;
 	      /*
 	       * And set our state to running
 	       */
@@ -260,8 +260,8 @@ static OFC_VOID ThreadTestPreSelect (OFC_HANDLE app)
 	      /*
 	       * Keep the timer event active
 	       */
-	      BlueSchedAddWait (ThreadApp->hScheduler, app, 
-				ThreadApp->hTimer) ;
+	      ofc_sched_add_wait (ThreadApp->hScheduler, app,
+                              ThreadApp->hTimer) ;
 	      break ;
 	    }
 	}
@@ -370,7 +370,7 @@ static OFC_VOID ThreadTestDestroy (OFC_HANDLE app)
 	  /*
 	   * We just have a timer to delete
 	   */
-	  BlueTimerDestroy (ThreadApp->hTimer) ;
+	  ofc_timer_destroy (ThreadApp->hTimer) ;
 	  break ;
 	}
     }
@@ -397,10 +397,10 @@ TEST(thread, test_thread)
   /*
    * Create the Thread that this deamon will interact with
    */
-  hThread = BlueThreadCreate (&ThreadTestApp,
-                              BLUE_THREAD_THREAD_TEST, BLUE_THREAD_SINGLETON,
-                              OFC_NULL,
-                              BLUE_THREAD_JOIN, OFC_HANDLE_NULL) ;
+  hThread = ofc_thread_create (&ThreadTestApp,
+                               OFC_THREAD_THREAD_TEST, OFC_THREAD_SINGLETON,
+                               OFC_NULL,
+                               OFC_THREAD_JOIN, OFC_HANDLE_NULL) ;
   if (hThread == OFC_HANDLE_NULL)
     ofc_printf ("Could not create ThreadTestApp\n") ;
   else
@@ -415,7 +415,7 @@ TEST(thread, test_thread)
       /*
        * Create a timer that the thread will wait on
        */
-      ThreadApp->hTimer = BlueTimerCreate ("THREAD") ;
+      ThreadApp->hTimer = ofc_timer_create ("THREAD") ;
       ThreadApp->state = THREAD_TEST_STATE_IDLE ;
       ThreadApp->hThread = hThread ;
       /*
@@ -432,8 +432,8 @@ TEST(thread, test_thread)
 	  /*
 	   * Delete the thread
 	   */
-	  BlueThreadDelete (ThreadApp->hThread) ;
-	  BlueThreadWait (ThreadApp->hThread);
+	  ofc_thread_delete (ThreadApp->hThread) ;
+	  ofc_thread_wait (ThreadApp->hThread);
 	  /*
 	   * And delete our deamon's context
 	   */

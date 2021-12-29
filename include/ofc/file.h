@@ -829,7 +829,7 @@ typedef struct _OFC_FILE_NAME_INFO
   /**
    * The file name
    */
-  BLUE_WCHAR FileName[1] ;
+  OFC_WCHAR FileName[1] ;
 } OFC_FILE_NAME_INFO ;
 
 /**
@@ -852,7 +852,7 @@ typedef struct _OFC_FILE_RENAME_INFO
   /**
    * The New File Name
    */
-  BLUE_WCHAR FileName[1] ;
+  OFC_WCHAR FileName[1] ;
 } OFC_FILE_RENAME_INFO ;
 
 /** 
@@ -912,7 +912,7 @@ typedef struct _OFC_FILE_STREAM_INFO
   /**
    * The Stream Name
    */
-  BLUE_WCHAR StreamName[1] ;
+  OFC_WCHAR StreamName[1] ;
 } OFC_FILE_STREAM_INFO ;
 
 /**
@@ -1107,7 +1107,7 @@ typedef struct _OFC_FILE_ID_FULL_DIR_INFO
   /**
    * The File Name
    */
-  BLUE_WCHAR FileName[1] ;
+  OFC_WCHAR FileName[1] ;
 } OFC_FILE_ID_FULL_DIR_INFO ;
 
 /**
@@ -1170,11 +1170,11 @@ typedef struct _OFC_FILE_BOTH_DIR_INFO
   /**
    * The short 8.3 file name
    */
-  BLUE_WCHAR ShortName[12] ;
+  OFC_WCHAR ShortName[12] ;
   /**
    * The File Name
    */
-  BLUE_WCHAR FileName[1] ;
+  OFC_WCHAR FileName[1] ;
 } OFC_FILE_BOTH_DIR_INFO ;
 
 /**
@@ -1233,7 +1233,7 @@ typedef struct _OFC_FILE_ID_BOTH_DIR_INFO
   /**
    * The short 8.3 file name
    */
-  BLUE_WCHAR ShortName[12] ;
+  OFC_WCHAR ShortName[12] ;
   /**
    * The File ID
    */
@@ -1241,7 +1241,7 @@ typedef struct _OFC_FILE_ID_BOTH_DIR_INFO
   /**
    * The File Name
    */
-  BLUE_WCHAR FileName[1] ;
+  OFC_WCHAR FileName[1] ;
 } OFC_FILE_ID_BOTH_DIR_INFO ;
 
 typedef struct _OFC_FILE_ALL_INFO
@@ -1294,7 +1294,7 @@ typedef struct _OFC_FILE_NAMES_INFO
   /**
    * The File Name
    */
-  BLUE_WCHAR FileName[1] ;
+  OFC_WCHAR FileName[1] ;
 } OFC_FILE_NAMES_INFO ;
 
 /**

@@ -16,24 +16,24 @@ typedef struct
 {
   OFC_MSTIME  expiration_time ;
   OFC_CCHAR *id ;
-} BLUE_TIMER ;
+} OFC_TIMER ;
 
 OFC_CORE_LIB OFC_HANDLE
-BlueTimerCreate (OFC_CCHAR *id)
+ofc_timer_create (OFC_CCHAR *id)
 {
-  BLUE_TIMER *pTimer ;
+  OFC_TIMER *pTimer ;
   OFC_HANDLE hTimer ;
 
-  pTimer = ofc_malloc (sizeof (BLUE_TIMER)) ;
+  pTimer = ofc_malloc (sizeof (OFC_TIMER)) ;
   pTimer->expiration_time = 0 ;
   pTimer->id = id ;
   hTimer = ofc_handle_create (OFC_HANDLE_TIMER, pTimer) ;
   return (hTimer) ;
 }
 
-OFC_CORE_LIB OFC_CCHAR *BlueTimerID (OFC_HANDLE hTimer)
+OFC_CORE_LIB OFC_CCHAR *ofc_timer_id (OFC_HANDLE hTimer)
 {
-  BLUE_TIMER *pTimer ;
+  OFC_TIMER *pTimer ;
   OFC_CCHAR *id ;
 
   pTimer = ofc_handle_lock (hTimer) ;
@@ -47,10 +47,10 @@ OFC_CORE_LIB OFC_CCHAR *BlueTimerID (OFC_HANDLE hTimer)
 }
 
 OFC_CORE_LIB OFC_MSTIME
-BlueTimerGetWaitTime (OFC_HANDLE hTimer)
+ofc_timer_get_wait_time (OFC_HANDLE hTimer)
 {
   OFC_MSTIME now ;
-  BLUE_TIMER *pTimer ;
+  OFC_TIMER *pTimer ;
   OFC_MSTIME ret ;
 
   ret = 0 ;
@@ -58,7 +58,7 @@ BlueTimerGetWaitTime (OFC_HANDLE hTimer)
   if (pTimer != OFC_NULL)
     {
       OFC_MSTIME elapsed ;
-      now = BlueTimeGetNow() ;
+      now = ofc_time_get_now() ;
       elapsed = pTimer->expiration_time - now ;
       if (elapsed > 0)
 	ret = elapsed ;
@@ -68,22 +68,22 @@ BlueTimerGetWaitTime (OFC_HANDLE hTimer)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueTimerSet (OFC_HANDLE hTimer, OFC_MSTIME delta)
+ofc_timer_set (OFC_HANDLE hTimer, OFC_MSTIME delta)
 {
-  BLUE_TIMER *pTimer ;
+  OFC_TIMER *pTimer ;
 
   pTimer = ofc_handle_lock (hTimer) ;
   if (pTimer != OFC_NULL)
     {
-      pTimer->expiration_time = BlueTimeGetNow() + delta ;
+      pTimer->expiration_time = ofc_time_get_now() + delta ;
       ofc_handle_unlock (hTimer) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueTimerDestroy (OFC_HANDLE hTimer)
+ofc_timer_destroy (OFC_HANDLE hTimer)
 {
-  BLUE_TIMER *pTimer ;
+  OFC_TIMER *pTimer ;
 
   pTimer = ofc_handle_lock (hTimer) ;
   if (pTimer != OFC_NULL)

@@ -3,17 +3,17 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_WAIT_SET_H__)
-#define __BLUE_WAIT_SET_H__
+#if !defined(__OFC_WAIT_SET_H__)
+#define __OFC_WAIT_SET_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
 
 /**
- * \addtogroup BlueSched
+ * \addtogroup sched
  *
- * Wait Sets are a key component of Blue Share and allow for synchronization
+ * Wait Sets are a key component of Open Files and allow for synchronization
  * of events between applications and platform threads.  The events can
  * be for network sockets, files, wait queues, semaphores, or any 
  * synchonizable abstraction supported by the platform.
@@ -46,7 +46,7 @@ extern "C"
    * A handle to the wait set
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueWaitSetCreate (OFC_VOID) ;
+  ofc_waitset_create (OFC_VOID) ;
   /**
    * Destroy a wait set
    *
@@ -54,7 +54,7 @@ extern "C"
    * Handle of the wait set to destroy
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetDestroy (OFC_HANDLE handle) ;
+  ofc_waitset_destroy (OFC_HANDLE handle) ;
   /**
    * Wait for an event in a wait set to be ready
    *
@@ -66,7 +66,7 @@ extern "C"
    * OFC_HANDLE_NULL if woken by a wake call.
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueWaitSetWait (OFC_HANDLE handle) ;
+  ofc_waitset_wait (OFC_HANDLE handle) ;
   /**
    * Wake up a wait set that is currently waiting.
    *
@@ -74,7 +74,7 @@ extern "C"
    * Handle of the wait set to wake up.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetWake (OFC_HANDLE handle) ;
+  ofc_waitset_wake (OFC_HANDLE handle) ;
   /**
    * Add an event to the wait set
    *
@@ -88,7 +88,7 @@ extern "C"
    * Handle to the event to add
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetAdd (OFC_HANDLE hSet, OFC_HANDLE hApp, OFC_HANDLE hEvent) ;
+  ofc_waitset_add (OFC_HANDLE hSet, OFC_HANDLE hApp, OFC_HANDLE hEvent) ;
   /**
    * Remove an event from a wait set
    *
@@ -99,7 +99,7 @@ extern "C"
    * Handle to event to remove
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetRemove (OFC_HANDLE hSet, OFC_HANDLE hEvent) ;
+  ofc_waitset_remove (OFC_HANDLE hSet, OFC_HANDLE hEvent) ;
   /**
    * Remove all events from a wait set
    *
@@ -107,12 +107,12 @@ extern "C"
    * Handle to wait set
    */
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetClear (OFC_HANDLE handle) ;
+  ofc_waitset_clear (OFC_HANDLE handle) ;
   OFC_CORE_LIB OFC_VOID
-  BlueWaitSetClearApp (OFC_HANDLE handle, OFC_HANDLE hApp) ;
+  ofc_waitset_clear_app (OFC_HANDLE handle, OFC_HANDLE hApp) ;
 #if defined(OFC_HANDLE_DEBUG)
-  BLUE_CORE_LIB BLUE_VOID 
-  BlueWaitSetLogMeasure (BLUE_HANDLE handle)  ;
+  OFC_CORE_LIB OFC_VOID 
+  ofc_waitset_log_measure(OFC_HANDLE handle)  ;
 #endif
 
 #if defined(__cplusplus)

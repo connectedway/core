@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_SOCKET_IMPL_H__)
-#define __BLUE_SOCKET_IMPL_H__
+#if !defined(__OFC_SOCKET_IMPL_H__)
+#define __OFC_SOCKET_IMPL_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -13,19 +13,19 @@
 #include "ofc/net.h"
 
 /**
- * \defgroup BlueSocketImpl Platform Dependent Socket Handling
- * \ingroup BluePort
+ * \defgroup socket_impl Platform Dependent Socket Handling
+ * \ingroup port
  *
- * This layer is used to interface with the BlueSocket platform independent
+ * This layer is used to interface with the Open Files platform independent
  * socket handling.  This layer should probably only be ported to a target
  * platform if the target has a BSD like socket facility.  If it doesn't,
- * then it is probably more effective to port the upper BlueSocket layer to
+ * then it is probably more effective to port the upper socket layer to
  * the target platform.
  *
  * These calls provide a similar framework to a BSD socket like layer.  
  * Unfortunately, not all BSD-like socket layers are created equal.  In fact,
  * every implementation seems to have some differences.  This layer in 
- * Blue Share is designed to abstract those differences.
+ * Open Files is designed to abstract those differences.
  */
 
 /** \{ */
@@ -50,8 +50,8 @@ extern "C"
    * a Handle to the socket
    */
   OFC_HANDLE
-  BlueSocketImplCreate (OFC_FAMILY_TYPE family,
-                        BLUE_SOCKET_TYPE socktype) ;
+  ofc_socket_impl_create (OFC_FAMILY_TYPE family,
+                          OFC_SOCKET_TYPE socktype) ;
   /**
    * Bind a socket to an address and port
    *
@@ -73,8 +73,8 @@ extern "C"
    * OFC_TRUE if the bind was successful, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplBind (OFC_HANDLE hSocket, const OFC_IPADDR *ip,
-                      OFC_UINT16 port) ;
+  ofc_socket_impl_bind (OFC_HANDLE hSocket, const OFC_IPADDR *ip,
+                        OFC_UINT16 port) ;
   /**
    * Close a socket
    *
@@ -87,7 +87,7 @@ extern "C"
    * OFC_TRUE if socket is closed, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplClose (OFC_HANDLE hSocket) ;
+  ofc_socket_impl_close (OFC_HANDLE hSocket) ;
   /**
    * Connect to a remote
    * 
@@ -106,8 +106,8 @@ extern "C"
    * OFC_TRUE if connect initiated.  OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplConnect (OFC_HANDLE hSocket,
-                         const OFC_IPADDR *ip, OFC_UINT16 port) ;
+  ofc_socket_impl_connect (OFC_HANDLE hSocket,
+                           const OFC_IPADDR *ip, OFC_UINT16 port) ;
   /**
    * Listen for an incoming connection
    *
@@ -123,7 +123,7 @@ extern "C"
    * OFC_TRUE if socket is listening, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplListen (OFC_HANDLE hSocket, OFC_INT backlog) ;
+  ofc_socket_impl_listen (OFC_HANDLE hSocket, OFC_INT backlog) ;
   /**
    * Accept an incoming connection
    *
@@ -144,8 +144,8 @@ extern "C"
    * Handle to socket implementation
    */  
   OFC_HANDLE
-  BlueSocketImplAccept (OFC_HANDLE hSocket,
-                        OFC_IPADDR *ip, OFC_UINT16 *port) ;
+  ofc_socket_impl_accept (OFC_HANDLE hSocket,
+                          OFC_IPADDR *ip, OFC_UINT16 *port) ;
   /**
    * Resuse ip address and port
    *
@@ -161,7 +161,7 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplReuseAddr (OFC_HANDLE hSocket, OFC_BOOL onoff) ;
+  ofc_socket_impl_reuse_addr (OFC_HANDLE hSocket, OFC_BOOL onoff) ;
   /**
    * Set a socket as non blocking
    *
@@ -177,7 +177,7 @@ extern "C"
    * OFC_TRUE if successful, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplNoBlock (OFC_HANDLE hSocket, OFC_BOOL onoff) ;
+  ofc_socket_impl_no_block (OFC_HANDLE hSocket, OFC_BOOL onoff) ;
   /**
    * Test if a socket is connected.
    *
@@ -193,7 +193,7 @@ extern "C"
    * OFC_TRUE if connected, OFC_FALSE otherwise.
    */
   OFC_BOOL
-  BlueSocketImplConnected (OFC_HANDLE hSocket) ;
+  ofc_socket_impl_connected (OFC_HANDLE hSocket) ;
   /**
    * Send data on a socket
    *
@@ -212,8 +212,8 @@ extern "C"
    * Number of bytes sent, or -1 if error.
    */
   OFC_SIZET
-  BlueSocketImplSend (OFC_HANDLE hSocket, const OFC_VOID *buf,
-                      OFC_SIZET len) ;
+  ofc_socket_impl_send (OFC_HANDLE hSocket, const OFC_VOID *buf,
+                        OFC_SIZET len) ;
   /**
    * Send data on a datagram socket
    *
@@ -238,10 +238,10 @@ extern "C"
    * Number of bytes sent or -1 if error
    */
   OFC_SIZET
-  BlueSocketImplSendTo (OFC_HANDLE hSocket, const OFC_VOID *buf,
-                        OFC_SIZET len,
-                        const OFC_IPADDR *ip,
-                        OFC_UINT16 port) ;
+  ofc_socket_impl_sendto (OFC_HANDLE hSocket, const OFC_VOID *buf,
+                          OFC_SIZET len,
+                          const OFC_IPADDR *ip,
+                          OFC_UINT16 port) ;
   /**
    * Receive data from a socket
    *
@@ -260,9 +260,9 @@ extern "C"
    * Number of bytes read, or -1 if error.
    */
   OFC_SIZET
-  BlueSocketImplRecv (OFC_HANDLE hSocket,
-                      OFC_VOID *buf,
-                      OFC_SIZET len) ;
+  ofc_socket_impl_recv (OFC_HANDLE hSocket,
+                        OFC_VOID *buf,
+                        OFC_SIZET len) ;
   /**
    * Receive data from a datagram socket
    *
@@ -287,11 +287,11 @@ extern "C"
    * Number of bytes received, or -1 if error.
    */
   OFC_SIZET
-  BlueSocketImplRecvFrom (OFC_HANDLE hSocket,
-                          OFC_VOID *buf,
-                          OFC_SIZET len,
-                          OFC_IPADDR *ip,
-                          OFC_UINT16 *port) ;
+  ofc_socket_impl_recv_from (OFC_HANDLE hSocket,
+                             OFC_VOID *buf,
+                             OFC_SIZET len,
+                             OFC_IPADDR *ip,
+                             OFC_UINT16 *port) ;
   /**
    * Destroy a socket
    *
@@ -301,7 +301,7 @@ extern "C"
    * Socket to destroy
    */
   OFC_VOID
-  BlueSocketImplDestroy (OFC_HANDLE hSocket) ;
+  ofc_socket_impl_destroy (OFC_HANDLE hSocket) ;
   /**
    * Test for an event on the socket
    *
@@ -314,8 +314,8 @@ extern "C"
    * \returns 
    * Events that are set
    */
-  BLUE_SOCKET_EVENT_TYPE 
-  BlueSocketImplTest (OFC_HANDLE hSocket) ;
+  OFC_SOCKET_EVENT_TYPE
+  ofc_socket_impl_test (OFC_HANDLE hSocket) ;
   /**
    * Enable an event on the socket
    *
@@ -332,8 +332,8 @@ extern "C"
    * OFC_TRUE if event is set, otherwise OFC_FALSE
    */
   OFC_BOOL
-  BlueSocketImplEnable (OFC_HANDLE hSocket,
-                        BLUE_SOCKET_EVENT_TYPE type) ;
+  ofc_socket_impl_enable (OFC_HANDLE hSocket,
+                          OFC_SOCKET_EVENT_TYPE type) ;
   /**
    * Set the sockets receive buffer size
    *
@@ -346,7 +346,7 @@ extern "C"
    * size to set the buffer to
    */
   OFC_VOID
-  BlueSocketImplSetRecvSize (OFC_HANDLE hSocket, OFC_INT size) ;
+  ofc_socket_impl_set_recv_size (OFC_HANDLE hSocket, OFC_INT size) ;
   /**
    * Set the sockets send buffer size
    *
@@ -359,7 +359,7 @@ extern "C"
    * size to set the buffer to
    */
   OFC_VOID
-  BlueSocketImplSetSendSize (OFC_HANDLE hSocket, OFC_INT size) ;
+  ofc_socket_impl_set_send_size (OFC_HANDLE hSocket, OFC_INT size) ;
   /**
    * Get the Implementations Event Handle
    *
@@ -372,7 +372,7 @@ extern "C"
    * The event handle associated with the socket
    */
   OFC_HANDLE
-  BlueSocketImplGetEventHandle (OFC_HANDLE hSocket)  ;
+  ofc_socket_impl_get_event_handle (OFC_HANDLE hSocket)  ;
   /**
    * Get the ip and ports of a tcp connection
    *
@@ -389,13 +389,13 @@ extern "C"
    * OFC_TRUE if success, OFC_FALSE otherwise
    */
   OFC_BOOL
-  BlueSocketImplGetAddresses (OFC_HANDLE hSock,
-                              OFC_SOCKADDR *local,
-                              OFC_SOCKADDR *remote) ;
-  OFC_INT BlueSocketImplGetFD (OFC_HANDLE hSocket)  ;
-  OFC_UINT16 BlueSocketImplGetEvent (OFC_HANDLE hSocket) ;
-  OFC_VOID BlueSocketImplSetEvent (OFC_HANDLE hSocket,
-                                   OFC_UINT16 revents) ;
+  ofc_socket_impl_get_addresses (OFC_HANDLE hSock,
+                                 OFC_SOCKADDR *local,
+                                 OFC_SOCKADDR *remote) ;
+  OFC_INT ofc_socket_impl_get_fd (OFC_HANDLE hSocket)  ;
+  OFC_UINT16 ofc_socket_impl_get_event (OFC_HANDLE hSocket) ;
+  OFC_VOID ofc_socket_impl_set_event (OFC_HANDLE hSocket,
+                                      OFC_UINT16 revents) ;
 #if defined(__cplusplus)
 }
 #endif

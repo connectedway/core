@@ -13,14 +13,14 @@
 
 #if defined(OFC_64BIT_INTEGER)
 
-OFC_VOID EpochTimeToFileTime (const OFC_ULONG tv_sec,
-                              const OFC_ULONG tv_nsec,
-                              OFC_FILETIME *filetime)
+OFC_VOID epoch_time_to_file_time (const OFC_ULONG tv_sec,
+                                  const OFC_ULONG tv_nsec,
+                                  OFC_FILETIME *filetime)
 {
   OFC_UINT64 secs ;
   OFC_UINT64 ns ;
 
-  secs = (OFC_UINT64) tv_sec + BLUE_TIME_S_EPOCH_OFFSET_1900 ;
+  secs = (OFC_UINT64) tv_sec + OFC_TIME_S_EPOCH_OFFSET_1900 ;
 
   /*
    * Convert to number of 100 ns
@@ -33,9 +33,9 @@ OFC_VOID EpochTimeToFileTime (const OFC_ULONG tv_sec,
   filetime->dwLowDateTime = (OFC_DWORD) (ns & 0xFFFFFFFF) ;
 }
 
-OFC_VOID FileTimeToEpochTime (const OFC_FILETIME *filetime,
-                              OFC_ULONG *tv_sec,
-                              OFC_ULONG *tv_nsec)
+OFC_VOID file_time_to_epoch_time (const OFC_FILETIME *filetime,
+                                  OFC_ULONG *tv_sec,
+                                  OFC_ULONG *tv_nsec)
 {
   OFC_UINT64 ns ;
 
@@ -47,17 +47,17 @@ OFC_VOID FileTimeToEpochTime (const OFC_FILETIME *filetime,
    * Convert to number of secs
    */
   *tv_sec = (OFC_ULONG) ((ns / (1000 * 1000 * 10)) -
-                         BLUE_TIME_S_EPOCH_OFFSET_1900) ;
+                         OFC_TIME_S_EPOCH_OFFSET_1900) ;
   *tv_nsec = (ns % (1000 * 1000 * 10)) * 100 ;
 }
 #else
-#include "BlueUtil/BlueInt64.h"
+#include "int64.h"
 
 #if 1
 /*
  * This brings us to 1900
  */
-static BLUE_UINT64 Blue64EpochOffset =
+static OFC_UINT64 ofc_64_epoch_offset =
   {
     0xB6109100,
     0x00000002
@@ -66,117 +66,117 @@ static BLUE_UINT64 Blue64EpochOffset =
 /*
  * This brings us to 1970
  */
-static BLUE_UINT64 Blue64EpochOffset =
+static OFC_UINT64 ofc_64_epoch_offset =
   {
     0x32661280
     0x00000002
   } ;
 #endif
 
-BLUE_VOID EpochTimeToFileTime (const BLUE_ULONG tv_sec,
-			       const BLUE_ULONG tv_nsec,
-			       BLUE_FILETIME *filetime)
+OFC_VOID EpochTimeToFileTime (const OFC_ULONG tv_sec,
+			       const OFC_ULONG tv_nsec,
+			       OFC_FILETIME *filetime)
 {
-  BLUE_UINT64 ns ;
-  BLUE_UINT64 temp ;
+  OFC_UINT64 ns ;
+  OFC_UINT64 temp ;
 
-  Blue64UAssign32 (&ns, tv_sec) ;
-  Blue64UAdd (&ns, &Blue64EpochOffset) ;
+  ofc_u64_assign_u32 (&ns, tv_sec) ;
+  ofc_u64_add(&ns, &ofc_64_epoch_offset) ;
   /*
    * Convert to number of 100 ns
    */
-  Blue64UMult32 (&ns, 1000 * 1000 * 10) ;
+  ofc_u64_mult_u32(&ns, 1000 * 1000 * 10) ;
 
-  Blue64UAssign32 (&temp, tv_nsec / 100) ;
-  Blue64UAdd (&ns, &temp) ;
+  ofc_u64_assisgn_u32(&temp, tv_nsec / 100) ;
+  ofc_u64_add(&ns, &temp) ;
   /*
    * Name into 100ns chunks
    */
-  filetime->dwHighDateTime = Blue64URetrieve32h (&ns) ;
-  filetime->dwLowDateTime = Blue64URetrieve32 (&ns) ;
+  filetime->dwHighDateTime = ofc_u64_retrieve_high (&ns) ;
+  filetime->dwLowDateTime = ofc_u64_retrieve_low (&ns) ;
 }
 
-BLUE_VOID FileTimeToEpochTime (const BLUE_FILETIME *filetime,
-			       BLUE_ULONG *tv_sec,
-			       BLUE_ULONG *tv_nsec)
+OFC_VOID file_time_to_epoch_time (const OFC_FILETIME *filetime,
+			       OFC_ULONG *tv_sec,
+			       OFC_ULONG *tv_nsec)
 {
-  BLUE_UINT64 secs ;
-  BLUE_UINT64 ns ;
-  BLUE_UINT64 temp ;
-  BLUE_UINT64 quot ;
-  BLUE_UINT64 rem ;
+  OFC_UINT64 secs ;
+  OFC_UINT64 ns ;
+  OFC_UINT64 temp ;
+  OFC_UINT64 quot ;
+  OFC_UINT64 rem ;
 
   /*
    * Name into 100ns chunks
    */
-  Blue64UAssign64 (&ns,
+  ofc_u64_assign_u64(&ns,
 		  filetime->dwLowDateTime, filetime->dwHighDateTime) ;
   /*
    * Convert to number of secs
    */
-  Blue64UAssign (&secs, &ns) ;
-  Blue64UAssign32 (&temp, 1000 * 1000 * 10) ;
-  Blue64UDivide (&secs, &temp, &quot, &rem) ;
-  Blue64USub (&quot, &Blue64EpochOffset) ;
-  *tv_sec = Blue64URetrieve32 (&quot) ;
-  *tv_nsec = Blue64URetrieve32 (&rem) * 100 ;
+  ofc_u64_assign(&secs, &ns) ;
+  ofc_u64_assign_u32(&temp, 1000 * 1000 * 10) ;
+  ofc_u64_divide(&secs, &temp, &quot, &rem) ;
+  ofc_u64_sub(&quot, &ofc_64_epoch_offset) ;
+  *tv_sec = ofc_u64_retrieve_low (&quot) ;
+  *tv_nsec = ofc_u64_retrieve_low (&rem) * 100 ;
 }
 #endif
 
 OFC_CORE_LIB OFC_MSTIME
-BlueTimeGetNow(OFC_VOID)
+ofc_time_get_now(OFC_VOID)
 {
-  return (BlueTimeGetNowImpl ()) ;
+  return (ofc_time_get_now_impl ()) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueTimeGetFileTime(OFC_FILETIME *filetime)
+ofc_time_get_file_time(OFC_FILETIME *filetime)
 {
-  BlueTimeGetFileTimeImpl (filetime) ;
+  ofc_time_get_file_time_impl (filetime) ;
 }
 
 OFC_CORE_LIB OFC_UINT16
-BlueTimeGetTimeZone (OFC_VOID)
+ofc_time_get_time_zone (OFC_VOID)
 {
-  return (BlueTimeGetTimeZoneImpl ()) ;
+  return (ofc_time_get_timezone_impl ()) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueFileTimeToDosDateTime (const OFC_FILETIME *lpFileTime,
-                           OFC_WORD *lpFatDate, OFC_WORD *lpFatTime)
+ofc_file_time_to_dos_date_time (const OFC_FILETIME *lpFileTime,
+                                OFC_WORD *lpFatDate, OFC_WORD *lpFatTime)
 {
-  return (BlueFileTimeToDosDateTimeImpl (lpFileTime, lpFatDate, lpFatTime)) ;
+  return (ofc_file_time_to_dos_date_time_impl (lpFileTime, lpFatDate, lpFatTime)) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueDosDateTimeToFileTime (OFC_WORD FatDate, OFC_WORD FatTime,
-                           OFC_FILETIME *lpFileTime)
+ofc_dos_date_time_to_file_time (OFC_WORD FatDate, OFC_WORD FatTime,
+                                OFC_FILETIME *lpFileTime)
 {
-  return (BlueDosDateTimeToFileTimeImpl (FatDate, FatTime, lpFileTime)) ;
+  return (ofc_dos_date_time_to_file_time_impl (FatDate, FatTime, lpFileTime)) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueTimeElementsToDosDateTime (OFC_UINT16 month,
-                               OFC_UINT16 day,
-                               OFC_UINT16 year,
-                               OFC_UINT16 hour,
-                               OFC_UINT16 min,
-                               OFC_UINT16 sec,
-                               OFC_WORD *lpFatDate,
-                               OFC_WORD *lpFatTime)
+ofc_time_elements_to_dos_date_time (OFC_UINT16 month,
+                                    OFC_UINT16 day,
+                                    OFC_UINT16 year,
+                                    OFC_UINT16 hour,
+                                    OFC_UINT16 min,
+                                    OFC_UINT16 sec,
+                                    OFC_WORD *lpFatDate,
+                                    OFC_WORD *lpFatTime)
 {					 
-  *lpFatDate = 
-    month << BLUE_DOS_MONTH_SHIFT |
-    day << BLUE_DOS_DAY_SHIFT |
-    (year - BLUE_DOS_YEAR_BASE) << BLUE_DOS_YEAR_SHIFT ;
+  *lpFatDate =
+          month << OFC_DOS_MONTH_SHIFT |
+          day << OFC_DOS_DAY_SHIFT |
+          (year - OFC_DOS_YEAR_BASE) << OFC_DOS_YEAR_SHIFT ;
   *lpFatTime =
-    hour << BLUE_DOS_HRS_SHIFT |
-    min << BLUE_DOS_MINS_SHIFT |
-    sec << BLUE_DOS_SECS_SHIFT ;
+          hour << OFC_DOS_HRS_SHIFT |
+          min << OFC_DOS_MINS_SHIFT |
+          sec << OFC_DOS_SECS_SHIFT ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueTimeDosDateTimeToElements (OFC_WORD FatDate,
+ofc_dos_date_time_to_elements (OFC_WORD FatDate,
                                OFC_WORD FatTime,
                                OFC_UINT16 *month,
                                OFC_UINT16 *day,
@@ -185,19 +185,21 @@ BlueTimeDosDateTimeToElements (OFC_WORD FatDate,
                                OFC_UINT16 *min,
                                OFC_UINT16 *sec)
 {
-  *hour = (FatTime & BLUE_DOS_HRS) >> BLUE_DOS_HRS_SHIFT ;
-  *min = (FatTime & BLUE_DOS_MINS) >> BLUE_DOS_MINS_SHIFT ;
-  *sec = (FatTime & BLUE_DOS_SECS) >> BLUE_DOS_SECS_SHIFT ;
+  *hour = (FatTime & OFC_DOS_HRS) >> OFC_DOS_HRS_SHIFT ;
+  *min = (FatTime & OFC_DOS_MINS) >> OFC_DOS_MINS_SHIFT ;
+  *sec = (FatTime & OFC_DOS_SECS) >> OFC_DOS_SECS_SHIFT ;
 
-  *month = ((FatDate & BLUE_DOS_MONTH) >> BLUE_DOS_MONTH_SHIFT) ;
-  *day = (FatDate & BLUE_DOS_DAY) >> BLUE_DOS_DAY_SHIFT ;
-  *year = ((FatDate & BLUE_DOS_YEAR) >> BLUE_DOS_YEAR_SHIFT) + 
-    BLUE_DOS_YEAR_BASE ; 
+  *month = ((FatDate & OFC_DOS_MONTH) >> OFC_DOS_MONTH_SHIFT) ;
+  *day = (FatDate & OFC_DOS_DAY) >> OFC_DOS_DAY_SHIFT ;
+  *year = ((FatDate & OFC_DOS_YEAR) >> OFC_DOS_YEAR_SHIFT) +
+          OFC_DOS_YEAR_BASE ;
 }
 
 #if defined(OFC_PERF_STATS)
 
-static BLUE_CHAR *BlueTimePerfNames[BLUE_TIME_PERF_NUM] =
+static OFC_PERF_STAT ofc_perf_stats[OFC_PERF_NUM];
+
+static OFC_CHAR *ofc_perf_names[OFC_PERF_NUM] =
   {
     "App Read",
     "App Write",
@@ -210,143 +212,104 @@ static BLUE_CHAR *BlueTimePerfNames[BLUE_TIME_PERF_NUM] =
 } ;
 
 
-BLUE_CORE_LIB BLUE_MSTIME 
-BlueTimeGetRuntime (BLUE_VOID)
+OFC_CORE_LIB OFC_MSTIME 
+ofc_get_runtime(OFC_VOID)
 {
-  return (BlueTimeGetRuntimeImpl()) ;
+  return (ofc_get_runtime_impl()) ;
 }
 
-BLUE_CORE_LIB BLUE_MSTIME 
-BlueTimePerfStart (BLUE_TIME_PERF_ID id)
+OFC_CORE_LIB OFC_MSTIME 
+ofc_perf_start(OFC_TIME_PERF_ID id)
 {
-  BLUE_MSTIME stamp ;
-  BLUE_TIME_PERF_STAT *BlueTimePerfStats ;
+  OFC_MSTIME stamp ;
 
-  BlueTimePerfStats = BlueGetPerfStats() ;
-  stamp = BlueTimeGetNow() ;
+  stamp = ofc_time_get_now() ;
 
-  if (BlueTimePerfStats != BLUE_NULL)
-    BlueTimePerfStats[id].depth++ ;
+  ofc_perf_stats[id].depth++ ;
 
-  if (BlueTimePerfStats[id].runtime_start == 0)
-    BlueTimePerfStats[id].runtime_start = BlueTimeGetRuntime() ;
+  if (ofc_perf_stats[id].runtime_start == 0)
+    ofc_perf_stats[id].runtime_start = ofc_get_runtime() ;
   return (stamp) ;
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimePerfStop (BLUE_TIME_PERF_ID id, BLUE_MSTIME stamp,
-		  BLUE_LONG bytes_transferred)
+OFC_CORE_LIB OFC_VOID 
+ofc_perf_stop(OFC_TIME_PERF_ID id, OFC_MSTIME stamp,
+		  OFC_LONG bytes_transferred)
 {
-  BLUE_TIME_PERF_STAT *BlueTimePerfStats ;
+  ofc_perf_stats[id].elapsed += ofc_time_get_now() - stamp ;
+  ofc_perf_stats[id].depthsum += ofc_perf_stats[id].depth ;
+  ofc_perf_stats[id].totalbytes += bytes_transferred ;
+  ofc_perf_stats[id].count++ ;
+  ofc_perf_stats[id].depth-- ;
+  ofc_perf_stats[id].runtime_end = ofc_get_runtime() ;
+}
 
-  BlueTimePerfStats = BlueGetPerfStats() ;
-  if (BlueTimePerfStats != BLUE_NULL)
+OFC_CORE_LIB OFC_VOID 
+ofc_perf_reset(OFC_VOID)
+{
+  OFC_INT id ;
+
+  for (id = 0 ; id < OFC_PERF_NUM ; id++)
     {
-      BlueTimePerfStats[id].elapsed += BlueTimeGetNow() - stamp ;
-      BlueTimePerfStats[id].depthsum += BlueTimePerfStats[id].depth ;
-      BlueTimePerfStats[id].totalbytes += bytes_transferred ;
-      BlueTimePerfStats[id].count++ ;
-      BlueTimePerfStats[id].depth-- ;
-      BlueTimePerfStats[id].runtime_end = BlueTimeGetRuntime() ;
+      ofc_perf_stats[id].id = id ;
+      ofc_perf_stats[id].elapsed = 0 ;
+      ofc_perf_stats[id].totalbytes = 0 ;
+      ofc_perf_stats[id].count = 0 ;
+      ofc_perf_stats[id].depth = 0 ;
+      ofc_perf_stats[id].depthsum = 0 ;
+      ofc_perf_stats[id].runtime_start = 0 ;
+      ofc_perf_stats[id].runtime_end = 0 ;
     }
 }
 
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimePerfReset(BLUE_VOID)
+OFC_CORE_LIB OFC_VOID 
+ofc_perf_init(OFC_VOID)
 {
-  BLUE_INT id ;
-  BLUE_TIME_PERF_STAT *BlueTimePerfStats ;
+  ofc_perf_reset () ;
+}
 
-  BlueTimePerfStats = BlueGetPerfStats() ;
-  if (BlueTimePerfStats != BLUE_NULL)
+OFC_CORE_LIB OFC_VOID 
+ofc_perf_destroy(OFC_VOID)
+{
+}
+
+OFC_CORE_LIB OFC_VOID 
+ofc_perf_dump(OFC_VOID)
+{
+  OFC_INT i ;
+  OFC_MSTIME uspio ;
+  OFC_MSTIME bpsec ;
+  OFC_MSTIME uspq ;
+  OFC_MSTIME count ;
+  OFC_MSTIME depth ;
+  OFC_MSTIME runtime ;
+  OFC_LONG bpio ;
+
+  ofc_printf ("ID      Name      us/io  byte/sec  us/q   count  b/io  "
+	      "depth runtime(us) \n") ;
+
+  for (i = 0 ; i < OFC_PERF_NUM ; i++)
     {
-      for (id = 0 ; id < BLUE_TIME_PERF_NUM ; id++)
+      count = ofc_perf_stats[i].count ;
+      if (count > 0)
 	{
-	  BlueTimePerfStats[id].id = id ;
-	  BlueTimePerfStats[id].elapsed = 0 ;
-	  BlueTimePerfStats[id].totalbytes = 0 ;
-	  BlueTimePerfStats[id].count = 0 ;
-	  BlueTimePerfStats[id].depth = 0 ;
-	  BlueTimePerfStats[id].depthsum = 0 ;
-	  BlueTimePerfStats[id].runtime_start = 0 ;
-	  BlueTimePerfStats[id].runtime_end = 0 ;
-	}
-    }
-}
-
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimePerfInit (BLUE_VOID)
-{
-  BLUE_TIME_PERF_STAT *BlueTimePerfStats ;
-
-  BlueTimePerfStats = BlueGetPerfStats() ;
-  if (BlueTimePerfStats == BLUE_NULL)
-    {
-      BlueTimePerfStats = BlueHeapMalloc (sizeof (BLUE_TIME_PERF_STAT) * 
-					  BLUE_TIME_PERF_NUM) ;
-
-      BlueSetPerfStats(BlueTimePerfStats) ;
-
-      BlueTimePerfReset () ;
-    }
-}
-
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimePerfDestroy (BLUE_VOID)
-{
-  BLUE_TIME_PERF_STAT *BlueTimePerfStats ;
-
-  BlueTimePerfStats = BlueGetPerfStats() ;
-  if (BlueTimePerfStats != BLUE_NULL)
-    {
-      BlueSetPerfStats(BLUE_NULL) ;
-      BlueHeapFree(BlueTimePerfStats);
-    }
-}
-
-BLUE_CORE_LIB BLUE_VOID 
-BlueTimePerfDump (BLUE_VOID)
-{
-  BLUE_INT i ;
-  BLUE_MSTIME uspio ;
-  BLUE_MSTIME bpsec ;
-  BLUE_MSTIME uspq ;
-  BLUE_MSTIME count ;
-  BLUE_MSTIME depth ;
-  BLUE_MSTIME runtime ;
-  BLUE_LONG bpio ;
-
-  BLUE_TIME_PERF_STAT *BlueTimePerfStats ;
-
-  BlueTimePerfStats = BlueGetPerfStats() ;
-  if (BlueTimePerfStats != BLUE_NULL)
-    {
-      BlueCprintf ("ID      Name      us/io  byte/sec  us/q   count  b/io  "
-		   "depth runtime(us) \n") ;
-
-      for (i = 0 ; i < BLUE_TIME_PERF_NUM ; i++)
-	{
-	  count = BlueTimePerfStats[i].count ;
-	  if (count > 0)
-	    {
-	      depth = BlueTimePerfStats[i].depthsum / count ;
-	      uspq = (BlueTimePerfStats[i].elapsed * 1000) / count ;
-	      if (BlueTimePerfStats[i].depthsum == 0)
-		uspio = 0 ;
-	      else
-		uspio = (BlueTimePerfStats[i].elapsed * 1000 ) / 
-		  BlueTimePerfStats[i].depthsum ;
-	      bpio = BlueTimePerfStats[i].totalbytes / count ;
-	      if (uspio == 0)
-		bpsec = 0 ;
-	      else
-		bpsec = (bpio * 1000 * 1000) / uspio ;
-	      runtime = BlueTimePerfStats[i].runtime_end -
-		BlueTimePerfStats[i].runtime_start ;
-	      BlueCprintf ("%2d %-14s %6d %8d %6d %6d %5d %5d %7d\n",
-			   i, BlueTimePerfNames[i], 
-			   uspio, bpsec, uspq, count, bpio, depth, runtime) ;
-	    }
+	  depth = ofc_perf_stats[i].depthsum / count ;
+	  uspq = (ofc_perf_stats[i].elapsed * 1000) / count ;
+	  if (ofc_perf_stats[i].depthsum == 0)
+	    uspio = 0 ;
+	  else
+	    uspio = (ofc_perf_stats[i].elapsed * 1000 ) / 
+	      ofc_perf_stats[i].depthsum ;
+	  bpio = ofc_perf_stats[i].totalbytes / count ;
+	  if (uspio == 0)
+	    bpsec = 0 ;
+	  else
+	    bpsec = (bpio * 1000 * 1000) / uspio ;
+	  runtime = ofc_perf_stats[i].runtime_end -
+	    ofc_perf_stats[i].runtime_start ;
+	  ofc_printf ("%2d %-14s %6d %8d %6d %6d %5d %5d %7d\n",
+		      i, ofc_perf_names[i], 
+		      uspio, bpsec, uspq, count, bpio, depth, runtime) ;
 	}
     }
 }

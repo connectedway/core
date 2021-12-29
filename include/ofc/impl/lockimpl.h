@@ -3,14 +3,14 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_LOCK_IMPL_H__)
-#define __BLUE_LOCK_IMPL_H__
+#if !defined(__OFC_LOCK_IMPL_H__)
+#define __OFC_LOCK_IMPL_H__
 
 #include "ofc/core.h"
 
 /**
- * \defgroup BlueLockImpl Lock Implementation
- * \ingroup BluePort
+ * \defgroup ofc_lock_impl Lock Implementation
+ * \ingroup port
  *
  * This facility implements the platform specific lock handling
  *
@@ -26,7 +26,7 @@ extern "C"
    * \param lock
    * Pointer to the lock to destroy
    */
-  OFC_VOID BlueLockDestroyImpl (OFC_LOCK lock) ;
+  OFC_VOID ofc_lock_destroy_impl (OFC_LOCK lock) ;
   /**
    * Test if a lock is available and lock it if it is.
    *
@@ -39,7 +39,7 @@ extern "C"
    * OFC_TRUE if the lock has been obtained, OFC_FALSE if the lock was
    * not available
    */
-  OFC_BOOL BlueLockTryImpl (OFC_LOCK lock) ;
+  OFC_BOOL ofc_lock_try_impl (OFC_LOCK lock) ;
   /**
    * Wait for a lock
    *
@@ -48,20 +48,20 @@ extern "C"
    * \param pLock
    * Pointer to lock to obtain
    */
-  OFC_VOID BlueLockImpl (OFC_LOCK pLock) ;
+  OFC_VOID ofc_lock_impl (OFC_LOCK pLock) ;
   /**
    * Release a Lock
    *
    * \param pLock
    * Pointer to lock to release
    */
-  OFC_VOID BlueUnlockImpl (OFC_LOCK pLock) ;
+  OFC_VOID ofc_unlock_impl (OFC_LOCK pLock) ;
   /**
    * Initialize the Locking subsystem
    *
    * This routine will be called during system initialization
    */
-  OFC_LOCK BlueLockInitImpl (OFC_VOID) ;
+  OFC_LOCK ofc_lock_init_impl (OFC_VOID) ;
 #if defined(__cplusplus)
 }
 #endif

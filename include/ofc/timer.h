@@ -7,13 +7,13 @@
 #include "ofc/types.h"
 #include "ofc/handle.h"
 
-#if !defined(__BLUE_TIMER_H__)
-#define __BLUE_TIMER_H__
+#if !defined(__OFC_TIMER_H__)
+#define __OFC_TIMER_H__
 
 /**
- * \defgroup BlueTimer Timer Facility
+ * \defgroup Open Files Timer Timer Facility
  *
- * \ingroup BlueUtil
+ * \ingroup core
  */
 
 /** \{ */
@@ -29,7 +29,7 @@ extern "C"
    * A handle to the timer
    */
   OFC_CORE_LIB OFC_HANDLE
-  BlueTimerCreate (OFC_CCHAR *id) ;
+  ofc_timer_create (OFC_CCHAR *id) ;
   /**
    * Get the remaining wait time for a timer
    *
@@ -41,7 +41,7 @@ extern "C"
    * is expired, a zero is returned.
    */
   OFC_CORE_LIB OFC_MSTIME
-  BlueTimerGetWaitTime (OFC_HANDLE hTimer) ;
+  ofc_timer_get_wait_time (OFC_HANDLE hTimer) ;
   /**
    * Set a timer with a millisecond count
    * 
@@ -52,7 +52,7 @@ extern "C"
    * The number of milliseconds to tick for
    */
   OFC_CORE_LIB OFC_VOID
-  BlueTimerSet (OFC_HANDLE hTimer, OFC_MSTIME delta) ;
+  ofc_timer_set (OFC_HANDLE hTimer, OFC_MSTIME delta) ;
   /**
    * Destroy a timer
    *
@@ -60,9 +60,9 @@ extern "C"
    * The handle to the timer to destroy
    */
   OFC_CORE_LIB OFC_VOID
-  BlueTimerDestroy (OFC_HANDLE hTimer) ;
+  ofc_timer_destroy (OFC_HANDLE hTimer) ;
 
-  OFC_CORE_LIB OFC_CCHAR *BlueTimerID (OFC_HANDLE hTimer);
+  OFC_CORE_LIB OFC_CCHAR *ofc_timer_id (OFC_HANDLE hTimer);
 #if defined(__cplusplus)
 }
 #endif

@@ -3,34 +3,34 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_HEAP_IMPL_H__)
-#define __BLUE_HEAP_IMPL_H__
+#if !defined(__OFC_HEAP_IMPL_H__)
+#define __OFC_HEAP_IMPL_H__
 
 #include "ofc/types.h"
 
 /**
- * \defgroup BluePort Platform Specific Abstraction
+ * \defgroup port Platform Specific Abstraction
  *
- * Blue Share is designed as a portable package that can be ported to
+ * Open Files is designed as a portable package that can be ported to
  * most any target platform.  To accomodate this and ease platform 
- * integration, Blue Share provides a porting abstraction.
+ * integration, Open Files provides a porting abstraction.
  *
- * To port Blue Share to a new platform, simple implement these routines
+ * To port Open Files to a new platform, simple implement these routines
  * and target them at your desired platform
  */
 
 /**
- * \defgroup BlueHeap Heap Facility
- * \ingroup BluePort
+ * \defgroup heap Heap Facility
+ * \ingroup port
  *
- * Blue Share provides routines that abstract heap functions.  A port
+ * Open Files provides routines that abstract heap functions.  A port
  * can map these functions to underlying platform specific heap functions
- * or can use Blue Share's heap management facility.
+ * or can use Open Files's heap management facility.
  *
  * The documentation of these APIs may include specific information relevant
- * only to the Blue Share heap
+ * only to the heap
  *
- * The Blue Share Heap algorithm is described below:
+ * The binary heap algorithm is described below:
  *
  * The heap algorithm used is simple, quick and relatively efficient and is
  * designed to provide deterministic behavior.  The heap is organized as an
@@ -40,10 +40,10 @@
  * 2^5 or 32 bytes in size.  
  *
  * The number of entries in the array determines the maximum size of a
- * memory block and is defined in BlueUtil/BlueParam.h as 
+ * memory block and is defined in the configuration as 
  * OFC_HEAP_POWER.
  *
- * The heap is statically allocated in the file BlueHeap.c and is a power of 2
+ * The heap is statically allocated in the file heap.c and is a power of 2
  * bytes in size.  This power of this size must be less then 
  * OFC_HEAP_POWER.  To initialize the heap, all entries in the array
  * are cleared and the static heap is added to block list corresponding to
@@ -92,14 +92,14 @@ extern "C"
   /**
    * Initialize the Heap
    *
-   * This function is only called by BlueInit.  It will initialize the
+   * This function is only called by ofc_init.  It will initialize the
    * heap for use.  This may be a noop on many platforms
    */
-  OFC_VOID BlueHeapInitImpl (OFC_VOID) ;
+  OFC_VOID ofc_heap_init_impl (OFC_VOID) ;
   /**
    * Unload the heap implementation
    */
-  OFC_VOID BlueHeapUnloadImpl (OFC_VOID) ;
+  OFC_VOID ofc_heap_unload_impl (OFC_VOID) ;
   /**
    * Deallocate a chunk of memory
    *
@@ -108,8 +108,8 @@ extern "C"
    * \param mem
    * A pointer to the memory to deallocate.
    */
-  OFC_VOID BlueHeapFreeImpl (OFC_LPVOID mem) ;
-  OFC_VOID BlueHeapCheckAllocImpl (OFC_LPCVOID mem) ;
+  OFC_VOID ofc_free_impl (OFC_LPVOID mem) ;
+  OFC_VOID ofc_heap_check_alloc_impl (OFC_LPCVOID mem) ;
   /**
    * Allocate a chunk of memory
    *
@@ -118,7 +118,7 @@ extern "C"
    * \param size
    * size of the memory block to allocate
    */
-  OFC_LPVOID BlueHeapMallocImpl (OFC_SIZET size) ;
+  OFC_LPVOID ofc_malloc_impl (OFC_SIZET size) ;
   /**
    * Change the size (reallocate) a chunk of memory
    *
@@ -137,8 +137,8 @@ extern "C"
    * Reallocating a chunk of memory to a size within the same power of two
    * 2^x to the 2^(x+1) will return the pointer passed in.
    */
-  OFC_LPVOID BlueHeapReallocImpl (OFC_LPVOID ptr,
-                                  OFC_SIZET size) ;
+  OFC_LPVOID ofc_realloc_impl (OFC_LPVOID ptr,
+                               OFC_SIZET size) ;
 #if defined(__cplusplus)
 }
 #endif

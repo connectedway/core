@@ -108,7 +108,7 @@ ofc_net_resolve_name (OFC_LPCSTR name, OFC_UINT16 *num_addrs,
    */
   if (none)
     {
-      BlueNameResolveName (name, num_addrs, ip) ;
+      ofc_name_resolve_name(name, num_addrs, ip) ;
       if (!ofc_net_is_addr_none (ip))
 	none = OFC_FALSE ;
     }

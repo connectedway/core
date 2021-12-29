@@ -187,7 +187,7 @@ typedef OFC_INT64 OFC_LARGE_INTEGER ;
 /**
  * Assign one large integer to another
  */
-#define OFC_LARGE_INTEGER_ASSIGN(x,y) BlueCmemcpy(&x,&y, sizeof(OFC_LARGE_INTEGER))
+#define OFC_LARGE_INTEGER_ASSIGN(x,y) ofc_memcpy(&x,&y, sizeof(OFC_LARGE_INTEGER))
 /**
  * Initialize a large integer from two 32 bit integers
  */
@@ -255,19 +255,19 @@ typedef const OFC_VOID OFC_CVOID ;
 /**
  * Represents a pointer to a wide character string
  */
-typedef BLUE_WCHAR *OFC_LPWSTR ;
+typedef OFC_WCHAR *OFC_LPWSTR ;
 /**
  * Another representation of a pointer to a wide character string
  */
-typedef BLUE_WCHAR *OFC_LMSTR ;
+typedef OFC_WCHAR *OFC_LMSTR ;
 /**
  * Represents a constant wide character
  */
-typedef const BLUE_WCHAR OFC_CWCHAR ;
+typedef const OFC_WCHAR OFC_CWCHAR ;
 /**
  * Represents a pointer to a constant wide character string
  */
-typedef const BLUE_WCHAR *OFC_LPCWSTR ;
+typedef const OFC_WCHAR *OFC_LPCWSTR ;
 /**
  * Represents a constant character
  */
@@ -323,11 +323,11 @@ typedef const OFC_VOID *OFC_LPCVOID ;
 /**
  * Represents a wide character
  */
-typedef BLUE_WCHAR OFC_TCHAR ;
+typedef OFC_WCHAR OFC_TCHAR ;
 /**
  * Represents a wide character constant
  */
-typedef const BLUE_WCHAR OFC_CTCHAR ;
+typedef const OFC_WCHAR OFC_CTCHAR ;
 
 #if defined(OFC_UNICODE_API)
 /**

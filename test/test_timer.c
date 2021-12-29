@@ -44,11 +44,11 @@ static OFC_INT test_startup_default(OFC_VOID)
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
     } ;
 
-  BlueConfigDefault();
-  BlueConfigSetInterfaceType(BLUE_CONFIG_ICONFIG_AUTO);
-  BlueConfigSetNodeName(TSTR("localhost"), TSTR("WORKGROUP"),
-			TSTR("OpenFiles Unit Test"));
-  BlueConfigSetUUID(&uuid);
+  ofc_persist_default();
+  ofc_persist_set_interface_type(OFC_CONFIG_ICONFIG_AUTO);
+  ofc_persist_set_node_name(TSTR("localhost"), TSTR("WORKGROUP"),
+                            TSTR("OpenFiles Unit Test"));
+  ofc_persist_set_uuid(&uuid);
   return(0);
 }
 
@@ -61,7 +61,7 @@ static OFC_INT test_startup(OFC_VOID)
 #else
   ret = test_startup_default();
 #endif
-  hScheduler = BlueSchedCreate();
+  hScheduler = ofc_sched_create();
   hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
@@ -70,7 +70,7 @@ static OFC_INT test_startup(OFC_VOID)
 static OFC_VOID test_shutdown(OFC_VOID)
 {
   ofc_event_destroy(hDone);
-  BlueSchedQuit(hScheduler);
+  ofc_sched_quit(hScheduler);
   ofc_framework_shutdown();
   ofc_framework_destroy();
 }
@@ -90,7 +90,7 @@ typedef struct
   OFC_HANDLE hTimer ;
   OFC_HANDLE scheduler ;
   OFC_INT count ;
-} BLUE_TIMER_TEST ;
+} OFC_TIMER_TEST ;
 
 static OFC_VOID TimerTestPreSelect (OFC_HANDLE app) ;
 static OFC_HANDLE TimerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent) ;
@@ -103,13 +103,13 @@ static OFC_APP_TEMPLATE TimerTestAppDef =
    &TimerTestPostSelect,
    &TimerTestDestroy,
 #if defined(OFC_APP_DEBUG)
-   BLUE_NULL
+   OFC_NULL
 #endif
 } ;
 
 static OFC_VOID TimerTestPreSelect (OFC_HANDLE app)
 {
-  BLUE_TIMER_TEST *timerTest ;
+  OFC_TIMER_TEST *timerTest ;
   TIMER_TEST_STATE entry_state ;
 
   timerTest = ofc_app_get_data (app) ;
@@ -118,24 +118,24 @@ static OFC_VOID TimerTestPreSelect (OFC_HANDLE app)
       do
 	{
 	  entry_state = timerTest->state ;
-	  BlueSchedClearWait (timerTest->scheduler, app) ;
+	  ofc_sched_clear_wait (timerTest->scheduler, app) ;
 
 	  switch (timerTest->state)
 	    {
 	    default:
 	    case TIMER_TEST_STATE_IDLE:
-	      timerTest->hTimer = BlueTimerCreate("TIMER TEST") ;
+	      timerTest->hTimer = ofc_timer_create("TIMER TEST") ;
 	      if (timerTest->hTimer != OFC_HANDLE_NULL)
 		{
-		  BlueTimerSet (timerTest->hTimer, TIMER_TEST_INTERVAL) ;
+		  ofc_timer_set (timerTest->hTimer, TIMER_TEST_INTERVAL) ;
 		  timerTest->state = TIMER_TEST_STATE_RUNNING ;
-		  BlueSchedAddWait (timerTest->scheduler, app, 
-				    timerTest->hTimer) ;
+		  ofc_sched_add_wait (timerTest->scheduler, app,
+                              timerTest->hTimer) ;
 		}
 	      break ;
 
 	    case TIMER_TEST_STATE_RUNNING:
-	      BlueSchedAddWait (timerTest->scheduler, app, timerTest->hTimer) ;
+	      ofc_sched_add_wait (timerTest->scheduler, app, timerTest->hTimer) ;
 	      break ;
 	    }
 	}
@@ -145,7 +145,7 @@ static OFC_VOID TimerTestPreSelect (OFC_HANDLE app)
 
 static OFC_HANDLE TimerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 {
-  BLUE_TIMER_TEST *timerTest ;
+  OFC_TIMER_TEST *timerTest ;
   OFC_BOOL progress ;
 
   timerTest = ofc_app_get_data (app) ;
@@ -171,7 +171,7 @@ static OFC_HANDLE TimerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 		      ofc_app_kill (app) ;
 		    }
 		  else
-		    BlueTimerSet (timerTest->hTimer, TIMER_TEST_INTERVAL) ;
+		    ofc_timer_set (timerTest->hTimer, TIMER_TEST_INTERVAL) ;
 		}
 	      break ;
 	    }
@@ -182,7 +182,7 @@ static OFC_HANDLE TimerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hEvent)
 
 static OFC_VOID TimerTestDestroy (OFC_HANDLE app)
 {
-  BLUE_TIMER_TEST *timerTest ;
+  OFC_TIMER_TEST *timerTest ;
 
   timerTest = ofc_app_get_data (app) ;
   if (timerTest != OFC_NULL)
@@ -194,7 +194,7 @@ static OFC_VOID TimerTestDestroy (OFC_HANDLE app)
 	  break ;
 
 	case TIMER_TEST_STATE_RUNNING:
-	  BlueTimerDestroy (timerTest->hTimer) ;
+	  ofc_timer_destroy (timerTest->hTimer) ;
 	  break ;
 	}
 
@@ -216,10 +216,10 @@ TEST_TEAR_DOWN(timer)
 
 TEST(timer, test_timer)
 {
-  BLUE_TIMER_TEST *timerTest ;
+  OFC_TIMER_TEST *timerTest ;
   OFC_HANDLE hApp ;
 
-  timerTest = ofc_malloc (sizeof (BLUE_TIMER_TEST)) ;
+  timerTest = ofc_malloc (sizeof (OFC_TIMER_TEST)) ;
   timerTest->count = 0 ;
   timerTest->state = TIMER_TEST_STATE_IDLE ;
   timerTest->scheduler = hScheduler ;

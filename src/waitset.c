@@ -19,13 +19,13 @@
  * pass the handle set off to a platform dependent layer
  *
  * The platform layer needs to decide on a scheduling scheme.
- * Each handle has a type (see BlueHandle.h).  Some Types are 'scheduling 
+ * Each handle has a type (see handle.h).  Some Types are 'scheduling 
  * entities'.  Which are scheduling entities and which are not is platform 
  * dependent but if an appis trying to schedule on a handle which is not a 
  * scheduling entity for the platform, well, the app may not wake up when 
  * expected.  Therefore, an app should be designed to only wait on handles 
  * that are defined as scheduling entities for all platforms that the app 
- * is being targeted to.  For the BlueShare product, the handles that are
+ * is being targeted to.  For the Open Files product, the handles that are
  * scheduling entities are:
  *
  *   OFC_HANDLE_WAIT_QUEUE
@@ -37,7 +37,7 @@
  *   OFC_HANDLE_MAILSLOT
  *
  * How these are handled is a platform dependent decision.  Some thoughts 
- * about the three platforms currently supported by BlueShare: win32, and 
+ * about the three platforms currently supported by Open Files: win32, and 
  * posix.
  *
  * Some platforms support the notion of a scheduling entity of a FIFO or 
@@ -78,7 +78,7 @@
  *
  * This facility consists of a number of threads that perform I/O.  The 
  * actual number is build specific (OFC_NUM_OVERLAPPED_IOS).  Each 
- * thread is a BlueScheduler and each of these schedulers have one app.  
+ * thread is a Open Files scheduler and each of these schedulers have one app.  
  * There's a queue associated with each of these apps.  When a file I/O 
  * occurs, a message is built defining the I/O and queued to a free I/O app.  
  * If no free I/O app is found, it is queued to a round robin app.  
@@ -87,21 +87,21 @@
  * FILE handle, adds the file handle to the triggered list and resumes the 
  * initiating scheduler.
  *
- * This is expected to be the most difficult aspect of porting BlueShare 
+ * This is expected to be the most difficult aspect of porting Open Files 
  * to new platforms.  We provide PSPs for all three platforms so a 
  * developer should be able to use the techniques available to design a 
  * scheme that works for the target platform.
  */
 
 OFC_CORE_LIB OFC_HANDLE
-BlueWaitSetCreate (OFC_VOID)
+ofc_waitset_create (OFC_VOID)
 {
   WAIT_SET *pWaitSet ;
   OFC_HANDLE handle ;
 
   pWaitSet = ofc_malloc (sizeof (WAIT_SET)) ;
-  pWaitSet->hHandleQueue = BlueQcreate() ;
-  BlueWaitSetCreateImpl (pWaitSet) ;
+  pWaitSet->hHandleQueue = ofc_queue_create() ;
+  ofc_waitset_create_impl (pWaitSet) ;
   handle = ofc_handle_create (OFC_HANDLE_WAIT_SET, pWaitSet) ;
   /* extra for create */
   ofc_handle_lock (handle) ;
@@ -109,7 +109,7 @@ BlueWaitSetCreate (OFC_VOID)
 }
   
 OFC_CORE_LIB OFC_VOID
-BlueWaitSetClear (OFC_HANDLE handle)
+ofc_waitset_clear (OFC_HANDLE handle)
 {
   WAIT_SET *pWaitSet ;
   OFC_HANDLE hEventHandle ;
@@ -118,10 +118,10 @@ BlueWaitSetClear (OFC_HANDLE handle)
   if (pWaitSet != OFC_NULL)
     {
       for (hEventHandle = 
-	     (OFC_HANDLE) BlueQdequeue (pWaitSet->hHandleQueue) ;
+	     (OFC_HANDLE) ofc_dequeue (pWaitSet->hHandleQueue) ;
            hEventHandle != OFC_HANDLE_NULL ;
 	   hEventHandle = 
-	     (OFC_HANDLE) BlueQdequeue (pWaitSet->hHandleQueue) )
+	     (OFC_HANDLE) ofc_dequeue (pWaitSet->hHandleQueue) )
 	{
 	  ofc_handle_set_app (hEventHandle, OFC_HANDLE_NULL, OFC_HANDLE_NULL) ;
 	}
@@ -130,7 +130,7 @@ BlueWaitSetClear (OFC_HANDLE handle)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueWaitSetClearApp (OFC_HANDLE handle, OFC_HANDLE hApp)
+ofc_waitset_clear_app (OFC_HANDLE handle, OFC_HANDLE hApp)
 {
   WAIT_SET *pWaitSet ;
   OFC_HANDLE hEventHandle ;
@@ -140,16 +140,16 @@ BlueWaitSetClearApp (OFC_HANDLE handle, OFC_HANDLE hApp)
   if (pWaitSet != OFC_NULL)
     {
       for (hEventHandle = 
-	     (OFC_HANDLE) BlueQfirst (pWaitSet->hHandleQueue) ;
+	     (OFC_HANDLE) ofc_queue_first (pWaitSet->hHandleQueue) ;
            hEventHandle != OFC_HANDLE_NULL ;)
 	{
-	  hNext = (OFC_HANDLE) BlueQnext (pWaitSet->hHandleQueue,
-                                      (OFC_VOID *) hEventHandle) ;
+	  hNext = (OFC_HANDLE) ofc_queue_next (pWaitSet->hHandleQueue,
+                                           (OFC_VOID *) hEventHandle) ;
 
 	  if (ofc_handle_get_app (hEventHandle) == hApp)
 	    {
-	      BlueQunlink (pWaitSet->hHandleQueue, 
-			   (OFC_VOID *) hEventHandle) ;
+	      ofc_queue_unlink (pWaitSet->hHandleQueue,
+                            (OFC_VOID *) hEventHandle) ;
 	      ofc_handle_set_app (hEventHandle,
                               OFC_HANDLE_NULL, OFC_HANDLE_NULL) ;
 	    }
@@ -161,7 +161,7 @@ BlueWaitSetClearApp (OFC_HANDLE handle, OFC_HANDLE hApp)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueWaitSetDestroy (OFC_HANDLE handle)
+ofc_waitset_destroy (OFC_HANDLE handle)
 {
   WAIT_SET *pWaitSet ;
   OFC_HANDLE hEventHandle ;
@@ -170,17 +170,17 @@ BlueWaitSetDestroy (OFC_HANDLE handle)
   if (pWaitSet != OFC_NULL)
     {
       for (hEventHandle = 
-	     (OFC_HANDLE) BlueQdequeue (pWaitSet->hHandleQueue) ;
+	     (OFC_HANDLE) ofc_dequeue (pWaitSet->hHandleQueue) ;
            hEventHandle != OFC_HANDLE_NULL ;
 	   hEventHandle = 
-	     (OFC_HANDLE) BlueQdequeue (pWaitSet->hHandleQueue) )
+	     (OFC_HANDLE) ofc_dequeue (pWaitSet->hHandleQueue) )
 	{
 	  ofc_handle_set_app (hEventHandle, OFC_HANDLE_NULL, OFC_HANDLE_NULL) ;
 	}
-      BlueQdestroy (pWaitSet->hHandleQueue) ;
+      ofc_queue_destroy (pWaitSet->hHandleQueue) ;
       ofc_handle_destroy (handle) ;
       ofc_handle_unlock (handle) ;
-      BlueWaitSetDestroyImpl (pWaitSet) ;
+      ofc_waitset_destroy_impl (pWaitSet) ;
       ofc_free (pWaitSet) ;
       /* second unlock to balance extra on create */
       ofc_handle_unlock (handle) ;
@@ -188,66 +188,66 @@ BlueWaitSetDestroy (OFC_HANDLE handle)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueWaitSetAdd (OFC_HANDLE hSet, OFC_HANDLE hApp, OFC_HANDLE hEvent)
+ofc_waitset_add (OFC_HANDLE hSet, OFC_HANDLE hApp, OFC_HANDLE hEvent)
 {
   WAIT_SET *pWaitSet ;
 
   pWaitSet = ofc_handle_lock (hSet) ;
   if (pWaitSet != OFC_NULL)
     {
-      BlueWaitSetAddImpl (hSet, hApp, hEvent) ;
+      ofc_waitset_add_impl (hSet, hApp, hEvent) ;
       ofc_handle_set_app (hEvent, hApp, hSet) ;
-      BlueQenqueue (pWaitSet->hHandleQueue, (OFC_VOID *) hEvent) ;
+      ofc_enqueue (pWaitSet->hHandleQueue, (OFC_VOID *) hEvent) ;
       ofc_handle_unlock (hSet) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueWaitSetRemove (OFC_HANDLE hSet, OFC_HANDLE hEvent)
+ofc_waitset_remove (OFC_HANDLE hSet, OFC_HANDLE hEvent)
 {
   WAIT_SET *pWaitSet ;
 
   pWaitSet = ofc_handle_lock (hSet) ;
   if (pWaitSet != OFC_NULL)
     {
-      BlueQunlink (pWaitSet->hHandleQueue, (OFC_VOID *) hEvent) ;
+      ofc_queue_unlink (pWaitSet->hHandleQueue, (OFC_VOID *) hEvent) ;
       ofc_handle_set_app (hEvent, OFC_HANDLE_NULL, OFC_HANDLE_NULL) ;
       ofc_handle_unlock (hSet) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueWaitSetWake (OFC_HANDLE handle)
+ofc_waitset_wake (OFC_HANDLE handle)
 {
-  BlueWaitSetWakeImpl (handle) ;
+  ofc_waitset_wake_impl (handle) ;
 }
 
 OFC_CORE_LIB OFC_HANDLE
-BlueWaitSetWait (OFC_HANDLE handle)
+ofc_waitset_wait (OFC_HANDLE handle)
 {
-  return (BlueWaitSetWaitImpl (handle)) ;
+  return (ofc_waitset_wait_impl (handle)) ;
 }
  
 #if defined(OFC_HANDLE_PERF)
-BLUE_CORE_LIB BLUE_VOID 
-BlueWaitSetLogMeasure (BLUE_HANDLE handle) 
+OFC_CORE_LIB OFC_VOID 
+ofc_waitset_log_measure(OFC_HANDLE handle) 
 {
   WAIT_SET *pWaitSet ;
-  BLUE_HANDLE hEventHandle ;
+  OFC_HANDLE hEventHandle ;
 
-  pWaitSet = BlueHandleLock (handle) ;
-  if (pWaitSet != BLUE_NULL)
+  pWaitSet = ofc_handle_lock (handle) ;
+  if (pWaitSet != OFC_NULL)
     {
-      BlueHandlePrintIntervalHeader() ;
+      ofc_handle_print_interval_header() ;
       for (hEventHandle = 
-	     (BLUE_HANDLE) BlueQfirst (pWaitSet->hHandleQueue) ;
-	   hEventHandle != BLUE_HANDLE_NULL ;
+	     (OFC_HANDLE) ofc_queue_first (pWaitSet->hHandleQueue) ;
+	   hEventHandle != OFC_HANDLE_NULL ;
 	   hEventHandle = 
-	     (BLUE_HANDLE) BlueQnext (pWaitSet->hHandleQueue, hEventHandle) ) 
+	     (OFC_HANDLE) ofc_queue_next (pWaitSet->hHandleQueue, hEventHandle) )
 	{
-	  BlueHandlePrintInterval ("", hEventHandle) ;
+	  ofc_handle_print_interval("", hEventHandle) ;
 	}
-      BlueHandleUnlock (handle) ;
+      ofc_handle_unlock(handle) ;
     }
 }
 #endif

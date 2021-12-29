@@ -49,11 +49,11 @@ static OFC_INT test_startup_default(OFC_VOID)
      0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
     } ;
 
-  BlueConfigDefault();
-  BlueConfigSetInterfaceType(BLUE_CONFIG_ICONFIG_AUTO);
-  BlueConfigSetNodeName(TSTR("localhost"), TSTR("WORKGROUP"),
-			TSTR("OpenFiles Unit Test"));
-  BlueConfigSetUUID(&uuid);
+  ofc_persist_default();
+  ofc_persist_set_interface_type(OFC_CONFIG_ICONFIG_AUTO);
+  ofc_persist_set_node_name(TSTR("localhost"), TSTR("WORKGROUP"),
+                            TSTR("OpenFiles Unit Test"));
+  ofc_persist_set_uuid(&uuid);
   return(0);
 }
 
@@ -66,7 +66,7 @@ static OFC_INT test_startup(OFC_VOID)
 #else
   ret = test_startup_default();
 #endif
-  hScheduler = BlueSchedCreate();
+  hScheduler = ofc_sched_create();
   hDone = ofc_event_create(OFC_EVENT_AUTO);
 
   return(ret);
@@ -75,7 +75,7 @@ static OFC_INT test_startup(OFC_VOID)
 static OFC_VOID test_shutdown(OFC_VOID)
 {
   ofc_event_destroy(hDone);
-  BlueSchedQuit(hScheduler);
+  ofc_sched_quit(hScheduler);
   ofc_framework_shutdown();
   ofc_framework_destroy();
 }
@@ -106,7 +106,7 @@ typedef struct
    * The Handle of the Socket that is listening on the interface
    */
   OFC_HANDLE hListen ;
-} BLUE_STREAM_INTERFACE ;
+} OFC_STREAM_INTERFACE ;
 
 /**
  * The management information for the Stream Socket Server Application
@@ -125,7 +125,7 @@ typedef struct
   /**
    * A Handle to the configuration update wait queue
    */
-  BLUE_HANDLE hConfigUpdate ;
+  OFC_HANDLE hConfigUpdate ;
 #endif
   /**
    * A reference to the Application's scheduler
@@ -140,7 +140,7 @@ typedef struct
    */
   OFC_INT count ;
   OFC_FAMILY_TYPE family ;
-} BLUE_STREAM_TEST ;
+} OFC_STREAM_TEST ;
 
 static OFC_VOID StreamTestPreSelect (OFC_HANDLE app) ;
 static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app,
@@ -211,7 +211,7 @@ typedef struct
    * The header of the received message (contains the message length)
    */
   OFC_UINT32 header ;
-} BLUE_SERVER_TEST ;
+} OFC_SERVER_TEST ;
 
 static OFC_VOID ServerTestPreSelect (OFC_HANDLE app) ;
 static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket) ;
@@ -270,7 +270,7 @@ typedef struct
   OFC_MESSAGE *write_msg ;
   OFC_HANDLE app ;
   OFC_IPADDR ip ;
-} BLUE_CLIENT_TEST ;
+} OFC_CLIENT_TEST ;
 
 static OFC_VOID ClientTestPreSelect (OFC_HANDLE app) ;
 static OFC_HANDLE ClientTestPostSelect (OFC_HANDLE app,
@@ -318,18 +318,18 @@ static OFC_APP_TEMPLATE ClientTestAppDef =
  * The IP address of the associated interface to startup
  *
  * \returns
- * A pointer to a BLUE_STREAM_INTERFACE structure
+ * A pointer to a OFC_STREAM_INTERFACE structure
  */
-static BLUE_STREAM_INTERFACE *StartupInterface (OFC_FAMILY_TYPE family,
+static OFC_STREAM_INTERFACE *StartupInterface (OFC_FAMILY_TYPE family,
                                                 OFC_IPADDR *ip)
 {
-  BLUE_STREAM_INTERFACE *interface ;
+  OFC_STREAM_INTERFACE *interface ;
   OFC_CHAR ip_addr[IP6STR_LEN] ;
 
   /*
    * Allocate a context for this interface
    */
-  interface = ofc_malloc (sizeof (BLUE_STREAM_INTERFACE)) ;
+  interface = ofc_malloc (sizeof (OFC_STREAM_INTERFACE)) ;
   /*
    * Initialize the IP address of the interface
    */
@@ -337,7 +337,7 @@ static BLUE_STREAM_INTERFACE *StartupInterface (OFC_FAMILY_TYPE family,
   /*
    * Create a Listen Socket for this interface
    */
-  interface->hListen = BlueSocketListen (ip, STREAM_TEST_PORT) ;
+  interface->hListen = ofc_socket_listen (ip, STREAM_TEST_PORT) ;
   if (interface->hListen == OFC_HANDLE_NULL)
     {
       /*
@@ -371,12 +371,12 @@ static BLUE_STREAM_INTERFACE *StartupInterface (OFC_FAMILY_TYPE family,
  * A pointer to the interface structure associated with the interface to 
  * shutdown.
  */
-static OFC_VOID ShutdownInterface (BLUE_STREAM_INTERFACE *interface)
+static OFC_VOID ShutdownInterface (OFC_STREAM_INTERFACE *interface)
 {
   /*
    * Destroy the listening socket
    */
-  BlueSocketDestroy (interface->hListen) ;
+  ofc_socket_destroy (interface->hListen) ;
   /*
    * And free the interface context
    */
@@ -393,17 +393,17 @@ static OFC_VOID ShutdownInterface (BLUE_STREAM_INTERFACE *interface)
  * \param streamTest
  * A pointer to the Stream Socket Server's management data
  */
-static OFC_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
+static OFC_VOID StreamTestInitialize (OFC_STREAM_TEST *streamTest)
 {
 #if !defined(OFC_MULTI_TCP)
   OFC_IPADDR ip ;
-  BLUE_STREAM_INTERFACE *interface ;
+  OFC_STREAM_INTERFACE *interface ;
 #endif
 
   /*
    * Create a queue for our interface list
    */
-  streamTest->interfaceList = BlueQcreate () ;
+  streamTest->interfaceList = ofc_queue_create () ;
 
   /*
    * If we are multi-homed and listen on multiple interfaces, we want to hold
@@ -433,7 +433,7 @@ static OFC_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
     /*
      * If we successfully started the interface, add it to our list
      */
-    BlueQenqueue (streamTest->interfaceList, interface) ;
+    ofc_enqueue (streamTest->interfaceList, interface) ;
 #endif
   /*
    * Create a timer for the socket server application.  We create the
@@ -442,50 +442,50 @@ static OFC_VOID StreamTestInitialize (BLUE_STREAM_TEST *streamTest)
    * implementation creates only one client regardless of the number of
    * interfaces we've started.
    */
-  streamTest->hTimer = BlueTimerCreate("SOCKET") ;
+  streamTest->hTimer = ofc_timer_create("SOCKET") ;
   if (streamTest->hTimer != OFC_HANDLE_NULL)
     {
       /*
        * The timer is created, so set it with our test interval.  When it
        * fires, we'll create the client
        */
-      BlueTimerSet (streamTest->hTimer, STREAM_TEST_INTERVAL) ;
+      ofc_timer_set (streamTest->hTimer, STREAM_TEST_INTERVAL) ;
     }
 #if defined(OFC_MULTI_TCP)
   /*
    * Create an event to get configuration updates
    */
-  streamTest->hConfigUpdate = BlueEventCreate(BLUE_EVENT_AUTO) ;
-  if (streamTest->hConfigUpdate != BLUE_HANDLE_NULL)
-    BlueConfigRegisterUpdate (streamTest->hConfigUpdate) ;
+  streamTest->hConfigUpdate = ofc_event_create(OFC_EVENT_AUTO) ;
+  if (streamTest->hConfigUpdate != OFC_HANDLE_NULL)
+    ofc_persist_register_update(streamTest->hConfigUpdate) ;
 #endif
 }
 
 #if defined(OFC_MULTI_TCP)
-static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
+static OFC_VOID StreamTestReconfig (OFC_STREAM_TEST *streamTest)
 {
   int i ;
-  BLUE_IPADDR ip ;
-  BLUE_STREAM_INTERFACE *interface ;
-  BLUE_STREAM_INTERFACE *next_interface ;
+  OFC_IPADDR ip ;
+  OFC_STREAM_INTERFACE *interface ;
+  OFC_STREAM_INTERFACE *next_interface ;
   OFC_BOOL found ;
   /*
    * First look for deleted interfaces
    */
-  for (interface = BlueQfirst (streamTest->interfaceList) ;
+  for (interface = ofc_queue_first (streamTest->interfaceList) ;
        interface != OFC_NULL ;
        interface = next_interface)
     {
-      next_interface = BlueQnext (streamTest->interfaceList, interface) ;
+      next_interface = ofc_queue_next (streamTest->interfaceList, interface) ;
       /*
        * Is this interface in the update message with the same values
        */
-      found = BLUE_FALSE ;
-      for (i = 0 ; i < BlueConfigInterfaceCount() && !found ;)
+      found = OFC_FALSE ;
+      for (i = 0 ; i < ofc_persist_interface_count() && !found ;)
 	{
-	  BlueConfigInterfaceAddr (i, &ip, OFC_NULL, OFC_NULL) ;
-	  if (BlueNETIsAddrEqual (&interface->ip, &ip))
-	    found = BLUE_TRUE ;
+	  ofc_persist_interface_addr(i, &ip, OFC_NULL, OFC_NULL) ;
+	  if (ofc_net_is_addr_equal (&interface->ip, &ip))
+	    found = OFC_TRUE ;
 	  else
 	    i++ ;
 	}
@@ -494,7 +494,7 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
 	  /*
 	   * Delete the interface
 	   */
-	  BlueQunlink (streamTest->interfaceList, interface) ;
+	  ofc_queue_unlink (streamTest->interfaceList, interface) ;
 	  ShutdownInterface (interface) ;
 	}
     }
@@ -502,21 +502,21 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
   /*
    * Now look for added interfaces
    */
-  for (i = 0 ; i < BlueConfigInterfaceCount() ; i++)
+  for (i = 0 ; i < ofc_persist_interface_count() ; i++)
     {
-      BlueConfigInterfaceAddr (i, &ip, OFC_NULL, OFC_NULL) ;
+      ofc_persist_interface_addr(i, &ip, OFC_NULL, OFC_NULL) ;
 
-      found = BLUE_FALSE ;
-      for (interface = BlueQfirst (streamTest->interfaceList) ;
+      found = OFC_FALSE ;
+      for (interface = ofc_queue_first (streamTest->interfaceList) ;
 	   interface != OFC_NULL && !found ;)
 	{
 	  /*
 	   * Is this interface in the update message with the same values
 	   */
-	  if (BlueNETIsAddrEqual (&interface->ip, &ip))
-	    found = BLUE_TRUE ;
+	  if (ofc_net_is_addr_equal (&interface->ip, &ip))
+	    found = OFC_TRUE ;
 	  else
-	    interface = BlueQnext (streamTest->interfaceList, interface) ;
+	    interface = ofc_queue_next (streamTest->interfaceList, interface) ;
 	}
 
       if (!found && (streamTest->family == ip.ip_version))
@@ -529,7 +529,7 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
 	    /*
 	     * If we successfully started the interface, add it to our list
 	     */
-	    BlueQenqueue (streamTest->interfaceList, interface) ;
+	    ofc_queue_enqueue (streamTest->interfaceList, interface) ;
 	}
     }
 }
@@ -546,9 +546,9 @@ static BLUE_VOID StreamTestReconfig (BLUE_STREAM_TEST *streamTest)
  */
 static OFC_VOID StreamTestPreSelect (OFC_HANDLE app)
 {
-  BLUE_STREAM_TEST *streamTest ;
-  BLUE_STREAM_INTERFACE *interface ;
-  BLUE_SOCKET_EVENT_TYPE event_types ;
+  OFC_STREAM_TEST *streamTest ;
+  OFC_STREAM_INTERFACE *interface ;
+  OFC_SOCKET_EVENT_TYPE event_types ;
   STREAM_TEST_STATE entry_state ;
   /*
    * Get our application data.  This is the structure that was passed into
@@ -560,7 +560,7 @@ static OFC_VOID StreamTestPreSelect (OFC_HANDLE app)
       do /* while streamTest->state != entry_state */
 	{
 	  entry_state = streamTest->state ;
-	  BlueSchedClearWait (streamTest->scheduler, app) ;
+	  ofc_sched_clear_wait (streamTest->scheduler, app) ;
 
 	  /*
 	   * Dispatch on our state
@@ -576,25 +576,25 @@ static OFC_VOID StreamTestPreSelect (OFC_HANDLE app)
 	      /*
 	       * Now enable the timer so we'll get events to create a client
 	       */
-	      BlueSchedAddWait (streamTest->scheduler, app, 
-				streamTest->hTimer) ;
+	      ofc_sched_add_wait (streamTest->scheduler, app,
+                              streamTest->hTimer) ;
 #if defined(OFC_MULTI_TCP)
-	      BlueSchedAddWait (streamTest->scheduler, app, 
-				streamTest->hConfigUpdate) ;
+	      ofc_sched_add_wait (streamTest->scheduler, app, 
+				  streamTest->hConfigUpdate) ;
 #endif
 	      /*
 	       * For each interface we've started, enable the event on that 
 	       * interface's socket.
 	       */
-	      for (interface = BlueQfirst (streamTest->interfaceList) ;
+	      for (interface = ofc_queue_first (streamTest->interfaceList) ;
                interface != OFC_NULL ;
-		   interface = BlueQnext (streamTest->interfaceList, 
-					  interface))
+		   interface = ofc_queue_next (streamTest->interfaceList,
+                                       interface))
 		{
-		  event_types = BLUE_SOCKET_EVENT_ACCEPT ;
-		  BlueSocketEnable (interface->hListen, event_types) ;
-		  BlueSchedAddWait (streamTest->scheduler, app, 
-				    interface->hListen) ;
+		  event_types = OFC_SOCKET_EVENT_ACCEPT ;
+		  ofc_socket_enable (interface->hListen, event_types) ;
+		  ofc_sched_add_wait (streamTest->scheduler, app,
+                              interface->hListen) ;
 		}
 	      /*
 	       * And switch our state to running
@@ -609,24 +609,24 @@ static OFC_VOID StreamTestPreSelect (OFC_HANDLE app)
 	       *
 	       * Enable the timer to create clients
 	       */
-	      BlueSchedAddWait (streamTest->scheduler, app, 
-				streamTest->hTimer) ;
+	      ofc_sched_add_wait (streamTest->scheduler, app,
+                              streamTest->hTimer) ;
 #if defined(OFC_MULTI_TCP)
-	      BlueSchedAddWait (streamTest->scheduler, app, 
-				streamTest->hConfigUpdate) ;
+	      ofc_sched_add_wait (streamTest->scheduler, app, 
+				  streamTest->hConfigUpdate) ;
 #endif
 	      /*
 	       * And enable each interface we've started
 	       */
-	      for (interface = BlueQfirst (streamTest->interfaceList) ;
+	      for (interface = ofc_queue_first (streamTest->interfaceList) ;
                interface != OFC_NULL ;
-		   interface = BlueQnext (streamTest->interfaceList, 
-					  interface))
+		   interface = ofc_queue_next (streamTest->interfaceList,
+                                       interface))
 		{
-		  event_types = BLUE_SOCKET_EVENT_ACCEPT ;
-		  BlueSocketEnable (interface->hListen, event_types) ;
-		  BlueSchedAddWait (streamTest->scheduler, app, 
-				    interface->hListen) ;
+		  event_types = OFC_SOCKET_EVENT_ACCEPT ;
+		  ofc_socket_enable (interface->hListen, event_types) ;
+		  ofc_sched_add_wait (streamTest->scheduler, app,
+                              interface->hListen) ;
 		}
 	      break ;
 	    }
@@ -649,12 +649,12 @@ static OFC_VOID StreamTestPreSelect (OFC_HANDLE app)
  */
 static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 {
-  BLUE_STREAM_TEST *streamTest ;
-  BLUE_SERVER_TEST *serverTest ;
-  BLUE_CLIENT_TEST *clientTest ;
-  BLUE_STREAM_INTERFACE *interface ;
+  OFC_STREAM_TEST *streamTest ;
+  OFC_SERVER_TEST *serverTest ;
+  OFC_CLIENT_TEST *clientTest ;
+  OFC_STREAM_INTERFACE *interface ;
   OFC_BOOL progress ;
-  BLUE_SOCKET_EVENT_TYPE event_types ;
+  OFC_SOCKET_EVENT_TYPE event_types ;
   OFC_CHAR ip_str[IP6STR_LEN] ;
 
   /*
@@ -684,25 +684,25 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 	      /*
 	       * Find a matching interface socket
 	       */
-	      for (interface = BlueQfirst (streamTest->interfaceList) ;
+	      for (interface = ofc_queue_first (streamTest->interfaceList) ;
                interface != OFC_NULL && hSocket != interface->hListen ;
-		   interface = BlueQnext (streamTest->interfaceList, 
-					  interface)) ;
+		   interface = ofc_queue_next (streamTest->interfaceList,
+                                       interface)) ;
 
 	      if (interface != OFC_NULL && hSocket == interface->hListen)
 		{
 		  /*
 		   * Found an Interface, Determine Event
 		   */
-		  event_types = BlueSocketTest (hSocket) ;
-		  if (event_types & BLUE_SOCKET_EVENT_ACCEPT)
+		  event_types = ofc_socket_test (hSocket) ;
+		  if (event_types & OFC_SOCKET_EVENT_ACCEPT)
 		    {
 		      /*
 		       * We've received a listen event
 		       *
 		       * Let's create an app to accept the listen
 		       */
-		      serverTest = ofc_malloc (sizeof (BLUE_SERVER_TEST)) ;
+		      serverTest = ofc_malloc (sizeof (OFC_SERVER_TEST)) ;
 		      /*
 		       * Initialize it's state to idle and set up the info
 		       * we know about
@@ -717,7 +717,7 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		       * need to service the listen now.
 		       */
 		      serverTest->hSocket = 
-			BlueSocketAccept (serverTest->masterSocket) ;
+			ofc_socket_accept (serverTest->masterSocket) ;
 		      if (serverTest->hSocket == OFC_HANDLE_NULL)
 			{
 			  ofc_free (serverTest) ;
@@ -745,17 +745,17 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		    }
 		  else
 		    {
-		      for (interface = BlueQfirst (streamTest->interfaceList) ;
+		      for (interface = ofc_queue_first (streamTest->interfaceList) ;
                    interface != OFC_NULL ;
-			   interface = BlueQnext (streamTest->interfaceList, 
-						  interface)) 
+			   interface = ofc_queue_next (streamTest->interfaceList,
+                                           interface))
 			{
 			  /*
 			   * This is a timer that we use to create a client.
 			   * Let's create an app to send a message
 			   */
 			  clientTest = 
-			    ofc_malloc (sizeof (BLUE_CLIENT_TEST)) ;
+			    ofc_malloc (sizeof (OFC_CLIENT_TEST)) ;
 			  /*
 			   * Set it's state and the info we know
 			   */
@@ -781,7 +781,7 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		       * And reset the timer so we'll get notification to 
 		       * create another client in the future.
 		       */
-		      BlueTimerSet (streamTest->hTimer, STREAM_TEST_INTERVAL) ;
+		      ofc_timer_set (streamTest->hTimer, STREAM_TEST_INTERVAL) ;
 		    }
 		}
 #if defined(OFC_MULTI_TCP)
@@ -806,8 +806,8 @@ static OFC_HANDLE StreamTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
  */
 static OFC_VOID StreamTestDestroy (OFC_HANDLE app)
 {
-  BLUE_STREAM_TEST *streamTest ;
-  BLUE_STREAM_INTERFACE *interface ;
+  OFC_STREAM_TEST *streamTest ;
+  OFC_STREAM_INTERFACE *interface ;
 
   ofc_printf ("Destroying Stream Test Application\n") ;
 
@@ -833,24 +833,24 @@ static OFC_VOID StreamTestDestroy (OFC_HANDLE app)
 	  /*
 	   * Destroy the timer
 	   */
-	  BlueTimerDestroy (streamTest->hTimer) ;
+	  ofc_timer_destroy (streamTest->hTimer) ;
 #if defined(OFC_MULTI_TCP)
-	  BlueConfigUnregisterUpdate (streamTest->hConfigUpdate) ;
-	  BlueEventDestroy (streamTest->hConfigUpdate) ;
+	  ofc_persist_unregister_update (streamTest->hConfigUpdate) ;
+	  ofc_event_destroy(streamTest->hConfigUpdate) ;
 #endif
 	  /*
 	   * And Shutdown all our configured interfaces
 	   */
-	  for (interface = BlueQdequeue (streamTest->interfaceList) ;
+	  for (interface = ofc_dequeue (streamTest->interfaceList) ;
            interface != OFC_NULL ;
-	       interface = BlueQdequeue (streamTest->interfaceList))
+	       interface = ofc_dequeue (streamTest->interfaceList))
 	    {
 	      ShutdownInterface (interface) ;
 	    }
 	  /*
 	   * Now destroy the interface list
 	   */
-	  BlueQdestroy (streamTest->interfaceList) ;
+	  ofc_queue_destroy (streamTest->interfaceList) ;
 	  break ;
 	}
       /*
@@ -871,8 +871,8 @@ static OFC_VOID StreamTestDestroy (OFC_HANDLE app)
  */
 static OFC_VOID ServerTestPreSelect (OFC_HANDLE app)
 {
-  BLUE_SERVER_TEST *serverTest ;
-  BLUE_SOCKET_EVENT_TYPE event_types ;
+  OFC_SERVER_TEST *serverTest ;
+  OFC_SOCKET_EVENT_TYPE event_types ;
   SERVER_TEST_STATE entry_state ;
 
   /*
@@ -884,7 +884,7 @@ static OFC_VOID ServerTestPreSelect (OFC_HANDLE app)
       do /* while serverTest->state != entry_state */
 	{
 	  entry_state = serverTest->state ;
-	  BlueSchedClearWait (serverTest->scheduler, app) ;
+	  ofc_sched_clear_wait (serverTest->scheduler, app) ;
 
 	  /*
 	   * Dispatch on state
@@ -903,10 +903,10 @@ static OFC_VOID ServerTestPreSelect (OFC_HANDLE app)
 	      /*
 	       * And enable socket events
 	       */
-	      event_types = BLUE_SOCKET_EVENT_READ | BLUE_SOCKET_EVENT_CLOSE ;
-	      BlueSocketEnable (serverTest->hSocket, event_types) ;
-	      BlueSchedAddWait (serverTest->scheduler, app, 
-				serverTest->hSocket) ;
+	      event_types = OFC_SOCKET_EVENT_READ | OFC_SOCKET_EVENT_CLOSE ;
+	      ofc_socket_enable (serverTest->hSocket, event_types) ;
+	      ofc_sched_add_wait (serverTest->scheduler, app,
+                              serverTest->hSocket) ;
 	      break ;
 
 	    case SERVER_TEST_STATE_HEADER:
@@ -915,10 +915,10 @@ static OFC_VOID ServerTestPreSelect (OFC_HANDLE app)
 	       * If we're awaiting a header or a body, simply enable socket
 	       * events
 	       */
-	      event_types = BLUE_SOCKET_EVENT_READ | BLUE_SOCKET_EVENT_CLOSE ;
-	      BlueSocketEnable (serverTest->hSocket, event_types) ;
-	      BlueSchedAddWait (serverTest->scheduler, app, 
-				serverTest->hSocket) ;
+	      event_types = OFC_SOCKET_EVENT_READ | OFC_SOCKET_EVENT_CLOSE ;
+	      ofc_socket_enable (serverTest->hSocket, event_types) ;
+	      ofc_sched_add_wait (serverTest->scheduler, app,
+                              serverTest->hSocket) ;
 	      break ;
 	    }
 	}
@@ -940,7 +940,7 @@ static OFC_VOID ServerTestPreSelect (OFC_HANDLE app)
  */
 static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 {
-  BLUE_SERVER_TEST *serverTest ;
+  OFC_SERVER_TEST *serverTest ;
   OFC_SIZET count ;
   OFC_BOOL progress ;
   OFC_SOCKADDR sockaddr_local ;
@@ -999,8 +999,8 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		  /*
 		   * Now Service the read using recv_msg
 		   */
-		  progress |= BlueSocketRead (serverTest->hSocket, 
-					      serverTest->recv_msg) ;
+		  progress |= ofc_socket_read (serverTest->hSocket,
+                                       serverTest->recv_msg) ;
 		  /*
 		   * Check if we've received the entire message (or expected
 		   * portion)
@@ -1043,8 +1043,8 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		   * Yes, since we're in the body state, we know we have a 
 		   * recv_msg context, so use it to service the read.
 		   */
-		  progress |= BlueSocketRead (serverTest->hSocket, 
-					      serverTest->recv_msg) ;
+		  progress |= ofc_socket_read (serverTest->hSocket,
+                                       serverTest->recv_msg) ;
 		  /*
 		   * Have we read in the entire message body?
 		   */
@@ -1053,9 +1053,9 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 		      /*
 		       * Entire message read in
 		       */
-		      BlueSocketGetAddresses (serverTest->hSocket,
-					      &sockaddr_local,
-					      &sockaddr_remote) ;
+		      ofc_socket_get_addresses (serverTest->hSocket,
+                                        &sockaddr_local,
+                                        &sockaddr_remote) ;
 		      ofc_ntop(&sockaddr_local.sin_addr,
                        local_ip_str, IP6STR_LEN) ;
 		      ofc_ntop(&sockaddr_remote.sin_addr,
@@ -1091,7 +1091,7 @@ static OFC_HANDLE ServerTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
  */
 static OFC_VOID ServerTestDestroy (OFC_HANDLE app)
 {
-  BLUE_SERVER_TEST *serverTest ;
+  OFC_SERVER_TEST *serverTest ;
 
   ofc_printf ("Destroying Stream Server Application\n") ;
   /*
@@ -1118,7 +1118,7 @@ static OFC_VOID ServerTestDestroy (OFC_HANDLE app)
 	   * If we are reading (or have read) the header and/or body,
 	   * destroy the socket
 	   */
-	  BlueSocketDestroy (serverTest->hSocket) ;
+	  ofc_socket_destroy (serverTest->hSocket) ;
 	  /*
 	   * If we have a message allocated, destroy it
 	   */
@@ -1133,7 +1133,7 @@ static OFC_VOID ServerTestDestroy (OFC_HANDLE app)
     }
 }
 
-OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
+OFC_BOOL ServiceWrite(OFC_CLIENT_TEST *clientTest)
 {
   OFC_BOOL progress ;
   OFC_SIZET size ;
@@ -1169,13 +1169,13 @@ OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
   /*
    * Now write it to the server
    */
-  progress = BlueSocketWrite (clientTest->hSocket, clientTest->write_msg) ;
+  progress = ofc_socket_write (clientTest->hSocket, clientTest->write_msg) ;
 
   if (ofc_message_done (clientTest->write_msg))
     {
-      BlueSocketGetAddresses (clientTest->hSocket,
-			      &sockaddr_local,
-			      &sockaddr_remote) ;
+      ofc_socket_get_addresses (clientTest->hSocket,
+                                &sockaddr_local,
+                                &sockaddr_remote) ;
       ofc_ntop(&sockaddr_local.sin_addr, local_ip_str, IP6STR_LEN) ;
       ofc_ntop(&sockaddr_remote.sin_addr, remote_ip_str, IP6STR_LEN) ;
       ofc_printf ("Wrote Message on %s(%d) to %s(%d)\n",
@@ -1207,8 +1207,8 @@ OFC_BOOL ServiceWrite(BLUE_CLIENT_TEST *clientTest)
  */
 static OFC_VOID ClientTestPreSelect (OFC_HANDLE app)
 {
-  BLUE_CLIENT_TEST *clientTest ;
-  BLUE_SOCKET_EVENT_TYPE event_types ;
+  OFC_CLIENT_TEST *clientTest ;
+  OFC_SOCKET_EVENT_TYPE event_types ;
   CLIENT_TEST_STATE entry_state ;
 
   /*
@@ -1220,7 +1220,7 @@ static OFC_VOID ClientTestPreSelect (OFC_HANDLE app)
       do /* while clientTest->state != entry_state */
 	{
 	  entry_state = clientTest->state ;
-	  BlueSchedClearWait (clientTest->scheduler, app) ;
+	  ofc_sched_clear_wait (clientTest->scheduler, app) ;
 	  /*
 	   * And dispatch on our state
 	   */
@@ -1233,18 +1233,18 @@ static OFC_VOID ClientTestPreSelect (OFC_HANDLE app)
 	       * application.
 	       */
 	      clientTest->write_msg = OFC_NULL ;
-	      clientTest->hSocket = BlueSocketConnect (&clientTest->ip, 
-						       STREAM_TEST_PORT) ;
+	      clientTest->hSocket = ofc_socket_connect (&clientTest->ip,
+                                                    STREAM_TEST_PORT) ;
 	      if (clientTest->hSocket != OFC_HANDLE_NULL)
 		{
 		  clientTest->state = CLIENT_TEST_STATE_CONNECTING ;
 	      
-		  event_types = BLUE_SOCKET_EVENT_CLOSE | 
-		    BLUE_SOCKET_EVENT_WRITE ;
+		  event_types = OFC_SOCKET_EVENT_CLOSE |
+                        OFC_SOCKET_EVENT_WRITE ;
 
-		  BlueSocketEnable (clientTest->hSocket, event_types) ;
-		  BlueSchedAddWait (clientTest->scheduler, app, 
-				    clientTest->hSocket) ;
+		  ofc_socket_enable (clientTest->hSocket, event_types) ;
+		  ofc_sched_add_wait (clientTest->scheduler, app,
+                              clientTest->hSocket) ;
 		}
 	      else
 		{
@@ -1263,13 +1263,13 @@ static OFC_VOID ClientTestPreSelect (OFC_HANDLE app)
 	       * If we're connecting or connected, we're interested in socket
 	       * events
 	       */
-	      event_types = BLUE_SOCKET_EVENT_CLOSE ;
+	      event_types = OFC_SOCKET_EVENT_CLOSE ;
 	      if (clientTest->write_msg == OFC_HANDLE_NULL)
-		event_types |= BLUE_SOCKET_EVENT_WRITE ;
-	      BlueSocketEnable (clientTest->hSocket, event_types) ;
+		event_types |= OFC_SOCKET_EVENT_WRITE ;
+	      ofc_socket_enable (clientTest->hSocket, event_types) ;
 
-	      BlueSchedAddWait (clientTest->scheduler, app, 
-				clientTest->hSocket) ;
+	      ofc_sched_add_wait (clientTest->scheduler, app,
+                              clientTest->hSocket) ;
 	      break ;
 	    }
 	}
@@ -1291,9 +1291,9 @@ static OFC_VOID ClientTestPreSelect (OFC_HANDLE app)
  */
 static OFC_HANDLE ClientTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 {
-  BLUE_CLIENT_TEST *clientTest ;
+  OFC_CLIENT_TEST *clientTest ;
   OFC_BOOL progress ;
-  BLUE_SOCKET_EVENT_TYPE event_types ;
+  OFC_SOCKET_EVENT_TYPE event_types ;
 
   /*
    * Get our context
@@ -1322,12 +1322,12 @@ static OFC_HANDLE ClientTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
 	       */
 	      if (hSocket == clientTest->hSocket)
 		{
-		  event_types = BlueSocketTest (hSocket) ;
-		  if (event_types & BLUE_SOCKET_EVENT_CLOSE)
+		  event_types = ofc_socket_test (hSocket) ;
+		  if (event_types & OFC_SOCKET_EVENT_CLOSE)
 		    {
 		      ofc_app_kill (app) ;
 		    }
-		  else if (BlueSocketConnected (clientTest->hSocket))
+		  else if (ofc_socket_connected (clientTest->hSocket))
 		    {
 		      /*
 		       * Yes, so let's say we're connected.
@@ -1362,7 +1362,7 @@ static OFC_HANDLE ClientTestPostSelect (OFC_HANDLE app, OFC_HANDLE hSocket)
  */
 static OFC_VOID ClientTestDestroy (OFC_HANDLE app)
 {
-  BLUE_CLIENT_TEST *clientTest ;
+  OFC_CLIENT_TEST *clientTest ;
 
   ofc_printf ("Destroying Stream Client Application\n") ;
 
@@ -1390,7 +1390,7 @@ static OFC_VOID ClientTestDestroy (OFC_HANDLE app)
 	   * If we're connected or connecting, let's destroy the client's
 	   * socket
 	   */
-	  BlueSocketDestroy (clientTest->hSocket) ;
+	  ofc_socket_destroy (clientTest->hSocket) ;
 	  /*
 	   * And free the message if we have one
 	   */
@@ -1419,13 +1419,13 @@ TEST_TEAR_DOWN(stream)
 
 TEST(stream, test_stream)
 {
-  BLUE_STREAM_TEST *streamTest ;
+  OFC_STREAM_TEST *streamTest ;
   OFC_HANDLE hApp ;
 
   /*
    * Allocate a management context for the socket server application
    */
-  streamTest = ofc_malloc (sizeof (BLUE_STREAM_TEST)) ;
+  streamTest = ofc_malloc (sizeof (OFC_STREAM_TEST)) ;
   /*
    * Initialize the state and note the scheduler the app is part of
    */
@@ -1451,7 +1451,7 @@ TEST(stream, test_stream)
   /*
    * Now IPv6. Allocate a management context for the socket server application
    */
-  streamTest = ofc_malloc (sizeof (BLUE_STREAM_TEST)) ;
+  streamTest = ofc_malloc (sizeof (OFC_STREAM_TEST)) ;
   /*
    * Initialize the state and note the scheduler the app is part of
    */

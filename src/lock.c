@@ -13,34 +13,34 @@
 OFC_CORE_LIB OFC_VOID
 ofc_lock_destroy (OFC_LOCK lock)
 {
-  BlueLockDestroyImpl (lock) ;
+  ofc_lock_destroy_impl (lock) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
 ofc_lock_try (OFC_LOCK lock)
 {
-  return (BlueLockTryImpl (lock)) ;
+  return (ofc_lock_try_impl (lock)) ;
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_lock (OFC_LOCK pLock)
 {
   if (pLock != OFC_NULL)
-    BlueLockImpl (pLock) ;
+    ofc_lock_impl (pLock) ;
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_unlock (OFC_LOCK pLock)
 {
   if (pLock != OFC_NULL)
-    BlueUnlockImpl (pLock) ;
+    ofc_unlock_impl (pLock) ;
 }
 
 OFC_CORE_LIB OFC_LOCK
 ofc_lock_init (OFC_VOID)
 {
   OFC_LOCK plock;
-  plock = BlueLockInitImpl () ;
+  plock = ofc_lock_init_impl () ;
   return (plock);
 }
 

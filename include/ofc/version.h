@@ -7,19 +7,16 @@
 #define __VERSION_H__
 
 /**
- * \defgroup BlueParam Parameters for BlueShare
+ * \defgroup version Version of Open Files
  *
- * These parameters allow for compile time configuration of the Blue Share
- * software packages.  When porting and when targeting Blue Share to a 
- * product, attention should be paid to these definitions
  */
 
 /**
- * Define the Major version of Blue Share
+ * Define the Major version of Open Files
  */
 #define OFC_SHARE_MAJOR 5
 /**
- * Define the Minor version of Blue Share
+ * Define the Minor version of Open Files
  */
 #define OFC_SHARE_MINOR 0
 /**

@@ -118,7 +118,7 @@ ofc_message_create (MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
 
   msg = ofc_malloc (sizeof (OFC_MESSAGE)) ;
   if (msg == OFC_NULL)
-    BlueProcessCrash ("BlueMessage: Couldn't alloc message\n") ;
+    ofc_process_crash ("message: Couldn't alloc message\n") ;
   else
     {
       msg->length = msgDataLength ;
@@ -220,7 +220,7 @@ ofc_message_done (OFC_MESSAGE *msg)
   if (msg->count < 0)
     {
       ofc_heap_dump_chunk (msg) ;
-      BlueProcessCrash ("Message has negative count\n") ;
+      ofc_process_crash ("Message has negative count\n") ;
     }
   return (ret) ;
 }
@@ -1153,7 +1153,7 @@ ofc_message_param_put_u8 (OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT8 value)
     ofc_message_put_u8 (msg, msg->param_offset + offset, value) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
     }
 }
 
@@ -1164,7 +1164,7 @@ ofc_message_param_put_u16 (OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT16 value)
     ofc_message_put_u16 (msg, msg->param_offset + offset, value) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
     }
 }
 
@@ -1175,7 +1175,7 @@ ofc_message_param_put_u32 (OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT32 value)
     ofc_message_put_u32 (msg, msg->param_offset + offset, value) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
     }
 }
 
@@ -1186,7 +1186,7 @@ ofc_message_param_put_u64 (OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value)
     ofc_message_put_u64 (msg, msg->param_offset + offset, value) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
     }
 }
 
@@ -1199,7 +1199,7 @@ ofc_message_param_get_u8 (OFC_MESSAGE *msg, OFC_INT offset)
     ret = ofc_message_get_u8 (msg, msg->param_offset + offset) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
       ret = 0 ;
     }
   return (ret) ;
@@ -1214,7 +1214,7 @@ ofc_message_param_get_u16 (OFC_MESSAGE *msg, OFC_INT offset)
     ret = ofc_message_get_u16 (msg, msg->param_offset + offset) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
       ret = 0 ;
     }
   return (ret) ;
@@ -1229,7 +1229,7 @@ ofc_message_param_get_u32 (OFC_MESSAGE *msg, OFC_INT offset)
     ret = ofc_message_get_u32 (msg, msg->param_offset + offset) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
       ret = 0 ;
     }
   return (ret) ;
@@ -1242,7 +1242,7 @@ ofc_message_param_get_u64 (OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value)
     ofc_message_get_u64 (msg, msg->param_offset + offset, value) ;
   else
     {
-      BlueProcessCrash ("Param offset out of bounds\n") ;
+      ofc_process_crash ("Param offset out of bounds\n") ;
 #if defined(OFC_64BIT_INTEGER)
       *value = 0 ;
 #else
@@ -1262,7 +1262,7 @@ ofc_message_from_subnet (OFC_MESSAGE *msg, OFC_INT iface, OFC_IPADDR *intip)
 
   ofc_message_addr (msg, &fromip, &port) ;
 
-  BlueConfigInterfaceAddr (iface, intip, OFC_NULL, &mask) ;
+  ofc_persist_interface_addr (iface, intip, OFC_NULL, &mask) ;
 
   ret = ofc_net_subnet_match (&fromip, intip, &mask) ;
 

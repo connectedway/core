@@ -15,7 +15,7 @@
 
 /**
  * \defgroup Open Files Path Handling Facility
- * \ingroup BlueUtil
+ * \ingroup util
  *
  * The Open Files Path facility provides parsing of local and network paths as well
  * as providing maps of arbitrary paths to a specified destination.

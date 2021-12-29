@@ -3,15 +3,15 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_CONSOLE_IMPL_H__)
-#define __BLUE_CONSOLE_IMPL_H__
+#if !defined(__OFC_CONSOLE_IMPL_H__)
+#define __OFC_CONSOLE_IMPL_H__
 
 #include "ofc/types.h"
 #include "ofc/core.h"
 
 /**
- * \defgroup BlueConsoleImpl Console I/O Implementation
- * \ingroup BluePort
+ * \defgroup console_impl Console I/O Implementation
+ * \ingroup port
  *
  * This facility implements the platform specific console I/O routines
  */
@@ -36,13 +36,13 @@ extern "C"
    * Number of characters to output
    */
   OFC_VOID
-  BlueWriteStdOutImpl (OFC_CCHAR *obuf, OFC_SIZET len) ;
+  ofc_write_stdout_impl (OFC_CCHAR *obuf, OFC_SIZET len) ;
   OFC_CORE_LIB OFC_VOID
-  BlueWriteConsoleImpl (OFC_CCHAR *obuf) ;
+  ofc_write_console_impl (OFC_CCHAR *obuf) ;
   OFC_VOID
-  BlueReadStdInImpl (OFC_CHAR *inbuf, OFC_SIZET len) ;
+  ofc_read_stdin_impl (OFC_CHAR *inbuf, OFC_SIZET len) ;
   OFC_VOID
-  BlueReadPasswordImpl (OFC_CHAR *inbuf, OFC_SIZET len) ;
+  ofc_read_password_impl (OFC_CHAR *inbuf, OFC_SIZET len) ;
 #if defined(__cplusplus)
 }
 #endif

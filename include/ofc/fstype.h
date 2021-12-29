@@ -7,7 +7,7 @@
 #define __OFC_FS_TYPE_H__
 
 /**
- * \addtogroup BlueFS
+ * \addtogroup fs
  *
  */
 

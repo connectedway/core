@@ -20,7 +20,7 @@
 #include "ofc/heap.h"
 
 static OFC_DWORD
-BlueSchedulerLoop (OFC_HANDLE hThread, OFC_VOID *context) ;
+ofc_scheduler_loop (OFC_HANDLE hThread, OFC_VOID *context) ;
 
 /*
 * Define the scheduler data structure
@@ -34,8 +34,8 @@ typedef struct _SCHEDULER
   OFC_HANDLE thread ;
   OFC_HANDLE hTriggered ;
 #if defined(OFC_HANDLE_PERF)
-  BLUE_MSTIME avg_sleep ;
-  BLUE_UINT32 avg_count ;
+  OFC_MSTIME avg_sleep ;
+  OFC_UINT32 avg_count ;
 #endif
   OFC_HANDLE hEvent ;
 } SCHEDULER ;
@@ -43,7 +43,7 @@ typedef struct _SCHEDULER
 static OFC_INT g_instance = 0 ;
 
 /*
- * BlueSchedcreate - Create an application scheduler
+ * ofc_sched_create - Create an application scheduler
  *
  * Accepts:
  *    Nothing
@@ -52,7 +52,7 @@ static OFC_INT g_instance = 0 ;
  *    Scheduler Context
  */
 OFC_CORE_LIB OFC_HANDLE
-BlueSchedCreate(OFC_VOID)
+ofc_sched_create(OFC_VOID)
 {
   SCHEDULER *scheduler ;
   OFC_HANDLE hScheduler ;
@@ -65,9 +65,9 @@ BlueSchedCreate(OFC_VOID)
   scheduler->significant_event = OFC_FALSE ;
   scheduler->hEvent = OFC_HANDLE_NULL ;
 
-  scheduler->hEventSet = BlueWaitSetCreate() ;
+  scheduler->hEventSet = ofc_waitset_create() ;
 
-  scheduler->applications = BlueQcreate() ;
+  scheduler->applications = ofc_queue_create() ;
   scheduler->hTriggered = OFC_HANDLE_NULL ;
 #if defined(OFC_HANDLE_PERF)
   scheduler->avg_sleep = 0 ;
@@ -79,15 +79,15 @@ BlueSchedCreate(OFC_VOID)
    * Create a thread for the scheduler
    */
   scheduler->thread =
-    BlueThreadCreate (&BlueSchedulerLoop,
-                      BLUE_THREAD_SCHED, g_instance++,
-                      (OFC_VOID *) hScheduler,
-                      BLUE_THREAD_JOIN, OFC_HANDLE_NULL) ;
+    ofc_thread_create (&ofc_scheduler_loop,
+                       OFC_THREAD_SCHED, g_instance++,
+                       (OFC_VOID *) hScheduler,
+                       OFC_THREAD_JOIN, OFC_HANDLE_NULL) ;
   return (hScheduler) ;
 }
 
 /*
- * BlueSchedquit - See if the scheduler is supposed to quit
+ * ofc_sched_quit - See if the scheduler is supposed to quit
  *
  * Accepts:
  *    Scheduler to check for
@@ -96,7 +96,7 @@ BlueSchedCreate(OFC_VOID)
  *    TRUE if we need to quit, FALSE otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-BlueSchedQuit (OFC_HANDLE hScheduler)
+ofc_sched_quit (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
   OFC_BOOL ret ;
@@ -105,9 +105,9 @@ BlueSchedQuit (OFC_HANDLE hScheduler)
   ret = OFC_FALSE ;
   if (scheduler != OFC_NULL)
     {
-      BlueThreadDelete (scheduler->thread) ;
-      BlueSchedWake (hScheduler) ;
-      BlueThreadWait (scheduler->thread);
+      ofc_thread_delete (scheduler->thread) ;
+      ofc_sched_wake (hScheduler) ;
+      ofc_thread_wait (scheduler->thread);
       ofc_handle_unlock (hScheduler) ;
       ret = OFC_TRUE ;
     }
@@ -116,7 +116,7 @@ BlueSchedQuit (OFC_HANDLE hScheduler)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSchedJoin (OFC_HANDLE hScheduler)
+ofc_sched_join (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
   
@@ -128,7 +128,7 @@ BlueSchedJoin (OFC_HANDLE hScheduler)
 
       if (scheduler->hEvent != OFC_HANDLE_NULL)
 	{
-	  BlueSchedWake (hScheduler) ;
+	  ofc_sched_wake (hScheduler) ;
 	  ofc_event_wait (scheduler->hEvent) ;
 	  ofc_event_destroy (scheduler->hEvent) ;
 	}
@@ -137,7 +137,7 @@ BlueSchedJoin (OFC_HANDLE hScheduler)
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueSchedKill (OFC_HANDLE hScheduler)
+ofc_sched_kill (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
   OFC_BOOL ret ;
@@ -146,8 +146,8 @@ BlueSchedKill (OFC_HANDLE hScheduler)
   ret = OFC_FALSE ;
   if (scheduler != OFC_NULL)
     {
-      BlueThreadDelete (scheduler->thread) ;
-      BlueSchedJoin (hScheduler) ;
+      ofc_thread_delete (scheduler->thread) ;
+      ofc_sched_join (hScheduler) ;
       ofc_handle_unlock (hScheduler) ;
       ret = OFC_TRUE ;
     }
@@ -156,7 +156,7 @@ BlueSchedKill (OFC_HANDLE hScheduler)
 }
 
 /*
- * BlueSchedPreselect - Preselect all the applications
+ * ofc_sched_preselect - Preselect all the applications
  *
  * Accepts:
  *    Scheduler
@@ -167,7 +167,7 @@ BlueSchedKill (OFC_HANDLE hScheduler)
  * This will also clean up applications being deleted
  */
 OFC_CORE_LIB OFC_VOID
-BlueSchedPreselect (OFC_HANDLE hScheduler)
+ofc_sched_preselect (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
   OFC_HANDLE hApp ;
@@ -178,12 +178,12 @@ BlueSchedPreselect (OFC_HANDLE hScheduler)
       /*
        * Scheduler loop.
        */
-      BlueWaitSetClear (scheduler->hEventSet) ;
+      ofc_waitset_clear (scheduler->hEventSet) ;
       /*
        * Go through all the apps until there are no more or someone
        * set a significant event
        */
-      for (hApp = (OFC_HANDLE) BlueQfirst (scheduler->applications) ;
+      for (hApp = (OFC_HANDLE) ofc_queue_first (scheduler->applications) ;
 	   (hApp != OFC_HANDLE_NULL) ; )
 	{
 	  /*
@@ -194,8 +194,8 @@ BlueSchedPreselect (OFC_HANDLE hScheduler)
 	      /*
 	       * Yes, remove it from the scheduler list
 	       */
-	      BlueWaitSetClearApp (scheduler->hEventSet, hApp) ;
-	      BlueQunlink (scheduler->applications, (OFC_VOID *) hApp) ;
+	      ofc_waitset_clear_app (scheduler->hEventSet, hApp) ;
+	      ofc_queue_unlink (scheduler->applications, (OFC_VOID *) hApp) ;
 	      /*
 	       * Destroy the application
 	       */
@@ -203,11 +203,11 @@ BlueSchedPreselect (OFC_HANDLE hScheduler)
 	      /*
 	       * And force another scheduler pass
 	       */
-	      hApp = (OFC_HANDLE) BlueQfirst (scheduler->applications) ;
+	      hApp = (OFC_HANDLE) ofc_queue_first (scheduler->applications) ;
 	    }
 	  else
-	    hApp = (OFC_HANDLE) BlueQnext (scheduler->applications,
-                                       (OFC_VOID *) hApp) ;
+	    hApp = (OFC_HANDLE) ofc_queue_next (scheduler->applications,
+                                            (OFC_VOID *) hApp) ;
 	}
       
       /*
@@ -218,28 +218,28 @@ BlueSchedPreselect (OFC_HANDLE hScheduler)
        * Go through all the apps until there are no more or someone
        * set a significant event
        */
-      BlueWaitSetClear (scheduler->hEventSet) ;
+      ofc_waitset_clear (scheduler->hEventSet) ;
 
-      for (hApp = (OFC_HANDLE) BlueQfirst (scheduler->applications) ;
+      for (hApp = (OFC_HANDLE) ofc_queue_first (scheduler->applications) ;
 	   (hApp != OFC_HANDLE_NULL) ; )
 	{
 	  ofc_app_preselect (hApp) ;
 	  if (scheduler->significant_event)
 	    {
 	      scheduler->significant_event = OFC_FALSE ;
-	      hApp = (OFC_HANDLE) BlueQfirst (scheduler->applications) ;
-	      BlueWaitSetClear (scheduler->hEventSet) ;
+	      hApp = (OFC_HANDLE) ofc_queue_first (scheduler->applications) ;
+	      ofc_waitset_clear (scheduler->hEventSet) ;
 	    }
 	  else
-	    hApp = (OFC_HANDLE) BlueQnext (scheduler->applications,
-                                       (OFC_VOID *) hApp) ;
+	    hApp = (OFC_HANDLE) ofc_queue_next (scheduler->applications,
+                                            (OFC_VOID *) hApp) ;
 	}
       ofc_handle_unlock (hScheduler) ;
     }
 }
 
 /*
- * BlueSchedPostselect - Process any triggered events
+ * ofc_sched_postselect - Process any triggered events
  *
  * Accepts:
  *    Scheduler
@@ -248,7 +248,7 @@ BlueSchedPreselect (OFC_HANDLE hScheduler)
  *    Nothing
  */
 OFC_CORE_LIB OFC_VOID
-BlueSchedPostselect (OFC_HANDLE hScheduler)
+ofc_sched_postselect (OFC_HANDLE hScheduler)
 {
   OFC_HANDLE hApp ;
   SCHEDULER *scheduler ;
@@ -274,8 +274,8 @@ BlueSchedPostselect (OFC_HANDLE hScheduler)
 		  /*
 		   * Yes, remove it from the scheduler list
 		   */
-		  BlueWaitSetClearApp (scheduler->hEventSet, hApp) ;
-		  BlueQunlink (scheduler->applications, (OFC_VOID *) hApp) ;
+		  ofc_waitset_clear_app (scheduler->hEventSet, hApp) ;
+		  ofc_queue_unlink (scheduler->applications, (OFC_VOID *) hApp) ;
 		  /*
 		   * Destroy the application
 		   */
@@ -296,18 +296,18 @@ BlueSchedPostselect (OFC_HANDLE hScheduler)
 }
 
 /*
- * BlueSchedWait - Wait for any pending events to trigger
+ * ofc_sched_wait - Wait for any pending events to trigger
  *
  * Accepts:
  *    scheduler to wait for
  */
 OFC_CORE_LIB OFC_VOID
-BlueSchedWait (OFC_HANDLE hScheduler)
+ofc_sched_wait (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
 #if defined(OFC_HANDLE_PERF)
-  BLUE_MSTIME sleep ;
-  BLUE_MSTIME slept ;
+  OFC_MSTIME sleep ;
+  OFC_MSTIME slept ;
 #endif
 
   scheduler = ofc_handle_lock (hScheduler) ;
@@ -320,11 +320,11 @@ BlueSchedWait (OFC_HANDLE hScheduler)
 	   * Wait for an event (preselect set up the events to wait for)
 	   */
 #if defined(OFC_HANDLE_PERF)
-	  sleep = BlueTimeGetNow() ;
+	  sleep = ofc_time_get_now() ;
 #endif
-	  scheduler->hTriggered = BlueWaitSetWait (scheduler->hEventSet) ;
+	  scheduler->hTriggered = ofc_waitset_wait (scheduler->hEventSet) ;
 #if defined(OFC_HANDLE_PERF)
-	  slept = BlueTimeGetNow() - sleep ;
+	  slept = ofc_time_get_now() - sleep ;
 	  if (slept > scheduler->avg_sleep)
 	    scheduler->avg_sleep += 
 	      ((slept - scheduler->avg_sleep) /
@@ -334,7 +334,7 @@ BlueSchedWait (OFC_HANDLE hScheduler)
 	      ((scheduler->avg_sleep - slept) /
 	       (scheduler->avg_count + 1)) ;
 	  scheduler->avg_count++ ;
-	  BlueHandleMeasure (scheduler->hTriggered) ;
+	  ofc_handle_measure (scheduler->hTriggered) ;
 #endif
 	}
       ofc_handle_unlock (hScheduler) ;
@@ -342,16 +342,16 @@ BlueSchedWait (OFC_HANDLE hScheduler)
 }
 
 #if defined(OFC_HANDLE_PERF)
-BLUE_VOID BlueSchedLogMeasure (BLUE_HANDLE hScheduler)
+OFC_VOID ofc_sched_log_measure (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
 
-  scheduler = BlueHandleLock (hScheduler) ;
-  if (scheduler != BLUE_NULL)
+  scheduler = ofc_handle_lock (hScheduler) ;
+  if (scheduler != OFC_NULL)
     {
-      BlueCprintf ("Average Sleep Time: %lu ms\n", scheduler->avg_sleep) ;
+      ofc_printf ("Average Sleep Time: %lu ms\n", scheduler->avg_sleep) ;
 
-      BlueWaitSetLogMeasure (scheduler->hEventSet) ;
+      ofc_waitset_log_measure (scheduler->hEventSet) ;
 
       scheduler->avg_sleep = 0 ;
       scheduler->avg_count = 0 ;
@@ -360,7 +360,7 @@ BLUE_VOID BlueSchedLogMeasure (BLUE_HANDLE hScheduler)
 #endif
 
 /*
- * BlueSchedDestroy - Destroy a scheduler
+ * ofc_sched_destroy - Destroy a scheduler
  *
  * Accepts:
  *    scheduler to destroy
@@ -368,7 +368,7 @@ BLUE_VOID BlueSchedLogMeasure (BLUE_HANDLE hScheduler)
  * This doesn't currently get called
  */
 OFC_CORE_LIB OFC_VOID
-BlueSchedDestroy (OFC_HANDLE hScheduler)
+ofc_sched_destroy (OFC_HANDLE hScheduler)
 {
   OFC_HANDLE hApp ;
   SCHEDULER *scheduler ;
@@ -381,24 +381,24 @@ BlueSchedDestroy (OFC_HANDLE hScheduler)
       /*
        * Dequeue all the applications and destroy them
        */
-      for (hApp = (OFC_HANDLE) BlueQdequeue (scheduler->applications) ;
+      for (hApp = (OFC_HANDLE) ofc_dequeue (scheduler->applications) ;
            hApp != OFC_HANDLE_NULL ;
-	   hApp = (OFC_HANDLE) BlueQdequeue (scheduler->applications))
+	   hApp = (OFC_HANDLE) ofc_dequeue (scheduler->applications))
 	{
 	  /*
 	   * Destroy the app
 	   */
-	  BlueWaitSetClearApp (scheduler->hEventSet, hApp) ;
+	  ofc_waitset_clear_app (scheduler->hEventSet, hApp) ;
 	  ofc_app_destroy (hApp) ;
 	}
       /*
        * Get rid of the applications list
        */
-      BlueQdestroy (scheduler->applications) ;
+      ofc_queue_destroy (scheduler->applications) ;
       /*
        * And get rid of the scheduler
        */
-      BlueWaitSetDestroy (scheduler->hEventSet) ;
+      ofc_waitset_destroy (scheduler->hEventSet) ;
       ofc_free (scheduler) ;
       ofc_handle_destroy (hScheduler) ;
       ofc_handle_unlock (hScheduler) ;
@@ -406,7 +406,7 @@ BlueSchedDestroy (OFC_HANDLE hScheduler)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSchedKillAll (OFC_HANDLE hScheduler)
+ofc_sched_kill_all (OFC_HANDLE hScheduler)
 {
   OFC_HANDLE hApp ;
   SCHEDULER *scheduler ;
@@ -417,10 +417,10 @@ BlueSchedKillAll (OFC_HANDLE hScheduler)
       /*
        * Dequeue all the applications and destroy them
        */
-      for (hApp = (OFC_HANDLE) BlueQfirst (scheduler->applications) ;
+      for (hApp = (OFC_HANDLE) ofc_queue_first (scheduler->applications) ;
            hApp != OFC_HANDLE_NULL ;
-	   hApp = (OFC_HANDLE) BlueQnext (scheduler->applications,
-                                      (OFC_VOID *) hApp))
+	   hApp = (OFC_HANDLE) ofc_queue_next (scheduler->applications,
+                                           (OFC_VOID *) hApp))
 	{
 	  /*
 	   * Destroy the app
@@ -431,7 +431,7 @@ BlueSchedKillAll (OFC_HANDLE hScheduler)
 }
 
 /*
- * BlueSchedSignificantEvent - Schedule a significant event
+ * ofc_sched_significant_event - Schedule a significant event
  *
  * Accepts:
  *    Scheduler Handle
@@ -440,7 +440,7 @@ BlueSchedKillAll (OFC_HANDLE hScheduler)
  *    nothing
  */
 OFC_CORE_LIB OFC_VOID
-BlueSchedSignificantEvent (OFC_HANDLE hScheduler)
+ofc_sched_significant_event (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
 
@@ -453,7 +453,7 @@ BlueSchedSignificantEvent (OFC_HANDLE hScheduler)
 }
 
 /*
- * BlueSchedAdd - Add an application to the scheduler list
+ * ofc_sched_add - Add an application to the scheduler list
  *
  * Accepts:
  *    hScheduler - The scheduler handle
@@ -463,79 +463,79 @@ BlueSchedSignificantEvent (OFC_HANDLE hScheduler)
  *    Nothing
  */
 OFC_CORE_LIB OFC_VOID
-BlueSchedAdd (OFC_HANDLE hScheduler, OFC_HANDLE hApp)
+ofc_sched_add (OFC_HANDLE hScheduler, OFC_HANDLE hApp)
 {
   SCHEDULER *scheduler ;
 
   scheduler = ofc_handle_lock (hScheduler) ;
   if (scheduler != OFC_NULL)
     {
-      BlueQenqueue (scheduler->applications, (OFC_VOID *) hApp) ;
+      ofc_enqueue (scheduler->applications, (OFC_VOID *) hApp) ;
       ofc_handle_unlock (hScheduler) ;
     }
 }
 
 /*
- * BlueSchedWake - Wake up the scheduler
+ * ofc_sched_wake - Wake up the scheduler
  *
  * Accepts:
  *    scheduler handle
  */
 OFC_CORE_LIB OFC_VOID
-BlueSchedWake (OFC_HANDLE hScheduler)
+ofc_sched_wake (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
 
   scheduler = ofc_handle_lock (hScheduler) ;
   if (scheduler != OFC_NULL)
     {
-      BlueSchedSignificantEvent (hScheduler);
-      BlueWaitSetWake (scheduler->hEventSet) ;
+      ofc_sched_significant_event (hScheduler);
+      ofc_waitset_wake (scheduler->hEventSet) ;
       ofc_handle_unlock (hScheduler) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSchedClearWait (OFC_HANDLE hScheduler, OFC_HANDLE hApp)
+ofc_sched_clear_wait (OFC_HANDLE hScheduler, OFC_HANDLE hApp)
 {
   SCHEDULER *scheduler ;
 
   scheduler = ofc_handle_lock (hScheduler) ;
   if (scheduler != OFC_NULL)
     {
-      BlueWaitSetClearApp (scheduler->hEventSet, hApp) ;
+      ofc_waitset_clear_app (scheduler->hEventSet, hApp) ;
       ofc_handle_unlock (hScheduler) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSchedAddWait (OFC_HANDLE hScheduler, OFC_HANDLE hApp, OFC_HANDLE hEvent)
+ofc_sched_add_wait (OFC_HANDLE hScheduler, OFC_HANDLE hApp, OFC_HANDLE hEvent)
 {
   SCHEDULER *scheduler ;
 
   scheduler = ofc_handle_lock (hScheduler) ;
   if (scheduler != OFC_NULL)
     {
-      BlueWaitSetAdd (scheduler->hEventSet, hApp, hEvent) ;
+      ofc_waitset_add (scheduler->hEventSet, hApp, hEvent) ;
       ofc_handle_unlock (hScheduler) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSchedRemoveWait (OFC_HANDLE hScheduler, OFC_HANDLE hEvent)
+ofc_sched_remove_wait (OFC_HANDLE hScheduler, OFC_HANDLE hEvent)
 {
   SCHEDULER *scheduler ;
 
   scheduler = ofc_handle_lock (hScheduler) ;
   if (scheduler != OFC_NULL)
     {
-      BlueWaitSetRemove (scheduler->hEventSet, hEvent) ;
+      ofc_waitset_remove (scheduler->hEventSet, hEvent) ;
       ofc_handle_unlock (hScheduler) ;
     }
 }
 
 static OFC_DWORD
-BlueSchedulerLoop (OFC_HANDLE hThread, OFC_VOID *context)
+ofc_scheduler_loop (OFC_HANDLE hThread, OFC_VOID *context)
 {
   OFC_HANDLE hScheduler ;
   SCHEDULER *scheduler ;
@@ -543,34 +543,34 @@ BlueSchedulerLoop (OFC_HANDLE hThread, OFC_VOID *context)
   hScheduler = (OFC_HANDLE) context ;
   scheduler = ofc_handle_lock (hScheduler) ;
 
-  while (!BlueThreadIsDeleting (hThread))
+  while (!ofc_thread_is_deleting (hThread))
     {
 #if defined(OFC_PRESELECT_PASS)
       /*
        * Do a preselect path
        */
-      BlueSchedPreselect (hScheduler) ;
+      ofc_sched_preselect (hScheduler) ;
 #else
       if (scheduler->significant_event)
-	BlueSchedPreselect (hScheduler) ;
+	ofc_sched_preselect (hScheduler) ;
 #endif
       /*
        * Wait for some significant event
        */
-      BlueSchedWait (hScheduler) ;
+      ofc_sched_wait (hScheduler) ;
       /*
        * And do a post select path
        */
-      BlueSchedPostselect (hScheduler) ;
+      ofc_sched_postselect (hScheduler) ;
     }
 
-  BlueSchedDestroy (hScheduler) ;
+  ofc_sched_destroy (hScheduler) ;
   ofc_handle_unlock (hScheduler) ;
   return (0) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueSchedEmpty (OFC_HANDLE hScheduler)
+ofc_sched_empty (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
   OFC_BOOL ret ;
@@ -579,7 +579,7 @@ BlueSchedEmpty (OFC_HANDLE hScheduler)
   scheduler = ofc_handle_lock (hScheduler) ;
   if (scheduler != OFC_NULL)
     {
-      if (BlueQempty (scheduler->applications))
+      if (ofc_queue_empty (scheduler->applications))
 	ret = OFC_TRUE ;
       ofc_handle_unlock (hScheduler) ;
     }
@@ -587,32 +587,32 @@ BlueSchedEmpty (OFC_HANDLE hScheduler)
 }
 
 #if defined(OFC_APP_DEBUG)
-BLUE_CORE_LIB BLUE_VOID 
-BlueSchedDump (BLUE_HANDLE hScheduler)
+OFC_CORE_LIB OFC_VOID 
+ofc_sched_dump (OFC_HANDLE hScheduler)
 {
   SCHEDULER *scheduler ;
-  BLUE_HANDLE hApp ;
+  OFC_HANDLE hApp ;
 
-  scheduler = BlueHandleLock (hScheduler) ;
-  if (scheduler != BLUE_NULL)
+  scheduler = ofc_handle_lock (hScheduler) ;
+  if (scheduler != OFC_NULL)
     {
-      BlueCprintf ("%-20s: %s\n", "Scheduled for Quit", 
+      ofc_printf ("%-20s: %s\n", "Scheduled for Quit", 
 		   scheduler->quit ? "yes" : "no") ;
-      BlueCprintf ("%-20s: %s\n", "Significant Event", 
+      ofc_printf ("%-20s: %s\n", "Significant Event", 
 		   scheduler->quit ? "yes" : "no") ;
 
       /*
        * Go through all the apps until there are no more or someone
        */
-      for (hApp = (BLUE_HANDLE) BlueQfirst (scheduler->applications) ;
-	   hApp != BLUE_HANDLE_NULL ; 
-	   hApp = (BLUE_HANDLE) BlueQnext (scheduler->applications, 
-					   (BLUE_VOID *) hApp))
+      for (hApp = (OFC_HANDLE) ofc_queue_first (scheduler->applications) ;
+	   hApp != OFC_HANDLE_NULL ; 
+	   hApp = (OFC_HANDLE) ofc_queue_next (scheduler->applications,
+					   (OFC_VOID *) hApp))
 
 	{
-	  BlueAppDump (hApp) ;
+	  ofc_app_dump (hApp) ;
 	}
-      BlueHandleUnlock (hScheduler) ;
+      ofc_handle_unlock (hScheduler) ;
     }
 }
 #endif

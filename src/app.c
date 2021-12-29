@@ -18,14 +18,14 @@
 /**
  * The Application Descriptor
  */
-typedef struct _BLUEAPP
+typedef struct _OFC_APP
 {
   OFC_APP_TEMPLATE *def ;	/* Pointer to app definition */
   OFC_HANDLE scheduler ;	/* Scheduler Hanlder */
   OFC_BOOL destroy ;		/* Flag to destroy app */
   OFC_VOID *app_data ;
   OFC_HANDLE hNotify ;
-} BLUEAPP ;
+} OFC_APP ;
 
 /*
  * STATE_create - Create an application
@@ -41,13 +41,13 @@ OFC_CORE_LIB OFC_HANDLE
 ofc_app_create (OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
                 OFC_VOID *app_data)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
   OFC_HANDLE hApp ;
 
   /*
    * Allocate structure for app
    */
-  app = ofc_malloc (sizeof (BLUEAPP)) ;
+  app = ofc_malloc (sizeof (OFC_APP)) ;
 
   /*
    * Initialize the application
@@ -62,9 +62,9 @@ ofc_app_create (OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
   /*
    * Application was initialized, add to scheduler
    */
-  BlueSchedAdd (scheduler, hApp) ;
+  ofc_sched_add (scheduler, hApp) ;
 #if defined(OFC_PRESELECT_PASS)
-  BlueAppEventSig (hApp) ;
+  ofc_app_event_sig(hApp) ;
 #else
   ofc_app_preselect (hApp) ;
 #endif
@@ -85,7 +85,7 @@ ofc_app_create (OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
 OFC_CORE_LIB OFC_VOID
 ofc_app_kill (OFC_HANDLE hApp)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
 
   app = ofc_handle_lock (hApp) ;
   if (app != OFC_NULL)
@@ -105,7 +105,7 @@ ofc_app_kill (OFC_HANDLE hApp)
 OFC_CORE_LIB OFC_VOID
 ofc_app_set_wait (OFC_HANDLE hApp, OFC_HANDLE hNotify)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
 
   app = ofc_handle_lock (hApp) ;
   if (app != OFC_NULL)
@@ -126,7 +126,7 @@ ofc_app_set_wait (OFC_HANDLE hApp, OFC_HANDLE hNotify)
 OFC_CORE_LIB OFC_VOID
 ofc_app_destroy (OFC_HANDLE hApp)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
 
   app = ofc_handle_lock (hApp) ;
   if (app != OFC_NULL)
@@ -153,7 +153,7 @@ ofc_app_destroy (OFC_HANDLE hApp)
 OFC_CORE_LIB OFC_VOID
 ofc_app_preselect (OFC_HANDLE hApp)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
 
   app = ofc_handle_lock (hApp) ;
   if (app != OFC_NULL)
@@ -176,7 +176,7 @@ ofc_app_preselect (OFC_HANDLE hApp)
 OFC_CORE_LIB OFC_HANDLE
 ofc_app_postselect (OFC_HANDLE hApp, OFC_HANDLE hEvent)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
   OFC_HANDLE ret ;
 
   ret = OFC_HANDLE_NULL ;
@@ -201,7 +201,7 @@ ofc_app_postselect (OFC_HANDLE hApp, OFC_HANDLE hEvent)
 OFC_CORE_LIB OFC_VOID
 ofc_app_sig_event (OFC_HANDLE hApp)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
 
   app = ofc_handle_lock (hApp) ;
   if (app != OFC_NULL)
@@ -209,7 +209,7 @@ ofc_app_sig_event (OFC_HANDLE hApp)
       /*
        * Pass the significant event on to the scheduler
        */
-      BlueSchedSignificantEvent (app->scheduler) ;
+      ofc_sched_significant_event (app->scheduler) ;
       ofc_handle_unlock (hApp) ;
     }
 }
@@ -226,7 +226,7 @@ ofc_app_sig_event (OFC_HANDLE hApp)
 OFC_CORE_LIB OFC_BOOL
 ofc_app_destroying (OFC_HANDLE hApp)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
   OFC_BOOL ret ;
 
   app = ofc_handle_lock (hApp) ;
@@ -242,7 +242,7 @@ ofc_app_destroying (OFC_HANDLE hApp)
 OFC_CORE_LIB OFC_VOID *
 ofc_app_get_data (OFC_HANDLE hApp)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
   OFC_VOID *ret ;
 
   ret = OFC_NULL ;
@@ -256,17 +256,17 @@ ofc_app_get_data (OFC_HANDLE hApp)
 }
 
 #if defined(OFC_APP_DEBUG)
-BLUE_CORE_LIB BLUE_VOID 
-BlueAppDump (BLUE_HANDLE hApp)
+OFC_CORE_LIB OFC_VOID 
+ofc_app_dump(OFC_HANDLE hApp)
 {
-  BLUEAPP *app ;
+  OFC_APP *app ;
 
-  app = BlueHandleLock (hApp) ;
-  if (app != BLUE_NULL)
+  app = ofc_handle_lock (hApp) ;
+  if (app != OFC_NULL)
     {
-      if (*app->def->dump != BLUE_NULL)
+      if (*app->def->dump != OFC_NULL)
 	(*app->def->dump)(hApp) ;
-      BlueHandleUnlock (hApp) ;
+      ofc_handle_unlock(hApp) ;
     }
 }
 #endif

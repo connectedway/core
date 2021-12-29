@@ -10,10 +10,10 @@
 #include "ofc/types.h"
 
 /** 
- * \defgroup BlueNetImpl Platform Dependent Network Implementaion
- * \ingroup BluePort
+ * \defgroup net_impl Platform Dependent Network Implementaion
+ * \ingroup port
  *
- * Blue Share leverages BSD socket architectures for abstracting the
+ * Open Files leverages BSD socket architectures for abstracting the
  * network facility.  There are also functions for obtaining network
  * configuration information and resolving network names
  */

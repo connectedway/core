@@ -3,16 +3,16 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_THREAD_IMPL_H__)
-#define __BLUE_THREAD_IMPL_H__
+#if !defined(__OFC_THREAD_IMPL_H__)
+#define __OFC_THREAD_IMPL_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/thread.h"
 
 /**
- * \defgroup BlueThreadImpl Thread Management Implementation
- * \ingroup BluePort
+ * \defgroup thread_impl Thread Management Implementation
+ * \ingroup port
  *
  * This facility implements the Platform Thread abstractions
  */
@@ -47,7 +47,7 @@ extern "C"
    *
    * The routine will create a thread on the target platform.  Typically,
    * there are many parameters that can be specified when creating 
-   * target platform threads but, for the most part, Blue Share cares
+   * target platform threads but, for the most part, Open Files cares
    * only about a few.  For simplicity, we have limited our support only to
    * those parameters required.
    *
@@ -67,46 +67,46 @@ extern "C"
    * \returns The thread handle
    */
   
-  OFC_HANDLE BlueThreadCreateImpl (BLUE_THREAD_FN scheduler,
-                                   OFC_CCHAR *thread_name,
-                                   OFC_INT thread_instance,
-                                   OFC_VOID *context,
-                                   BLUE_THREAD_DETACHSTATE detachstate,
-                                   OFC_HANDLE hNotify) ;
+  OFC_HANDLE ofc_thread_create_impl (OFC_THREAD_FN scheduler,
+                                     OFC_CCHAR *thread_name,
+                                     OFC_INT thread_instance,
+                                     OFC_VOID *context,
+                                     OFC_THREAD_DETACHSTATE detachstate,
+                                     OFC_HANDLE hNotify) ;
   /**
    * Delete a thread
    *
    * This routine will cause the target thread to begin deletion.  It 
    * doesn't actually forcibly kill the thread, but rather sets a flag that
-   * the thread can check by calling BlueThreadIsDeleting.  If this flag
+   * the thread can check by calling ofc_thread_is_deleting.  If this flag
    * is set, the thread should clean up and exit.
    *
    * \param hThread Handle to the thread to delete
    */
-  OFC_VOID BlueThreadDeleteImpl (OFC_HANDLE hThread) ;
+  OFC_VOID ofc_thread_delete_impl (OFC_HANDLE hThread) ;
   /**
    * Wait for a thread to exit
    *
    * \param hThread
    * Handle to thread to wait for
    */
-  OFC_VOID BlueThreadWaitImpl (OFC_HANDLE hThread) ;
+  OFC_VOID ofc_thread_wait_impl (OFC_HANDLE hThread) ;
   /**
    * Check whether thread deletion has been scheduled.
    *
-   * This function will return whether someone has called BlueThreadDelete
+   * This function will return whether someone has called ofc_thread_delete
    *
    * \param hThread Handle of the thread to check
    * \returns OFC_TRUE if deletion is scheduled, OFC_FALSE otherwise
    */
-  OFC_BOOL BlueThreadIsDeletingImpl (OFC_HANDLE hThread) ;
+  OFC_BOOL ofc_thread_is_deleting_impl (OFC_HANDLE hThread) ;
   /**
    * Sleep for a specified number of milliseconds
    *
-   * \param milliseconds Number of milliseconds to sleep.  BLUE_INFINITE will
+   * \param milliseconds Number of milliseconds to sleep.  OFC_INFINITE will
    * sleep forever.
    */
-  OFC_VOID BlueSleepImpl (OFC_DWORD milliseconds) ;
+  OFC_VOID ofc_sleep_impl (OFC_DWORD milliseconds) ;
   /**
    * Create a Thread Specific Variable
    *
@@ -118,8 +118,8 @@ extern "C"
    *
    * \returns Variable ID
    */
-  OFC_DWORD BlueThreadCreateVariableImpl (OFC_VOID) ;
-  OFC_VOID BlueThreadDestroyVariableImpl (OFC_DWORD dkey);
+  OFC_DWORD ofc_thread_create_variable_impl (OFC_VOID) ;
+  OFC_VOID ofc_thread_destroy_variable_impl (OFC_DWORD dkey);
   /**
    * Get the value of a variable
    *
@@ -127,7 +127,7 @@ extern "C"
    * \returns Pointer to the variable value structure.  If the variable value
    * was a 32 bit value, this can be cast to a DWORD value.
    */
-  OFC_DWORD_PTR BlueThreadGetVariableImpl (OFC_DWORD var) ;
+  OFC_DWORD_PTR ofc_thread_get_variable_impl (OFC_DWORD var) ;
   /**
    * Set the value of a thread specific variable
    *
@@ -136,7 +136,7 @@ extern "C"
    * If setting a 32 bit value, the pointer can be cast to a DWORD.
    */
   OFC_VOID
-  BlueThreadSetVariableImpl (OFC_DWORD var, OFC_DWORD_PTR val) ;
+  ofc_thread_set_variable_impl (OFC_DWORD var, OFC_DWORD_PTR val) ;
   /**
    * Set the wait set of a thread
    *
@@ -147,31 +147,31 @@ extern "C"
    * wait set to set
    */
   OFC_VOID
-  BlueThreadSetWaitSetImpl (OFC_HANDLE hThread, OFC_HANDLE wait_set) ;
+  ofc_thread_set_waitset_impl (OFC_HANDLE hThread, OFC_HANDLE wait_set) ;
   /**
    * Create Local Storage for Local Variables
    *
    * This routine initializes local storage for a thread.  This routine is 
    * only required on platforms that do not support the notion of 
    * Thread Local Storage.  It is a noop on platforms that do support TLS.
-   * The routine should be called before any call using the BlueFile API 
+   * The routine should be called before any call using the file API 
    * (any call that manipulates last error).
    */
   OFC_CORE_LIB OFC_VOID
-  BlueThreadCreateLocalStorageImpl (OFC_VOID) ;
+  ofc_thread_create_local_storage_impl (OFC_VOID) ;
   /**
    * Destroys Local Storage for a thread
    */
   OFC_CORE_LIB OFC_VOID
-  BlueThreadDestroyLocalStorageImpl (OFC_VOID) ;
+  ofc_thread_destroy_local_storage_impl (OFC_VOID) ;
   /**
-   * Initialize the Blue Thread Facility
+   * Initialize the Thread Facility
    */
   OFC_CORE_LIB OFC_VOID
-  BlueThreadInitImpl (OFC_VOID) ;
+  ofc_thread_init_impl (OFC_VOID) ;
 
   OFC_CORE_LIB OFC_VOID
-  BlueThreadDestroyImpl (OFC_VOID) ;
+  ofc_thred_destroy_impl (OFC_VOID) ;
 
 #if defined(__cplusplus)
 }

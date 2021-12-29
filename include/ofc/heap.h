@@ -10,26 +10,26 @@
 #include "ofc/types.h"
 
 /**
- * \defgroup BluePort Platform Specific Abstraction
+ * \defgroup port Platform Specific Abstraction
  *
- * Blue Share is designed as a portable package that can be ported to
+ * Open Fiels is designed as a portable package that can be ported to
  * most any target platform.  To accomodate this and ease platform 
- * integration, Blue Share provides a porting abstraction.
+ * integration, Open Files provides a porting abstraction.
  *
- * To port Blue Share to a new platform, simple implement these routines
+ * To port Open Files to a new platform, simple implement these routines
  * and target them at your desired platform
  */
 
 /**
- * \defgroup BlueHeap Heap Facility
- * \ingroup BluePort
+ * \defgroup heap Heap Facility
+ * \ingroup port
  *
- * Blue Share provides routines that abstract heap functions.  A port
+ * Open Files provides routines that abstract heap functions.  A port
  * can map these functions to underlying platform specific heap functions
- * or can use Blue Share's heap management facility.
+ * or can use Open Files's heap management facility.
  *
  * The documentation of these APIs may include specific information relevant
- * only to the Blue Share heap
+ * only to the Open Files heap
  *
  * \{ 
  */
@@ -40,7 +40,7 @@ extern "C"
   /**
    * Initialize the Heap
    *
-   * This function is only called by BlueInit.  It will initialize the
+   * This function is only called by ofc_init.  It will initialize the
    * heap for use.  This may be a noop on many platforms
    */
   OFC_CORE_LIB OFC_VOID
@@ -102,7 +102,7 @@ extern "C"
   OFC_CORE_LIB OFC_LPVOID
   ofc_realloc (OFC_LPVOID ptr, OFC_SIZET size) ;
   /**
-   * Dump Blue Heap Stats Usuage
+   * Dump Heap Stats Usuage
    * 
    * This will print to the console the number of bytes used as well as the
    * maximum number of bytes that had been used 
@@ -110,7 +110,7 @@ extern "C"
   OFC_CORE_LIB OFC_VOID
   ofc_heap_dump_stats (OFC_VOID) ;
   /**
-   * Dump Blue Heap Trace
+   * Dump Heap Trace
    *
    * This will print to the console a record for each chunk of memory that
    * had been allocated includding who allocated it, the address of the
@@ -119,7 +119,7 @@ extern "C"
   OFC_CORE_LIB OFC_VOID
   ofc_heap_dump (OFC_VOID) ;
   /**
-   * Snap the Blue Heap
+   * Snap the Heap
    * 
    * Mark all allocated blocks in the heap as previously allocated.  Only
    * those chunks that are 'not snapped' will be printed upon a dump

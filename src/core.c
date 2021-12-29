@@ -21,29 +21,29 @@
 #include "ofc/heap.h"
 #include "ofc/persist.h"
 /**
- * \defgroup BlueInit Initialization
+ * \defgroup init Initialization
  * \ingroup Applications
  */
 
 /** \{ */
 
 /*
- * BlueHeap must be loaded first
+ * Heap must be loaded first
  */
 OFC_LOAD OFC_CORE_LIB OFC_VOID
 ofc_core_load (OFC_VOID)
 {
   ofc_heap_load() ;
   ofc_handle16_init() ;
-  BlueThreadInit() ;
+  ofc_thread_init() ;
   ofc_trace_init() ;
   ofc_path_init() ;
   ofc_net_init() ;
   ofc_fs_init() ;
   OfcFileInit() ;
-  BlueConfigInit() ;
+  ofc_persist_init() ;
 #if defined(OFC_PERF_STATS)
-  BlueTimePerfInit() ;
+  ofc_perf_init() ;
 #endif
 }
 
@@ -51,10 +51,10 @@ OFC_UNLOAD OFC_CORE_LIB OFC_VOID
 ofc_core_unload (OFC_VOID)
 {
 #if defined(OFC_PERF_STATS)
-  BlueTimePerfDestroy() ;
+  ofc_perf_destroy() ;
 #endif
 
-  BlueConfigUnload() ;
+  ofc_persist_unload() ;
   OfcFileDestroy();
 
   ofc_fs_destroy();
@@ -65,7 +65,7 @@ ofc_core_unload (OFC_VOID)
 
   ofc_trace_destroy() ;
 
-  BlueThreadDestroy() ;
+  ofc_thread_destroy() ;
 
   ofc_handle16_free() ;
 

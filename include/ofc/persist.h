@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_CONFIG_H__)
-#define __BLUE_CONFIG_H__
+#if !defined(__OFC_CONFIG_H__)
+#define __OFC_CONFIG_H__
 
 #include "ofc/types.h"
 #include "ofc/net.h"
@@ -12,16 +12,16 @@
 /**
  * Network Configuration Modes
  *
- * This enum defines whether Blue Share should query the underlying platform
+ * This enum defines whether Open Files should query the underlying platform
  * for network configuration, or whether it will be configured manual by
  * an application
  */
 typedef enum
   {
-    BLUE_CONFIG_ICONFIG_AUTO = 0, /**< Configure Network Automatically  */
-    BLUE_CONFIG_ICONFIG_MANUAL,	/**< Configure Network Manually  */
-    BLUE_CONFIG_ICONFIG_NUM
-  } BLUE_CONFIG_ICONFIG_TYPE ;
+    OFC_CONFIG_ICONFIG_AUTO = 0, /**< Configure Network Automatically  */
+    OFC_CONFIG_ICONFIG_MANUAL,	/**< Configure Network Manually  */
+    OFC_CONFIG_ICONFIG_NUM
+  } OFC_CONFIG_ICONFIG_TYPE ;
 
 /**
  * Netbios Modes
@@ -32,12 +32,12 @@ typedef enum
  */
 typedef enum
   {
-    BLUE_CONFIG_BMODE = 0,	/**< Broadcast Mode  */
-    BLUE_CONFIG_PMODE,		/**< WINS Mode  */
-    BLUE_CONFIG_MMODE,		/**< Mixed Mode, Broadcast first  */
-    BLUE_CONFIG_HMODE,		/**< Hybrid Mode, WINS first  */
-    BLUE_CONFIG_MODE_MAX	/**< Number of Modes  */
-  } BLUE_CONFIG_MODE ;
+    OFC_CONFIG_BMODE = 0,	/**< Broadcast Mode  */
+    OFC_CONFIG_PMODE,		/**< WINS Mode  */
+    OFC_CONFIG_MMODE,		/**< Mixed Mode, Broadcast first  */
+    OFC_CONFIG_HMODE,		/**< Hybrid Mode, WINS first  */
+    OFC_CONFIG_MODE_MAX	/**< Number of Modes  */
+  } OFC_CONFIG_MODE ;
 
 #if defined(__cplusplus)
 extern "C"
@@ -45,49 +45,49 @@ extern "C"
 #endif
   /**
    * \defgroup GeneralConfig General Configuration APIs
-   * \ingroup BlueConfig
+   * \ingroup persist
    *
    * General Configuration Routines.
    *
    * \{
    */
   /**
-   * Initialize the Blue Config Facility
+   * Initialize the Open Files Persist Facility
    *
    * This should be called when the deamon is loaded before starting up
    * any of the components that use the configuration or calling any of
    * the APIs to set configuration.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigInit(OFC_VOID) ;
+  ofc_persist_init(OFC_VOID) ;
   /**
    * Releases all Configuration Information
    *
-   * This routine is essentially the inverse of BlueConfigInit.  It can
+   * This routine is essentially the inverse of ofc_persist_init.  It can
    * be called to cleanly shutdown the Configuration Facility.  This 
-   * should not be called unless all Blue Share components have exited.
+   * should not be called unless all persist components have exited.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigFree (OFC_VOID) ;
+  ofc_persist_free (OFC_VOID) ;
   /**
    * Set a Default Configuration
    *
-   * This routine will configure Blue Share using a hard coded default
+   * This routine will configure Open Files using a hard coded default
    * configuration.  This generally should not be used unless you wish
    * to define your own hard coded configuration and modify the 
-   * BlueConfigDefault routine yourself.  Otherwise we recommend that you
+   * ofc_persist_default routine yourself.  Otherwise we recommend that you
    * either configure using the persistent configuration functions, or
    * by having your own configuration routine that uses the manual 
    * configuration APIs.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigDefault (OFC_VOID) ;
+  ofc_persist_default (OFC_VOID) ;
 
 #if defined(OFC_PERSIST)
   /**
    * Load a Persistent Configuration File
    *
-   * This routine loads a Blue Share configuration.
+   * This routine loads a persistent configuration.
    *
    * In order to use this routine, you must have OFC_PERSIST 
    * defined.  It will load the configuration from an XML file. 
@@ -99,18 +99,18 @@ extern "C"
    * \param lpFileName The XML File to load
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigLoad (OFC_LPCTSTR lpFileName) ;
+  ofc_persist_load (OFC_LPCTSTR lpFileName) ;
   /**
    * Saves a Configuration to a Persisten File
    *
-   * This routine saves a Blue Share configuration
+   * This routine saves an Open Files configuration
    *
    * All configuration info will be saved for later reload
    *
    * \param lpFileName Name of XML File to save
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSave (OFC_LPCTSTR lpFileName) ;
+  ofc_persist_save (OFC_LPCTSTR lpFileName) ;
   /**
    * Print a configuration to a buffer
    *
@@ -122,21 +122,21 @@ extern "C"
    * Pointer to where to store the length of the allocated buffer (plus null)
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigPrint (OFC_LPVOID *buf, OFC_SIZET *len) ;
+  ofc_persist_print (OFC_LPVOID *buf, OFC_SIZET *len) ;
 #endif
   /**
-   * Configure the Blue Share Node Name
+   * Configure the persistant Node Name
    *
    * The Node Name is used by the NetBIOS Cifs Client and Cifs Server
-   * components of Blue Share.
+   * components of Open Files.
    *
    * \param name The Node Name
    * \param workgroup The Workgroup that this node exists within
    * \param desc The description of this node
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSetNodeName (OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
-                         OFC_LPCTSTR desc) ;
+  ofc_persist_set_node_name (OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
+                             OFC_LPCTSTR desc) ;
   /**
    * Obtain the Node Name Information for a Node
    *
@@ -148,8 +148,8 @@ extern "C"
    * \param desc Where to store a pointer to the description
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigNodeName (OFC_LPCTSTR *name, OFC_LPCTSTR *workgroup,
-                      OFC_LPCTSTR *desc) ;
+  ofc_persist_node_name (OFC_LPCTSTR *name, OFC_LPCTSTR *workgroup,
+                         OFC_LPCTSTR *desc) ;
   /**
    * Set the Node's UUID
    *
@@ -162,14 +162,14 @@ extern "C"
    * \param uuid Pointer to the uuid value to set
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSetUUID (OFC_UUID *uuid) ;
+  ofc_persist_set_uuid (OFC_UUID *uuid) ;
   /**
    * Return the Node's UUID
    *
    * \param uuid Pointer to where to place the UUID
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigUUID (OFC_UUID *uuid) ;
+  ofc_persist_uuid (OFC_UUID *uuid) ;
   /**
    * Set the Interface Configuration Mode
    *
@@ -182,26 +182,26 @@ extern "C"
    * \param itype Type of Interface Configuration Mode  
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSetInterfaceType (BLUE_CONFIG_ICONFIG_TYPE itype) ;
+  ofc_persist_set_interface_type (OFC_CONFIG_ICONFIG_TYPE itype) ;
   /**
    * Return Interface Configuration Mode
    *
-   * This routine will return the configuration mode of the Blue Share
+   * This routine will return the configuration mode of the Open Files
    * stack.  
    *
    * \returns Configuration Mode
    */
-  OFC_CORE_LIB BLUE_CONFIG_ICONFIG_TYPE
-  BlueConfigInterfaceConfig (OFC_VOID) ;
+  OFC_CORE_LIB OFC_CONFIG_ICONFIG_TYPE
+  ofc_persist_interface_config (OFC_VOID) ;
   /**
    * Remove an Interface
    *
    * \param ip IP Address of interface to remove
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigRemoveInterfaceConfig (OFC_IPADDR *ip) ;
+  ofc_persist_remove_interface_config (OFC_IPADDR *ip) ;
   /**
-   * Define the number of interfaces supported by Blue Share
+   * Define the number of interfaces supported by Open Files
    *
    * This routine is only meaningful if the interface configuration mode
    * has been set to manual.  It is a noop otherwise.  This call
@@ -211,7 +211,7 @@ extern "C"
    * \param i The number of interfaces supported
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSetInterfaceCount (OFC_INT i) ;
+  ofc_persist_set_interface_count (OFC_INT i) ;
   /**
    * Configure an Interface
    *
@@ -235,16 +235,16 @@ extern "C"
    * Pointer to the wins list to use for the interface
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSetInterfaceConfig (OFC_INT i,
-                                BLUE_CONFIG_MODE netbios_mode,
-                                OFC_IPADDR *ipaddress,
-                                OFC_IPADDR *bcast,
-                                OFC_IPADDR *mask,
-                                OFC_CHAR *master,
-                                OFC_INT num_wins,
-                                OFC_IPADDR *winslist) ;
+  ofc_persist_set_interface_config (OFC_INT i,
+                                    OFC_CONFIG_MODE netbios_mode,
+                                    OFC_IPADDR *ipaddress,
+                                    OFC_IPADDR *bcast,
+                                    OFC_IPADDR *mask,
+                                    OFC_CHAR *master,
+                                    OFC_INT num_wins,
+                                    OFC_IPADDR *winslist) ;
   /**
-   * Return the number of interfaces in use by Blue Share.  
+   * Return the number of interfaces in use by Open Files
    *
    * This is either the number of interfaces on the platform if the 
    * configuration mode is AUTO, or the number of interfaces set if the 
@@ -253,7 +253,7 @@ extern "C"
    * \returns Number of Interfaces configured
    */
   OFC_CORE_LIB OFC_INT
-  BlueConfigInterfaceCount (OFC_VOID) ;
+  ofc_persist_interface_count (OFC_VOID) ;
   /**
    * Return configuration information for an interface
    *
@@ -266,14 +266,14 @@ extern "C"
    * NULL, do not store
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigInterfaceAddr (OFC_INT index, OFC_IPADDR *addr,
-                           OFC_IPADDR *pbcast, OFC_IPADDR *mask) ;
+  ofc_persist_interface_addr (OFC_INT index, OFC_IPADDR *addr,
+                              OFC_IPADDR *pbcast, OFC_IPADDR *mask) ;
   /**
    * Configure Only the Local Master Browser for an Interface
    *
    * A local master browser is used for browsing for workgroups, domains,
    * and servers on a LAN segment.  By default, the local master browser
-   * is dynamically discovered by the Blue Share browser software.  If
+   * is dynamically discovered by the Open Files browser software.  If
    * A local master browser does not exist on the LAN segment, it can be
    * set by the user application by using this function.  
    *
@@ -281,7 +281,7 @@ extern "C"
    * \param local_master Name of the Local Master Browser
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSetLocalMaster (OFC_INT index, OFC_LPCSTR local_master) ;
+  ofc_persist_set_local_master (OFC_INT index, OFC_LPCSTR local_master) ;
   /**
    * Return the local master browser for an interface
    *
@@ -291,7 +291,7 @@ extern "C"
    * not be freed or modified.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigLocalMaster (OFC_INT index, OFC_LPCSTR *local_master) ;
+  ofc_persist_local_master (OFC_INT index, OFC_LPCSTR *local_master) ;
   /**
    * Configure Only the Private Pointer for an Interface
    *
@@ -299,7 +299,7 @@ extern "C"
    * \param priv Pointer to the private pointer
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigSetPrivate (OFC_INT index, OFC_VOID *priv) ;
+  ofc_persist_set_private (OFC_INT index, OFC_VOID *priv) ;
   /**
    * Return the private pointer for an interface
    *
@@ -307,7 +307,7 @@ extern "C"
    * \param priv Pointer to where to store the private pointer.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigPrivate (OFC_INT index, OFC_VOID **priv) ;
+  ofc_persist_private (OFC_INT index, OFC_VOID **priv) ;
 
   /**
    * Get the count of WINS Servers
@@ -318,7 +318,7 @@ extern "C"
    * \returns Number of WINS Servers Configured
    */
   OFC_CORE_LIB OFC_INT
-  BlueConfigWINSCount(OFC_INT index) ;
+  ofc_persist_wins_count(OFC_INT index) ;
   /**
    * Get the IP Address of one of the WINS Servers
    *
@@ -330,14 +330,14 @@ extern "C"
    * \param addr A pointer to a where to put the IP address
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigWINSAddr(OFC_INT xface, OFC_INT index, OFC_IPADDR *addr) ;
+  ofc_persist_wins_addr(OFC_INT xface, OFC_INT index, OFC_IPADDR *addr) ;
   /**
    * Get the NetBIOS Mode of an Interface
    *
-   * Each interface on a Blue Share system can support a different 
+   * Each interface on a Open Files system can support a different 
    * NetBIOS Mode.  This call returns the mode that is running.
    * The interface mode for an interface can be set using the
-   * BlueConfigSetInterfaceConfig Routine
+   * ofc_persist_set_interface_config Routine
    *
    * \param index The index of the Interface to obtain the NetBIOS mode on.
    * \param num_wins 
@@ -347,9 +347,9 @@ extern "C"
    * should be freed using ofc_free after done
    * \returns The NetBIOS Mode of that interface
    */
-  OFC_CORE_LIB BLUE_CONFIG_MODE
-  BlueConfigInterfaceMode (OFC_INT index, OFC_INT *num_wins,
-                           OFC_IPADDR **winslist) ;
+  OFC_CORE_LIB OFC_CONFIG_MODE
+  ofc_persist_interface_mode (OFC_INT index, OFC_INT *num_wins,
+                              OFC_IPADDR **winslist) ;
 
   /**
    * Has the configuration been loaded
@@ -358,7 +358,7 @@ extern "C"
    * OFC_TRUE if loaded, OFC_FALSE otherwise
    */
   OFC_CORE_LIB OFC_BOOL
-  BlueConfigLoaded (OFC_VOID) ;
+  ofc_persist_loaded (OFC_VOID) ;
   /**
    * Register a Update When Configuration Changed
    *
@@ -369,7 +369,7 @@ extern "C"
    * registering that will contain adds for each configured interface.
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigRegisterUpdate (OFC_HANDLE hEvent) ;
+  ofc_persist_register_update (OFC_HANDLE hEvent) ;
   /**
    * Unregister a Configuration Update Notification
    *
@@ -377,19 +377,19 @@ extern "C"
    * The Event to remove 
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigUnregisterUpdate (OFC_HANDLE hEvent) ;
+  ofc_persist_unregister_update (OFC_HANDLE hEvent) ;
   /**
    * Initiate a configuration event
    *
    * The routine takes no arguments
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigUpdate (OFC_VOID) ;
+  ofc_persist_update (OFC_VOID) ;
   /**
    * Unload the config library
    */
   OFC_CORE_LIB OFC_VOID
-  BlueConfigUnload (OFC_VOID) ;
+  ofc_persist_unload (OFC_VOID) ;
 
 #if defined(__cplusplus)
 }

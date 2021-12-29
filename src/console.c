@@ -12,24 +12,24 @@
 OFC_CORE_LIB OFC_VOID
 ofc_write_stdout (OFC_CCHAR *obuf, OFC_SIZET len)
 {
-  BlueWriteStdOutImpl (obuf, len) ;
+  ofc_write_stdout_impl (obuf, len) ;
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_write_console (OFC_CCHAR *obuf)
 {
-  BlueWriteConsoleImpl (obuf) ;
+  ofc_write_console_impl (obuf) ;
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_read_line (OFC_CHAR *inbuf, OFC_SIZET len)
 {
-  BlueReadStdInImpl (inbuf, len) ;
+  ofc_read_stdin_impl (inbuf, len) ;
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_read_password (OFC_CHAR *inbuf, OFC_SIZET len)
 {
-  BlueReadPasswordImpl (inbuf, len) ;
+  ofc_read_password_impl (inbuf, len) ;
 }
 

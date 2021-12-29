@@ -110,14 +110,14 @@ OFC_VOID OfcHandleDebugAlloc (HANDLE_CONTEXT *handle, OFC_VOID *ret)
   /*
    * Put on the allocation queue
    */
-  BlueLock (HandleLock) ;
+  ofc_lock (HandleLock) ;
   handle->dbgnext = OfcHandleAlloc ;
   if (OfcHandleAlloc != OFC_NULL)
     OfcHandleAlloc->dbgprev = handle ;
   OfcHandleAlloc = handle ;
   handle->dbgprev = OFC_NULL ;
-  BlueUnlock (HandleLock) ;
-#if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
+  ofc_unlock (HandleLock) ;
+#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
   handle->caller1 = __builtin_return_address(1) ;
   handle->caller2 = __builtin_return_address(2) ;
   handle->caller3 = __builtin_return_address(3) ;
@@ -127,47 +127,47 @@ OFC_VOID OfcHandleDebugAlloc (HANDLE_CONTEXT *handle, OFC_VOID *ret)
 #endif
 }
 
-OFC_VOID OfcHandleDebugFree (HANDLE_CONTEXT *handle)
+OFC_VOID ofc_handle_debug_free (HANDLE_CONTEXT *handle)
 {
   /*
    * Pull off the allocation queue
    */
-  BlueLock (HandleLock) ;
-  if (handle->dbgprev != BLUE_NULL)
+  ofc_lock (HandleLock) ;
+  if (handle->dbgprev != OFC_NULL)
     handle->dbgprev->dbgnext = handle->dbgnext ;
   else
     OfcHandleAlloc = handle->dbgnext ;
-  if (handle->dbgnext != BLUE_NULL)
+  if (handle->dbgnext != OFC_NULL)
     handle->dbgnext->dbgprev = handle->dbgprev ;
-  BlueUnlock (HandleLock) ;
+  ofc_unlock (HandleLock) ;
 }
 
-OFC_VOID OfcHandleDebugDump (OFC_VOID)
+OFC_VOID ofc_handle_debug_dump (OFC_VOID)
 {
   HANDLE_CONTEXT *handle ;
 
-  BlueCprintf ("Handle Dump\n") ;
+  ofc_printf ("Handle Dump\n") ;
 #if defined(__GNUC__)
-  BlueCprintf ("%-10s %-10s %-10s %-10s %-10s\n", "Address", 
+  ofc_printf ("%-10s %-10s %-10s %-10s %-10s\n", "Address", 
 	       "Caller1", "Caller2", "Caller3", "Caller4") ;
 
-  for (handle = OfcHandleAlloc ; handle != BLUE_NULL ; 
+  for (handle = OfcHandleAlloc ; handle != OFC_NULL ; 
        handle = handle->dbgnext)
     {
-      BlueCprintf ("%-10p %-10p %-10p %-10p %-10p\n", handle, 
+      ofc_printf ("%-10p %-10p %-10p %-10p %-10p\n", handle, 
 		   handle->caller1, handle->caller2, handle->caller3,
 		   handle->caller4) ;
     }
 #else
-  BlueCprintf ("%-20s %-20s\n", "Address", "Caller") ;
+  ofc_printf ("%-20s %-20s\n", "Address", "Caller") ;
 
-  for (handle = OfcHandleAlloc ; handle != BLUE_NULL ; 
+  for (handle = OfcHandleAlloc ; handle != OFC_NULL ; 
        handle = handle->dbgnext)
     {
-      BlueCprintf ("%-20p %-20p\n", handle, handle->caller) ;
+      ofc_printf ("%-20p %-20p\n", handle, handle->caller) ;
     }
 #endif
-  BlueCprintf ("\n") ;
+  ofc_printf ("\n") ;
 }
 
 OFC_VOID OfcHandle16DebugAlloc (HANDLE16_CONTEXT *handle, OFC_VOID *ret)
@@ -175,14 +175,14 @@ OFC_VOID OfcHandle16DebugAlloc (HANDLE16_CONTEXT *handle, OFC_VOID *ret)
   /*
    * Put on the allocation queue
    */
-  BlueLock (HandleLock) ;
-  handle->dbgnext = BlueHandle16Alloc ;
+  ofc_lock (HandleLock) ;
+  handle->dbgnext = OfcHandle16Alloc ;
   if (OfcHandle16Alloc != OFC_NULL)
     OfcHandle16Alloc->dbgprev = handle ;
   OfcHandle16Alloc = handle ;
   handle->dbgprev = OFC_NULL ;
-  BlueUnlock (HandleLock) ;
-#if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
+  ofc_unlock (HandleLock) ;
+#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
   handle->caller1 = __builtin_return_address(1) ;
   handle->caller2 = __builtin_return_address(2) ;
   handle->caller3 = __builtin_return_address(3) ;
@@ -197,50 +197,50 @@ OFC_VOID OfcHandle16DebugFree (HANDLE16_CONTEXT *handle)
   /*
    * Pull off the allocation queue
    */
-  BlueLock (HandleLock) ;
-  if (handle->dbgprev != BLUE_NULL)
+  ofc_lock (HandleLock) ;
+  if (handle->dbgprev != OFC_NULL)
     handle->dbgprev->dbgnext = handle->dbgnext ;
   else
     OfcHandle16Alloc = handle->dbgnext ;
-  if (handle->dbgnext != BLUE_NULL)
+  if (handle->dbgnext != OFC_NULL)
     handle->dbgnext->dbgprev = handle->dbgprev ;
-#if defined(__GNUC__) && defined(BLUE_STACK_TRACE)
+#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
   handle->caller1 = __builtin_return_address(1) ;
   handle->caller2 = __builtin_return_address(2) ;
   handle->caller3 = __builtin_return_address(3) ;
   handle->caller4 = __builtin_return_address(4) ;
 #endif
-  BlueUnlock (HandleLock) ;
+  ofc_unlock (HandleLock) ;
 }
 
 OFC_VOID OfcHandle16DebugDump (OFC_VOID)
 {
   HANDLE16_CONTEXT *handle ;
 
-  BlueCprintf ("Handle 16 Dump\n") ;
-  BlueCprintf ("Address of BlueHandle16DebugDump 0x%08x\n", BlueHandle16DebugDump) ;
+  ofc_printf ("Handle 16 Dump\n") ;
+  ofc_printf ("Address of OfcHandle16DebugDump 0x%08x\n", OfcHandle16DebugDump) ;
 
 #if defined(__GNUC__)
-  BlueCprintf ("%-10s %-10s %-10s %-10s %-10s\n", "Address", 
+  ofc_printf ("%-10s %-10s %-10s %-10s %-10s\n", "Address", 
 	       "Caller1", "Caller2", "Caller3", "Caller4") ;
 
   for (handle = OfcHandle16Alloc ; handle != OFC_NULL ; 
        handle = handle->dbgnext)
     {
-      BlueCprintf ("%-10p %-10p %-10p %-10p %-10p\n", handle, 
+      ofc_printf ("%-10p %-10p %-10p %-10p %-10p\n", handle, 
 		   handle->caller1, handle->caller2, handle->caller3,
 		   handle->caller4) ;
     }
 #else
-  BlueCprintf ("%-20s %-20s\n", "Address", "Caller") ;
+  ofc_printf ("%-20s %-20s\n", "Address", "Caller") ;
 
   for (handle = OfcHandle16Alloc ; handle != OFC_NULL ; 
        handle = handle->dbgnext)
     {
-      BlueCprintf ("%-20p %-20p\n", handle, handle->caller) ;
+      ofc_printf ("%-20p %-20p\n", handle, handle->caller) ;
     }
 #endif
-  BlueCprintf ("\n") ;
+  ofc_printf ("\n") ;
 }
 
 #endif
@@ -336,7 +336,7 @@ ofc_handle_lock_ex (OFC_HANDLE handle, OFC_HANDLE_TYPE type)
   if (ofc_handle_get_type (handle) == type)
     ret = ofc_handle_lock (handle) ;
   else
-    BlueProcessCrash ("Handle Mismatch\n") ;
+    ofc_process_crash ("Handle Mismatch\n") ;
   return (ret) ;
 }
 
@@ -369,10 +369,10 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock (OFC_HANDLE handle)
   if (handle_context->destroy && handle_context->reference == 0)
     {
 #if defined(OFC_HANDLE_DEBUG)
-      OfcHandleDebugFree (handle_context) ;
+      ofc_handle_debug_free(handle_context) ;
 #endif
 #if defined(OFC_HANDLE_PERF)
-      OfcHandlePrintInterval ("Handle: ", handle) ;
+      ofc_handle_print_interval("Handle: ", handle) ;
 #endif
       ofc_unlock (HandleLock) ;
       ofc_free (handle_context) ;
@@ -388,7 +388,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle_destroy (OFC_HANDLE handle)
   handle_context = (HANDLE_CONTEXT *) handle ;
 
   if (handle_context->wait_set != OFC_HANDLE_NULL)
-    BlueWaitSetRemove (handle_context->wait_set, handle) ;
+    ofc_waitset_remove (handle_context->wait_set, handle) ;
 
   ofc_lock (HandleLock) ;
 #if defined(DISABLED)
@@ -414,10 +414,10 @@ OFC_CORE_LIB OFC_VOID ofc_handle_destroy (OFC_HANDLE handle)
     {
 
 #if defined(OFC_HANDLE_DEBUG)
-      OfcHandleDebugFree (handle_context) ;
+      ofc_handle_debug_free(handle_context) ;
 #endif
 #if defined(OFC_HANDLE_PERF)
-      OfcHandlePrintInterval ("Handle: ", handle) ;
+      ofc_handle_print_interval("Handle: ", handle) ;
 #endif
       ofc_free (handle_context) ;
     }
@@ -436,7 +436,7 @@ ofc_handle_set_app (OFC_HANDLE hHandle, OFC_HANDLE hApp, OFC_HANDLE hSet)
 
       handle_context->wait_app = hApp ;
       handle_context->wait_set = hSet ;
-      BlueWaitSetSetAssocImpl (hHandle, hApp, hSet) ;
+      ofc_waitset_set_assoc_impl (hHandle, hApp, hSet) ;
     }
 }
 
@@ -476,7 +476,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_init (OFC_VOID)
   OfcHandle16Mutex = ofc_lock_init () ;
   HandleLock = ofc_lock_init () ;
 
-  Handle16Free = BlueQcreate() ;
+  Handle16Free = ofc_queue_create() ;
 
   for (i = 0 ; i < OFC_MAX_HANDLE16 ; i++)
     {
@@ -485,14 +485,14 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_init (OFC_VOID)
       Handle16Array[i].context = OFC_NULL ;
       Handle16Array[i].alloc = OFC_FALSE ;
       Handle16Array[i].ref = 0 ;
-      BlueQenqueue (Handle16Free, &Handle16Array[i]) ;
+      ofc_enqueue (Handle16Free, &Handle16Array[i]) ;
     }
 }
 
 OFC_CORE_LIB OFC_VOID ofc_handle16_free (OFC_VOID)
 {
-  BlueQclear (Handle16Free) ;
-  BlueQdestroy (Handle16Free) ;
+  ofc_queue_clear (Handle16Free) ;
+  ofc_queue_destroy (Handle16Free) ;
 
   ofc_lock_destroy (OfcHandle16Mutex) ;
   ofc_lock_destroy (HandleLock) ;
@@ -529,7 +529,7 @@ OFC_CORE_LIB OFC_HANDLE16 ofc_handle16_create (OFC_VOID *context)
 
   ret = OFC_HANDLE16_INVALID ;
   ofc_lock (OfcHandle16Mutex) ;
-  handle = BlueQdequeue (Handle16Free) ;
+  handle = ofc_dequeue (Handle16Free) ;
   if (handle != OFC_NULL)
     {
       handle->instance++ ;
@@ -550,7 +550,7 @@ OFC_CORE_LIB OFC_HANDLE16 ofc_handle16_create (OFC_VOID *context)
   
   if (ret == OFC_HANDLE16_INVALID)
     {
-      BlueProcessCrash ("Handle16 Pool Exhausted\n") ;
+      ofc_process_crash ("Handle16 Pool Exhausted\n") ;
     }
 
   ofc_unlock (OfcHandle16Mutex) ;
@@ -587,7 +587,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_destroy (OFC_HANDLE16 hHandle)
       ofc_unlock (OfcHandle16Mutex) ;
       ofc_printf ("Bad Handle being destroyed 0x%08x, %d\n",
                   hHandle, id) ;
-      BlueProcessCrash ("Bad Handle being destroyed\n") ;
+      ofc_process_crash ("Bad Handle being destroyed\n") ;
     }
 }
 
@@ -611,12 +611,12 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_unlock (OFC_HANDLE16 hHandle)
 	      OfcHandle16DebugFree (handle) ;
 #endif
 	      handle->alloc = OFC_FALSE ;
-              BlueQenqueue (Handle16Free, handle) ;
+              ofc_enqueue (Handle16Free, handle) ;
             }
         }
     }
   else
-    BlueProcessCrash ("Bad Handle being unlocked\n") ;
+    ofc_process_crash ("Bad Handle being unlocked\n") ;
   ofc_unlock (OfcHandle16Mutex) ;
 }
 
@@ -629,7 +629,7 @@ OFC_CORE_LIB OFC_VOID OfcHandleMeasure (OFC_HANDLE hHandle)
 
   if (hHandle != OFC_HANDLE_NULL)
     {
-      now = BlueTimeGetNow() ;
+      now = ofc_time_get_now() ;
       handle_context = (HANDLE_CONTEXT *) hHandle ;
       if (handle_context->last_triggered != 0)
 	{
@@ -717,14 +717,14 @@ static OFC_CHAR *type2str (OFC_HANDLE_TYPE type)
   return (typearray[i].str) ;
 }
 
-OFC_CORE_LIB OFC_VOID BlueHandlePrintIntervalHeader (OFC_VOID)
+OFC_CORE_LIB OFC_VOID ofc_handle_print_interval_header(OFC_VOID)
 {
-  BlueCprintf ("%-15.15s  %15.15s  %15.15s\n", 
+  ofc_printf ("%-15.15s  %15.15s  %15.15s\n", 
 	       "Handle Type", "Avg Interval", "Count") ;
 }
 
 OFC_CORE_LIB OFC_VOID
-OfcHandlePrintInterval (OFC_CHAR *prefix, OFC_HANDLE hHandle)
+ofc_handle_print_interval(OFC_CHAR *prefix, OFC_HANDLE hHandle)
 {
   OFC_MSTIME interval ;
   OFC_UINT32 count ;
@@ -736,13 +736,13 @@ OfcHandlePrintInterval (OFC_CHAR *prefix, OFC_HANDLE hHandle)
     {
       if (type == OFC_HANDLE_TIMER)
 	{
-	  BlueCprintf ("%s%-15.15s  %12lu ms  %15lu  %s\n", prefix,
+	  ofc_printf ("%s%-15.15s  %12lu ms  %15lu  %s\n", prefix,
 		       type2str(type), 
-		       interval, count, BlueTimerID (hHandle)) ;
+		       interval, count, ofc_timer_id (hHandle)) ;
 	}
       else
 	{
-	  BlueCprintf ("%s%-15.15s  %12lu ms  %15lu\n", prefix,
+	  ofc_printf ("%s%-15.15s  %12lu ms  %15lu\n", prefix,
 		       type2str(type), interval, count) ;
 	}
     }

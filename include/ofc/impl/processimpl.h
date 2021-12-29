@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_PROCESS_IMPL_H__)
-#define __BLUE_PROCESS_IMPL_H__
+#if !defined(__OFC_PROCESS_IMPL_H__)
+#define __OFC_PROCESS_IMPL_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -14,16 +14,16 @@
 extern "C"
 {
 #endif
-  BLUE_PROCESS_ID BlueProcessGetImpl (OFC_VOID) ;
-  OFC_HANDLE BlueProcessExecImpl (OFC_CTCHAR *name,
-                                  OFC_TCHAR *uname,
-                                  OFC_INT argc,
-                                  OFC_CHAR **argv) ;
-  OFC_VOID BlueProcessTermImpl (OFC_HANDLE hProcess) ;
-  OFC_BOOL BlueProcessTermTrapImpl (BLUE_PROCESS_TRAP_HANDLER trap) ;
-  OFC_VOID BlueProcessKillImpl (BLUE_PROCESS_ID id) ;
-  BLUE_PROCESS_ID BlueProcessGetIdImpl (OFC_HANDLE hProcess) ;
-  OFC_VOID BlueProcessCrashImpl (OFC_CCHAR *obuf) ;
+  OFC_PROCESS_ID ofc_process_get_impl (OFC_VOID) ;
+  OFC_HANDLE ofc_process_exec_impl (OFC_CTCHAR *name,
+                                    OFC_TCHAR *uname,
+                                    OFC_INT argc,
+                                    OFC_CHAR **argv) ;
+  OFC_VOID ofc_process_term_impl (OFC_HANDLE hProcess) ;
+  OFC_BOOL ofc_process_term_trap_impl (OFC_PROCESS_TRAP_HANDLER trap) ;
+  OFC_VOID ofc_process_kill_impl (OFC_PROCESS_ID id) ;
+  OFC_PROCESS_ID ofc_process_get_id_impl (OFC_HANDLE hProcess) ;
+  OFC_VOID ofc_process_crash_impl (OFC_CCHAR *obuf) ;
 #if defined(__cplusplus)
 }
 #endif

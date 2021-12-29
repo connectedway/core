@@ -3,8 +3,8 @@
  * Attribution-NoDerivatives 4.0 International license that can be
  * found in the LICENSE file.
  */
-#if !defined(__BLUE_EVENT_IMPL_H__)
-#define __BLUE_EVENT_IMPL_H__
+#if !defined(__OFC_EVENT_IMPL_H__)
+#define __OFC_EVENT_IMPL_H__
 
 #include "ofc/core.h"
 #include "ofc/types.h"
@@ -28,7 +28,7 @@ extern "C"
    * Handle to event
    */
   OFC_HANDLE
-  BlueEventCreateImpl (OFC_EVENT_TYPE eventType) ;
+  ofc_event_create_impl (OFC_EVENT_TYPE eventType) ;
   /**
    * Return the event type
    *
@@ -38,7 +38,7 @@ extern "C"
    * \returns
    * The event type
    */
-  OFC_EVENT_TYPE BlueEventGetTypeImpl (OFC_HANDLE hEvent) ;
+  OFC_EVENT_TYPE ofc_event_get_type_impl (OFC_HANDLE hEvent) ;
   /**
    * Set an event.  
    *
@@ -47,7 +47,7 @@ extern "C"
    * \param hEvent
    * The event to signal
    */
-  OFC_VOID BlueEventSetImpl (OFC_HANDLE hEvent) ;
+  OFC_VOID ofc_event_set_impl (OFC_HANDLE hEvent) ;
   /**
    * Reset an Event
    *
@@ -56,7 +56,7 @@ extern "C"
    * \param hEvent
    * The event to rearm
    */
-  OFC_VOID BlueEventResetImpl (OFC_HANDLE hEvent) ;
+  OFC_VOID ofc_event_reset_impl (OFC_HANDLE hEvent) ;
   /**
    * Test if an event has been signalled
    *
@@ -66,21 +66,21 @@ extern "C"
    * \returns
    * OFC_TRUE if set, OFC_FALSE otherwise
    */
-  OFC_BOOL BlueEventTestImpl (OFC_HANDLE hEvent) ;
+  OFC_BOOL ofc_event_test_impl (OFC_HANDLE hEvent) ;
   /**
    * Destroy an Event
    *
    * \param hEvent
    * The handle to the event to destroy
    */
-  OFC_VOID BlueEventDestroyImpl (OFC_HANDLE hEvent) ;
+  OFC_VOID ofc_event_destroy_impl (OFC_HANDLE hEvent) ;
   /**
    * Wait for an event to fire.
    *
    * If the event is an automatic event, it is automatically reset after
    * this return returns
    */
-  OFC_VOID BlueEventWaitImpl (OFC_HANDLE hEvent) ;
+  OFC_VOID ofc_event_wait_impl (OFC_HANDLE hEvent) ;
 #if defined(__cplusplus)
 }
 #endif

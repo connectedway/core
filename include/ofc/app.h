@@ -124,7 +124,7 @@ extern "C"
    */
   OFC_CORE_LIB OFC_VOID
   ofc_app_set_wait (OFC_HANDLE hApp, OFC_HANDLE hNotify) ;
-#if defined(BLUE_PARAM_APP_DEBUG)
+#if defined(OFC_PARAM_APP_DEBUG)
   /**
    * Dump the state of the app
    *
@@ -132,7 +132,7 @@ extern "C"
    * Handle to app to dump
    */
   OFC_CORE_LIB OFC_VOID 
-  ofc_app_dump (BLUE_HANDLE hApp) ;
+  ofc_app_dump (OFC_HANDLE hApp) ;
 #endif
 
 #if defined(__cplusplus)

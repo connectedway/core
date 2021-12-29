@@ -11,33 +11,33 @@
 #include "ofc/config.h"
 #include "ofc/fs.h"
 
-static OFC_FILE_FSINFO *BlueFSTable[OFC_FST_NUM] ;
+static OFC_FILE_FSINFO *ofc_fs_table[OFC_FST_NUM] ;
 
-static OFC_HANDLE BlueFSUnknownHandleInv (OFC_VOID)
+static OFC_HANDLE ofc_fs_unknown_handle_inv (OFC_VOID)
 {
   return (OFC_INVALID_HANDLE_VALUE) ;
 }
 
-static OFC_HANDLE BlueFSUnknownHandleNull (OFC_VOID)
+static OFC_HANDLE ofc_fs_unknown_handle_null (OFC_VOID)
 {
   return (OFC_HANDLE_NULL) ;
 }
 
-static OFC_BOOL BlueFSUnknownBool (OFC_VOID)
+static OFC_BOOL ofc_fs_unknown_bool (OFC_VOID)
 {
   return (OFC_FALSE) ;
 }
 
-static OFC_DWORD BlueFSUnknownDword (OFC_VOID)
+static OFC_DWORD ofc_fs_unknown_dword (OFC_VOID)
 {
   return (OFC_INVALID_SET_FILE_POINTER) ;
 }
 
-static OFC_VOID BlueFSUnknownVoid (OFC_VOID)
+static OFC_VOID ofc_fs_unknown_void (OFC_VOID)
 {
 }
 
-static OFC_FILE_FSINFO BlueFSUnknown =
+static OFC_FILE_FSINFO ofc_fs_unknown =
   {
     (OFC_HANDLE (*)(OFC_LPCTSTR,
                     OFC_DWORD,
@@ -45,67 +45,67 @@ static OFC_FILE_FSINFO BlueFSUnknown =
                     OFC_LPSECURITY_ATTRIBUTES,
                     OFC_DWORD,
                     OFC_DWORD,
-                    OFC_HANDLE)) &BlueFSUnknownHandleInv,
-    (OFC_BOOL (*)(OFC_LPCTSTR)) &BlueFSUnknownBool,
+                    OFC_HANDLE)) &ofc_fs_unknown_handle_inv,
+    (OFC_BOOL (*)(OFC_LPCTSTR)) &ofc_fs_unknown_bool,
     (OFC_HANDLE (*)(OFC_LPCTSTR,
                     OFC_LPWIN32_FIND_DATAW,
-                    OFC_BOOL *)) &BlueFSUnknownHandleInv,
+                    OFC_BOOL *)) &ofc_fs_unknown_handle_inv,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_LPWIN32_FIND_DATAW,
-                  OFC_BOOL *)) &BlueFSUnknownBool,
-    (OFC_BOOL (*)(OFC_HANDLE)) &BlueFSUnknownBool,
-    (OFC_BOOL (*)(OFC_HANDLE)) &BlueFSUnknownBool,
+                  OFC_BOOL *)) &ofc_fs_unknown_bool,
+    (OFC_BOOL (*)(OFC_HANDLE)) &ofc_fs_unknown_bool,
+    (OFC_BOOL (*)(OFC_HANDLE)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_LPCTSTR,
                   OFC_GET_FILEEX_INFO_LEVELS,
-                  OFC_LPVOID)) &BlueFSUnknownBool,
+                  OFC_LPVOID)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_FILE_INFO_BY_HANDLE_CLASS,
                   OFC_LPVOID,
-                  OFC_DWORD)) &BlueFSUnknownBool,
+                  OFC_DWORD)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_LPCTSTR,
-                  OFC_LPCTSTR)) &BlueFSUnknownBool,
+                  OFC_LPCTSTR)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_HANDLE,
                   OFC_LPDWORD,
-                  OFC_BOOL)) &BlueFSUnknownBool,
-    (OFC_HANDLE (*)(OFC_VOID)) &BlueFSUnknownHandleNull,
-    (OFC_VOID (*)(OFC_HANDLE)) &BlueFSUnknownVoid,
+                  OFC_BOOL)) &ofc_fs_unknown_bool,
+    (OFC_HANDLE (*)(OFC_VOID)) &ofc_fs_unknown_handle_null,
+    (OFC_VOID (*)(OFC_HANDLE)) &ofc_fs_unknown_void,
     (OFC_VOID (*)(OFC_HANDLE,
-                  OFC_OFFT)) &BlueFSUnknownVoid,
-    (OFC_BOOL (*)(OFC_HANDLE)) &BlueFSUnknownBool,
+                  OFC_OFFT)) &ofc_fs_unknown_void,
+    (OFC_BOOL (*)(OFC_HANDLE)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_LPCTSTR,
-                  OFC_DWORD)) &BlueFSUnknownBool,
+                  OFC_DWORD)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_FILE_INFO_BY_HANDLE_CLASS,
                   OFC_LPVOID,
-                  OFC_DWORD)) &BlueFSUnknownBool,
+                  OFC_DWORD)) &ofc_fs_unknown_bool,
     (OFC_DWORD (*)(OFC_HANDLE,
                    OFC_LONG,
                    OFC_PLONG,
-                   OFC_DWORD)) &BlueFSUnknownDword,
+                   OFC_DWORD)) &ofc_fs_unknown_dword,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_LPCVOID,
                   OFC_DWORD,
                   OFC_LPDWORD,
-                  OFC_HANDLE)) &BlueFSUnknownBool,
+                  OFC_HANDLE)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_LPVOID,
                   OFC_DWORD,
                   OFC_LPDWORD,
-                  OFC_HANDLE)) &BlueFSUnknownBool,
-    (OFC_BOOL (*)(OFC_HANDLE)) &BlueFSUnknownBool,
+                  OFC_HANDLE)) &ofc_fs_unknown_bool,
+    (OFC_BOOL (*)(OFC_HANDLE)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_LPVOID,
                   OFC_DWORD,
                   OFC_LPVOID,
                   OFC_DWORD,
                   OFC_LPDWORD,
-                  OFC_HANDLE)) &BlueFSUnknownBool,
+                  OFC_HANDLE)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_LPCTSTR,
                   OFC_LPDWORD,
                   OFC_LPDWORD,
                   OFC_LPDWORD,
-                  OFC_LPDWORD)) &BlueFSUnknownBool,
+                  OFC_LPDWORD)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_LPCTSTR,
                   OFC_LPTSTR,
                   OFC_DWORD,
@@ -113,144 +113,144 @@ static OFC_FILE_FSINFO BlueFSUnknown =
                   OFC_LPDWORD,
                   OFC_LPDWORD,
                   OFC_LPTSTR,
-                  OFC_DWORD)) &BlueFSUnknownBool,
+                  OFC_DWORD)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_LPCTSTR,
-                  OFC_LPSECURITY_ATTRIBUTES)) &BlueFSUnknownBool,
-    (OFC_BOOL (*)(OFC_LPCTSTR)) &BlueFSUnknownBool,
+                  OFC_LPSECURITY_ATTRIBUTES)) &ofc_fs_unknown_bool,
+    (OFC_BOOL (*)(OFC_LPCTSTR)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_UINT32,
                   OFC_UINT32,
-                  OFC_HANDLE)) &BlueFSUnknownBool,
+                  OFC_HANDLE)) &ofc_fs_unknown_bool,
     (OFC_BOOL (*)(OFC_HANDLE,
                   OFC_DWORD,
                   OFC_DWORD,
                   OFC_DWORD,
-                  OFC_HANDLE))&BlueFSUnknownBool,
-    (OFC_BOOL (*)(OFC_LPCTSTR))&BlueFSUnknownBool
+                  OFC_HANDLE))&ofc_fs_unknown_bool,
+    (OFC_BOOL (*)(OFC_LPCTSTR))&ofc_fs_unknown_bool
   } ;
 
-OFC_VOID BlueFSCIFSStartup (OFC_VOID) ;
-OFC_VOID BlueFSWin32Startup (OFC_VOID) ;
-OFC_VOID BlueFSWinCEStartup (OFC_VOID) ;
-OFC_VOID BlueFSDarwinStartup (OFC_VOID) ;
-OFC_VOID BlueFSLinuxStartup (OFC_VOID) ;
-OFC_VOID BlueFSFileXStartup (OFC_VOID) ;
-OFC_VOID BlueFSNUFileStartup (OFC_VOID) ;
-OFC_VOID BlueFSBrowseWorkgroupsStartup (OFC_VOID) ;
-OFC_VOID BlueFSBrowseServersStartup (OFC_VOID) ;
-OFC_VOID BlueFSBrowseSharesStartup (OFC_VOID) ;
-OFC_VOID BlueFSMailslotStartup (OFC_VOID) ;
-OFC_VOID BlueFSPipeStartup (OFC_VOID) ;
-OFC_VOID BlueFSBookmarksStartup (OFC_VOID) ;
-OFC_VOID BlueFSAndroidStartup (OFC_VOID) ;
+OFC_VOID OfcFSCIFSStartup (OFC_VOID) ;
+OFC_VOID OfcFSWin32Startup (OFC_VOID) ;
+OFC_VOID OfcFSWinCEStartup (OFC_VOID) ;
+OFC_VOID OfcFSDarwinStartup (OFC_VOID) ;
+OFC_VOID OfcFSLinuxStartup (OFC_VOID) ;
+OFC_VOID OfcFSFileXStartup (OFC_VOID) ;
+OFC_VOID OfcFSNUFileStartup (OFC_VOID) ;
+OFC_VOID OfcFSBrowseWorkgroupsStartup (OFC_VOID) ;
+OFC_VOID OfcFSBrowseServersStartup (OFC_VOID) ;
+OFC_VOID OfcFSBrowseSharesStartup (OFC_VOID) ;
+OFC_VOID OfcFSMailslotStartup (OFC_VOID) ;
+OFC_VOID OfcFSPipeStartup (OFC_VOID) ;
+OFC_VOID OfcFSBookmarksStartup (OFC_VOID) ;
+OFC_VOID OfcFSAndroidStartup (OFC_VOID) ;
 
-OFC_VOID BlueFSWinCEShutdown(OFC_VOID) ;
-OFC_VOID BlueFSDarwinShutdown(OFC_VOID) ;
-OFC_VOID BlueFSLinuxShutdown(OFC_VOID) ;
-OFC_VOID BlueFSFileXShutdown(OFC_VOID) ;
-OFC_VOID BlueFSAndroidShutdown(OFC_VOID) ;
-OFC_VOID BlueFSNUFileShutdown(OFC_VOID) ;
-OFC_VOID BlueFSBookmarksShutdown(OFC_VOID) ;
-OFC_VOID BlueFSMailslotShutdown (OFC_VOID) ;
-OFC_VOID BlueFSPipeShutdown(OFC_VOID) ;
+OFC_VOID OfcFSWinCEShutdown(OFC_VOID) ;
+OFC_VOID OfcFSDarwinShutdown(OFC_VOID) ;
+OFC_VOID OfcFSLinuxShutdown(OFC_VOID) ;
+OFC_VOID OfcFSFileXShutdown(OFC_VOID) ;
+OFC_VOID OfcFSAndroidShutdown(OFC_VOID) ;
+OFC_VOID OfcFSNUFileShutdown(OFC_VOID) ;
+OFC_VOID OfcFSBookmarksShutdown(OFC_VOID) ;
+OFC_VOID OfcFSMailslotShutdown (OFC_VOID) ;
+OFC_VOID OfcFSPipeShutdown(OFC_VOID) ;
 
 OFC_CORE_LIB OFC_VOID
 ofc_fs_init (OFC_VOID)
 {
-  ofc_fs_register (OFC_FST_UNKNOWN, &BlueFSUnknown) ;
+  ofc_fs_register (OFC_FST_UNKNOWN, &ofc_fs_unknown) ;
 #if defined(OFC_FS_CIFS)
-  BlueFSCIFSStartup () ;
+  OfcFSCIFSStartup () ;
 #endif
 #if defined (OFC_FS_WIN32)
-  BlueFSWin32Startup() ;
+  OfcFSWin32Startup() ;
 #endif
 #if defined (OFC_FS_WINCE)
-  BlueFSWinCEStartup() ;
+  OfcFSWinCEStartup() ;
 #endif
 #if defined(OFC_FS_DARWIN)
-  BlueFSDarwinStartup() ;
+  OfcFSDarwinStartup() ;
 #endif
 #if defined(OFC_FS_LINUX)
-  BlueFSLinuxStartup() ;
+  OfcFSLinuxStartup() ;
 #endif
 #if defined(OFC_FS_FILEX)
-  BlueFSFileXStartup() ;
+  OfcFSFileXStartup() ;
 #endif
 #if defined(OFC_FS_ANDROID)
-  BlueFSAndroidStartup() ;
+  OfcFSAndroidStartup() ;
 #endif
 #if defined(OFC_FS_NUFILE)
-  BlueFSNUFileStartup() ;
+  OfcFSNUFileStartup() ;
 #endif
 #if defined(OFC_FS_BROWSER)
-  BlueFSBrowseWorkgroupsStartup() ;
-  BlueFSBrowseServersStartup() ;
-  BlueFSBrowseSharesStartup() ;
+  OfcFSBrowseWorkgroupsStartup() ;
+  OfcFSBrowseServersStartup() ;
+  OfcFSBrowseSharesStartup() ;
 #endif
 #if defined(OFC_FS_BOOKMARKS)
-  BlueFSBookmarksStartup() ;
+  OfcFSBookmarksStartup() ;
 #endif
 #if defined(OFC_LANMAN)
-  BlueFSMailslotStartup () ;
-  BlueFSPipeStartup() ;
+  OfcFSMailslotStartup () ;
+  OfcFSPipeStartup() ;
 #endif
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_fs_destroy (OFC_VOID)
 {
-  ofc_fs_register (OFC_FST_UNKNOWN, &BlueFSUnknown) ;
+  ofc_fs_register (OFC_FST_UNKNOWN, &ofc_fs_unknown) ;
 #if defined(OFC_FS_CIFS)
-  BlueFSRegister (BLUE_FS_CIFS, &BlueFSUnknown);
+  ofc_fs_register (OFC_FST_SMB, &ofc_fs_unknown);
 #endif
 #if defined (OFC_FS_WIN32)
-  BlueFSRegister (BLUE_FS_WIN32, &BlueFSUnknown);
+  ofc_fs_register (OFC_FST_WIN32, &ofc_fs_unknown);
 #endif
 #if defined (OFC_FS_WINCE)
-  BlueFSWinCEShutdown() ;
-  BlueFSRegister (BLUE_FS_WINCE, &BlueFSUnknown);
+  OfcFSWinCEShutdown() ;
+  ofc_fs_register (OFC_FST_WINCE, &ofc_fs_unknown);
 #endif
 #if defined(OFC_FS_DARWIN)
-  BlueFSDarwinShutdown() ;
-  ofc_fs_register (OFC_FST_DARWIN, &BlueFSUnknown);
+  OfcFSDarwinShutdown() ;
+  ofc_fs_register (OFC_FST_DARWIN, &ofc_fs_unknown);
 #endif
 #if defined(OFC_FS_LINUX)
-  BlueFSLinuxShutdown() ;
-  BlueFSRegister (BLUE_FS_LINUX, &BlueFSUnknown);
+  OfcFSLinuxShutdown() ;
+  ofc_fs_register (OFC_FST_LINUX, &ofc_fs_unknown);
 #endif
 #if defined(OFC_FS_FILEX)
-  BlueFSFileXShutdown() ;
-  BlueFSRegister (BLUE_FS_FILEX, &BlueFSUnknown);
+  OfcFSFileXShutdown() ;
+  ofc_fs_register (OFC_FST_FILEX, &ofc_fs_unknown);
 #endif
 #if defined(OFC_FS_ANDROID)
-  BlueFSAndroidShutdown() ;
-  BlueFSRegister (BLUE_FS_ANDROID, &BlueFSUnknown);
+  OfcFSAndroidShutdown() ;
+  ofc_fs_register (OFC_FST_ANDROID, &ofc_fs_unknown);
 #endif
 #if defined(OFC_FS_NUFILE)
-  BlueFSNUFileShutdown() ;
-  BlueFSRegister (BLUE_FS_NUFILE, &BlueFSUnknown);
+  OfcFSNUFileShutdown() ;
+  ofc_fs_register (OFC_FST_NUFILE, &ofc_fs_unknown);
 #endif
 #if defined(OFC_FS_BROWSER)
-  BlueFSRegister (BLUE_FS_BROWSE_WORKGROUPS, &BlueFSUnknown);
-  BlueFSRegister (BLUE_FS_BROWSE_SERVERS, &BlueFSUnknown);
-  BlueFSRegister (BLUE_FS_BROWSE_SHARES, &BlueFSUnknown);
+  ofc_fs_register (OFC_FST_BROWSE_WORKGROUPS, &ofc_fs_unknown);
+  ofc_fs_register (OFC_FST_BROWSE_SERVERS, &ofc_fs_unknown);
+  ofc_fs_register (OFC_FST_BROWSE_SHARES, &ofc_fs_unknown);
 #endif
 #if defined(OFC_FS_BOOKMARKS)
-  BlueFSBookmarksShutdown() ;
-  ofc_fs_register (OFC_FST_BOOKMARKS, &BlueFSUnknown);
+  OfcFSBookmarksShutdown() ;
+  ofc_fs_register (OFC_FST_BOOKMARKS, &ofc_fs_unknown);
 #endif
 #if defined(OFC_LANMAN)
-  BlueFSMailslotShutdown () ;
-  BlueFSRegister (BLUE_FS_MAILSLOT, &BlueFSUnknown);
-  BlueFSPipeShutdown() ;
-  BlueFSRegister (BLUE_FS_PIPE, &BlueFSUnknown);
+  OfcFSMailslotShutdown () ;
+  ofc_fs_register (OFC_FST_MAILSLOT, &ofc_fs_unknown);
+  OfcFSPipeShutdown() ;
+  ofc_fs_register (OFC_FST_PIPE, &ofc_fs_unknown);
 #endif
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_fs_register (OFC_FST_TYPE fsType, OFC_FILE_FSINFO *fsInfo)
 {
-  BlueFSTable[fsType] = fsInfo ;
+  ofc_fs_table[fsType] = fsInfo ;
 }
 
 OFC_HANDLE OfcFSCreateFile (OFC_FST_TYPE fsType,
@@ -263,7 +263,7 @@ OFC_HANDLE OfcFSCreateFile (OFC_FST_TYPE fsType,
                             OFC_HANDLE hTemplateFile)
 {
   OFC_HANDLE ret ;
-  ret = BlueFSTable[fsType]->CreateFile (lpFileName,
+  ret = ofc_fs_table[fsType]->CreateFile (lpFileName,
 					 dwDesiredAccess,
 					 dwShareMode,
 					 lpSecAttributes,
@@ -278,7 +278,7 @@ OFC_BOOL OfcFSCreateDirectory (OFC_FST_TYPE fsType,
                                OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->CreateDirectory (lpPathName, lpSecurityAttr) ;
+  ret = ofc_fs_table[fsType]->CreateDirectory (lpPathName, lpSecurityAttr) ;
   return (ret) ;
 }
 
@@ -290,7 +290,7 @@ OFC_BOOL OfcFSWriteFile (OFC_FST_TYPE fsType,
                          OFC_HANDLE hOverlapped)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->WriteFile (hFile,
+  ret = ofc_fs_table[fsType]->WriteFile (hFile,
 					lpBuffer,
 					nNumberOfBytesToWrite,
 					lpNumberOfBytesWritten,
@@ -306,7 +306,7 @@ OFC_BOOL OfcFSReadFile (OFC_FST_TYPE fsType,
                         OFC_HANDLE hOverlapped)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->ReadFile (hFile,
+  ret = ofc_fs_table[fsType]->ReadFile (hFile,
 				       lpBuffer,
 				       nNumberOfBytesToRead,
 				       lpNumberOfBytesRead,
@@ -318,7 +318,7 @@ OFC_BOOL OfcFSCloseHandle (OFC_FST_TYPE fsType,
                            OFC_HANDLE hFile)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->CloseHandle (hFile) ;
+  ret = ofc_fs_table[fsType]->CloseHandle (hFile) ;
 
   return (ret) ;
 }
@@ -326,7 +326,7 @@ OFC_BOOL OfcFSCloseHandle (OFC_FST_TYPE fsType,
 OFC_BOOL OfcFSDeleteFile (OFC_FST_TYPE fsType, OFC_LPCTSTR lpFileName)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->DeleteFile (lpFileName) ;
+  ret = ofc_fs_table[fsType]->DeleteFile (lpFileName) ;
 
   return (ret) ;
 }
@@ -334,7 +334,7 @@ OFC_BOOL OfcFSDeleteFile (OFC_FST_TYPE fsType, OFC_LPCTSTR lpFileName)
 OFC_BOOL OfcFSRemoveDirectory (OFC_FST_TYPE fsType, OFC_LPCTSTR lpPathName)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->RemoveDirectory (lpPathName) ;
+  ret = ofc_fs_table[fsType]->RemoveDirectory (lpPathName) ;
 
   return (ret) ;
 }
@@ -345,7 +345,7 @@ OFC_HANDLE OfcFSFindFirstFile (OFC_FST_TYPE fsType,
                                OFC_BOOL *more)
 {
   OFC_HANDLE ret ;
-  ret = BlueFSTable[fsType]->FindFirstFile (lpFileName, lpFindFileData, more) ;
+  ret = ofc_fs_table[fsType]->FindFirstFile (lpFileName, lpFindFileData, more) ;
 
   return (ret) ;
 }
@@ -356,7 +356,7 @@ OFC_BOOL OfcFSFindNextFile (OFC_FST_TYPE fsType,
                             OFC_BOOL *more)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->FindNextFile (hFindFile, lpFindFileData, more) ;
+  ret = ofc_fs_table[fsType]->FindNextFile (hFindFile, lpFindFileData, more) ;
 
   return (ret) ;
 }
@@ -364,7 +364,7 @@ OFC_BOOL OfcFSFindNextFile (OFC_FST_TYPE fsType,
 OFC_BOOL OfcFSFindClose (OFC_FST_TYPE fsType, OFC_HANDLE hFindFile)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->FindClose (hFindFile) ;
+  ret = ofc_fs_table[fsType]->FindClose (hFindFile) ;
 
   return (ret) ;
 }
@@ -372,7 +372,7 @@ OFC_BOOL OfcFSFindClose (OFC_FST_TYPE fsType, OFC_HANDLE hFindFile)
 OFC_BOOL OfcFSFlushFileBuffers (OFC_FST_TYPE fsType, OFC_HANDLE hFile)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->FlushFileBuffers (hFile) ;
+  ret = ofc_fs_table[fsType]->FlushFileBuffers (hFile) ;
 
   return (ret) ;
 }
@@ -383,7 +383,7 @@ OFC_BOOL OfcFSGetFileAttributesEx (OFC_FST_TYPE fsType,
                                    OFC_LPVOID lpFileInformation)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->GetFileAttributesEx (lpFileName,
+  ret = ofc_fs_table[fsType]->GetFileAttributesEx (lpFileName,
 						  fInfoLevelId,
 						  lpFileInformation) ;
 
@@ -399,7 +399,7 @@ OFC_BOOL OfcFSGetFileInformationByHandleEx (OFC_FST_TYPE fsType,
 {
   OFC_BOOL ret ;
   ret = 
-    BlueFSTable[fsType]->GetFileInformationByHandleEx (hFile,
+    ofc_fs_table[fsType]->GetFileInformationByHandleEx (hFile,
 						       FileInformationClass,
 						       lpFileInformation,
 						       dwBufferSize) ;
@@ -412,7 +412,7 @@ OFC_BOOL OfcFSMoveFile (OFC_FST_TYPE fsType,
                         OFC_LPCTSTR lpNewFileName)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->MoveFile (lpExistingFileName, lpNewFileName) ;
+  ret = ofc_fs_table[fsType]->MoveFile (lpExistingFileName, lpNewFileName) ;
 
   return (ret) ;
 }
@@ -421,21 +421,21 @@ OFC_HANDLE OfcFSCreateOverlapped (OFC_FST_TYPE fsType)
 {
   OFC_HANDLE ret ;
 
-  ret = BlueFSTable[fsType]->CreateOverlapped () ;
+  ret = ofc_fs_table[fsType]->CreateOverlapped () ;
   return (ret) ;
 }
 
 OFC_VOID OfcFSDestroyOverlapped (OFC_FST_TYPE fsType,
                                  OFC_HANDLE hOverlapped)
 {
-  BlueFSTable[fsType]->DestroyOverlapped (hOverlapped) ;
+  ofc_fs_table[fsType]->DestroyOverlapped (hOverlapped) ;
 }
 
 OFC_VOID OfcFSSetOverlappedOffset (OFC_FST_TYPE fsType,
                                    OFC_HANDLE hOverlapped,
                                    OFC_OFFT offset)
 {
-  BlueFSTable[fsType]->SetOverlappedOffset (hOverlapped, offset) ;
+  ofc_fs_table[fsType]->SetOverlappedOffset (hOverlapped, offset) ;
 }
 
 OFC_BOOL OfcFSGetOverlappedResult (OFC_FST_TYPE fsType,
@@ -445,7 +445,7 @@ OFC_BOOL OfcFSGetOverlappedResult (OFC_FST_TYPE fsType,
                                    OFC_BOOL bWait)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->GetOverlappedResult (hFile,
+  ret = ofc_fs_table[fsType]->GetOverlappedResult (hFile,
 						  hOverlapped,
 						  lpNumberOfBytesTransferred,
 						  bWait) ;
@@ -456,7 +456,7 @@ OFC_BOOL OfcFSGetOverlappedResult (OFC_FST_TYPE fsType,
 OFC_BOOL OfcFSSetEndOfFile (OFC_FST_TYPE fsType, OFC_HANDLE hFile)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->SetEndOfFile (hFile) ;
+  ret = ofc_fs_table[fsType]->SetEndOfFile (hFile) ;
 
   return (ret) ;
 }
@@ -466,7 +466,7 @@ OFC_BOOL OfcFSSetFileAttributes (OFC_FST_TYPE fsType,
                                  OFC_DWORD dwFileAttributes)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->SetFileAttributes (lpFileName,
+  ret = ofc_fs_table[fsType]->SetFileAttributes (lpFileName,
 						dwFileAttributes) ;
 
   return (ret) ;
@@ -480,7 +480,7 @@ OFC_BOOL OfcFSSetFileInformationByHandle (OFC_FST_TYPE fsType,
                                           OFC_DWORD dwBufferSize)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->SetFileInformationByHandle (hFile,
+  ret = ofc_fs_table[fsType]->SetFileInformationByHandle (hFile,
 							 FileInformationClass,
 							 lpFileInformation,
 							 dwBufferSize) ;
@@ -495,7 +495,7 @@ OFC_DWORD OfcFSSetFilePointer (OFC_FST_TYPE fsType,
                                OFC_DWORD dwMoveMethod)
 {
   OFC_DWORD ret ;
-  ret = BlueFSTable[fsType]->SetFilePointer (hFile, lDistanceToMove,
+  ret = ofc_fs_table[fsType]->SetFilePointer (hFile, lDistanceToMove,
 					     lpDistanceToMoveHigh,
 					     dwMoveMethod) ;
 
@@ -513,7 +513,7 @@ OFC_BOOL OfcFSTransactNamedPipe (OFC_FST_TYPE fsType,
 {
   OFC_BOOL ret ;
 
-  ret = BlueFSTable[fsType]->TransactNamedPipe (hFile,
+  ret = ofc_fs_table[fsType]->TransactNamedPipe (hFile,
 						lpInBuffer,
 						nInBufferSize,
 						lpOutBuffer,
@@ -535,7 +535,7 @@ OFC_BOOL OfcFSDeviceIoControl (OFC_FST_TYPE fsType,
 {
   OFC_BOOL ret ;
 
-  ret = BlueFSTable[fsType]->DeviceIoControl (hFile,
+  ret = ofc_fs_table[fsType]->DeviceIoControl (hFile,
 					      dwIoControlCode,
 					      lpInBuffer,
 					      nInBufferSize,
@@ -555,7 +555,7 @@ OFC_BOOL OfcFSGetDiskFreeSpace (OFC_FST_TYPE fsType,
 {
   OFC_BOOL ret ;
 
-  ret = BlueFSTable[fsType]->GetDiskFreeSpace (lpRootPathName,
+  ret = ofc_fs_table[fsType]->GetDiskFreeSpace (lpRootPathName,
 					       lpSectorsPerCluster,
 					       lpBytesPerSector,
 					       lpNumberOfFreeClusters,
@@ -575,7 +575,7 @@ OFC_BOOL OfcFSGetVolumeInformation (OFC_FST_TYPE fsType,
 {
   OFC_BOOL ret ;
 
-  ret = BlueFSTable[fsType]->GetVolumeInformation (lpRootPathName,
+  ret = ofc_fs_table[fsType]->GetVolumeInformation (lpRootPathName,
 						   lpVolumeNameBuffer,
 						   nVolumeNameSize,
 						   lpVolumeSerialNumber,
@@ -614,7 +614,7 @@ OFC_BOOL OfcFSUnlockFileEx (OFC_FST_TYPE fsType,
                             OFC_HANDLE hOverlapped)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->UnlockFileEx (hFile,
+  ret = ofc_fs_table[fsType]->UnlockFileEx (hFile,
 					   length_low, length_high,
 					   hOverlapped) ;
   return (ret) ;
@@ -649,7 +649,7 @@ OFC_BOOL OfcFSLockFileEx (OFC_FST_TYPE fsType,
                           OFC_HANDLE hOverlapped)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->LockFileEx (hFile, flags,
+  ret = ofc_fs_table[fsType]->LockFileEx (hFile, flags,
 					 length_low, length_high,
 					 hOverlapped) ;
   return (ret) ;
@@ -659,7 +659,7 @@ OFC_BOOL OfcFSDismount (OFC_FST_TYPE fsType,
                         OFC_LPCTSTR lpFileName)
 {
   OFC_BOOL ret ;
-  ret = BlueFSTable[fsType]->Dismount (lpFileName) ;
+  ret = ofc_fs_table[fsType]->Dismount (lpFileName) ;
 
   return (ret) ;
 }

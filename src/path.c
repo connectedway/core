@@ -1984,19 +1984,19 @@ static OFC_HANDLE hWorkgroups ;
 
 OFC_CORE_LIB OFC_VOID init_workgroups (OFC_VOID)
 {
-  hWorkgroups = BlueQcreate() ;
+  hWorkgroups = ofc_queue_create() ;
 }
 
 OFC_CORE_LIB OFC_VOID destroy_workgroups (OFC_VOID)
 {
   OFC_LPTSTR pWorkgroup ;
 
-  for (pWorkgroup = BlueQfirst (hWorkgroups) ;
+  for (pWorkgroup = ofc_queue_first (hWorkgroups) ;
        pWorkgroup != OFC_NULL ;
-       pWorkgroup = BlueQfirst (hWorkgroups))
+       pWorkgroup = ofc_queue_first (hWorkgroups))
     remove_workgroup (pWorkgroup);
 
-  BlueQdestroy(hWorkgroups);
+  ofc_queue_destroy(hWorkgroups);
 
   hWorkgroups = OFC_HANDLE_NULL ;
 }
@@ -2005,9 +2005,9 @@ static OFC_LPTSTR FindWorkgroup (OFC_LPCTSTR workgroup)
 {
   OFC_LPTSTR pWorkgroup ;
 
-  for (pWorkgroup = BlueQfirst (hWorkgroups) ;
+  for (pWorkgroup = ofc_queue_first (hWorkgroups) ;
        pWorkgroup != OFC_NULL && ofc_tstrcmp (pWorkgroup, workgroup) != 0 ;
-       pWorkgroup = BlueQnext (hWorkgroups, pWorkgroup)) ;
+       pWorkgroup = ofc_queue_next (hWorkgroups, pWorkgroup)) ;
 
   return (pWorkgroup) ;
 }
@@ -2022,7 +2022,7 @@ OFC_CORE_LIB OFC_VOID update_workgroup (OFC_LPCTSTR workgroup)
   if (pWorkgroup == OFC_NULL)
     {
       pWorkgroup = ofc_tstrndup (workgroup, OFC_MAX_PATH) ;
-      BlueQenqueue (hWorkgroups, pWorkgroup) ;
+      ofc_enqueue (hWorkgroups, pWorkgroup) ;
     }
   ofc_unlock (lockPath) ;
 }
@@ -2036,7 +2036,7 @@ OFC_CORE_LIB OFC_VOID remove_workgroup (OFC_LPCTSTR workgroup)
 
   if (pWorkgroup != OFC_NULL)
     {
-      BlueQunlink (hWorkgroups, pWorkgroup) ;
+      ofc_queue_unlink (hWorkgroups, pWorkgroup) ;
       ofc_free (pWorkgroup) ;
     }
   ofc_unlock (lockPath) ;

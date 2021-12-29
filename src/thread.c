@@ -14,66 +14,66 @@
 #include "ofc/libc.h"
 
 OFC_CORE_LIB OFC_HANDLE
-BlueThreadCreate (OFC_DWORD(scheduler)(OFC_HANDLE hThread,
+ofc_thread_create(OFC_DWORD(scheduler)(OFC_HANDLE hThread,
                                        OFC_VOID *context),
                   OFC_CCHAR *thread_name, OFC_INT thread_instance,
                   OFC_VOID *context,
-                  BLUE_THREAD_DETACHSTATE detachstate,
+                  OFC_THREAD_DETACHSTATE detachstate,
                   OFC_HANDLE hNotify)
 {
-  return (BlueThreadCreateImpl (scheduler, thread_name, thread_instance,
-				context, detachstate, hNotify)) ;
+  return (ofc_thread_create_impl (scheduler, thread_name, thread_instance,
+                                  context, detachstate, hNotify)) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadSetWaitSet (OFC_HANDLE hThread, OFC_HANDLE wait_set)
+ofc_thread_set_wait (OFC_HANDLE hThread, OFC_HANDLE wait_set)
 {
-  BlueThreadSetWaitSetImpl (hThread, wait_set) ;
+  ofc_thread_set_waitset_impl (hThread, wait_set) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadDelete (OFC_HANDLE hThread)
+ofc_thread_delete (OFC_HANDLE hThread)
 {
-  BlueThreadDeleteImpl (hThread) ;
+  ofc_thread_delete_impl (hThread) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadWait (OFC_HANDLE hThread)
+ofc_thread_wait (OFC_HANDLE hThread)
 {
-  BlueThreadWaitImpl (hThread) ;
+  ofc_thread_wait_impl (hThread) ;
 }
 
 OFC_CORE_LIB OFC_BOOL
-BlueThreadIsDeleting (OFC_HANDLE hThread)
+ofc_thread_is_deleting (OFC_HANDLE hThread)
 {
   OFC_BOOL ret ;
-  ret = BlueThreadIsDeletingImpl (hThread) ;
+  ret = ofc_thread_is_deleting_impl (hThread) ;
   return (ret) ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueSleep (OFC_DWORD milliseconds)
+ofc_sleep (OFC_DWORD milliseconds)
 {
-  BlueSleepImpl (milliseconds) ;
+  ofc_sleep_impl (milliseconds) ;
 }
 
 OFC_CORE_LIB OFC_DWORD
-BlueThreadCreateVariable (OFC_VOID)
+ofc_thread_create_variable (OFC_VOID)
 {
-  return (BlueThreadCreateVariableImpl()) ;
+  return (ofc_thread_create_variable_impl()) ;
 }
 
-OFC_VOID BlueThreadDestroyVariable (OFC_DWORD dkey)
+OFC_VOID ofc_thread_destroy_variable (OFC_DWORD dkey)
 {
-  BlueThreadDestroyVariableImpl(dkey);
+  ofc_thread_destroy_variable_impl(dkey);
 }
 
 OFC_CORE_LIB OFC_DWORD_PTR
-BlueThreadGetVariable (OFC_DWORD var)
+ofc_thread_get_variable (OFC_DWORD var)
 {
   OFC_DWORD_PTR val ;
 
-  val = BlueThreadGetVariableImpl (var) ;
+  val = ofc_thread_get_variable_impl (var) ;
   if (val > (OFC_DWORD_PTR) OFC_ERROR_NOT_ENOUGH_QUOTA)
     ofc_printf ("Obtained Bad Status on variable %d, val 0x%08x\n",
                 var, (OFC_UINT) (OFC_DWORD_PTR) val) ;
@@ -81,35 +81,35 @@ BlueThreadGetVariable (OFC_DWORD var)
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadSetVariable (OFC_DWORD var, OFC_DWORD_PTR val)
+ofc_thread_set_variable (OFC_DWORD var, OFC_DWORD_PTR val)
 {
   if (val > (OFC_DWORD_PTR) OFC_ERROR_NOT_ENOUGH_QUOTA)
     ofc_printf ("Setting Bad Status on variable %d, val 0x%08x\n",
                 var, (OFC_UINT) val) ;
   if (var != OfcLastError || val != (OFC_DWORD_PTR) OFC_ERROR_SUCCESS)
-    BlueThreadSetVariableImpl (var, val) ;
+    ofc_thread_set_variable_impl (var, val) ;
 }  
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadCreateLocalStorage (OFC_VOID)
+ofc_thread_create_local_storage (OFC_VOID)
 {
-  BlueThreadCreateLocalStorageImpl() ;
+  ofc_thread_create_local_storage_impl() ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadDestroyLocalStorage (OFC_VOID)
+ofc_thread_destroy_local_storage (OFC_VOID)
 {
-  BlueThreadDestroyLocalStorageImpl() ;
+  ofc_thread_destroy_local_storage_impl() ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadInit (OFC_VOID)
+ofc_thread_init (OFC_VOID)
 {
-  BlueThreadInitImpl() ;
+  ofc_thread_init_impl() ;
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueThreadDestroy (OFC_VOID)
+ofc_thread_destroy (OFC_VOID)
 {
-  BlueThreadDestroyImpl() ;
+  ofc_thred_destroy_impl() ;
 }

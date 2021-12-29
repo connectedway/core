@@ -191,7 +191,7 @@ ofc_dom_set_attribute (OFC_DOMNode *elem, const OFC_DOMString *name,
 }
 
 OFC_CORE_LIB OFC_VOID
-BlueDOMunlinkChild (OFC_DOMNode *node)
+ofc_dom_unlink_child (OFC_DOMNode *node)
 {
   if (node->nextSibling == OFC_NULL)
     {
@@ -220,7 +220,7 @@ ofc_dom_append_child (OFC_DOMNode *document, OFC_DOMNode *child)
       node = child->firstChild ;
       while (node != OFC_NULL)
 	{
-	  BlueDOMunlinkChild (node) ;
+	  ofc_dom_unlink_child (node) ;
         ofc_dom_append_child(document, node) ;
 	  node = child->firstChild ;
 	}
@@ -306,7 +306,7 @@ update_remainder (OFC_SIZET count, OFC_CHAR **p,
 }
 
 OFC_CORE_LIB OFC_SIZET
-BlueDOMsprintAttributes (OFC_CHAR *buf, OFC_SIZET len, OFC_DOMNode *attr)
+ofc_dom_sprint_attributes(OFC_CHAR *buf, OFC_SIZET len, OFC_DOMNode *attr)
 {
   OFC_CHAR *p ;
   OFC_SIZET rem ;
@@ -416,7 +416,7 @@ ofc_dom_sprint_node (OFC_CHAR *buf, OFC_SIZET len,
 
 	  if (node->attributes != OFC_NULL)
 	    {
-	      count = BlueDOMsprintAttributes (p, rem, node->attributes) ;
+	      count = ofc_dom_sprint_attributes (p, rem, node->attributes) ;
 	      update_remainder (count, &p, &total, &rem) ;
 	    }
 	      
@@ -684,7 +684,7 @@ ofc_dom_destroy_document (OFC_DOMNode *node)
   /*
    * Unlink this guy from the node list
    */
-  BlueDOMunlinkChild (node) ;
+  ofc_dom_unlink_child (node) ;
 
   ofc_dom_destroy_node (node) ;
 }
@@ -696,7 +696,7 @@ typedef struct dom_state
   OFC_SIZET valuelen ;
   OFC_CHAR *value ;
   OFC_DOMNode *document ;
-  BLUE_XML_PARSER parser ; 
+  OFC_XML_PARSER parser ;
 } DOMState ;
 
 static OFC_VOID
@@ -877,16 +877,16 @@ ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID, OFC_DWORD),
 
 	  dom_state->currentNode = doc ;
 
-	  dom_state->parser = BlueXMLparserCreate(OFC_NULL) ;
+	  dom_state->parser = ofc_xml_parser_create(OFC_NULL) ;
 
 	  if (dom_state->parser != OFC_NULL)
 	    {
-	      BlueXMLsetUserData(dom_state->parser, dom_state);
-	      BlueXMLsetElementHandler(dom_state->parser, 
-				       startElement, endElement);
-	      BlueXMLsetCharacterDataHandler (dom_state->parser, 
-					      characterData) ;
-	      BlueXMLsetXmlDeclHandler (dom_state->parser, xmlDeclaration) ;
+	      ofc_xml_set_user_data(dom_state->parser, dom_state);
+	      ofc_xml_set_element_handler(dom_state->parser,
+                                      startElement, endElement);
+	      ofc_xml_set_character_data_handler (dom_state->parser,
+                                              characterData) ;
+	      ofc_xml_set_xml_decl_handler (dom_state->parser, xmlDeclaration) ;
 
 	      buf = (OFC_CHAR *) ofc_malloc (1024) ;
 
@@ -900,8 +900,8 @@ ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID, OFC_DWORD),
 
 		  if (len >= 0)
 		    {
-		      if (BlueXMLparse(dom_state->parser, buf, len, done) == 
-			  BLUE_XML_STATUS_ERROR) 
+		      if (ofc_xml_parse(dom_state->parser, buf, len, done) ==
+                  OFC_XML_STATUS_ERROR)
 			{
 			  doc = OFC_NULL ;
 			  done = 1 ;
@@ -912,7 +912,7 @@ ofc_dom_load_document (OFC_SIZET callback(OFC_VOID*, OFC_LPVOID, OFC_DWORD),
 		}
 
 	      ofc_free (buf) ;
-	      BlueXMLparserFree(dom_state->parser);
+	      ofc_xml_parser_free(dom_state->parser);
 	    }
 	}
 
