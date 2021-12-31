@@ -11,22 +11,48 @@
 #include "ofc/handle.h"
 
 /**
+ * \defgroup app Event Driven Application Handling
+ *
+ * Open Files event driven applications are tasks that are defined by 
+ * simple callbacks.  Each callback is non-blocking and state driven.
+ * Applications can create events for many conditions and multiplex those
+ * events on a wait list.  As events are fired and actions are to be
+ * performed, the application will be callbacked.  Depending on state
+ * and event, applications can dispatch to appropriate handling.
+ */
+
+/** \{ */
+
+/**
+ * \struct _OFC_APP_TEMPLATE
  * The Application Template Definition
  *
  * Each application defines one of these and registers it with the
  * scheduler
+ *
+ * \var _OFC_APP_TEMPLATE:name
+ * Name of App 
+ *
+ * \var _OFC_APP_TEMPLATE:preselect
+ * App's preselect routine 
+ * 
+ * \var _OFC_APP_TEMPLATE:postselect
+ * Apps Postselect routine 
+ *
+ * \var _OFC_APP_TEMPLATE:destroy
+ * App's destroy routine 
+ * 
+ * \var _OFC_APP_TEMPLATE:dump
+ * App's dump routine (used in debug builds)
  */
 typedef struct _OFC_APP_TEMPLATE {
-    OFC_CHAR *name;                /**< Name of App */
-    OFC_VOID (*preselect)(OFC_HANDLE app); /**< App's preselect routine */
-    /** Apps Postselect routine */
+    OFC_CHAR *name;
+    OFC_VOID (*preselect)(OFC_HANDLE app);
     OFC_HANDLE (*postselect)(OFC_HANDLE app, OFC_HANDLE hEvent);
-
-    OFC_VOID (*destroy)(OFC_HANDLE app); /**< App's destroy routine */
-    OFC_VOID (*dump)(OFC_HANDLE app);      /**< App's dump routine  */
+    OFC_VOID (*destroy)(OFC_HANDLE app); 
+    OFC_VOID (*dump)(OFC_HANDLE app);
 } OFC_APP_TEMPLATE;
 
-/**/
 #if defined(__cplusplus)
 extern "C"
 {
@@ -40,14 +66,17 @@ extern "C"
  * \param template
  * Definition of application
  *
+ * \param data
+ * Context for application
+ *
  * \returns
  * Handle to the application
  */
 OFC_CORE_LIB OFC_HANDLE
 ofc_app_create(OFC_HANDLE scheduler, OFC_APP_TEMPLATE *template,
-               OFC_VOID *app_dat);
+               OFC_VOID *app_data);
 /**
- * schedule the application for destruction.
+ * Schedule the application for destruction.
  *
  * \param app
  * Handle to the app to kill
@@ -55,7 +84,10 @@ ofc_app_create(OFC_HANDLE scheduler, OFC_APP_TEMPLATE *template,
 OFC_CORE_LIB OFC_VOID
 ofc_app_kill(OFC_HANDLE app);
 /**
+ * \protected
  * Destroy an application
+ *
+ * Note: This is called only by the applications scheduler.
  *
  * \param app
  * Application to destroy
@@ -63,7 +95,10 @@ ofc_app_kill(OFC_HANDLE app);
 OFC_CORE_LIB OFC_VOID
 ofc_app_destroy(OFC_HANDLE app);
 /**
+ * \protected
  * Call the apps preselect routine
+ *
+ * NOTE: This is called only by the applications scheduler
  *
  * \param app
  * Handle to the app to preselect
@@ -71,13 +106,16 @@ ofc_app_destroy(OFC_HANDLE app);
 OFC_CORE_LIB OFC_VOID
 ofc_app_preselect(OFC_HANDLE app);
 /**
+ * \protected
  * Call the app's postselect routine
+ *
+ * NOTE: This is called only by the applications scheduler
  *
  * \param hApp
  * Handle to app to postselect
  *
  * \param hEvent
- * Event to pass to app
+ * App's event that fired.
  */
 OFC_CORE_LIB OFC_HANDLE
 ofc_app_postselect(OFC_HANDLE hApp, OFC_HANDLE hEvent);
@@ -92,7 +130,7 @@ ofc_app_postselect(OFC_HANDLE hApp, OFC_HANDLE hEvent);
 OFC_CORE_LIB OFC_VOID
 ofc_app_sig_event(OFC_HANDLE app);
 /**
- * Return whether we're destroying this app
+ * Return whether this app is scheduled for destruction
  *
  * \param hApp
  * Test if an app is being destroyed
@@ -129,6 +167,8 @@ ofc_app_set_wait(OFC_HANDLE hApp, OFC_HANDLE hNotify);
 /**
  * Dump the state of the app
  *
+ * NOTE: This is a debug routine 
+ *
  * \param hApp
  * Handle to app to dump
  */
@@ -140,4 +180,5 @@ ofc_app_dump (OFC_HANDLE hApp) ;
 }
 #endif
 #endif
+/** \} */
 

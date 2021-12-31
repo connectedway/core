@@ -14,6 +14,18 @@
 #include "ofc/persist.h"
 #include "ofc/file.h"
 
+/**
+ * \defgroup framework Management Interface to the Open Files Framework
+ *
+ * These APIs are for advanced use cases.  Assuming the build has been
+ * configured with INIT_ON_LOAD, and OFC_PERSIST has also been configured
+ * so that runtime configuration of the stack is restored from the 
+ * runtime configuration file, there should be no need for an application
+ * developer to call any of these routines.
+ */
+
+/** \{ */
+
 typedef struct {
     OFC_INT num_wins;
     OFC_IPADDR *winsaddr;
@@ -59,6 +71,12 @@ extern "C"
 OFC_CORE_LIB OFC_VOID
 ofc_framework_init(OFC_VOID);
 
+/**
+ * Destroy the Open Files framework
+ *
+ * This will release all memory and destroy the heap.  The state of the
+ * application should be as if Open Files has not been run.
+ */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_destroy(OFC_VOID);
 

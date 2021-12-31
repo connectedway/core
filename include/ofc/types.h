@@ -9,7 +9,7 @@
 #include "ofc/config.h"
 
 /**
- * \defgroup OfcTypes Global Types Used by all Components
+ * \defgroup types Global Types Used by all Components
  *
  * Open Files is designed as a highly portable subsystem.  As such, it is
  * necessary to define all types we use consistently throughout the product.
@@ -101,33 +101,12 @@ typedef unsigned short int OFC_UINT16;
  */
 typedef unsigned char OFC_UINT8;
 
+/**
+ * Represents an unsigned 64 bit value
+ */
 #if defined(OFC_64BIT_INTEGER)
-/**
- * Represents an unsigned 64 bit value
- */
 typedef unsigned long long int OFC_UINT64;
-/**
- * Represents a signed 64 bit value
- */
-typedef long long int OFC_INT64;
 #else
-/**
- * Represents a signed 64 bit value
- */
-typedef struct
-{
-  /**
-   * The low order 32 bits
-   */
-  OFC_UINT32 low ;
-  /**
-   * The high order 32 bits
-   */
-  OFC_INT32 high ;
-} OFC_INT64 ;
-/**
- * Represents an unsigned 64 bit value
- */
 typedef struct
 {
   /**
@@ -139,7 +118,24 @@ typedef struct
    */
   OFC_UINT32 high ;
 } OFC_UINT64 ;
-
+#endif
+/**
+ * Represents a signed 64 bit value
+ */
+#if defined(OFC_64BIT_INTEGER)
+typedef long long int OFC_INT64;
+#else
+typedef struct
+{
+  /**
+   * The low order 32 bits
+   */
+  OFC_UINT32 low ;
+  /**
+   * The high order 32 bits
+   */
+  OFC_INT32 high ;
+} OFC_INT64 ;
 #endif
 
 /**
@@ -147,68 +143,130 @@ typedef struct
  */
 typedef OFC_INT64 OFC_LARGE_INTEGER;
 
+/**
+ * Return the high order 32 bits of a large integer
+ * 
+ * \param x
+ * A 64 bit integer that we wish to get the high order from
+ */
 #if defined(OFC_64BIT_INTEGER)
-/**
- * Return the high order 32 bits of a large integer
- */
 #define OFC_LARGE_INTEGER_HIGH(x) ((OFC_UINT32)((x)>>32))
-/**
- * Return the low order 32 bits of a large integer
- */
-#define OFC_LARGE_INTEGER_LOW(x) ((OFC_UINT32)((x)&0xFFFFFFFF))
-/**
- * Assign one large integer to another
- */
-#define OFC_LARGE_INTEGER_ASSIGN(x, y) x=y
-/**
- * Initialize a large integer from two 32 bit integers
- */
-#define OFC_LARGE_INTEGER_SET(x, y, z) (x)=(OFC_LARGE_INTEGER)(z)<<32|(y)
-/*
- * Compare two large integers
- */
-#define OFC_LARGE_INTEGER_EQUAL(x, y) (x==y)
-
-#define OFC_LARGE_INTEGER_INCR(x) x++
-
-#define OFC_LARGE_INTEGER_AND(x, y, z) (x)&=((OFC_LARGE_INTEGER)(z)<<32|(y))
-
-#define OFC_LARGE_INTEGER_INIT(x, y) (OFC_LARGE_INTEGER)(y)<<32|(x)
-
 #else
-/**
- * Return the high order 32 bits of a large integer
- */
 #define OFC_LARGE_INTEGER_HIGH(x) ((x).high)
+#endif
+
 /**
  * Return the low order 32 bits of a large integer
+ * 
+ * \param x
+ * A 64 bit integer that we wish to get the low order from
  */
+#if defined(OFC_64BIT_INTEGER)
+#define OFC_LARGE_INTEGER_LOW(x) ((OFC_UINT32)((x)&0xFFFFFFFF))
+#else
 #define OFC_LARGE_INTEGER_LOW(x) ((x).low)
+#endif
+
 /**
  * Assign one large integer to another
+ *
+ * \param x
+ * 64 bit integer to receive assignment
+ *
+ * \param y
+ * 64 bit integer to assign
  */
+#if defined(OFC_64BIT_INTEGER)
+#define OFC_LARGE_INTEGER_ASSIGN(x, y) x=y
+#else
 #define OFC_LARGE_INTEGER_ASSIGN(x,y) ofc_memcpy(&x,&y, sizeof(OFC_LARGE_INTEGER))
+#endif
+
 /**
  * Initialize a large integer from two 32 bit integers
+ *
+ * \param x
+ * A 64 bit integer to receive assignment
+ *
+ * \param y
+ * A 32 bit integer to assign to the low order 32 bits
+ *
+ * \param z
+ * A 32 bit integer to assign to the high order 32 bits
  */
+#if defined(OFC_64BIT_INTEGER)
+#define OFC_LARGE_INTEGER_SET(x, y, z) (x)=(OFC_LARGE_INTEGER)(z)<<32|(y)
+#else
 #define OFC_LARGE_INTEGER_SET(x, y, z) {(x).low = (y); (x).high=(z);}
+#endif
 
-#define OFC_LARGE_INTEGER_INIT(x,y) {x; y}
-
-/*
+/**
  * Compare two large integers
+ *
+ * \param x
+ * First 64 bit integer to compare
+ *
+ * \param y
+ * Second 64 bit integer to compare
+ *
+ * \returns
+ * OFC_TRUE if equal, OFC_FALSE otherwise
  */
+#if defined(OFC_64BIT_INTEGER)
+#define OFC_LARGE_INTEGER_EQUAL(x, y) (x==y)
+#else
 #define OFC_LARGE_INTEGER_EQUAL(x,y) ((x).high==(y).high && (x).low==(y).low)
-/*
- * Increment
+#endif
+
+/**
+ * Increment a 64 bit integer
+ *
+ * This insure carry if using two 32 bit values to represent a 64 bit value
+ *
+ * \param x
+ * 64 bit value to increment
  */
+#if defined(OFC_64BIT_INTEGER)
+#define OFC_LARGE_INTEGER_INCR(x) x++
+#else
 #define OFC_LARGE_INTEGER_INCR(x) ((x).low==0xFFFFFFFF?\
                     (x).high++,(x).low=0:(x).low++)
+#endif
 
-#define OFZ_LARGE_INTEGER_AND(x, y, z) {(x).low &= (y); (x).high&=(z);}
+/**
+ * Perform a binary AND between two 64 bit values
+ *
+ * \param x
+ * Result of AND and first 64 bit value
+ *
+ * \param y
+ * low order 32 bit values to AND with
+ *
+ * \param z
+ * high order 32 bit values to AND with
+ */
+#if defined(OFC_64BIT_INTEGER)
+#define OFC_LARGE_INTEGER_AND(x, y, z) (x)&=((OFC_LARGE_INTEGER)(z)<<32|(y))
+#else
+#define OFC_LARGE_INTEGER_AND(x, y, z) {(x).low &= (y); (x).high&=(z);}
+#endif
 
-//#define OFC_LARGE_INTEGER_ADD(x,y,z) ((z).low=(x).low+(y).low,(z).high=(x).high+(y).high,(z).low<(x).low||(z).low<(y).low?(z).high++) 
-
+/**
+ * Initialize one 64 bit value from two 32 bit values
+ *
+ * \param x
+ * Low order 32 bit values to initialize with
+ *
+ * \param y
+ * High order 32 bit values to initialize with
+ *
+ * \returns
+ * 64 bit value
+ */
+#if defined(OFC_64BIT_INTEGER)
+#define OFC_LARGE_INTEGER_INIT(x, y) (OFC_LARGE_INTEGER)(y)<<32|(x)
+#else
+#define OFC_LARGE_INTEGER_INIT(x,y) {x; y}
 #endif
 
 /**
@@ -222,29 +280,26 @@ typedef unsigned long OFC_ULONG;
 /**
  * Represents the maximum unsigned long value
  */
-#define    OFC_ULONG_MAX ((OFC_ULONG)(~0L))
+#define OFC_ULONG_MAX ((OFC_ULONG)(~0L))
 /**
  * Represents the maximum positive long value
  */
-#define    OFC_LONG_MAX ((OFC_LONG)(OFC_ULONG_MAX >> 1))
+#define OFC_LONG_MAX ((OFC_LONG)(OFC_ULONG_MAX >> 1))
 /**
  * Represents the minimum negative long value
  */
-#define    OFC_LONG_MIN ((OFC_LONG)(~OFC_LONG_MAX))
+#define OFC_LONG_MIN ((OFC_LONG)(~OFC_LONG_MAX))
 /**
  * Represents a pointer to an Unsigned Long
  */
 typedef OFC_ULONG *OFC_LPULONG;
 
-#if defined(OFC_64BIT_POINTER)
 /**
  * Represents a pointer to a 64 bit value
  */
+#if defined(OFC_64BIT_POINTER)
 typedef OFC_UINT64 OFC_ULONG_PTR;
 #else
-/**
- * Represents a pointer to a 64 bit value
- */
 typedef OFC_UINT32 OFC_ULONG_PTR ;
 #endif
 
@@ -296,15 +351,12 @@ typedef OFC_UINT32 OFC_DWORD;
  * Represents a pointer to an array of double words
  */
 typedef OFC_DWORD *OFC_LPDWORD;
-#if defined(OFC_64BIT_POINTER)
 /**
  * Represents a pointer to a double word
  */
+#if defined(OFC_64BIT_POINTER)
 typedef OFC_UINT64 OFC_DWORD_PTR;
 #else
-/**
- * Represents a pointer to a double word
- */
 typedef OFC_UINT32 OFC_DWORD_PTR ;
 #endif
 /**
@@ -329,23 +381,21 @@ typedef OFC_WCHAR OFC_TCHAR;
  */
 typedef const OFC_WCHAR OFC_CTCHAR;
 
-#if defined(OFC_UNICODE_API)
 /**
  * Represents a wide character
  */
+#if defined(OFC_UNICODE_API)
 typedef OFC_TCHAR OFC_TACHAR;
+#else
+typedef OFC_CHAR OFC_TACHAR ;
+#endif
+
 /**
  * Represents a wide character constant
  */
+#if defined(OFC_UNICODE_API)
 typedef const OFC_TCHAR OFC_CTACHAR;
 #else
-/**
- * Represents a wide character
- */
-typedef OFC_CHAR OFC_TACHAR ;
-/**
- * Represents a wide character constant
- */
 typedef const OFC_CHAR OFC_CTACHAR ;
 #endif
 
@@ -353,11 +403,17 @@ typedef const OFC_CHAR OFC_CTACHAR ;
  * Represents a Pointer to a wide character string
  */
 typedef OFC_TCHAR *OFC_LPTSTR;
+/**
+ * Represents a Pointer to a default API wide character
+ */
 typedef OFC_TACHAR *OFC_LPTASTR;
 /**
  * Represents a pointer to a wide character constant string
  */
 typedef const OFC_TCHAR *OFC_LPCTSTR;
+/**
+ * Represents a pointer to a default API wide character constant string
+ */
 typedef const OFC_TACHAR *OFC_LPCTASTR;
 /**
  * Represents a Millisecond time value
@@ -386,70 +442,82 @@ typedef OFC_INT32 OFC_MSTIME;
 #define TCHAR_AMP L'@'
 /**
  * A wide character String
+ *
+ * \param x
+ * String to convert to wide character
  */
 #define TSTR(x) (const OFC_TCHAR *) L##x
 /**
  * A wide character
+ * 
+ * \param x
+ * Character to convert to wide
  */
 #define TCHAR(x) (const OFC_TCHAR) L##x
 
+/**
+ * A default API wide character backslash
+ */
 #if defined(OFC_UNICODE_API)
-/**
- * A wide character backslash
- */
 #define TACHAR_BACKSLASH TCHAR('\\')
-/**
- * A wide character slash
- */
-#define TACHAR_SLASH TCHAR('/')
-/**
- * A wide character colon
- */
-#define TACHAR_COLON TCHAR(':')
-/**
- * A wide character end of string
- */
-#define TACHAR_EOS TCHAR('\0')
-/**
- * A wide character ampersand
- */
-#define TACHAR_AMP TCHAR('@')
-/**
- * A wide character String
- */
-#define TASTR(x) TSTR(x)
-/**
- * A wide character
- */
-#define TACHAR(x) TCHAR(x)
 #else
 /**
  * A wide character backslash
  */
 #define TACHAR_BACKSLASH '\\'
+#endif
+
 /**
- * A wide character slash
+ * A default API wide character slash
  */
+#if defined(OFC_UNICODE_API)
+#define TACHAR_SLASH TCHAR('/')
+#else
 #define TACHAR_SLASH '/'
+#endif
+
 /**
- * A wide character colon
+ * A default API wide character colon
  */
+#if defined(OFC_UNICODE_API)
+#define TACHAR_COLON TCHAR(':')
+#else
 #define TACHAR_COLON ':'
+#endif
+
 /**
- * A wide character end of string
+ * A default API wide character end of string
  */
+#if defined(OFC_UNICODE_API)
+#define TACHAR_EOS TCHAR('\0')
+#else
 #define TACHAR_EOS '\0'
+#endif
+
 /**
- * A wide character ampersand
+ * A default API wide character ampersand
  */
+#if defined(OFC_UNICODE_API)
+#define TACHAR_AMP TCHAR('@')
+#else
 #define TACHAR_AMP '@'
+#endif
+
 /**
- * A wide character string
+ * A default API wide character String
  */
+#if defined(OFC_UNICODE_API)
+#define TASTR(x) TSTR(x)
+#else
 #define TASTR(x) x
+#endif
+  
 /**
- * A wide character
+ * A default API wide character
  */
+#if defined(OFC_UNICODE_API)
+#define TACHAR(x) TCHAR(x)
+#else
 #define TACHAR(x) x
 #endif
 
@@ -469,6 +537,9 @@ typedef OFC_UCHAR OFC_UUID[OFC_UUID_LEN];
  * Windows BOOL
  */
 typedef OFC_UINT8 OFC_BOOL;
+/**
+ * Values of a Boolean
+ */
 enum {
     /**
      * The value is false
@@ -492,10 +563,20 @@ typedef struct _iovec {
     OFC_CHAR *iov_base;
 } OFC_IOVEC;
 
-
-
 /**
  * Container of macro
+ * 
+ * \param ptr
+ * Pointer to field within structure
+ *
+ * \param type
+ * Type of structure
+ *
+ * \param member
+ * member name withing structure
+ *
+ * \returns
+ * offset to member field within structure
  */
 #define container_of(ptr, type, member) \
   (type *)((OFC_CHAR *)(ptr)-(OFC_CHAR *)&((type *)0)->member)

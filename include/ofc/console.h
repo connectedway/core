@@ -9,6 +9,16 @@
 #include "ofc/core.h"
 #include "ofc/types.h"
 
+/**
+ * \defgroup console APIs to perform primitive Console I/O
+ *
+ * These APIs allow an application to read and write to the console or
+ * controlling terminal in a platform independent way.  The C-lib like 
+ * ofc_printf calls these functions.
+ */
+
+/** \{ */
+
 #if defined(__cplusplus)
 extern "C"
 {
@@ -30,14 +40,42 @@ OFC_CORE_LIB OFC_VOID
 ofc_write_stdout(OFC_CCHAR *obuf, OFC_SIZET len);
 
 /**
- * Writes a null terminated string
+ * Writes a null terminated string to the console
+ *
+ * Almost identical to ofc_write_stdout accept the length argument
+ * is not required.
+ *
+ * \param obuf
+ * The NULL terminated string to output
  */
 OFC_CORE_LIB OFC_VOID
 ofc_write_console(OFC_CCHAR *obuf);
-
+  
+/**
+ * Read from the console
+ *
+ * \param inbuf
+ * Pointer to a buffer to read characters into
+ *
+ * \param len
+ * Size of the buffer.  The line read will be NULL terminated
+ * unless the buffer is full.
+ */
 OFC_CORE_LIB OFC_VOID
 ofc_read_line(OFC_CHAR *inbuf, OFC_SIZET len);
 
+/**
+ * Read a password from the console
+ *
+ * This is similar to ofc_read_line except the input will not be echoed.
+ *
+ * \param inbuf
+ * Pointer to a buffer to read characters into
+ *
+ * \param len
+ * Size of the buffer.  The line read will be NULL terminated
+ * unless the buffer is full.
+ */
 OFC_CORE_LIB OFC_VOID
 ofc_read_password(OFC_CHAR *inbuf, OFC_SIZET len);
 
