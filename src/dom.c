@@ -196,6 +196,7 @@ ofc_dom_append_child(OFC_DOMNode *document, OFC_DOMNode *child) {
             node = child->firstChild;
         }
         ofc_dom_destroy_node(child);
+	child = document;
     } else {
         child->parentNode = document;
         child->previousSibling = document->lastChild;
@@ -751,7 +752,7 @@ xmlDeclaration(OFC_VOID *userData, OFC_CCHAR *version,
 }
 
 OFC_CORE_LIB OFC_DOMNode *
-ofc_dom_load_document(OFC_SIZET callback(OFC_VOID *, OFC_LPVOID, OFC_DWORD),
+ofc_dom_load_document(ofc_dom_load_callback callback,
                       OFC_VOID *context) {
     OFC_DOMNode *doc;
     DOMState *dom_state;

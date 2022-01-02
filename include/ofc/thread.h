@@ -11,36 +11,15 @@
 #include "ofc/handle.h"
 
 /**
- * \defgroup util Open File APIs
- *
- * The Open File APIs are a collection of APIs that are used both
- * by the internal Open Files stack implementation and are used by 
- * the Applications.
- * 
- * The main facilities of Open Files are the SMB Client, SMB Server, and
- * NetBIOS stack.  The Server and NetBIOS stack interact with users
- * through the configuration facility only.  The Client faility 
- * interacts with the user through the File Redirector and the Path
- * handling faclity.  
- */
-
-/**
- * \defgroup internal APIS for Internal Facilities
- */
-
-/**
  * \defgroup thread Threading Utility Functions
- * \ingroup internal
  * 
  * The thread facility allows Open Files to manage platform threads in
  * a generic fashion.
  *
  * For examples on using the threads see test_thread.c
- *
- * \see thread_test.c
- *
- * \{
  */
+
+/** \{ */
 
 /**
  * A constant to indicate infinite sleep

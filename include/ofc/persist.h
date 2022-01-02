@@ -10,6 +10,12 @@
 #include "ofc/net.h"
 
 /**
+ * \defgroup persist Open Files Persistent Configuration
+ */
+
+/** \{ */
+
+/**
  * Network Configuration Modes
  *
  * This enum defines whether Open Files should query the underlying platform
@@ -393,4 +399,5 @@ ofc_persist_unload(OFC_VOID);
 #if defined(__cplusplus)
 }
 #endif
+/** \} */
 #endif

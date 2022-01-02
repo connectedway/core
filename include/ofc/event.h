@@ -9,15 +9,22 @@
 #include "ofc/core.h"
 #include "ofc/types.h"
 
-/*
- * The type of event
+/**
+ * \defgroup event Event Handling
  *
- * Events can be one shot, or auto trigger
+ * Events are constructs that are waitable, can be triggered, and can
+ * be reset.  They can be used by both synchronous threads and 
+ * asynchronous Open Files apps.
+ */
+
+/** \{ */
+
+/**
+ * The type of event
  */
 typedef enum {
-    OFC_EVENT_MANUAL,        /**< Arming of the event is manual  */
-    OFC_EVENT_AUTO        /**< Arming of the event is automatic
-				   It is reenabled after processing */
+    OFC_EVENT_MANUAL,		/**< Arming of the event is manual  */
+    OFC_EVENT_AUTO		/**< Arming of the event is automatic */
 } OFC_EVENT_TYPE;
 
 #if defined(__cplusplus)
@@ -28,7 +35,7 @@ extern "C"
  * Create an Event
  *
  * \param eventType
- * The type of event to create
+ * The type of event to create.  Auto Events are reenabled after wakeup.
  *
  * \returns
  * Handle to the event
@@ -82,7 +89,6 @@ ofc_event_test(OFC_HANDLE hEvent);
  *
  * \param hEvent
  * The handle to the event to destroy
- * Nothing
  */
 OFC_CORE_LIB OFC_VOID
 ofc_event_destroy(OFC_HANDLE hEvent);
@@ -91,6 +97,9 @@ ofc_event_destroy(OFC_HANDLE hEvent);
  *
  * If the event is an automatic event, it is automatically reset after
  * this return returns
+ *
+ * \param hEvent
+ * Event to wait for
  */
 OFC_CORE_LIB OFC_VOID
 ofc_event_wait(OFC_HANDLE hEvent);
@@ -98,5 +107,6 @@ ofc_event_wait(OFC_HANDLE hEvent);
 #if defined(__cplusplus)
 }
 #endif
+/** \} */
 #endif
 

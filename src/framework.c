@@ -15,6 +15,7 @@
 #include "ofc/thread.h"
 #include "ofc/persist.h"
 #include "ofc/net.h"
+#include "ofc/net_internal.h"
 #include "ofc/env.h"
 #include "ofc/version.h"
 

@@ -10,6 +10,7 @@
 #include "ofc/config.h"
 #include "ofc/libc.h"
 #include "ofc/net.h"
+#include "ofc/net_internal.h"
 #include "ofc/message.h"
 #include "ofc/lock.h"
 #include "ofc/thread.h"

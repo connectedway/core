@@ -12,7 +12,6 @@
 
 /**
  * \defgroup sched Open Files Sheduler Facility
- * \ingroup internal
  *
  * The Open Files Scheduler facility is used to manage the real time application
  * infrastructure.  A Scheduler is a special purpose thread that services
@@ -21,8 +20,9 @@
  *
  * There are two constructs to the scheduler.  The scheduler itself, and
  * the applications that are managed by the scheduler.
- * \{
  */
+
+/** \{ */
 
 #if defined(__cplusplus)
 extern "C"

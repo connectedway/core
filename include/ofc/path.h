@@ -14,11 +14,10 @@
 #include "ofc/fs.h"
 
 /**
- * \defgroup Open Files Path Handling Facility
- * \ingroup util
+ * \defgroup path Open Files Path Handling Facility
  *
- * The Open Files Path facility provides parsing of local and network paths as well
- * as providing maps of arbitrary paths to a specified destination.
+ * The Open Files Path facility provides parsing of local and network paths as 
+ * well as providing maps of arbitrary paths to a specified destination.
  *
  * This is a key component of Open Files.  The SMB client uses the mapping so
  * that applications don't always have to use either UNC formatted names or

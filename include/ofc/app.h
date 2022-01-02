@@ -179,6 +179,6 @@ ofc_app_dump (OFC_HANDLE hApp) ;
 #if defined(__cplusplus)
 }
 #endif
-#endif
 /** \} */
+#endif
 

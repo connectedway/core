@@ -7,8 +7,7 @@
 #define __OFC_FS_H__
 
 /**
- * \defgroup OfcFS File System Abstraction
- * \ingroup OFCPort
+ * \defgroup fs File System Abstraction
  *
  * The File System Redirector is a key component of the Open Files Product
  * and is leveraged heavily by both the SMB Client and Server.  The redirector
@@ -662,9 +661,6 @@ ofc_fs_destroy(OFC_VOID);
 OFC_CORE_LIB OFC_VOID
 ofc_fs_register(OFC_FST_TYPE fsType, OFC_FILE_FSINFO *fsInfo);
 
-/**
- * \latexonly
- */
 OFC_HANDLE OfcFSCreateFile(OFC_FST_TYPE fsType,
                            OFC_LPCTSTR lpFileName,
                            OFC_DWORD dwDesiredAccess,
@@ -814,9 +810,6 @@ OFC_BOOL OfcFSDeviceIoControl(OFC_FST_TYPE fsType,
                               OFC_DWORD nOutBufferSize,
                               OFC_LPDWORD lpBytesReturned,
                               OFC_HANDLE hOverlapped);
-/**
- * \endlatexonly
- */
 #if defined(__cplusplus)
 }
 #endif

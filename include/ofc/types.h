@@ -581,6 +581,6 @@ typedef struct _iovec {
 #define container_of(ptr, type, member) \
   (type *)((OFC_CHAR *)(ptr)-(OFC_CHAR *)&((type *)0)->member)
 
+/** \} */
 #endif
 
-/** \} */

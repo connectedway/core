@@ -76,4 +76,5 @@ ofc_core_unload(OFC_VOID);
 }
 #endif
 
+/** \} */
 #endif

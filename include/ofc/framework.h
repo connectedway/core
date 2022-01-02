@@ -252,5 +252,5 @@ OFC_INT ofc_framework_get_wifi_ip(OFC_VOID);
 #if defined(__cplusplus)
 }
 #endif
-
+/** \} */
 #endif

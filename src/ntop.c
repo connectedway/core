@@ -20,6 +20,7 @@
 #include "ofc/types.h"
 #include "ofc/libc.h"
 #include "ofc/net.h"
+#include "ofc/net_internal.h"
 
 #define IN6ADDRSZ 16
 #define INADDRSZ 4

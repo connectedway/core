@@ -11,12 +11,12 @@
 #include "ofc/handle.h"
 
 /**
- * \defgroup Open Files Queue Management Facility
- * \ingroup internal
+ * \defgroup queue Open Files Queue Management Facility
  *
  * Routines that provide for queue management
- * \{ 
  */
+
+/** \{ */
 
 #if defined(__cplusplus)
 extern "C"

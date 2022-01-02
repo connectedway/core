@@ -11,6 +11,14 @@
 #include "ofc/core.h"
 #include "ofc/types.h"
 
+/**
+ * \defgroup libc Open Files C runtime alternative
+ *
+ * Open Files provides routines that abstract heap functions.  A port
+ */
+
+/** \{ */
+
 #if defined(DEBUG_FUNCTION_CALLS)
 #define DBG_ENTRY() ofc_printf("Function %s Entry\n", __FUNCTION__)
 #define DBG_EXIT() ofc_printf("Function %s Exit\n", __FUNCTION__)
@@ -884,6 +892,6 @@ OFC_VOID ofc_atouuid(const OFC_CHAR *in, OFC_UUID uuid);
 #define ofc_tastr2cstr(str) ofc_strdup(str)
 #define ofc_cstr2tastr(str) ofc_strdup(str)
 #endif
-
+/** \} */
 #endif
 

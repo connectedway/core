@@ -12,7 +12,6 @@
 
 /**
  * \defgroup Open Files Time Management
- * \ingroup internal
  *
  * This facility provides Time conversion functions
  */

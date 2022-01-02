@@ -14,6 +14,7 @@
 #include "ofc/libc.h"
 #include "ofc/message.h"
 #include "ofc/net.h"
+#include "ofc/net_internal.h"
 #include "ofc/socket.h"
 #include "ofc/sched.h"
 #include "ofc/app.h"

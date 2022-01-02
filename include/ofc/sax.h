@@ -11,9 +11,7 @@
 #include "ofc/persist.h"
 
 /**
- * \defgroup Open Files SAX Parser
- *
- * \ingroup persist
+ * \defgroup sax Open Files SAX Parser
  */
 
 /** \{ */
@@ -71,7 +69,5 @@ ofc_xml_parse(OFC_VOID *parsertoken, OFC_CHAR *buf,
 }
 #endif
 
-#endif
-
-
 /** \} */
+#endif

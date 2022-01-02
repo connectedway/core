@@ -82,5 +82,6 @@ ofc_read_password(OFC_CHAR *inbuf, OFC_SIZET len);
 #if defined(__cplusplus)
 }
 #endif
+/** \} */
 #endif
 

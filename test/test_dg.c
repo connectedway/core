@@ -24,7 +24,19 @@
 #include "ofc/env.h"
 #include "ofc/persist.h"
 
+/**
+ * \defgroup test_dg Datagram Test Application
+ */
+
+/** \{ */
+
+/**
+ * Global scheduler handle
+ */
 static OFC_HANDLE hScheduler;
+/**
+ * Global application done event
+ */
 static OFC_HANDLE hDone;
 
 static OFC_INT
@@ -75,15 +87,28 @@ static OFC_VOID test_shutdown(OFC_VOID) {
     ofc_framework_destroy();
 }
 
+/**
+ * Datagram Server States
+ */
 typedef enum {
     DGRAM_TEST_SERVER_STATE_IDLE,
     DGRAM_TEST_SERVER_STATE_PRIMING,
     DGRAM_TEST_SERVER_STATE_BODY
 } DGRAM_TEST_SERVER_STATE;
 
+/**
+ * Datagram Server Timer Interval
+ */
 #define DGRAM_TEST_SERVER_INTERVAL 1000
+/**
+ * Datagram Server Listening Port
+ */
 #define DGRAM_TEST_PORT 7543
-
+/**
+ * Datagram Server App Context
+ *
+ * There is a Datagram Server app per network interface.
+ */
 typedef struct {
     DGRAM_TEST_SERVER_STATE state;
     OFC_IPADDR ip;
@@ -95,17 +120,45 @@ typedef struct {
     OFC_MESSAGE *recv_msg;
 } OFC_DGRAM_TEST_SERVER;
 
-static OFC_VOID DGramTestServerPreSelect(OFC_HANDLE app);
+/**
+ * Datagram Server Socket Read Service Routine
+ */
+static OFC_BOOL ServiceRead(OFC_DGRAM_TEST_SERVER *DGramTestServer) {
+    OFC_BOOL progress;
+    OFC_IPADDR ip;
+    OFC_UINT16 port;
+    OFC_CHAR packet_ip[IP6STR_LEN];
+    OFC_CHAR interface_ip[IP6STR_LEN];
 
+    progress =
+            ofc_socket_read(DGramTestServer->hSocket, DGramTestServer->recv_msg);
+
+    if (ofc_message_offset(DGramTestServer->recv_msg) != 0) {
+        ofc_message_addr(DGramTestServer->recv_msg, &ip, &port);
+        ofc_ntop(&ip, packet_ip, IP6STR_LEN);
+        ofc_ntop(&DGramTestServer->ip, interface_ip, IP6STR_LEN);
+        ofc_printf("Read %d Bytes in Message from %s:%d on interface %s\n",
+                   ofc_message_offset(DGramTestServer->recv_msg),
+                   packet_ip, port, interface_ip);
+        ofc_printf("%s\n", ofc_message_data(DGramTestServer->recv_msg));
+        ofc_message_destroy(DGramTestServer->recv_msg);
+        DGramTestServer->recv_msg =
+                ofc_message_create(MSG_ALLOC_HEAP, 1000, OFC_NULL);
+    }
+    return (progress);
+}
+
+static OFC_VOID DGramTestServerPreSelect(OFC_HANDLE app);
 static OFC_HANDLE DGramTestServerPostSelect(OFC_HANDLE app,
                                             OFC_HANDLE hSocket);
-
 static OFC_VOID DGramTestServerDestroy(OFC_HANDLE app);
-
 #if defined(OFC_APP_DEBUG)
 static OFC_VOID DGramTestServerDump (OFC_HANDLE app) ;
 #endif
 
+/**
+ * Datagram Server Application Definition
+ */
 static OFC_APP_TEMPLATE DGramTestServerAppDef =
         {
                 "Datagram Test Server Application",
@@ -120,6 +173,9 @@ static OFC_APP_TEMPLATE DGramTestServerAppDef =
         };
 
 #if defined(OFC_APP_DEBUG)
+/**
+ * Callback for dumping the Application State
+ */
 OFC_VOID DGramTestServerDump (OFC_HANDLE app)
 {
   OFC_DGRAM_TEST_SERVER *DGramTestServer ;
@@ -137,6 +193,9 @@ OFC_VOID DGramTestServerDump (OFC_HANDLE app)
 }
 #endif
 
+/**
+ * Callback for synchronizing waitable events
+ */
 static OFC_VOID DGramTestServerPreSelect(OFC_HANDLE app) {
     OFC_DGRAM_TEST_SERVER *DGramTestServer;
     OFC_SOCKET_EVENT_TYPE event_types;
@@ -183,32 +242,9 @@ static OFC_VOID DGramTestServerPreSelect(OFC_HANDLE app) {
     }
 }
 
-static OFC_BOOL ServiceRead(OFC_DGRAM_TEST_SERVER *DGramTestServer) {
-    OFC_BOOL progress;
-    OFC_IPADDR ip;
-    OFC_UINT16 port;
-    OFC_CHAR packet_ip[IP6STR_LEN];
-    OFC_CHAR interface_ip[IP6STR_LEN];
-
-    progress =
-            ofc_socket_read(DGramTestServer->hSocket, DGramTestServer->recv_msg);
-
-    if (ofc_message_offset(DGramTestServer->recv_msg) != 0) {
-        ofc_message_addr(DGramTestServer->recv_msg, &ip, &port);
-        ofc_ntop(&ip, packet_ip, IP6STR_LEN);
-        ofc_ntop(&DGramTestServer->ip, interface_ip, IP6STR_LEN);
-        ofc_printf("Read %d Bytes in Message from %s:%d on interface %s\n",
-                   ofc_message_offset(DGramTestServer->recv_msg),
-                   packet_ip, port, interface_ip);
-        ofc_printf("%s\n", ofc_message_data(DGramTestServer->recv_msg));
-        ofc_message_destroy(DGramTestServer->recv_msg);
-        DGramTestServer->recv_msg =
-                ofc_message_create(MSG_ALLOC_HEAP, 1000, OFC_NULL);
-    }
-    return (progress);
-}
-
-
+/**
+ * Datagram Server Event Servicing Routine
+ */
 static OFC_HANDLE DGramTestServerPostSelect(OFC_HANDLE app,
                                             OFC_HANDLE hSocket) {
     OFC_DGRAM_TEST_SERVER *DGramTestServer;
@@ -258,6 +294,9 @@ static OFC_HANDLE DGramTestServerPostSelect(OFC_HANDLE app,
     return (OFC_HANDLE_NULL);
 }
 
+/**
+ * Datagram Server App Destroy Routine
+ */
 static OFC_VOID DGramTestServerDestroy(OFC_HANDLE app) {
     OFC_DGRAM_TEST_SERVER *DGramTestServer;
 
@@ -285,18 +324,34 @@ static OFC_VOID DGramTestServerDestroy(OFC_HANDLE app) {
     }
 }
 
+/**
+ * Datagram Client App States
+ */
 typedef enum {
     DGRAM_TEST_CLIENT_STATE_IDLE,
     DGRAM_TEST_CLIENT_STATE_CONNECTED,
     DGRAM_TEST_CLIENT_STATE_DESTROYING,
 } DGRAM_TEST_CLIENT_STATE;
 
+/**
+ * Datagram Client Timer Interval
+ */
 #define DGRAM_TEST_CLIENT_INTERVAL 1000
+/**
+ * Number of Datagram Echos to process
+ */
 #define DGRAM_TEST_COUNT 10
-
+/**
+ * Offset within message for client data
+ */
 #define OFFSET_CLIENT_MSG_DATA 0
+/**
+ * Message to send
+ */
 #define CLIENT_MSG_DATA "This is my test message"
-
+/**
+ * Datagram Client Context
+ */
 typedef struct {
     OFC_FAMILY_TYPE family;
     DGRAM_TEST_CLIENT_STATE state;
@@ -313,16 +368,15 @@ typedef struct {
 } OFC_DGRAM_TEST_CLIENT;
 
 static OFC_VOID DGramTestClientPreSelect(OFC_HANDLE app);
-
 static OFC_HANDLE DGramTestClientPostSelect(OFC_HANDLE app,
                                             OFC_HANDLE hSocket);
-
 static OFC_VOID DGramTestClientDestroy(OFC_HANDLE app);
-
 #if defined(OFC_APP_DEBUG)
 static OFC_VOID DGramTestClientDump (OFC_HANDLE app) ;
 #endif
-
+/**
+ * Datagram Client Application Definition
+ */
 static OFC_APP_TEMPLATE DGramTestClientAppDef =
         {
                 "Datagram Test Client Application",
@@ -337,6 +391,9 @@ static OFC_APP_TEMPLATE DGramTestClientAppDef =
         };
 
 #if defined(OFC_APP_DEBUG)
+/**
+ * Callback to dump client app state
+ */
 OFC_VOID DGramTestClientDump (OFC_HANDLE app)
 {
   OFC_DGRAM_TEST_CLIENT *DGramTestClient ;
@@ -351,6 +408,9 @@ OFC_VOID DGramTestClientDump (OFC_HANDLE app)
 }
 #endif
 
+/**
+ * Datagram Client App Event Synchronization
+ */
 static OFC_VOID DGramTestClientPreSelect(OFC_HANDLE app) {
     OFC_DGRAM_TEST_CLIENT *DGramTestClient;
     OFC_SOCKET_EVENT_TYPE event_types;
@@ -484,6 +544,9 @@ static OFC_VOID DGramTestClientPreSelect(OFC_HANDLE app) {
     }
 }
 
+/**
+ * Datagram Client Configuration Callback
+ */
 static OFC_VOID DGramTestReconfig(OFC_DGRAM_TEST_CLIENT *DGramTestClient) {
     int i;
     OFC_IPADDR ip;
@@ -583,7 +646,9 @@ static OFC_VOID DGramTestReconfig(OFC_DGRAM_TEST_CLIENT *DGramTestClient) {
         }
     }
 }
-
+/**
+ * Datagram Client Event Handler
+ */
 static OFC_HANDLE DGramTestClientPostSelect(OFC_HANDLE app,
                                             OFC_HANDLE hSocket) {
     OFC_DGRAM_TEST_CLIENT *DGramTestClient;
@@ -708,7 +773,9 @@ static OFC_HANDLE DGramTestClientPostSelect(OFC_HANDLE app,
     }
     return (OFC_HANDLE_NULL);
 }
-
+/**
+ * Datagram Client App Destroy Routine
+ */
 static OFC_VOID DGramTestClientDestroy(OFC_HANDLE app) {
     OFC_DGRAM_TEST_CLIENT *DGramTestClient;
     OFC_HANDLE hAppServer;
@@ -801,6 +868,8 @@ TEST(dg, test_dg) {
         ofc_event_wait(hDone);
     }
 }
+
+/** \} */
 
 TEST_GROUP_RUNNER(dg) {
     RUN_TEST_CASE(dg, test_dg);

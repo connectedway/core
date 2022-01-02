@@ -12,8 +12,7 @@
 #include "ofc/net.h"
 
 /**
- * \defgroup Open Files Message Handling Facility
- * \ingroup OpenInternal
+ * \defgroup message Open Files Message Handling Facility
  *
  * The Message Handling Facility is designed to handle all aspects of network
  * message transfer.  This includes 

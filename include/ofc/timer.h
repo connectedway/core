@@ -13,7 +13,6 @@
 /**
  * \defgroup Open Files Timer Timer Facility
  *
- * \ingroup core
  */
 
 /** \{ */
@@ -68,6 +67,6 @@ OFC_CORE_LIB OFC_CCHAR *ofc_timer_id(OFC_HANDLE hTimer);
 }
 #endif
 
+/** \} */
 #endif
 
-/** \} */

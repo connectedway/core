@@ -10,19 +10,7 @@
 #include "ofc/types.h"
 
 /**
- * \defgroup port Platform Specific Abstraction
- *
- * Open Fiels is designed as a portable package that can be ported to
- * most any target platform.  To accomodate this and ease platform 
- * integration, Open Files provides a porting abstraction.
- *
- * To port Open Files to a new platform, simple implement these routines
- * and target them at your desired platform
- */
-
-/**
- * \defgroup heap Heap Facility
- * \ingroup port
+ * \defgroup heap Open Files Heap Handling
  *
  * Open Files provides routines that abstract heap functions.  A port
  * can map these functions to underlying platform specific heap functions
@@ -30,9 +18,9 @@
  *
  * The documentation of these APIs may include specific information relevant
  * only to the Open Files heap
- *
- * \{ 
  */
+
+ ** \{ */
 #if defined(__cplusplus)
 extern "C"
 {

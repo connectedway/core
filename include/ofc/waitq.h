@@ -12,7 +12,6 @@
 
 /**
  * \defgroup waitq Wait Queue Facility
- * \ingroup internal
  */
 
 /** \{ */

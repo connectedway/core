@@ -11,14 +11,15 @@
 #include "ofc/handle.h"
 
 /**
- * \addtogroup sched
+ * \defgroup waitset Waitable set of waitable events
  *
  * Wait Sets are a key component of Open Files and allow for synchronization
  * of events between applications and platform threads.  The events can
  * be for network sockets, files, wait queues, semaphores, or any 
  * synchonizable abstraction supported by the platform.
- * \{ 
  */
+
+/** \{ */
 
 /**
  * Visible definition of Wait Set

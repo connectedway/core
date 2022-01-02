@@ -10,6 +10,16 @@
 #include "ofc/types.h"
 
 /**
+ * \defgroup handle Open Files Abstract Handles
+ *
+ * The File System Redirector is a key component of the Open Files Product
+ * and is leveraged heavily by both the SMB Client and Server.  The redirector
+ * defines the file system to file system API mapping.  
+ */
+
+/** \{ */
+
+/**
  * The definition of the 32 bit handle
  */
 typedef OFC_DWORD_PTR OFC_HANDLE;
@@ -271,4 +281,5 @@ OFC_CORE_LIB OFC_VOID ofc_handle_print_interval (OFC_CHAR *prefix,
 #if defined(__cplusplus)
 }
 #endif
+/** \} */
 #endif

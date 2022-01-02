@@ -6,11 +6,16 @@
 #if !defined(__OFC_PROCESS_H__)
 #define __OFC_PROCESS_H__
 
-typedef OFC_VOID (OFC_PROCESS_TRAP_HANDLER)(OFC_INT signal);
-
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
+
+/**
+ * \defgroup process Open Files Process Abstraction
+ */
+
+/** \{ */
+typedef OFC_VOID (OFC_PROCESS_TRAP_HANDLER)(OFC_INT signal);
 
 typedef enum {
     OFC_PROCESS_PRIORITY_APP = 0,
@@ -74,5 +79,6 @@ ofc_process_crash(OFC_CCHAR *obuf);
 #if defined(__cplusplus)
 }
 #endif
+/** \} */
 #endif
 

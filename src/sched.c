@@ -512,7 +512,7 @@ ofc_scheduler_loop(OFC_HANDLE hThread, OFC_VOID *context) {
          */
         ofc_sched_wait(hScheduler);
         /*
-         * And do a post select path
+         * And do a post select pas
          */
         ofc_sched_postselect(hScheduler);
     }

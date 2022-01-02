@@ -14,7 +14,6 @@
 
 /** 
  * \defgroup socket Network Socket Facility
- * \ingroup internal
  *
  * Provides network socket level abstraction and helper routines
  *
@@ -351,6 +350,6 @@ ofc_socket_get_impl(OFC_HANDLE hSocket);
 #if defined(__cplusplus)
 }
 #endif
+/** \} */
 #endif
 
-/** \} */

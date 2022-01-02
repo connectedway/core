@@ -10,6 +10,14 @@
 #include "ofc/types.h"
 
 /**
+ * \defgroup lock Open Files Locking Facility
+ *
+ * Open Files provides routines that abstract heap functions.  A port
+ */
+
+/** \{ */
+
+/**
  * The Platform Abstracted Lock Structure
  */
 typedef OFC_VOID *OFC_LOCK;
@@ -69,5 +77,6 @@ ofc_unlock(OFC_LOCK pLock);
 #if defined(__cplusplus)
 }
 #endif
+/** \} */
 #endif
 
