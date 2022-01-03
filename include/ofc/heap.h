@@ -20,7 +20,7 @@
  * only to the Open Files heap
  */
 
- ** \{ */
+/** \{ */
 #if defined(__cplusplus)
 extern "C"
 {
