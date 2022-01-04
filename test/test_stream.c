@@ -91,7 +91,7 @@ typedef enum {
 #define STREAM_TEST_COUNT 5
 #define STREAM_TEST_PORT 7542
 
-typedef struct {
+typedef struct _OFC_STREAM_INTERFACE {
     /**
      * The IP Address of the Interface
      */
@@ -105,7 +105,7 @@ typedef struct {
 /**
  * The management information for the Stream Socket Server Application
  */
-typedef struct {
+typedef struct _OFC_STREAM_TEST {
     /**
      * The state that the StreamSocket Server Application is in
      */
@@ -317,28 +317,28 @@ static OFC_APP_TEMPLATE ClientTestAppDef =
  */
 static OFC_STREAM_INTERFACE *StartupInterface(OFC_FAMILY_TYPE family,
                                               OFC_IPADDR *ip) {
-    OFC_STREAM_INTERFACE *interface;
+    OFC_STREAM_INTERFACE *iface;
     OFC_CHAR ip_addr[IP6STR_LEN];
 
     /*
      * Allocate a context for this interface
      */
-    interface = ofc_malloc(sizeof(OFC_STREAM_INTERFACE));
+    iface = ofc_malloc(sizeof(OFC_STREAM_INTERFACE));
     /*
      * Initialize the IP address of the interface
      */
-    ofc_memcpy(&interface->ip, ip, sizeof(OFC_IPADDR));
+    ofc_memcpy(&iface->ip, ip, sizeof(OFC_IPADDR));
     /*
      * Create a Listen Socket for this interface
      */
-    interface->hListen = ofc_socket_listen(ip, STREAM_TEST_PORT);
-    if (interface->hListen == OFC_HANDLE_NULL) {
+    iface->hListen = ofc_socket_listen(ip, STREAM_TEST_PORT);
+    if (iface->hListen == OFC_HANDLE_NULL) {
         /*
          * If we had trouble issueing a listen, free up the interface and
          * return an error indication (OFC_NULL)
          */
-        ofc_free(interface);
-        interface = OFC_NULL;
+        ofc_free(iface);
+        iface = OFC_NULL;
     } else {
         /*
          * We have a listening socket, let's notify the user that the
@@ -346,10 +346,10 @@ static OFC_STREAM_INTERFACE *StartupInterface(OFC_FAMILY_TYPE family,
          */
         ofc_printf("Started Interface for %s on %s\n",
                    (family == OFC_FAMILY_IP) ? "IPV4" : "IPV6",
-                   ofc_ntop(&interface->ip, ip_addr, IP6STR_LEN));
+                   ofc_ntop(&iface->ip, ip_addr, IP6STR_LEN));
     }
 
-    return (interface);
+    return (iface);
 }
 
 /**
@@ -362,15 +362,15 @@ static OFC_STREAM_INTERFACE *StartupInterface(OFC_FAMILY_TYPE family,
  * A pointer to the interface structure associated with the interface to 
  * shutdown.
  */
-static OFC_VOID ShutdownInterface(OFC_STREAM_INTERFACE *interface) {
+static OFC_VOID ShutdownInterface(OFC_STREAM_INTERFACE *iface) {
     /*
      * Destroy the listening socket
      */
-    ofc_socket_destroy(interface->hListen);
+    ofc_socket_destroy(iface->hListen);
     /*
      * And free the interface context
      */
-    ofc_free(interface);
+    ofc_free(iface);
 }
 
 /**
@@ -386,7 +386,7 @@ static OFC_VOID ShutdownInterface(OFC_STREAM_INTERFACE *interface) {
 static OFC_VOID StreamTestInitialize(OFC_STREAM_TEST *streamTest) {
 #if !defined(OFC_MULTI_TCP)
     OFC_IPADDR ip;
-    OFC_STREAM_INTERFACE *interface;
+    OFC_STREAM_INTERFACE *iface;
 #endif
 
     /*
@@ -414,12 +414,12 @@ static OFC_VOID StreamTestInitialize(OFC_STREAM_TEST *streamTest) {
     /*
      * Startup the interface
      */
-    interface = StartupInterface(streamTest->family, &ip);
-    if (interface != OFC_NULL)
+    iface = StartupInterface(streamTest->family, &ip);
+    if (iface != OFC_NULL)
         /*
          * If we successfully started the interface, add it to our list
          */
-        ofc_enqueue(streamTest->interfaceList, interface);
+        ofc_enqueue(streamTest->interfaceList, iface);
 #endif
     /*
      * Create a timer for the socket server application.  We create the
@@ -531,7 +531,7 @@ static OFC_VOID StreamTestReconfig (OFC_STREAM_TEST *streamTest)
  */
 static OFC_VOID StreamTestPreSelect(OFC_HANDLE app) {
     OFC_STREAM_TEST *streamTest;
-    OFC_STREAM_INTERFACE *interface;
+    OFC_STREAM_INTERFACE *iface;
     OFC_SOCKET_EVENT_TYPE event_types;
     STREAM_TEST_STATE entry_state;
     /*
@@ -568,14 +568,14 @@ static OFC_VOID StreamTestPreSelect(OFC_HANDLE app) {
                      * For each interface we've started, enable the event on that
                      * interface's socket.
                      */
-                    for (interface = ofc_queue_first(streamTest->interfaceList);
-                         interface != OFC_NULL;
-                         interface = ofc_queue_next(streamTest->interfaceList,
-                                                    interface)) {
+                    for (iface = ofc_queue_first(streamTest->interfaceList);
+                         iface != OFC_NULL;
+                         iface = ofc_queue_next(streamTest->interfaceList,
+                                                    iface)) {
                         event_types = OFC_SOCKET_EVENT_ACCEPT;
-                        ofc_socket_enable(interface->hListen, event_types);
+                        ofc_socket_enable(iface->hListen, event_types);
                         ofc_sched_add_wait(streamTest->scheduler, app,
-                                           interface->hListen);
+                                           iface->hListen);
                     }
                     /*
                      * And switch our state to running
@@ -599,14 +599,14 @@ static OFC_VOID StreamTestPreSelect(OFC_HANDLE app) {
                     /*
                      * And enable each interface we've started
                      */
-                    for (interface = ofc_queue_first(streamTest->interfaceList);
-                         interface != OFC_NULL;
-                         interface = ofc_queue_next(streamTest->interfaceList,
-                                                    interface)) {
+                    for (iface = ofc_queue_first(streamTest->interfaceList);
+                         iface != OFC_NULL;
+                         iface = ofc_queue_next(streamTest->interfaceList,
+                                                    iface)) {
                         event_types = OFC_SOCKET_EVENT_ACCEPT;
-                        ofc_socket_enable(interface->hListen, event_types);
+                        ofc_socket_enable(iface->hListen, event_types);
                         ofc_sched_add_wait(streamTest->scheduler, app,
-                                           interface->hListen);
+                                           iface->hListen);
                     }
                     break;
             }
@@ -630,7 +630,7 @@ static OFC_HANDLE StreamTestPostSelect(OFC_HANDLE app, OFC_HANDLE hSocket) {
     OFC_STREAM_TEST *streamTest;
     OFC_SERVER_TEST *serverTest;
     OFC_CLIENT_TEST *clientTest;
-    OFC_STREAM_INTERFACE *interface;
+    OFC_STREAM_INTERFACE *iface;
     OFC_BOOL progress;
     OFC_SOCKET_EVENT_TYPE event_types;
     OFC_CHAR ip_str[IP6STR_LEN];
@@ -659,12 +659,12 @@ static OFC_HANDLE StreamTestPostSelect(OFC_HANDLE app, OFC_HANDLE hSocket) {
                     /*
                      * Find a matching interface socket
                      */
-                    for (interface = ofc_queue_first(streamTest->interfaceList);
-                         interface != OFC_NULL && hSocket != interface->hListen;
-                         interface = ofc_queue_next(streamTest->interfaceList,
-                                                    interface));
+                    for (iface = ofc_queue_first(streamTest->interfaceList);
+                         iface != OFC_NULL && hSocket != iface->hListen;
+                         iface = ofc_queue_next(streamTest->interfaceList,
+                                                    iface));
 
-                    if (interface != OFC_NULL && hSocket == interface->hListen) {
+                    if (iface != OFC_NULL && hSocket == iface->hListen) {
                         /*
                          * Found an Interface, Determine Event
                          */
@@ -682,7 +682,7 @@ static OFC_HANDLE StreamTestPostSelect(OFC_HANDLE app, OFC_HANDLE hSocket) {
                              */
                             serverTest->state = SERVER_TEST_STATE_IDLE;
                             serverTest->scheduler = streamTest->scheduler;
-                            serverTest->masterSocket = interface->hListen;
+                            serverTest->masterSocket = iface->hListen;
                             /*
                              * Need to do the accept now to clear the event
                              * Some implementations will not clear the listen event
@@ -710,10 +710,10 @@ static OFC_HANDLE StreamTestPostSelect(OFC_HANDLE app, OFC_HANDLE hSocket) {
                              */
                             ofc_app_kill(app);
                         } else {
-                            for (interface = ofc_queue_first(streamTest->interfaceList);
-                                 interface != OFC_NULL;
-                                 interface = ofc_queue_next(streamTest->interfaceList,
-                                                            interface)) {
+                            for (iface = ofc_queue_first(streamTest->interfaceList);
+                                 iface != OFC_NULL;
+                                 iface = ofc_queue_next(streamTest->interfaceList,
+                                                            iface)) {
                                 /*
                                  * This is a timer that we use to create a client.
                                  * Let's create an app to send a message
@@ -725,13 +725,13 @@ static OFC_HANDLE StreamTestPostSelect(OFC_HANDLE app, OFC_HANDLE hSocket) {
                                  */
                                 clientTest->state = CLIENT_TEST_STATE_IDLE;
                                 clientTest->scheduler = streamTest->scheduler;
-                                clientTest->ip = interface->ip;
+                                clientTest->ip = iface->ip;
 
                                 ofc_printf("Creating Stream Client for %s "
                                            "Application on %s\n",
                                            streamTest->family == OFC_FAMILY_IP ?
                                            "IPv4" : "IPv6",
-                                           ofc_ntop(&interface->ip,
+                                           ofc_ntop(&iface->ip,
                                                     ip_str, IP6STR_LEN));
                                 /*
                                  * Create the application
@@ -770,7 +770,7 @@ static OFC_HANDLE StreamTestPostSelect(OFC_HANDLE app, OFC_HANDLE hSocket) {
  */
 static OFC_VOID StreamTestDestroy(OFC_HANDLE app) {
     OFC_STREAM_TEST *streamTest;
-    OFC_STREAM_INTERFACE *interface;
+    OFC_STREAM_INTERFACE *iface;
 
     ofc_printf("Destroying Stream Test Application\n");
 
@@ -802,10 +802,10 @@ static OFC_VOID StreamTestDestroy(OFC_HANDLE app) {
                 /*
                  * And Shutdown all our configured interfaces
                  */
-                for (interface = ofc_dequeue(streamTest->interfaceList);
-                     interface != OFC_NULL;
-                     interface = ofc_dequeue(streamTest->interfaceList)) {
-                    ShutdownInterface(interface);
+                for (iface = ofc_dequeue(streamTest->interfaceList);
+                     iface != OFC_NULL;
+                     iface = ofc_dequeue(streamTest->interfaceList)) {
+                    ShutdownInterface(iface);
                 }
                 /*
                  * Now destroy the interface list

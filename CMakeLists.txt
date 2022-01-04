@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21.1)
+cmake_minimum_required(VERSION 3.20.0)
 project(of_core VERSION 1.0.1 DESCRIPTION "OpenFiles Core Library")
 
 set(SRCS
@@ -35,6 +35,11 @@ set(SRCS
 if (DEFINED CACHE{OFC_FS_DARWIN})
     message("Adding FS Darwin")
     list(APPEND fs_library_list of_core_fs_darwin)
+endif ()
+
+if (DEFINED CACHE{OFC_FS_WINDOWS})
+    message("Adding FS Windows")
+    list(APPEND fs_library_list of_core_fs_windows)
 endif ()
 
 if (DEFINED CACHE{OFC_FS_LINUX})
