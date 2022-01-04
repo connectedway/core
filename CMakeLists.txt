@@ -37,31 +37,36 @@ if (DEFINED CACHE{OFC_FS_DARWIN})
     list(APPEND fs_library_list of_core_fs_darwin)
 endif ()
 
+if (DEFINED CACHE{OFC_FS_LINUX})
+    message("Adding FS Linux")
+    list(APPEND fs_library_list of_core_fs_linux)
+endif ()
+
 if (DEFINED CACHE{OFC_FS_BOOKMARKS})
     message("Adding FS Bookmarks")
     list(APPEND fs_library_list of_core_fs_bookmarks)
 endif ()
 
 add_library(of_core_static STATIC ${SRCS})
-add_library(of_core_shared SHARED ${SRCS})
+# add_library(of_core_shared SHARED ${SRCS})
 
-set_target_properties(of_core_shared PROPERTIES VERSION ${PROJECT_VERSION})
+# set_target_properties(of_core_shared PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(of_core_static PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(of_core_shared PROPERTIES SOVERSION 1)
+# set_target_properties(of_core_shared PROPERTIES SOVERSION 1)
 set_target_properties(of_core_static PROPERTIES SOVERSION 1)
 
 target_include_directories(of_core_static PUBLIC include)
-target_include_directories(of_core_shared PUBLIC include)
+# target_include_directories(of_core_shared PUBLIC include)
 target_link_libraries(of_core_static PRIVATE
         of_core_${OFC_HEAP_IMPL}
         of_core_${OFC_IMPL}
         ${fs_library_list}
         )
-target_link_libraries(of_core_shared PRIVATE
-        of_core_${OFC_HEAP_IMPL}
-        of_core_${OFC_IMPL}
-        ${fs_library_list}
-        )
+#target_link_libraries(of_core_shared PRIVATE
+#        of_core_${OFC_HEAP_IMPL}
+#        of_core_${OFC_IMPL}
+#        ${fs_library_list}
+#        )
 
 enable_testing()
 add_subdirectory(test)

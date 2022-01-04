@@ -13,7 +13,12 @@ static void runAllTests(void) {
     RUN_TEST_GROUP(dg);
     RUN_TEST_GROUP(stream);
     RUN_TEST_GROUP(path);
+#if defined(OFC_FS_DARWIN)
     RUN_TEST_GROUP(fs_darwin);
+#endif
+#if defined(OFC_FS_LINUX)
+    RUN_TEST_GROUP(fs_linux);
+#endif
 }
 
 int main(int argc, const char *argv[]) {

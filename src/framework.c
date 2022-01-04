@@ -38,7 +38,7 @@ ofc_framework_init(OFC_VOID) {
      * Load Open Files if not done as part of library load
      */
 #if !defined(INIT_ON_LOAD)
-    of_core_load();
+    ofc_core_load();
 #endif
 
     /*
@@ -59,7 +59,7 @@ ofc_framework_destroy(OFC_VOID) {
     }
 #endif
 #if !defined(INIT_ON_LOAD)
-    of_core_unload() ;
+    ofc_core_unload() ;
 #endif
 }
 
