@@ -16,6 +16,9 @@ static void runAllTests(void) {
 #if defined(OFC_FS_DARWIN)
     RUN_TEST_GROUP(fs_darwin);
 #endif
+#if defined(OFC_FS_WINDOWS)
+    RUN_TEST_GROUP(fs_windows);
+#endif
 #if defined(OFC_FS_LINUX)
     RUN_TEST_GROUP(fs_linux);
 #endif
