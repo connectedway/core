@@ -451,17 +451,17 @@ static OFC_VOID StreamTestReconfig (OFC_STREAM_TEST *streamTest)
 {
   int i ;
   OFC_IPADDR ip ;
-  OFC_STREAM_INTERFACE *interface ;
+  OFC_STREAM_INTERFACE *iface ;
   OFC_STREAM_INTERFACE *next_interface ;
   OFC_BOOL found ;
   /*
    * First look for deleted interfaces
    */
-  for (interface = ofc_queue_first (streamTest->interfaceList) ;
-       interface != OFC_NULL ;
-       interface = next_interface)
+  for (iface = ofc_queue_first (streamTest->interfaceList) ;
+       iface != OFC_NULL ;
+       iface = next_interface)
     {
-      next_interface = ofc_queue_next (streamTest->interfaceList, interface) ;
+      next_interface = ofc_queue_next (streamTest->interfaceList, iface) ;
       /*
        * Is this interface in the update message with the same values
        */
@@ -469,7 +469,7 @@ static OFC_VOID StreamTestReconfig (OFC_STREAM_TEST *streamTest)
       for (i = 0 ; i < ofc_persist_interface_count() && !found ;)
     {
       ofc_persist_interface_addr(i, &ip, OFC_NULL, OFC_NULL) ;
-      if (ofc_net_is_addr_equal (&interface->ip, &ip))
+      if (ofc_net_is_addr_equal (&iface->ip, &ip))
         found = OFC_TRUE ;
       else
         i++ ;
@@ -479,8 +479,8 @@ static OFC_VOID StreamTestReconfig (OFC_STREAM_TEST *streamTest)
       /*
        * Delete the interface
        */
-      ofc_queue_unlink (streamTest->interfaceList, interface) ;
-      ShutdownInterface (interface) ;
+      ofc_queue_unlink (streamTest->interfaceList, iface) ;
+      ShutdownInterface (iface) ;
     }
     }
 
@@ -492,16 +492,16 @@ static OFC_VOID StreamTestReconfig (OFC_STREAM_TEST *streamTest)
       ofc_persist_interface_addr(i, &ip, OFC_NULL, OFC_NULL) ;
 
       found = OFC_FALSE ;
-      for (interface = ofc_queue_first (streamTest->interfaceList) ;
-       interface != OFC_NULL && !found ;)
+      for (iface = ofc_queue_first (streamTest->interfaceList) ;
+       iface != OFC_NULL && !found ;)
     {
       /*
        * Is this interface in the update message with the same values
        */
-      if (ofc_net_is_addr_equal (&interface->ip, &ip))
+      if (ofc_net_is_addr_equal (&iface->ip, &ip))
         found = OFC_TRUE ;
       else
-        interface = ofc_queue_next (streamTest->interfaceList, interface) ;
+        iface = ofc_queue_next (streamTest->interfaceList, iface) ;
     }
 
       if (!found && (streamTest->family == ip.ip_version))
@@ -509,12 +509,12 @@ static OFC_VOID StreamTestReconfig (OFC_STREAM_TEST *streamTest)
       /*
        * Add the interface
        */
-      interface = StartupInterface (streamTest->family, &ip) ;
-      if (interface != OFC_NULL)
+      iface = StartupInterface (streamTest->family, &ip) ;
+      if (iface != OFC_NULL)
         /*
          * If we successfully started the interface, add it to our list
          */
-        ofc_queue_enqueue (streamTest->interfaceList, interface) ;
+        ofc_enqueue (streamTest->interfaceList, iface) ;
     }
     }
 }
