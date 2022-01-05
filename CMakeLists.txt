@@ -37,7 +37,7 @@ if (DEFINED CACHE{OFC_FS_DARWIN})
     list(APPEND fs_library_list of_core_fs_darwin)
 endif ()
 
-if (DEFINED CACHE{OFC_FS_WINDOWS})
+if (DEFINED CACHE{OFC_FS_WIN32})
     message("Adding FS Windows")
     list(APPEND fs_library_list of_core_fs_windows)
 endif ()

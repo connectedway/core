@@ -38,8 +38,10 @@ const char *__cyg_profile_addr2sym(void *address)
   __attribute__((no_instrument_function)) ;
 
 #define RETURN_ADDRESS() __cyg_profile_return_address(0)
-#else
+#elif defined(OFC_STACK_TRACE)
 #define RETURN_ADDRESS() __builtin_return_address(0)
+#else
+#define RETURN_ADDRESS() OFC_NULL
 #endif
 
 /**
