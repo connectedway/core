@@ -78,8 +78,11 @@ ofc_heap_load(OFC_VOID) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_heap_unload(OFC_VOID) {
-    ofc_lock_destroy(ofc_heap_stats.lock);
+    OFC_LOCK save;
+
+    save = ofc_heap_stats.lock;
     ofc_heap_stats.lock = OFC_NULL;
+    ofc_lock_destroy(save);
     ofc_heap_unload_impl();
     ofc_heap_dump();
 }

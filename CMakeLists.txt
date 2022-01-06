@@ -47,6 +47,11 @@ if (DEFINED CACHE{OFC_FS_LINUX})
     list(APPEND fs_library_list of_core_fs_linux)
 endif ()
 
+if (DEFINED CACHE{OFC_FS_ANDROID})
+    message("Adding FS Android")
+    list(APPEND fs_library_list of_core_fs_android)
+endif ()
+
 if (DEFINED CACHE{OFC_FS_BOOKMARKS})
     message("Adding FS Bookmarks")
     list(APPEND fs_library_list of_core_fs_bookmarks)

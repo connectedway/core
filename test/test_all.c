@@ -22,6 +22,9 @@ static void runAllTests(void) {
 #if defined(OFC_FS_LINUX)
     RUN_TEST_GROUP(fs_linux);
 #endif
+#if defined(OFC_FS_ANDROID)
+    RUN_TEST_GROUP(fs_android);
+#endif
 }
 
 int main(int argc, const char *argv[]) {
