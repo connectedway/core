@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 #include "unity_fixture.h"
+#include "ofc/config.h"
 
 static void runAllTests(void) {
     RUN_TEST_GROUP(timer);
