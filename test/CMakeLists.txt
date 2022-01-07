@@ -21,7 +21,7 @@ if (DEFINED CACHE{OFC_FS_DARWIN})
    set(TEST_FILE test_fs_darwin.c)
 endif()
 
-if (DEFINED CACHE{OFC_FS_WINDOWS})
+if (DEFINED CACHE{OFC_FS_WIN32})
    set(TEST_FILE test_fs_windows.c)
 endif()
 
@@ -39,6 +39,7 @@ add_executable(test_all
         test_stream.c
         test_path.c
         test_file.c
+	${TEST_FILE}
         )
 target_compile_definitions(test_all PUBLIC NO_MAIN ON)
 target_link_libraries(test_all PRIVATE of_core_static unityextras)
@@ -85,7 +86,7 @@ if (DEFINED CACHE{OFC_FS_DARWIN})
    target_link_libraries(test_fs_darwin PRIVATE of_core_static unityextras)
    add_test(fs_darwin test_fs_darwin COMMAND $<TARGET_FILE:test_fs_darwin>)
 endif()
-if (DEFINED CACHE{OFC_FS_WINDOWS})
+if (DEFINED CACHE{OFC_FS_WIN32})
    add_executable(test_fs_windows test_fs_windows.c test_file.c)
    target_link_libraries(test_fs_windows PRIVATE of_core_static unityextras)
    add_test(fs_windows test_fs_windows COMMAND $<TARGET_FILE:test_fs_windows>)

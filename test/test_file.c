@@ -332,10 +332,11 @@ static OFC_TCHAR *MakeFilename(OFC_CTCHAR *device, OFC_CTCHAR *name) {
     devlen = ofc_tastrlen (device);
     namelen = ofc_tastrlen (name);
     filename =
-            ofc_malloc((devlen + namelen + 1) * sizeof(OFC_TCHAR));
+            ofc_malloc((devlen + namelen + 2) * sizeof(OFC_TCHAR));
     ofc_tastrcpy (filename, device);
-    ofc_tastrcpy (&filename[devlen], name);
-    filename[devlen + namelen] = TCHAR_EOS;
+    filename[devlen] = TCHAR('/');
+    ofc_tastrcpy (&filename[devlen+1], name);
+    filename[devlen + 1 + namelen] = TCHAR_EOS;
     return (filename);
 }
 
@@ -995,35 +996,15 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device) {
         ofc_free(filename);
         ofc_free(tofilename);
 
-        dirHandle = OfcCreateFile(dirname,
-                                  OFC_FILE_DELETE,
-                                  OFC_FILE_SHARE_DELETE,
-                                  OFC_NULL,
-                                  OFC_OPEN_EXISTING,
-                                  OFC_FILE_FLAG_DELETE_ON_CLOSE |
-                                  OFC_FILE_ATTRIBUTE_DIRECTORY,
-                                  OFC_HANDLE_NULL);
-
-        if (dirHandle == OFC_INVALID_HANDLE_VALUE) {
-            ofc_printf("Failed to create delete on close dir %A, "
-                       "Error Code %d\n",
-                       dirname,
-                       OfcGetLastError());
-            ret = OFC_FALSE;
-        } else {
-            /* Close file
-	   */
-            status = OfcCloseHandle(dirHandle);
-            if (status != OFC_TRUE) {
-                dwLastError = OfcGetLastError();
-                ofc_printf("Close of Delete on close dir "
-                           "Failed with Error %d\n",
-                           dwLastError);
-                ret = OFC_FALSE;
-            }
-        }
+	status = OfcRemoveDirectory(dirname);
+	if (status != OFC_TRUE) {
+	  dwLastError = OfcGetLastError();
+	  ofc_printf("Couldn't delete directory, failed with error %d\n",
+		     dwLastError);
+	}
     } else {
-        dwLastError = OfcGetLastError();
+
+    dwLastError = OfcGetLastError();
         ofc_printf("Create of Directory Failed with Error %d\n",
                    dwLastError);
         ret = OFC_FALSE;
@@ -1185,33 +1166,12 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device) {
         ofc_free(tofilename);
         ofc_free(fulltofilename);
 
-        dirHandle = OfcCreateFile(dirname,
-                                  OFC_FILE_DELETE,
-                                  OFC_FILE_SHARE_DELETE,
-                                  OFC_NULL,
-                                  OFC_OPEN_EXISTING,
-                                  OFC_FILE_FLAG_DELETE_ON_CLOSE |
-                                  OFC_FILE_ATTRIBUTE_DIRECTORY,
-                                  OFC_HANDLE_NULL);
-
-        if (dirHandle == OFC_INVALID_HANDLE_VALUE) {
-            ofc_printf("Failed to create delete on close dir %A, "
-                       "Error Code %d\n",
-                       dirname,
-                       OfcGetLastError());
-            ret = OFC_FALSE;
-        } else {
-            /* Close file
-	   */
-            status = OfcCloseHandle(dirHandle);
-            if (status != OFC_TRUE) {
-                dwLastError = OfcGetLastError();
-                ofc_printf("Close of Delete on close dir "
-                           "Failed with Error %d\n",
-                           dwLastError);
-                ret = OFC_FALSE;
-            }
-        }
+	status = OfcRemoveDirectory(dirname);
+	if (status != OFC_TRUE) {
+	  dwLastError = OfcGetLastError();
+	  ofc_printf("Couldn't delete directory, failed with error %d\n",
+		     dwLastError);
+	}
     } else {
         dwLastError = OfcGetLastError();
         ofc_printf("Create of Directory Failed with Error %d\n",
@@ -1354,33 +1314,11 @@ static OFC_BOOL OfcDeleteDirectoryTest(OFC_CTCHAR *device) {
     ret = OFC_TRUE;
     filename = MakeFilename(device, FS_TEST_DIRECTORY);
 
-    dirhandle = OfcCreateFile(filename,
-                              OFC_FILE_DELETE,
-                              OFC_FILE_SHARE_DELETE,
-                              OFC_NULL,
-                              OFC_OPEN_EXISTING,
-                              OFC_FILE_FLAG_DELETE_ON_CLOSE |
-                              OFC_FILE_ATTRIBUTE_DIRECTORY,
-                              OFC_HANDLE_NULL);
-
-    if (dirhandle == OFC_INVALID_HANDLE_VALUE) {
-        ofc_printf("Failed to create delete on close dir %A, "
-                   "Error Code %d\n",
-                   filename,
-                   OfcGetLastError());
-        ret = OFC_FALSE;
-    } else {
-        /* Close file
-       */
-        status = OfcCloseHandle(dirhandle);
-        if (status != OFC_TRUE) {
-            dwLastError = OfcGetLastError();
-            ofc_printf("Close of Delete on close dir "
-                       "Failed with Error %d\n",
-                       dwLastError);
-            ret = OFC_FALSE;
-        } else
-            ofc_printf("Delete Directory Test Succeeded\n");
+    status = OfcRemoveDirectory(filename);
+    if (status != OFC_TRUE) {
+      dwLastError = OfcGetLastError();
+      ofc_printf("Couldn't delete directory, failed with error %d\n",
+		 dwLastError);
     }
     ofc_free(filename);
     return (ret);
