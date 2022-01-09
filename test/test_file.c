@@ -2143,6 +2143,25 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
     while (count != OFC_FILE_TEST_COUNT) {
         test_result = OFC_TRUE;
 
+	/*
+	 * OfcGetFileAttributesExW on "/" (initially failed with java)
+	 */
+	{
+	  OFC_WIN32_FILE_ATTRIBUTE_DATA fadFile;
+	  OFC_BOOL bret;
+	  ofc_printf("Trying an OfcGetFileAttributesExW on /");
+	  bret = OfcGetFileAttributesExW(TSTR("/"),
+					 OfcGetFileExInfoStandard,
+					 &fadFile);
+	  if (bret != OFC_TRUE)
+	    {
+	      ofc_printf ("%s: OfcGetFileAttributesExW failed for %S, Last Error %d\n",
+			  __func__, TSTR("/"), OfcGetLastError()) ;
+	    }
+	  else
+	    ofc_printf("Succeeded\n");
+	}
+
         /*
        * First, create a random file
        */

@@ -596,7 +596,9 @@ ofc_path_printW(OFC_PATH *_path, OFC_LPTSTR *filename, OFC_SIZET *rem) {
         len += ofc_path_out_char(delimeter, filename, rem);
         len += ofc_path_out_char(delimeter, filename, rem);
     } else if (path->absolute) {
+#if 0
         if (path->num_dirs > 0)
+#endif
             len += ofc_path_out_char(delimeter, filename, rem);
     }
 

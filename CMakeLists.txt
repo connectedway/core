@@ -82,5 +82,4 @@ target_link_libraries(of_core_shared PRIVATE
         ${fs_library_list}
         )
 
-enable_testing()
 add_subdirectory(test)
