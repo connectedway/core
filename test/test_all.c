@@ -4,7 +4,12 @@
  * found in the LICENSE file.
  */
 #include "unity_fixture.h"
+#include "ofc/types.h"
+#include "ofc/libc.h"
 #include "ofc/config.h"
+#include "ofc/file.h"
+
+extern OFC_CHAR config_path[OFC_MAX_PATH+1];
 
 static void runAllTests(void) {
     RUN_TEST_GROUP(timer);
@@ -29,5 +34,11 @@ static void runAllTests(void) {
 }
 
 int main(int argc, const char *argv[]) {
+  if (argc >= 2) {
+    if (ofc_strcmp(argv[1], "--config") == 0) {
+      ofc_strncpy(config_path, argv[2], OFC_MAX_PATH);
+    }
+  }
+
     return UnityMain(argc, argv, runAllTests);
 }

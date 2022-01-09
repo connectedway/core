@@ -2042,7 +2042,7 @@ OfcGetLastFileError(OFC_HANDLE hHandle);
 OFC_CORE_LIB OFC_DWORD
 OfcGetLastError(OFC_VOID);
 
-OFC_CORE_LIB const OFC_CHAR *OfcGetErrorString(OFC_DWORD dwerr);
+OFC_CORE_LIB const OFC_CHAR *ofc_get_error_string(OFC_DWORD dwerr);
 /**
  * Get the last file error that occured in the file handler for a
  * specified file in this thread's context

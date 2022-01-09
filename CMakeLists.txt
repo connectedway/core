@@ -57,26 +57,30 @@ if (DEFINED CACHE{OFC_FS_BOOKMARKS})
     list(APPEND fs_library_list of_core_fs_bookmarks)
 endif ()
 
-add_library(of_core_static STATIC ${SRCS})
-# add_library(of_core_shared SHARED ${SRCS})
+add_library(of_core OBJECT ${SRCS})
+set_property(TARGET of_core PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-# set_target_properties(of_core_shared PROPERTIES VERSION ${PROJECT_VERSION})
+add_library(of_core_static STATIC $<TARGET_OBJECTS:of_core>)
+add_library(of_core_shared SHARED $<TARGET_OBJECTS:of_core>)
+
+set_target_properties(of_core_shared PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(of_core_static PROPERTIES VERSION ${PROJECT_VERSION})
-# set_target_properties(of_core_shared PROPERTIES SOVERSION 1)
+
+set_target_properties(of_core_shared PROPERTIES SOVERSION 1)
 set_target_properties(of_core_static PROPERTIES SOVERSION 1)
 
-target_include_directories(of_core_static PUBLIC include)
-# target_include_directories(of_core_shared PUBLIC include)
+target_include_directories(of_core PUBLIC include)
+
 target_link_libraries(of_core_static PRIVATE
         of_core_${OFC_HEAP_IMPL}
         of_core_${OFC_IMPL}
         ${fs_library_list}
         )
-#target_link_libraries(of_core_shared PRIVATE
-#        of_core_${OFC_HEAP_IMPL}
-#        of_core_${OFC_IMPL}
-#        ${fs_library_list}
-#        )
+target_link_libraries(of_core_shared PRIVATE
+        of_core_${OFC_HEAP_IMPL}
+        of_core_${OFC_IMPL}
+        ${fs_library_list}
+        )
 
 enable_testing()
 add_subdirectory(test)

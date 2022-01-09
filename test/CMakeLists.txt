@@ -29,6 +29,10 @@ if (DEFINED CACHE{OFC_FS_LINUX})
    set(TEST_FILE test_fs_linux.c)
 endif()
 
+if (DEFINED CACHE{OFC_FS_ANDROID})
+   set(TEST_FILE test_fs_android.c)
+endif()
+
 add_executable(test_all
         test_all.c
         test_timer.c
@@ -39,6 +43,7 @@ add_executable(test_all
         test_stream.c
         test_path.c
         test_file.c
+	test_startup.c
 	${TEST_FILE}
         )
 target_compile_definitions(test_all PUBLIC NO_MAIN ON)
@@ -52,52 +57,54 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(OPEN_FILES_HOME ${openfiles_SOURCE_DIR}/configs/darwin_debug.xml)
 
-add_executable(test_timer test_timer.c)
+add_executable(test_timer test_timer.c test_startup.c)
 target_link_libraries(test_timer PRIVATE of_core_static unityextras)
-add_test(timer test_timer COMMAND $<TARGET_FILE:test_timer>)
+add_test(NAME timer COMMAND $<TARGET_FILE:test_timer> --config ${OPEN_FILES_HOME})
 
-add_executable(test_event test_event.c)
+add_executable(test_event test_event.c test_startup.c)
 target_link_libraries(test_event PRIVATE of_core_static unityextras)
-add_test(event test_event COMMAND $<TARGET_FILE:test_event>)
+add_test(NAME event COMMAND $<TARGET_FILE:test_event> --config ${OPEN_FILES_HOME})
 
-add_executable(test_waitq test_waitq.c)
+add_executable(test_waitq test_waitq.c test_startup.c)
 target_link_libraries(test_waitq PRIVATE of_core_static unityextras)
-add_test(waitq test_waitq COMMAND $<TARGET_FILE:test_waitq>)
+add_test(NAME waitq COMMAND $<TARGET_FILE:test_waitq> --config ${OPEN_FILES_HOME})
 
-add_executable(test_thread test_thread.c)
+add_executable(test_thread test_thread.c test_startup.c)
 target_link_libraries(test_thread PRIVATE of_core_static unityextras)
-add_test(thread test_thread COMMAND $<TARGET_FILE:test_thread>)
+add_test(NAME thread COMMAND $<TARGET_FILE:test_thread> --config ${OPEN_FILES_HOME})
 
-add_executable(test_dg test_dg.c)
+
+add_executable(test_dg test_dg.c test_startup.c)
 target_link_libraries(test_dg PRIVATE of_core_static unityextras)
-add_test(dg test_dg COMMAND $<TARGET_FILE:test_dg>)
+add_test(NAME dg COMMAND $<TARGET_FILE:test_dg> --config ${OPEN_FILES_HOME})
 
-add_executable(test_stream test_stream.c)
+add_executable(test_stream test_stream.c test_startup.c)
 target_link_libraries(test_stream PRIVATE of_core_static unityextras)
-add_test(timer test_stream COMMAND $<TARGET_FILE:test_stream>)
+add_test(NAME stream COMMAND $<TARGET_FILE:test_stream> --config ${OPEN_FILES_HOME})
 
 add_executable(test_path test_path.c)
 target_link_libraries(test_path PRIVATE of_core_static unityextras)
-add_test(timer test_path COMMAND $<TARGET_FILE:test_path>)
+add_test(NAME path COMMAND $<TARGET_FILE:test_path>)
 
 if (DEFINED CACHE{OFC_FS_DARWIN})
    add_executable(test_fs_darwin test_fs_darwin.c test_file.c)
    target_link_libraries(test_fs_darwin PRIVATE of_core_static unityextras)
-   add_test(fs_darwin test_fs_darwin COMMAND $<TARGET_FILE:test_fs_darwin>)
+   add_test(NAME fs_darwin COMMAND $<TARGET_FILE:test_fs_darwin>)
 endif()
 if (DEFINED CACHE{OFC_FS_WIN32})
    add_executable(test_fs_windows test_fs_windows.c test_file.c)
-   target_link_libraries(test_fs_windows PRIVATE of_core_static unityextras)
-   add_test(fs_windows test_fs_windows COMMAND $<TARGET_FILE:test_fs_windows>)
+   target_link_libraries(test_fs_windows PRIVATE of_core unityextras)
+   add_test(NAME fs_windows COMMAND $<TARGET_FILE:test_fs_windows>)
 endif()
 if (DEFINED CACHE{OFC_FS_LINUX})
    add_executable(test_fs_linux test_fs_linux.c test_file.c)
-   target_link_libraries(test_fs_linux PRIVATE of_core_static unityextras)
-   add_test(fs_linux test_fs_linux COMMAND $<TARGET_FILE:test_fs_linux>)
+   target_link_libraries(test_fs_linux PRIVATE of_core unityextras)
+   add_test(NAME fs_linux COMMAND $<TARGET_FILE:test_fs_linux>)
 endif()
 if (DEFINED CACHE{OFC_FS_ANDROID})
    add_executable(test_fs_android test_fs_android.c test_file.c)
-   target_link_libraries(test_fs_android PRIVATE of_core_static unityextras)
-   add_test(fs_linux test_fs_android COMMAND $<TARGET_FILE:test_fs_android>)
+   target_link_libraries(test_fs_android PRIVATE of_core unityextras)
+   add_test(NAME fs_android COMMAND $<TARGET_FILE:test_fs_android>)
 endif()

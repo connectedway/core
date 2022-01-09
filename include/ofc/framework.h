@@ -231,6 +231,8 @@ OFC_FRAMEWORK_MAPS *ofc_framework_get_maps(OFC_VOID);
  */
 OFC_VOID ofc_framework_free_maps(OFC_FRAMEWORK_MAPS *maps);
 
+OFC_VOID ofc_framework_remove_map(OFC_LPCTSTR tszPrefix);
+
 /**
  * Reconfigure the stack
  *

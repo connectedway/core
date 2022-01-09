@@ -21,56 +21,13 @@
 #include "ofc/env.h"
 #include "ofc/persist.h"
 
-static OFC_HANDLE hScheduler;
-static OFC_HANDLE hDone;
+extern OFC_CHAR config_path[OFC_MAX_PATH+1];
 
-static OFC_INT
-test_startup_persist(OFC_VOID) {
-    OFC_INT ret = 1;
-    OFC_TCHAR path[OFC_MAX_PATH];
+extern OFC_HANDLE hScheduler;
+extern OFC_HANDLE hDone;
 
-    if (ofc_env_get(OFC_ENV_HOME, path, OFC_MAX_PATH) == OFC_TRUE) {
-        ofc_framework_load(path);
-        ret = 0;
-    }
-    return (ret);
-}
-
-static OFC_INT test_startup_default(OFC_VOID) {
-    static OFC_UUID uuid =
-            {
-                    0x04, 0x5d, 0x88, 0x8a, 0xeb, 0x1c, 0xc9, 0x11,
-                    0x9f, 0xe8, 0x08, 0x00, 0x2b, 0x10, 0x48, 0x60
-            };
-
-    ofc_persist_default();
-    ofc_persist_set_interface_type(OFC_CONFIG_ICONFIG_AUTO);
-    ofc_persist_set_node_name(TSTR("localhost"), TSTR("WORKGROUP"),
-                              TSTR("OpenFiles Unit Test"));
-    ofc_persist_set_uuid(&uuid);
-    return (0);
-}
-
-static OFC_INT test_startup(OFC_VOID) {
-    OFC_INT ret;
-    ofc_framework_init();
-#if defined(OFC_PERSIST)
-    ret = test_startup_persist();
-#else
-    ret = test_startup_default();
-#endif
-    hScheduler = ofc_sched_create();
-    hDone = ofc_event_create(OFC_EVENT_AUTO);
-
-    return (ret);
-}
-
-static OFC_VOID test_shutdown(OFC_VOID) {
-    ofc_event_destroy(hDone);
-    ofc_sched_quit(hScheduler);
-    ofc_framework_shutdown();
-    ofc_framework_destroy();
-}
+OFC_VOID test_shutdown(OFC_VOID);
+OFC_INT test_startup(OFC_VOID);
 
 typedef enum {
     EVENT_TEST_STATE_IDLE,
@@ -254,6 +211,12 @@ static void runAllTests(void)
 
 int main(int argc, const char *argv[])
 {
+  if (argc >= 2) {
+    if (ofc_strcmp(argv[1], "--config") == 0) {
+      ofc_strncpy(config_path, argv[2], OFC_MAX_PATH);
+    }
+  }
+
   return UnityMain(argc, argv, runAllTests);
 }
 #endif
