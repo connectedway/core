@@ -16,7 +16,7 @@
 #include "ofc/framework.h"
 #include "ofc/env.h"
 
-OFC_CHAR config_path[OFC_MAX_PATH+1];
+#define CONFIG_PATH "./test.xml"
 
 static OFC_INT test_startup(OFC_VOID) {
     ofc_framework_init();
@@ -142,36 +142,21 @@ TEST(subpersist, test_subpersist_load)
     /*
      * We should still be registered
      */
-    if (config_path[0] != '\0')
-      {
-	tpath = ofc_cstr2tstr(config_path);
-      }
-    else
-      {
-	tpath = ofc_malloc((OFC_MAX_PATH+1)*sizeof(OFC_TCHAR));
-	if (ofc_env_get(OFC_ENV_HOME, tpath, OFC_MAX_PATH) == OFC_FALSE)
-	  ret = 1;
-      }
+    tpath = ofc_cstr2tstr(CONFIG_PATH);
 
-    TEST_ASSERT_FALSE_MESSAGE(ret, "Failed to get a configuration file path");
+    ret = ofc_persist_register("subpersist", subpersist_parse, subpersist_make);
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to register subconfig");
+    ofc_framework_load(tpath);
 
-    if (ret == 0)
-      {
-	ret = ofc_persist_register("subpersist", subpersist_parse, subpersist_make);
-	TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to register subconfig");
-	ofc_framework_load(tpath);
+    ofc_persist_print(&buf, &len);
+    TEST_ASSERT_FALSE_MESSAGE(buf==OFC_NULL, "Couldn't print dom");
+    ofc_printf("After Load:\n%.*s\n", len, buf);
+    ofc_free(buf);
 
-	ofc_persist_print(&buf, &len);
-	TEST_ASSERT_FALSE_MESSAGE(buf==OFC_NULL, "Couldn't print dom");
-	ofc_printf("After Load:\n%.*s\n", len, buf);
-	ofc_free(buf);
+    ret = ofc_persist_unregister("subpersist");
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to unregister subconfig");
 
-	ret = ofc_persist_unregister("subpersist");
-	TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to unregister subconfig");
-      }
-
-    if (tpath != OFC_NULL)
-      ofc_free(tpath);
+    ofc_free(tpath);
 }
 
 TEST(subpersist, test_subpersist_init) {
@@ -180,41 +165,25 @@ TEST(subpersist, test_subpersist_init) {
     OFC_LPVOID buf;
     OFC_SIZET len;
 
-    if (config_path[0] != '\0')
-      {
-	tpath = ofc_cstr2tstr(config_path);
-      }
-    else
-      {
-	tpath = ofc_malloc((OFC_MAX_PATH+1)*sizeof(OFC_TCHAR));
-	if (ofc_env_get(OFC_ENV_HOME, tpath, OFC_MAX_PATH) == OFC_FALSE)
-	  ret = 1;
-      }
+    tpath = ofc_cstr2tstr(CONFIG_PATH);
+    /*
+     * Then register for the save
+     */
+    ret = ofc_persist_register("subpersist", subpersist_parse, subpersist_make);
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to register subconfig");
+    /*
+     * Save the config with our sub
+     */
+    ofc_framework_save(tpath);
 
-    TEST_ASSERT_FALSE_MESSAGE(ret, "Failed to get a configuration file path");
+    ofc_persist_print(&buf, &len);
+    TEST_ASSERT_FALSE_MESSAGE(buf==OFC_NULL, "Couldn't print dom");
+    ofc_printf("After Save:\n%.*s\n", len, buf);
+    ofc_free(buf);
 
-    if (ret == 0)
-      {
-	/*
-	 * Then register for the save
-	 */
-	ret = ofc_persist_register("subpersist", subpersist_parse, subpersist_make);
-	TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to register subconfig");
-	/*
-	 * Save the config with our sub
-	 */
-	ofc_framework_save(tpath);
-
-	ofc_persist_print(&buf, &len);
-	TEST_ASSERT_FALSE_MESSAGE(buf==OFC_NULL, "Couldn't print dom");
-	ofc_printf("After Save:\n%.*s\n", len, buf);
-	ofc_free(buf);
-
-	ret = ofc_persist_unregister("subpersist");
-	TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to unregister subconfig");
-      }
-    if (tpath != OFC_NULL)
-      ofc_free(tpath);
+    ret = ofc_persist_unregister("subpersist");
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Failed to unregister subconfig");
+    ofc_free(tpath);
  }
 
 TEST(subpersist, test_subpersist_save)
@@ -224,40 +193,24 @@ TEST(subpersist, test_subpersist_save)
     OFC_LPVOID buf;
     OFC_SIZET len;
 
-    if (config_path[0] != '\0')
-      {
-	tpath = ofc_cstr2tstr(config_path);
-      }
-    else
-      {
-	tpath = ofc_malloc((OFC_MAX_PATH+1)*sizeof(OFC_TCHAR));
-	if (ofc_env_get(OFC_ENV_HOME, tpath, OFC_MAX_PATH) == OFC_FALSE)
-	  ret = 1;
-      }
+    tpath = ofc_cstr2tstr(CONFIG_PATH);
+    /*
+     * Save the config without our sub
+     */
+    ofc_framework_save(tpath);
 
-    TEST_ASSERT_FALSE_MESSAGE(ret, "Failed to get a configuration file path");
+    ofc_persist_print(&buf, &len);
+    TEST_ASSERT_FALSE_MESSAGE(buf==OFC_NULL, "Couldn't print dom");
+    ofc_printf("After save:\n%.*s\n", len, buf);
+    ofc_free(buf);
 
-    if (ret == 0)
-      {
-	/*
-	 * Save the config without our sub
-	 */
-	ofc_framework_save(tpath);
-
-	ofc_persist_print(&buf, &len);
-	TEST_ASSERT_FALSE_MESSAGE(buf==OFC_NULL, "Couldn't print dom");
-	ofc_printf("After save:\n%.*s\n", len, buf);
-	ofc_free(buf);
-      }
-
-    if (tpath != OFC_NULL)
-      ofc_free(tpath);
+    ofc_free(tpath);
  }
 
 TEST_GROUP_RUNNER(subpersist) {
-    RUN_TEST_CASE(subpersist, test_subpersist_init);
-    RUN_TEST_CASE(subpersist, test_subpersist_load);
-    RUN_TEST_CASE(subpersist, test_subpersist_save);
+  RUN_TEST_CASE(subpersist, test_subpersist_init);
+  RUN_TEST_CASE(subpersist, test_subpersist_load);
+  RUN_TEST_CASE(subpersist, test_subpersist_save);
 }
 
 #if !defined(NO_MAIN)
@@ -268,12 +221,6 @@ static void runAllTests(void)
 
 int main(int argc, const char *argv[])
 {
-  if (argc >= 2) {
-    if (ofc_strcmp(argv[1], "--config") == 0) {
-      ofc_strncpy(config_path, argv[2], OFC_MAX_PATH);
-    }
-  }
-
   return UnityMain(argc, argv, runAllTests);
 }
 #endif
