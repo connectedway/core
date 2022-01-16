@@ -8,6 +8,7 @@
 
 #include "ofc/types.h"
 #include "ofc/net.h"
+#include "ofc/dom.h"
 
 /**
  * \defgroup persist Open Files Persistent Configuration
@@ -395,6 +396,46 @@ ofc_persist_update(OFC_VOID);
  */
 OFC_CORE_LIB OFC_VOID
 ofc_persist_unload(OFC_VOID);
+/**
+ * Register a DOM config section
+ *
+ * This routine allows a subfeature of openfiles to maintain a portion of openfiles persistance
+ * in a modular fashion.  Some optional feature simply needs to register itself to the persistance
+ * facility after initialization but before loading of the config.  Then while the configuration
+ * is being loaded, the subfeature will be called back at the parse callback with the node containing
+ * it's own dom.  The subfeature can parse through and gather what it wants.  
+ *
+ * When the configuration is being saved, the subfeature will also be called back through its
+ * maake callback.  The subfeature can return a dom containing the state that it wishes to save.
+ *
+ * \param tag
+ * The DOM tag for the feature.  A section of the XML will begin with this tag
+ *
+ * \param parse
+ * The parse callback
+ *
+ * \param make
+ * The make dom callback
+ *
+ * \returns
+ * OFC_TRUE if the registration was successful, OFC_FALSE otherwise
+ */
+OFC_BOOL
+ofc_persist_register(OFC_CCHAR *tag,
+		     OFC_VOID (*parse)(OFC_DOMNode *dom, OFC_DOMNode *drives_node),
+		     OFC_BOOL (*make)(OFC_DOMNode *doc, OFC_DOMNode *root));
+/**
+ * Unregister a subfeature
+ *
+ * This routine will remove a subfeature from the persistance facility
+ *
+ * \param tag
+ * The tag for the subfeature to unregister
+ *
+ * \returns
+ * OFC_TRUE if successfully unregistered, OFC_FALSE otherwise
+ */
+OFC_BOOL ofc_persist_unregister(OFC_CCHAR*tag);
 
 #if defined(__cplusplus)
 }

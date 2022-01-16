@@ -31,6 +31,9 @@ static void runAllTests(void) {
 #if defined(OFC_FS_ANDROID)
     RUN_TEST_GROUP(fs_android);
 #endif
+#if defined(OFC_PERSIST)
+    RUN_TEST_GROUP(subpersist);
+#endif
 }
 
 int main(int argc, const char *argv[]) {

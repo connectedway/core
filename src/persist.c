@@ -74,6 +74,12 @@ typedef struct {
 } OFC_CONFIG_ICONFIG;
 
 typedef struct {
+  OFC_CHAR *tag;
+  OFC_VOID (*parse)(OFC_DOMNode *dom, OFC_DOMNode *drives_node);
+  OFC_BOOL (*make)(OFC_DOMNode *doc, OFC_DOMNode *root);
+} PERSIST_REGISTER;
+
+typedef struct {
     OFC_LOCK *config_lock;
     OFC_TCHAR *workstation_name;
     OFC_TCHAR *workstation_domain;
@@ -89,6 +95,7 @@ typedef struct {
 
     OFC_UUID uuid;
     OFC_UINT32 update_count;
+    OFC_HANDLE subconfigs;
 } OFC_CONFIG;
 
 static OFC_VOID ofc_persist_lock(OFC_VOID);
@@ -136,6 +143,8 @@ ofc_persist_make_dom(OFC_VOID) {
     OFC_INT j;
     OFC_CONFIG *ofc_persist;
     OFC_CHAR ip_addr[IP6STR_LEN];
+    PERSIST_REGISTER *subconfig;
+    OFC_DOMNode *sub_node;
 
     doc = OFC_NULL;
     ofc_persist = ofc_get_config();
@@ -437,6 +446,25 @@ ofc_persist_make_dom(OFC_VOID) {
             }
         }
 
+	for (subconfig = ofc_queue_first(ofc_persist->subconfigs);
+	     subconfig != OFC_NULL && !error_state;
+	     subconfig = ofc_queue_next(ofc_persist->subconfigs, subconfig))
+	  {
+            sub_node = ofc_dom_create_element(doc, subconfig->tag);
+            if (sub_node != OFC_NULL)
+	      {
+		error_state = (*subconfig->make)(doc, sub_node);
+		if (error_state)
+		  {
+		    ofc_dom_destroy_node(sub_node);
+		  }
+		else
+		  {
+		    ofc_dom_append_child(config_node, sub_node);
+		  }
+	      }
+	  }
+
         if (error_state && doc != OFC_NULL) {
             ofc_dom_destroy_document(doc);
             doc = OFC_NULL;
@@ -473,6 +501,8 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
     OFC_CCHAR *cstr;
     OFC_IPADDR *iparray;
     OFC_CONFIG *ofc_persist;
+    PERSIST_REGISTER *subconfig;
+    OFC_DOMNode *sub_node;
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
@@ -696,11 +726,82 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
                     ofc_dom_destroy_node_list(drives_nodelist);
                 }
             }
+
+	    for (subconfig = ofc_queue_first(ofc_persist->subconfigs);
+		 subconfig != OFC_NULL;
+		 subconfig = ofc_queue_next(ofc_persist->subconfigs, subconfig))
+	      {
+		sub_node = ofc_dom_get_element(config_dom, subconfig->tag);
+		if (sub_node != OFC_NULL)
+		  {
+		    (*subconfig->parse)(config_dom, sub_node);
+		  }
+	      }
+
             ofc_persist->loaded = OFC_TRUE;
         }
     }
 }
 
+OFC_BOOL
+ofc_persist_register(OFC_CCHAR *tag,
+		     OFC_VOID (*parse)(OFC_DOMNode *dom, OFC_DOMNode *sub_node),
+		     OFC_BOOL (*make)(OFC_DOMNode *doc, OFC_DOMNode *sub_node)
+		     )
+{
+  OFC_CONFIG *ofc_persist;
+  PERSIST_REGISTER *subconfig;
+  OFC_BOOL ret = OFC_FALSE;
+
+  ofc_persist = ofc_get_config();
+  if (ofc_persist != OFC_NULL)
+    {
+      ofc_lock(ofc_persist->config_lock);
+      subconfig = ofc_malloc(sizeof (PERSIST_REGISTER));
+      if (subconfig != OFC_NULL)
+	{
+	  subconfig->tag = ofc_strdup(tag);
+	  subconfig->parse = parse;
+	  subconfig->make = make;
+	  ofc_enqueue (ofc_persist->subconfigs, subconfig);
+	  ret = OFC_TRUE;
+	}
+      ofc_unlock(ofc_persist->config_lock);
+    }
+  return (ret);
+}
+
+OFC_BOOL
+ofc_persist_unregister(OFC_CCHAR*tag)
+{
+  OFC_CONFIG *ofc_persist;
+  PERSIST_REGISTER *subconfig;
+  OFC_BOOL ret = OFC_FALSE;
+  OFC_BOOL found;
+
+  ofc_persist = ofc_get_config();
+  if (ofc_persist != OFC_NULL)
+    {
+      ofc_lock(ofc_persist->config_lock);
+      for (found = OFC_FALSE, subconfig = ofc_queue_first(ofc_persist->subconfigs);
+	   subconfig != OFC_NULL && !found;)
+	{
+	  if (ofc_strcmp(subconfig->tag, tag) == 0)
+	    found = OFC_TRUE;
+	  else
+	    subconfig = ofc_queue_next(ofc_persist->subconfigs, subconfig);
+	}
+      if (found)
+	{
+	  ofc_queue_unlink(ofc_persist->subconfigs, subconfig);
+	  ofc_free(subconfig->tag);
+	  ofc_free(subconfig);
+	  ret = OFC_TRUE;
+	}
+      ofc_unlock(ofc_persist->config_lock);
+    }
+  return (ret);
+}
 #endif
 
 static OFC_VOID
@@ -882,6 +983,7 @@ ofc_persist_free(OFC_VOID) {
             ofc_persist->netbios_dns.num_dns = 0;
             ofc_persist->netbios_dns.dns = OFC_NULL;
         }
+
     }
 }
 
@@ -937,6 +1039,7 @@ ofc_persist_init(OFC_VOID) {
             ofc_persist->workstation_desc = OFC_NULL;
             ofc_persist->interface_config = OFC_NULL;
             ofc_persist->netbios_dns.dns = OFC_NULL;
+	    ofc_persist->subconfigs = ofc_queue_create();
 
             ofc_set_config(ofc_persist);
 
@@ -950,6 +1053,7 @@ OFC_CORE_LIB OFC_VOID
 ofc_persist_unload(OFC_VOID) {
     OFC_HANDLE hEvent;
     OFC_CONFIG *ofc_persist;
+    PERSIST_REGISTER *subconfig;
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
@@ -959,6 +1063,15 @@ ofc_persist_unload(OFC_VOID) {
             ofc_event_destroy(hEvent);
         }
         ofc_queue_destroy(event_queue);
+
+	for (subconfig = ofc_dequeue(ofc_persist->subconfigs);
+	     subconfig != OFC_NULL;
+	     subconfig = ofc_dequeue(ofc_persist->subconfigs))
+	  {
+	    ofc_free(subconfig->tag);
+	    ofc_free(subconfig);
+	  }
+	ofc_queue_destroy(ofc_persist->subconfigs);
 
         ofc_persist_free();
 

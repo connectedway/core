@@ -8,7 +8,6 @@
 
 #include "ofc/core.h"
 #include "ofc/types.h"
-#include "ofc/persist.h"
 
 /**
  * \defgroup dom DOM Parser

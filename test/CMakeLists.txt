@@ -18,19 +18,23 @@ target_sources(unityextras INTERFACE
 
 
 if (DEFINED CACHE{OFC_FS_DARWIN})
-   set(TEST_FILE test_fs_darwin.c)
+   list(APPEND TEST_EXTRA test_fs_darwin.c)
 endif()
 
 if (DEFINED CACHE{OFC_FS_WIN32})
-   set(TEST_FILE test_fs_windows.c)
+   list(APPEND TEST_EXTRA test_fs_windows.c)
 endif()
 
 if (DEFINED CACHE{OFC_FS_LINUX})
-   set(TEST_FILE test_fs_linux.c)
+   list(APPEND TEST_EXTRA test_fs_linux.c)
 endif()
 
 if (DEFINED CACHE{OFC_FS_ANDROID})
-   set(TEST_FILE test_fs_android.c)
+   list(APPEND TEST_EXTRA test_fs_android.c)
+endif()
+
+if (DEFINED CACHE{OFC_PERSIST})
+   list(APPEND TEST_EXTRA test_subpersist.c)
 endif()
 
 add_executable(test_all
@@ -44,7 +48,7 @@ add_executable(test_all
         test_path.c
         test_file.c
 	test_startup.c
-	${TEST_FILE}
+	${TEST_EXTRA}
         )
 target_compile_definitions(test_all PUBLIC NO_MAIN ON)
 target_link_libraries(test_all PRIVATE of_core_static unityextras)
@@ -107,4 +111,9 @@ if (DEFINED CACHE{OFC_FS_ANDROID})
    add_executable(test_fs_android test_fs_android.c test_file.c)
    target_link_libraries(test_fs_android PRIVATE of_core unityextras)
    add_test(NAME fs_android COMMAND $<TARGET_FILE:test_fs_android>)
+endif()
+if (DEFINED CACHE{OFC_PERSIST})
+   add_executable(test_subpersist test_subpersist.c)
+   target_link_libraries(test_subpersist PRIVATE of_core_static unityextras)
+   add_test(NAME subpersist COMMAND $<TARGET_FILE:test_subpersist> --config ${OPEN_FILES_HOME})
 endif()
