@@ -71,15 +71,15 @@ set_target_properties(of_core_static PROPERTIES SOVERSION 1)
 
 target_include_directories(of_core PUBLIC include)
 
-target_link_libraries(of_core_static PRIVATE
+target_link_libraries(of_core_static PUBLIC
+        ${fs_library_list}
         of_core_${OFC_HEAP_IMPL}
         of_core_${OFC_IMPL}
-        ${fs_library_list}
         )
-target_link_libraries(of_core_shared PRIVATE
+target_link_libraries(of_core_shared PUBLIC
+        ${fs_library_list}
         of_core_${OFC_HEAP_IMPL}
         of_core_${OFC_IMPL}
-        ${fs_library_list}
         )
 
 add_subdirectory(test)
