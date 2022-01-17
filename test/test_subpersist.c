@@ -139,9 +139,6 @@ TEST(subpersist, test_subpersist_load)
     OFC_LPVOID buf;
     OFC_SIZET len;
 
-    /*
-     * We should still be registered
-     */
     tpath = ofc_cstr2tstr(CONFIG_PATH);
 
     ret = ofc_persist_register("subpersist", subpersist_parse, subpersist_make);

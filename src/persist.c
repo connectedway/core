@@ -74,12 +74,6 @@ typedef struct {
 } OFC_CONFIG_ICONFIG;
 
 typedef struct {
-  OFC_CHAR *tag;
-  OFC_VOID (*parse)(OFC_DOMNode *dom, OFC_DOMNode *drives_node);
-  OFC_BOOL (*make)(OFC_DOMNode *doc, OFC_DOMNode *root);
-} PERSIST_REGISTER;
-
-typedef struct {
     OFC_LOCK *config_lock;
     OFC_TCHAR *workstation_name;
     OFC_TCHAR *workstation_domain;

@@ -560,7 +560,7 @@ ofc_dom_unescape(OFC_CHAR *data) {
 }
 
 OFC_CORE_LIB OFC_ULONG
-ofc_dom_get_element_cdata_long(OFC_DOMNode *doc, OFC_CHAR *name) {
+ofc_dom_get_element_cdata_ulong(OFC_DOMNode *doc, OFC_CHAR *name) {
     OFC_CHAR *cdata;
     OFC_ULONG val;
 

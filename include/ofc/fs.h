@@ -660,6 +660,14 @@ ofc_fs_destroy(OFC_VOID);
  */
 OFC_CORE_LIB OFC_VOID
 ofc_fs_register(OFC_FST_TYPE fsType, OFC_FILE_FSINFO *fsInfo);
+/**
+ * Deregister a File System Handler
+ *
+ * \param fsType
+ * Type of file system handler to deregister
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_fs_deregister(OFC_FST_TYPE fsType);
 
 OFC_HANDLE OfcFSCreateFile(OFC_FST_TYPE fsType,
                            OFC_LPCTSTR lpFileName,

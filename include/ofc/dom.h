@@ -300,7 +300,7 @@ ofc_dom_get_cdata(OFC_DOMNode *node);
  * An unsigned long value of the CDATA
  */
 OFC_CORE_LIB OFC_ULONG
-ofc_dom_get_element_cdata_long(OFC_DOMNode *doc, OFC_CHAR *name);
+ofc_dom_get_element_cdata_ulong(OFC_DOMNode *doc, OFC_CHAR *name);
 /**
  * Get the first matching element in a node hierarchy
  *

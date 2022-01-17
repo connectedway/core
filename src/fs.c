@@ -173,9 +173,6 @@ OFC_VOID OfcFSPipeShutdown(OFC_VOID);
 OFC_CORE_LIB OFC_VOID
 ofc_fs_init(OFC_VOID) {
     ofc_fs_register(OFC_FST_UNKNOWN, &ofc_fs_unknown);
-#if defined(OFC_FS_CIFS)
-    OfcFSCIFSStartup () ;
-#endif
 #if defined (OFC_FS_WIN32)
     OfcFSWin32Startup() ;
 #endif
@@ -214,9 +211,6 @@ ofc_fs_init(OFC_VOID) {
 OFC_CORE_LIB OFC_VOID
 ofc_fs_destroy(OFC_VOID) {
     ofc_fs_register(OFC_FST_UNKNOWN, &ofc_fs_unknown);
-#if defined(OFC_FS_CIFS)
-    ofc_fs_register (OFC_FST_SMB, &ofc_fs_unknown);
-#endif
 #if defined (OFC_FS_WIN32)
     ofc_fs_register (OFC_FST_WIN32, &ofc_fs_unknown);
 #endif
@@ -264,6 +258,11 @@ ofc_fs_destroy(OFC_VOID) {
 OFC_CORE_LIB OFC_VOID
 ofc_fs_register(OFC_FST_TYPE fsType, OFC_FILE_FSINFO *fsInfo) {
     ofc_fs_table[fsType] = fsInfo;
+}
+
+OFC_CORE_LIB OFC_VOID
+ofc_fs_deregister(OFC_FST_TYPE fsType) {
+    ofc_fs_table[fsType] = &ofc_fs_unknown;
 }
 
 OFC_HANDLE OfcFSCreateFile(OFC_FST_TYPE fsType,

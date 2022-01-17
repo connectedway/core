@@ -17,6 +17,22 @@
 /** \{ */
 
 /**
+ * Registration for sub persistance facilities
+ *
+ * This structure is used to register a tag within an XML file that will be the responsibility
+ * of a facility outside of the core persistance handling.  When a DOM is being parsed, if a
+ * tag is encountered, the parse routine will be called with the node so that the facility can
+ * parse the facilities DOM structure.  When a DOM is being created, the make callback will be
+ * called so that the facility has an opportunity to populate it with persistant data.
+ *
+ */
+typedef struct {
+  OFC_CHAR *tag;		/**< The XML tag for the facility  */
+  OFC_VOID (*parse)(OFC_DOMNode *dom, OFC_DOMNode *drives_node); /**< The parse callback */
+  OFC_BOOL (*make)(OFC_DOMNode *doc, OFC_DOMNode *root); /**< The make callback  */
+} PERSIST_REGISTER;
+
+/**
  * Network Configuration Modes
  *
  * This enum defines whether Open Files should query the underlying platform
