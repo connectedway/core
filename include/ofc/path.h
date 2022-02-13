@@ -436,7 +436,7 @@ OFC_CORE_LIB OFC_LPCTSTR ofc_path_device(OFC_PATH *path);
 
 OFC_CORE_LIB OFC_VOID ofc_path_free_device(OFC_PATH *path);
 
-OFC_CORE_LIB OFC_VOID ofc_path_free_usernane(OFC_PATH *path);
+OFC_CORE_LIB OFC_VOID ofc_path_free_username(OFC_PATH *path);
 
 OFC_CORE_LIB OFC_VOID ofc_path_free_password(OFC_PATH *path);
 

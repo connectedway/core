@@ -192,7 +192,7 @@ typedef struct {
     OFC_DWORD nInBufferSize;
     OFC_DWORD nOutBufferSize;
     OFC_DWORD nBytesReturned;
-    OFC_HANDLE msgqOverlapped;
+    OFC_HANDLE waitqOverlapped;
 } FILE_CALL_DEVICE_IO_CONTROL;
 
 typedef struct {
@@ -247,6 +247,9 @@ typedef struct {
     OFC_DWORD dwLastError;
     OFC_HANDLE hFile;
     OFC_MSTIME stamp;
+
+    OFC_HANDLE response_queue;
+    OFC_UINT command;
     union {
         FILE_CALL_CREATE create;
         FILE_CALL_CLOSE close;

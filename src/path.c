@@ -1567,7 +1567,7 @@ OFC_CORE_LIB OFC_VOID ofc_path_free_device(OFC_PATH *_path) {
     path->device = OFC_NULL;
 }
 
-OFC_CORE_LIB OFC_VOID ofc_path_free_usernane(OFC_PATH *_path) {
+OFC_CORE_LIB OFC_VOID ofc_path_free_username(OFC_PATH *_path) {
     _OFC_PATH *path = (_OFC_PATH *) _path;
     ofc_free(path->username);
     path->username = OFC_NULL;

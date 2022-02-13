@@ -79,6 +79,14 @@ ofc_process_crash(OFC_CCHAR *obuf);
 #if defined(__cplusplus)
 }
 #endif
+
+static inline OFC_CORE_LIB OFC_VOID
+ofc_assert(OFC_BOOL condition, OFC_CCHAR *error)
+{
+  if (!condition)
+    ofc_process_crash(error);
+}
+
 /** \} */
 #endif
 

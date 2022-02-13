@@ -1138,3 +1138,4 @@ OFC_CORE_LIB OFC_BOOL ofc_message_destroy_after_send(OFC_MESSAGE *msg) {
 OFC_CORE_LIB OFC_VOID ofc_message_set_destroy_after_send(OFC_MESSAGE *msg) {
     msg->destroy_after_send = OFC_TRUE;
 }
+

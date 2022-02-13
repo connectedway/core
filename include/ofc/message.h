@@ -182,6 +182,7 @@ typedef struct _OFC_MESSAGE {
 #endif
     OFC_VOID *context;
     OFC_BOOL destroy_after_send;
+
 } OFC_MESSAGE;
 
 #if defined(__cplusplus)
