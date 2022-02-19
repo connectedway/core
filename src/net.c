@@ -83,27 +83,27 @@ ofc_net_subnet_match(OFC_IPADDR *fromip, OFC_IPADDR *intip, OFC_IPADDR *mask) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
-                     OFC_IPADDR *ip) {
-    OFC_BOOL none;
+                     OFC_IPADDR *ip)
+{
+  OFC_BOOL resolved = OFC_FALSE;
+  *num_addres = 0;
+  
+  if (ofc_pton (name, ip) == 1)
+    resolved = OFC_TRUE;
 
-    none = OFC_TRUE;
-#if defined (OFC_NETBIOS)
-    ofc_pton (name, ip) ;
-
-    /*
-     * Is it still null?
-     */
-    if (none)
-      {
-        ofc_name_resolve_name(name, num_addrs, ip) ;
-        if (!ofc_net_is_addr_none (ip))
-      none = OFC_FALSE ;
-      }
-#endif
-
-    if (none) {
-        ofc_net_resolve_dns_name(name, num_addrs, ip);
+  if (!resolved)
+    {
+      ofc_net_resolve_dns_name(name, num_addrs, ip);
     }
+
+#if defined (OFC_NETBIOS)
+  if (!resolved)
+    {
+      ofc_name_resolve_name(name, num_addrs, ip) ;
+      if (!ofc_net_is_addr_none (&ip[0]))
+	resolved = OFC_TRUE;
+    }
+#endif
 }
 
 OFC_CORE_LIB OFC_VOID
