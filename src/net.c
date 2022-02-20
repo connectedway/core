@@ -86,7 +86,7 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
                      OFC_IPADDR *ip)
 {
   OFC_BOOL resolved = OFC_FALSE;
-  *num_addres = 0;
+  *num_addrs = 0;
   
   if (ofc_pton (name, ip) == 1)
     resolved = OFC_TRUE;
