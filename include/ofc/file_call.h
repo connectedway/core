@@ -126,10 +126,10 @@ typedef struct {
 /* new file name is pushed for move */
 
 typedef struct {
-    OFC_OFFT offBuffer;
+    OFC_LPVOID lpBuffer;
     OFC_DWORD nNumberOfBytesToRead;
     OFC_DWORD nNumberOfBytesRead;
-    OFC_HANDLE msgqOverlapped;
+    OFC_HANDLE hOverlapped;
     /*
      * These are added to help the CIFS write call.  Others that call write
      * should set distance to move to 0 and move method to FILE_CURRENT.
@@ -142,10 +142,10 @@ typedef struct {
 } FILE_CALL_READ;
 
 typedef struct {
-    OFC_OFFT offBuffer;
+    OFC_LPVOID lpBuffer;
     OFC_DWORD nNumberOfBytesToWrite;
     OFC_DWORD nNumberOfBytesWritten;
-    OFC_HANDLE msgqOverlapped;
+    OFC_HANDLE hOverlapped;
     /*
      * These are added to help the CIFS write call.  Others that call write
      * should set distance to move to 0 and move method to FILE_CURRENT.
@@ -184,7 +184,7 @@ typedef struct {
     OFC_DWORD nInBufferSize;
     OFC_DWORD nOutBufferSize;
     OFC_DWORD nBytesRead;
-    OFC_HANDLE msgqOverlapped;
+    OFC_HANDLE hOverlapped;
 } FILE_CALL_TRANSACT2_NAMED_PIPE;
 
 typedef struct {
