@@ -370,6 +370,18 @@ ofc_message_set_addr(OFC_MESSAGE *msg, OFC_IPADDR *ip, OFC_UINT16 port);
 OFC_CORE_LIB OFC_VOID
 ofc_message_reset(OFC_MESSAGE *msg);
 /**
+ * Reset Jsut the FIFO pointers
+ *
+ * This call sets the fifo pointer and fifo remaining length to the
+ * original values of the FIFO.  Useful when the message has been created
+ * and then wants to be read by someone else.
+ *
+ * \param msg
+ * The message to reset
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_message_fifo_reset(OFC_MESSAGE *msg);
+/**
  * Set the base offset of a message.
  *
  * This is usually 0, but can be overridden to some other offset

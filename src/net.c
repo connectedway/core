@@ -89,7 +89,10 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
   *num_addrs = 0;
   
   if (ofc_pton (name, ip) == 1)
-    resolved = OFC_TRUE;
+    {
+      *num_addrs = 1;
+      resolved = OFC_TRUE;
+    }
 
   if (!resolved)
     {

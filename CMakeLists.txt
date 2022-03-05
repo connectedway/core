@@ -9,6 +9,7 @@ set(SRCS
         src/env.c
         src/event.c
         src/file.c
+	src/file_call.c
         src/framework.c
         src/fs.c
         src/handle.c

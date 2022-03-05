@@ -10,6 +10,7 @@
 #include "ofc/types.h"
 #include "ofc/config.h"
 #include "ofc/handle.h"
+#include "ofc/file.h"
 
 enum {
     FILE_CALL_TAG_CREATE,
@@ -142,7 +143,7 @@ typedef struct {
 } FILE_CALL_READ;
 
 typedef struct {
-    OFC_LPVOID lpBuffer;
+    OFC_LPCVOID lpBuffer;
     OFC_DWORD nNumberOfBytesToWrite;
     OFC_DWORD nNumberOfBytesWritten;
     OFC_HANDLE hOverlapped;
@@ -276,5 +277,14 @@ typedef struct {
         FILE_CALL_QUERY_DIRECTORY query_directory;
     } u;
 } FILE_CALL;
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+  OFC_CORE_LIB OFC_MESSAGE *of_file_call_create(OFC_VOID);
+#if defined(__cplusplus)
+}
+#endif
 
 #endif

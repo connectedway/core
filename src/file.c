@@ -1338,7 +1338,7 @@ OfcFileGetOverlappedEvent(OFC_HANDLE hOverlapped) {
 
     Overlapped = ofc_handle_lock(hOverlapped);
     if (Overlapped != OFC_NULL) {
-        ret = ofc_waitq_get_event_handle(Overlapped->hUser);
+        ret = ofc_waitq_get_event_handle(Overlapped->response_queue);
         ofc_handle_unlock(hOverlapped);
     }
     return (ret);
@@ -1353,7 +1353,7 @@ OfcFileGetOverlappedWaitQ(OFC_HANDLE hOverlapped) {
 
     Overlapped = ofc_handle_lock(hOverlapped);
     if (Overlapped != OFC_NULL) {
-        ret = Overlapped->hUser;
+        ret = Overlapped->response_queue;
         ofc_handle_unlock(hOverlapped);
     }
     return (ret);

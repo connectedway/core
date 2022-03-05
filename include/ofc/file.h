@@ -672,7 +672,7 @@ typedef struct _OFC_OVERLAPPED {
     OFC_DWORD dwLen;
     OFC_OFFT offset;
     OFC_HANDLE hContext;
-    OFC_HANDLE hUser;
+    OFC_HANDLE response_queue;
 #if defined(OFC_PERF_STATS)
     OFC_INT perf_id;
     OFC_MSTIME stamp;

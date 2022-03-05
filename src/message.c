@@ -256,6 +256,12 @@ ofc_message_reset(OFC_MESSAGE *msg) {
 }
 
 OFC_CORE_LIB OFC_VOID
+ofc_message_fifo_reset(OFC_MESSAGE *msg) {
+    msg->FIFO1 = msg->FIFO1base;
+    msg->FIFO1rem = msg->FIFO1size;
+}
+
+OFC_CORE_LIB OFC_VOID
 ofc_message_set_base(OFC_MESSAGE *msg, OFC_INT base) {
     msg->base = base;
 }
@@ -365,11 +371,7 @@ ofc_message_put_tstr(OFC_MESSAGE *msg, OFC_INT offset, OFC_LPCTSTR str) {
         p = str;
         for (i = 0, p = str; i < len && ret == OFC_TRUE;
              i += sizeof(OFC_WORD), p++) {
-#if defined(OFC_UNICODE)
             ret = ofc_message_put_u16(msg, offset + i, *p) ;
-#else
-            ret = ofc_message_put_u8(msg, offset + i, *p);
-#endif
         }
     }
     return (ret);

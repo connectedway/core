@@ -65,17 +65,11 @@ ofc_thread_get_variable(OFC_DWORD var) {
     OFC_DWORD_PTR val;
 
     val = ofc_thread_get_variable_impl(var);
-    if (val > (OFC_DWORD_PTR) OFC_ERROR_NOT_ENOUGH_QUOTA)
-        ofc_printf("Obtained Bad Status on variable %d, val 0x%08x\n",
-                   var, (OFC_UINT) (OFC_DWORD_PTR) val);
     return (val);
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_thread_set_variable(OFC_DWORD var, OFC_DWORD_PTR val) {
-    if (val > (OFC_DWORD_PTR) OFC_ERROR_NOT_ENOUGH_QUOTA)
-        ofc_printf("Setting Bad Status on variable %d, val 0x%08x\n",
-                   var, (OFC_UINT) val);
     if (var != OfcLastError || val != (OFC_DWORD_PTR) OFC_ERROR_SUCCESS)
         ofc_thread_set_variable_impl(var, val);
 }
