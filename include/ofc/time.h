@@ -23,8 +23,8 @@
  * A structure for helping us measure queing delay
  */
 typedef enum {
-    OFC_PERF_FSCIFS_READ = 0,
-    OFC_PERF_FSCIFS_WRITE = 1,
+    OFC_PERF_FSSMB_READ = 0,
+    OFC_PERF_FSSMB_WRITE = 1,
     OFC_PERF_CLIENT_READ = 2,
     OFC_PERF_CLIENT_WRITE = 3,
     OFC_PERF_SERVER_READ = 4,

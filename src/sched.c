@@ -209,11 +209,13 @@ ofc_sched_preselect(OFC_HANDLE hScheduler) {
         for (hApp = (OFC_HANDLE) ofc_queue_first(scheduler->applications);
              (hApp != OFC_HANDLE_NULL);) {
             ofc_app_preselect(hApp);
+#if defined(OFC_PRESELECT_PASS)
             if (scheduler->significant_event) {
                 scheduler->significant_event = OFC_FALSE;
                 hApp = (OFC_HANDLE) ofc_queue_first(scheduler->applications);
                 ofc_waitset_clear(scheduler->hEventSet);
             } else
+#endif
                 hApp = (OFC_HANDLE) ofc_queue_next(scheduler->applications,
                                                    (OFC_VOID *) hApp);
         }
@@ -240,7 +242,9 @@ ofc_sched_postselect(OFC_HANDLE hScheduler) {
         /*
          * Go through applications until end or some significant event
          */
+#if defined(OFC_PRESELECT_PASS)
         scheduler->significant_event = OFC_FALSE;
+#endif
 
         while (scheduler->hTriggered != OFC_HANDLE_NULL) {
             hApp = ofc_handle_get_app(scheduler->hTriggered);
