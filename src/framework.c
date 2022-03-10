@@ -115,6 +115,30 @@ OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename) {
 #endif
 }
 
+OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir, OFC_SIZET len)
+{
+  OFC_BOOL ret;
+  ret = OFC_FALSE;
+#if defined(OFC_PERSIST)
+  if (config_filename != OFC_NULL)
+    {
+      OFC_PATH *path;
+      OFC_SIZET rem;
+      OFC_SIZET size;
+      OFC_TCHAR *dir;
+      
+      path = ofc_path_createW(config_filename);
+      ofc_path_free_filename(path);
+      rem = 128;
+      dir = config_dir;
+      ofc_path_printW(path, &dir, &rem);
+      ofc_path_delete(path);
+      ret = OFC_TRUE;
+    }
+#endif
+  return (ret);
+}
+
 OFC_CORE_LIB OFC_VOID
 ofc_framework_set_host_name(OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
                             OFC_LPCTSTR desc) {

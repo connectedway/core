@@ -111,6 +111,13 @@ OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename);
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename);
 /**
+ * Find the application directory (i.e. directory that config file is in
+ *
+ * returns a TSTR of the config directory that needs to be freed after use
+ */
+OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir,
+					 OFC_SIZET len);
+/**
  * Set the host name of the running instance
  *
  * Mostly used to set the server name but this will also set the
