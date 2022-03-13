@@ -22,6 +22,7 @@
 #include "ofc/lock.h"
 #include "ofc/socket.h"
 #include "ofc/message.h"
+#include "ofc/time.h"
 
 #include "ofc/heap.h"
 
@@ -1659,6 +1660,8 @@ OFC_CORE_LIB OFC_VOID
 ofc_printf(OFC_CCHAR *fmt, ...) {
     OFC_CHAR *obuf;
     OFC_SIZET len;
+    OFC_SIZET tlen;
+    OFC_CHAR timestamp[20];
 
     va_list ap;
 
@@ -1670,6 +1673,9 @@ ofc_printf(OFC_CCHAR *fmt, ...) {
     va_start(ap, fmt);
     ofc_vsnprintf(obuf, len + 1, fmt, ap);
     va_end(ap);
+
+    tlen = ofc_snprintf(timestamp, 20, "%s ", ofc_time_get_now());
+    ofc_write_stdout(timestamp, tlen);
 
     ofc_write_stdout(obuf, len);
 

@@ -21,9 +21,7 @@
 
 #include "ofc/heap.h"
 
-#if defined(OFC_PERSIST)
 static OFC_LPTSTR config_filename = OFC_NULL;
-#endif
 
 /**
  * \defgroup init Initialization
@@ -52,12 +50,10 @@ ofc_framework_init(OFC_VOID) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_framework_destroy(OFC_VOID) {
-#if defined(OFC_PERSIST)
     if (config_filename != OFC_NULL) {
         ofc_free(config_filename);
         config_filename = OFC_NULL;
     }
-#endif
 #if !defined(INIT_ON_LOAD)
     ofc_core_unload() ;
 #endif
@@ -92,10 +88,11 @@ ofc_framework_shutdown(OFC_VOID) {
 }
 
 OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename) {
-#if defined(OFC_PERSIST)
-    ofc_printf("Loading %S\n", filename);
     if (config_filename == OFC_NULL)
         config_filename = ofc_tstrdup(filename);
+
+#if defined(OFC_PERSIST)
+    ofc_printf("Loading %S\n", filename);
     ofc_persist_load(filename);
 #else
     ofc_printf("Configuration Files Disabled\n") ;
@@ -119,7 +116,6 @@ OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir, OFC_SIZET len)
 {
   OFC_BOOL ret;
   ret = OFC_FALSE;
-#if defined(OFC_PERSIST)
   if (config_filename != OFC_NULL)
     {
       OFC_PATH *path;
@@ -135,7 +131,6 @@ OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir, OFC_SIZET len)
       ofc_path_delete(path);
       ret = OFC_TRUE;
     }
-#endif
   return (ret);
 }
 

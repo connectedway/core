@@ -177,20 +177,16 @@ static OFC_FST_TYPE MapType(OFC_PATH *path) {
 
         if (server_wild) {
 #if defined(OFC_FS_BROWSER)
-            fstype = OFC_FS_BROWSE_WORKGROUPS ;
+            fstype = OFC_FST_BROWSE_WORKGROUPS ;
 #endif
         } else if (share_wild && lookup_workgroup(server) == OFC_TRUE) {
 #if defined(OFC_FS_BROWSER)
-            fstype = OFC_FS_BROWSE_SERVERS ;
+            fstype = OFC_FST_BROWSE_SERVERS ;
 #endif
         } else if (share_wild) {
-#if defined(OFC_FS_BROWSER)
-            fstype = OFC_FS_BROWSE_SHARES ;
-#endif
+            fstype = OFC_FST_BROWSE_SHARES ;
         } else {
-#if defined(OFC_FS_CIFS)
-            fstype = OFC_FS_CIFS ;
-#endif
+            fstype = OFC_FST_SMB ;
         }
     }
     return (fstype);
