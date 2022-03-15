@@ -226,7 +226,7 @@ OFC_VOID ofc_framework_free_interfaces(OFC_FRAMEWORK_INTERFACES *ifaces);
  *
  * Optional
  */
-OFC_VOID ofc_framework_add_map(OFC_FRAMEWORK_MAP *map);
+OFC_BOOL ofc_framework_add_map(OFC_FRAMEWORK_MAP *map);
 
 /**
  * Return the aliases

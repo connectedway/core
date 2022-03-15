@@ -357,11 +357,13 @@ OFC_VOID ofc_framework_free_maps(OFC_FRAMEWORK_MAPS *maps) {
     ofc_free(maps);
 }
 
-OFC_VOID ofc_framework_add_map(OFC_FRAMEWORK_MAP *map) {
+OFC_BOOL ofc_framework_add_map(OFC_FRAMEWORK_MAP *map) {
     OFC_PATH *path;
+    OFC_BOOL ret;
 
     path = ofc_path_createW(map->path);
-    ofc_path_add_mapW(map->prefix, map->desc, path, map->type, map->thumbnail);
+    ret = ofc_path_add_mapW(map->prefix, map->desc, path, map->type, map->thumbnail);
+    return (ret);
 }
 
 OFC_VOID ofc_framework_remove_map(OFC_LPCTSTR tszPrefix) {
