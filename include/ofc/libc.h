@@ -859,6 +859,22 @@ OFC_VOID ofc_uuidtoa(OFC_UUID uuid, OFC_CHAR *out);
 
 OFC_VOID ofc_atouuid(const OFC_CHAR *in, OFC_UUID uuid);
 
+/*
+ * ofc_substr - Is string s2 in s1?
+ *
+ * \param s2
+ * string to find inside of s1
+ *
+ * \param s1
+ * string that may contain s2
+ *
+ * \returns
+ * -1 if string s1 does not contain string s2
+ * >= 0 location in s1 where string s2 starts
+ */
+OFC_CORE_LIB
+OFC_INT ofc_substr(OFC_CCHAR *s2, OFC_CCHAR *s1);
+
 #if defined(__cplusplus)
 }
 #endif

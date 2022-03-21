@@ -23,7 +23,8 @@ struct heap_chunk {
     struct heap_chunk *dbgnext;
     struct heap_chunk *dbgprev;
     OFC_BOOL snap;
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
+
+#if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
     OFC_VOID *caller1;
     OFC_VOID *caller2;
     OFC_VOID *caller3;
@@ -99,7 +100,7 @@ ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk,
     ofc_heap_stats.Allocated = chunk;
     chunk->dbgprev = 0;
 
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
+#if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
 #if defined(__cyg_profile)
     chunk->caller1 = __cyg_profile_return_address(1) ;
     chunk->caller2 = __cyg_profile_return_address(2) ;
@@ -135,7 +136,7 @@ ofc_heap_debug_free(struct heap_chunk *chunk) {
         ofc_heap_stats.Allocated = chunk->dbgnext;
     if (chunk->dbgnext != OFC_NULL)
         chunk->dbgnext->dbgprev = chunk->dbgprev;
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
+#if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
 #if defined(__cyg_profile)
     chunk->caller1 = __cyg_profile_return_address(1) ;
     chunk->caller2 = __cyg_profile_return_address(2) ;
@@ -175,14 +176,15 @@ ofc_heap_dump(OFC_VOID) {
 
     ofc_heap_dump_stats();
 #if defined(OFC_HEAP_DEBUG)
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
+#if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
     if (ofc_heap_stats.Allocated == OFC_NULL) {
         len = ofc_snprintf(obuf, OBUF_SIZE,
                            "\nHeap is Empty, No leaks detected\n");
         ofc_write_console(obuf);
     } else {
+
         len = ofc_snprintf(obuf, OBUF_SIZE,
-                           "%-10s %-10s %-10s %-10s %-10s %-10s\n",
+                           "%-16s %-10s %-16s %-16s %-16s %-16s\n",
                            "Address", "Size", "Caller1", "Caller2", "Caller3",
                            "Caller4");
         ofc_write_console(obuf);
@@ -195,7 +197,7 @@ ofc_heap_dump(OFC_VOID) {
         if (!chunk->snap) {
 #if defined(__cyg_profile)
             len = ofc_snprintf (obuf, OBUF_SIZE,
-                         "%-10p %-10d %-10s %-10s %-10s %-10s\n",
+                         "%0-16p %-10d %0-16s %0-16s %0-16s %0-16s\n",
                          chunk+1, (OFC_INT) chunk->alloc_size,
                          __cyg_profile_addr2sym(chunk->caller1),
                          __cyg_profile_addr2sym(chunk->caller2),
@@ -203,10 +205,12 @@ ofc_heap_dump(OFC_VOID) {
                          __cyg_profile_addr2sym(chunk->caller4)) ;
 #else
             len = ofc_snprintf(obuf, OBUF_SIZE,
-                               "%-10p %-10d %-10p %-10p %-10p %-10p\n",
+                               "%0-16p %-10d %0-16p %0-16p %0-16p %0-16p\n",
                                chunk + 1, (OFC_INT) chunk->alloc_size,
-                               chunk->caller1, chunk->caller2, chunk->caller3,
-                               chunk->caller4);
+			       ofc_process_relative_addr(chunk->caller1),
+			       ofc_process_relative_addr(chunk->caller2),
+			       ofc_process_relative_addr(chunk->caller3),
+			       ofc_process_relative_addr(chunk->caller4));
 #endif
             ofc_write_console(obuf);
         }
@@ -263,17 +267,19 @@ ofc_heap_snap(OFC_VOID) {
 OFC_CORE_LIB OFC_VOID
 ofc_heap_dump_chunk(OFC_LPVOID mem) {
 #if defined(OFC_HEAP_DEBUG)
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
+#if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
     struct heap_chunk *chunk;
 
     if (mem != OFC_NULL) {
         chunk = mem;
         chunk--;
 
-        ofc_printf("%-10p %-10d %-10p %-10p %-10p %-10p\n",
-                   chunk + 1, (OFC_INT) chunk->alloc_size,
-                   chunk->caller1, chunk->caller2, chunk->caller3,
-                   chunk->caller4);
+	ofc_printf("%0-16p %-10d %0-16p %0-16p %0-16p %0-16p\n",
+		   chunk + 1, (OFC_INT) chunk->alloc_size,
+		   ofc_process_relative_addr(chunk->caller1),
+		   ofc_process_relative_addr(chunk->caller2),
+		   ofc_process_relative_addr(chunk->caller3),
+		   ofc_process_relative_addr(chunk->caller4));
     }
 #endif
 #endif

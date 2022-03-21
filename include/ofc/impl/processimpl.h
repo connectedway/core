@@ -32,6 +32,10 @@ OFC_PROCESS_ID ofc_process_get_id_impl(OFC_HANDLE hProcess);
 
 OFC_VOID ofc_process_crash_impl(OFC_CCHAR *obuf);
 
+OFC_VOID ofc_process_dump_libs_impl(OFC_VOID);
+
+OFC_VOID *ofc_process_relative_addr_impl(OFC_VOID *addr);
+
 #if defined(__cplusplus)
 }
 #endif

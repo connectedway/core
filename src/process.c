@@ -59,3 +59,15 @@ OFC_CORE_LIB OFC_VOID
 ofc_process_crash(OFC_CCHAR *obuf) {
     ofc_process_crash_impl(obuf);
 }
+
+OFC_CORE_LIB OFC_VOID
+ofc_process_dump_libs(OFC_VOID)
+{
+  ofc_process_dump_libs_impl();
+}
+
+OFC_CORE_LIB OFC_VOID *ofc_process_relative_addr(OFC_VOID *addr)
+{
+  return (ofc_process_relative_addr_impl(addr));
+}
+

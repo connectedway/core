@@ -1127,7 +1127,7 @@ static OFC_VOID fmttastr(OFC_CHAR *buffer, OFC_SIZET *currlen,
                          OFC_INT flags, OFC_SIZET min, OFC_SIZET max);
 
 static OFC_VOID fmtint(OFC_CHAR *buffer, OFC_SIZET *currlen,
-                       OFC_SIZET maxlen, OFC_LONG value, OFC_INT base,
+                       OFC_SIZET maxlen, OFC_INT64 value, OFC_INT base,
                        OFC_SIZET min, OFC_SIZET max, OFC_INT flags);
 
 static OFC_VOID dopr_outch(OFC_CHAR *buffer, OFC_SIZET *currlen,
@@ -1385,7 +1385,7 @@ dopr(OFC_CHAR *buffer, OFC_SIZET maxlen, OFC_CCHAR *format, va_list args) {
                         flags |= DP_F_UNSIGNED;
                         strvalue = va_arg (args, OFC_CHAR *);
                         fmtint(buffer, &currlen, maxlen,
-                               (OFC_ULONG) ((OFC_ULONG_PTR) strvalue & OFC_ULONG_MAX),
+                               (OFC_ULONG_PTR) strvalue,
                                16, min, max, flags);
                         break;
                     case 'n':
@@ -1536,11 +1536,11 @@ fmttastr(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
 
 static OFC_VOID
 fmtint(OFC_CHAR *buffer, OFC_SIZET *currlen, OFC_SIZET maxlen,
-       OFC_LONG value, OFC_INT base, OFC_SIZET min, OFC_SIZET max,
+       OFC_INT64 value, OFC_INT base, OFC_SIZET min, OFC_SIZET max,
        OFC_INT flags) {
 #define MAX_CONVERT_PLACES 40
     OFC_INT signvalue = 0;
-    OFC_ULONG uvalue;
+    OFC_UINT64 uvalue;
     OFC_CHAR convert[MAX_CONVERT_PLACES];
     OFC_INT place = 0;
     OFC_SIZET spadlen = 0; /* amount to space pad */
@@ -1674,7 +1674,7 @@ ofc_printf(OFC_CCHAR *fmt, ...) {
     ofc_vsnprintf(obuf, len + 1, fmt, ap);
     va_end(ap);
 
-    tlen = ofc_snprintf(timestamp, 20, "%s ", ofc_time_get_now());
+    tlen = ofc_snprintf(timestamp, 20, "%d ", ofc_time_get_now());
     ofc_write_stdout(timestamp, tlen);
 
     ofc_write_stdout(obuf, len);
@@ -1907,3 +1907,53 @@ ofc_atouuid(const OFC_CHAR *in, OFC_UUID uuid) {
     }
 }
 
+/*
+ * ofc_substr - Is string s2 in s1?
+ *
+ * \param s2
+ * string to find inside of s1
+ *
+ * \param s1
+ * string that may contain s2
+ *
+ * \returns
+ * -1 if string s1 does not contain string s2
+ * >= 0 location in s1 where string s2 starts
+ */
+OFC_CORE_LIB
+OFC_INT ofc_substr(OFC_CCHAR *s2, OFC_CCHAR *s1)
+{
+  OFC_INT s2_index;
+  OFC_INT s1_index;
+  OFC_SIZET s1_len;
+  OFC_SIZET s2_len;
+  OFC_INT ret;
+
+  s1_index = 0;
+  s2_index = 0;
+  s1_len = ofc_strlen(s1);
+  s2_len = ofc_strlen(s2);
+
+  for( ; (s1_index < s1_len) && (s2_index != s2_len); s1_index++)
+    {
+      if (s2[s2_index] == s1[s1_index])
+        {
+	  s2_index++;
+        }
+      else
+        {
+	  if (s2_index > 0)
+            {
+	      s1_index -= s2_index;
+            }
+	  s2_index = 0;
+        }
+    }
+
+  if (s2_index < s2_len)
+    ret = -1;
+  else
+    ret = s1_index - s2_index;
+
+  return (ret);
+}

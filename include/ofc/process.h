@@ -76,6 +76,12 @@ ofc_process_get_id(OFC_HANDLE hProcess);
 OFC_CORE_LIB OFC_VOID
 ofc_process_crash(OFC_CCHAR *obuf);
 
+OFC_CORE_LIB OFC_VOID
+ofc_process_dump_libs(OFC_VOID);
+
+OFC_CORE_LIB OFC_VOID *
+ofc_process_relative_addr(OFC_VOID *addr);
+
 #if defined(__cplusplus)
 }
 #endif
