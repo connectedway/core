@@ -378,6 +378,10 @@ OFC_VOID ofc_framework_dump_heap(OFC_VOID) {
     ofc_heap_dump();
 }
 
+OFC_VOID ofc_framework_stats_heap(OFC_VOID) {
+    ofc_heap_dump_stats();
+}
+
 static OFC_INT wifi_ip = 0;
 
 OFC_VOID ofc_framework_set_wifi_ip(OFC_INT ip) {

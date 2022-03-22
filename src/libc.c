@@ -1674,7 +1674,7 @@ ofc_printf(OFC_CCHAR *fmt, ...) {
     ofc_vsnprintf(obuf, len + 1, fmt, ap);
     va_end(ap);
 
-    tlen = ofc_snprintf(timestamp, 20, "%d ", ofc_time_get_now());
+    tlen = ofc_snprintf(timestamp, 20, "%u ", ofc_time_get_now());
     ofc_write_stdout(timestamp, tlen);
 
     ofc_write_stdout(obuf, len);
