@@ -258,6 +258,8 @@ OFC_VOID ofc_framework_set_wifi_ip(OFC_INT);
 
 OFC_INT ofc_framework_get_wifi_ip(OFC_VOID);
 
+OFC_VOID ofc_framework_stats_heap(OFC_VOID);
+
 #if defined(__cplusplus)
 }
 #endif
