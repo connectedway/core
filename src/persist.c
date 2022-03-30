@@ -376,7 +376,7 @@ ofc_persist_make_dom(OFC_VOID) {
 
             for (i = 0; i < OFC_MAX_MAPS && !error_state; i++) {
                 ofc_path_get_mapW(i, &prefix, &desc, &path, &thumbnail);
-                if (prefix != OFC_NULL && ofc_path_remote(path)) {
+                if (prefix != OFC_NULL) {
                     map_node = ofc_dom_create_element(doc, "map");
                     if (map_node != OFC_NULL)
                         ofc_dom_append_child(drives_node, map_node);
@@ -702,18 +702,24 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
                                 thumbnail = OFC_FALSE;
                         }
 
-                        if (lpDesc == OFC_NULL)
-                            lpDesc = "Remote Share";
                         lpFile = ofc_dom_get_element_cdata(map_node, "path");
                         if (lpBookmark != OFC_NULL && lpFile != OFC_NULL) {
                             path = ofc_path_createA(lpFile);
-                            if (ofc_path_remote(path)) {
-                                if (!ofc_path_add_mapA(lpBookmark, lpDesc,
+                            if (ofc_path_remote(path))
+			      {
+				if (lpDesc == OFC_NULL)
+				  lpDesc = "Remote Share";
+				if (!ofc_path_add_mapA(lpBookmark, lpDesc,
                                                        path, OFC_FST_SMB,
                                                        thumbnail))
                                     ofc_path_delete(path);
                             } else {
-                                ofc_path_delete(path);
+				if (lpDesc == OFC_NULL)
+				  lpDesc = "Local Bookmark";
+                                if (!ofc_path_add_mapA(lpBookmark, lpDesc,
+                                                       path, OFC_FST_BOOKMARKS,
+                                                       thumbnail))
+				  ofc_path_delete(path);
                             }
                         }
                     }
