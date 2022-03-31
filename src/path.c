@@ -254,6 +254,52 @@ static OFC_TCHAR *ParseEscaped(OFC_CTCHAR *cursor, OFC_CTCHAR **outcursor,
     return (ret);
 }
 
+static OFC_TCHAR *ParseUnescaped(OFC_CTCHAR *cursor, OFC_CTCHAR **outcursor,
+				 OFC_CTCHAR *terms) {
+    OFC_LPCTSTR peek;
+    OFC_BOOL hit;
+    OFC_LPTSTR ret;
+    OFC_INT len;
+    OFC_TCHAR *p;
+    OFC_TCHAR *outstr;
+
+    outstr = OFC_NULL;
+    *outcursor = cursor;
+
+    if (cursor == OFC_NULL || terms == OFC_NULL)
+        ret = OFC_NULL;
+    else {
+        /*
+         * First, find the length
+         */
+        for (peek = cursor, len = 0, hit = OFC_FALSE; !hit;) {
+	    if (terminator(*peek, terms)) {
+	      hit = OFC_TRUE;
+	    } else {
+	      peek++;
+	      len++;
+            }
+        }
+
+        if (len > 0) {
+            outstr = ofc_malloc(sizeof(OFC_TCHAR) * (len + 1));
+            p = outstr;
+
+            for (peek = cursor, hit = OFC_FALSE; !hit;) {
+		if (terminator(*peek, terms)) {
+		  hit = OFC_TRUE;
+		} else {
+		  *p++ = *peek++;
+		}
+            }
+            *p = TCHAR_EOS;
+            *outcursor = peek;
+        }
+        ret = outstr;
+    }
+    return (ret);
+}
+
 OFC_CORE_LIB OFC_PATH *
 ofc_path_init_path(OFC_VOID) {
     _OFC_PATH *path;
@@ -328,7 +374,7 @@ ofc_path_createW(OFC_LPCTSTR lpFileName) {
      */
     p = ofc_tstrtok(cursor, TSTR("\\/:"));
     if (*p == TCHAR_COLON) {
-        path->device = ParseEscaped(cursor, &cursor, TSTR(":"));
+        path->device = ParseUnescaped(cursor, &cursor, TSTR(":"));
         cursor++;
         if ((ofc_tstrcmp(path->device, TSTR("cifs")) == 0) ||
             (ofc_tstrcmp(path->device, TSTR("smb")) == 0) ||
@@ -392,7 +438,7 @@ ofc_path_createW(OFC_LPCTSTR lpFileName) {
     }
 
     while (*cursor != TCHAR_EOS) {
-        dir = ParseEscaped(cursor, &cursor, TSTR("\\/:"));
+        dir = ParseUnescaped(cursor, &cursor, TSTR("\\/:"));
 
         if (dir != OFC_NULL) {
             wild = ofc_path_is_wild(dir);
@@ -434,7 +480,7 @@ ofc_path_createW(OFC_LPCTSTR lpFileName) {
 
             if ((*cursor == TCHAR(':')) && path->remote && (path->num_dirs == 1)) {
                 cursor++;
-                portw = ParseEscaped(cursor, &cursor, TSTR("\\/"));
+                portw = ParseUnescaped(cursor, &cursor, TSTR("\\/"));
                 porta = ofc_tstr2cstr(portw);
                 path->port = (OFC_INT) ofc_strtoul(porta, OFC_NULL, 10);
                 ofc_free(portw);
