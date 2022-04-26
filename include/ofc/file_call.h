@@ -248,6 +248,7 @@ typedef struct {
     OFC_DWORD dwLastError;
     OFC_HANDLE hFile;
     OFC_MSTIME stamp;
+    OFC_VOID *context;
 
     OFC_HANDLE response_queue;
     OFC_UINT command;
