@@ -20,7 +20,7 @@
 #include "ofc/file.h"
 
 #define OFC_FS_TEST_INTERVAL 1000
-#define OFC_FILE_TEST_COUNT 2
+#define OFC_FILE_TEST_COUNT 1000
 
 /*
  * This application demonstrates the API to the Open File I/O Facility
@@ -2285,8 +2285,12 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
        * fail.
        * Either case is good
        */
+#if 0
         ofc_printf("  Dismount Test with No connection\n");
         OfcDismountTest(device);
+#else
+	ofc_sleep(500);
+#endif
         /*
        * Then see if we can copy files
        */
