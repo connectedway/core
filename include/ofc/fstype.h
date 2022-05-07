@@ -24,7 +24,8 @@ typedef enum {
     OFC_FST_NUFILE,        /**< A Nucleus NUFile type filesystem */
     OFC_FST_ANDROID,        /**< An Android Filesystem */
     OFC_FST_OTHER,        /**< A platform specific type filesystem  */
-    OFC_FST_SMB,        /**< A CIFS/SMB type filesystem  */
+    OFC_FST_SMB,        /**< A SMB type filesystem  */
+    OFC_FST_RESOLVER,  /**< A Android Content Resolver FS */
     OFC_FST_FILE,        /**< The redirectory filesystem (loopback) */
     OFC_FST_PIPE,        /**< A Pipe File System  */
     OFC_FST_MAILSLOT,        /**< A Mailslot File System  */

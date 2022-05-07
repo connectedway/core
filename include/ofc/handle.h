@@ -75,6 +75,7 @@ typedef enum {
     OFC_HANDLE_FSLINUX_FILE,    /**< The handle for a linux file  */
     OFC_HANDLE_FSFILEX_FILE,    /**< The handle for a threadx filex file */
     OFC_HANDLE_FSANDROID_FILE,    /**< The handle for a android file */
+    OFC_HANDLE_FSRESOLVER_FILE,    /**< The handle for android content file */
     OFC_HANDLE_FSNUFILE_FILE,  /**< The handle for a Nucleus NUFile file */
     OFC_HANDLE_FSOTHER_FILE,   /**< The handle for a port specific file */
     OFC_HANDLE_FSBROWSER_FILE, /**< The handle on a browser file  */
