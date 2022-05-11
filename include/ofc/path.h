@@ -391,6 +391,8 @@ OFC_CORE_LIB OFC_INT ofc_path_port(OFC_PATH *path);
 
 OFC_CORE_LIB OFC_VOID ofc_path_set_port(OFC_PATH *_path, OFC_INT port);
 
+OFC_CORE_LIB OFC_VOID ofc_path_set_device(OFC_PATH *_path, OFC_LPCTSTR device);
+
 OFC_CORE_LIB OFC_VOID
 ofc_path_set_server(OFC_PATH *path, OFC_LPTSTR server);
 

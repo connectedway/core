@@ -20,7 +20,7 @@
 #include "ofc/file.h"
 
 #define OFC_FS_TEST_INTERVAL 1000
-#define OFC_FILE_TEST_COUNT 1000
+#define OFC_FILE_TEST_COUNT 2
 
 /*
  * This application demonstrates the API to the Open File I/O Facility

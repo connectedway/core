@@ -1376,6 +1376,15 @@ OFC_CORE_LIB OFC_VOID ofc_path_set_port(OFC_PATH *_path, OFC_INT port) {
     path->port = port;
 }
 
+OFC_CORE_LIB OFC_VOID ofc_path_set_device(OFC_PATH *_path,
+					  OFC_LPCTSTR device) {
+    _OFC_PATH *path = (_OFC_PATH *) _path;
+
+    if (path->device != OFC_NULL)
+      ofc_free(path->device);
+    path->device = ofc_tstrdup(device);
+}
+
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_server(OFC_PATH *_path) {
     _OFC_PATH *path = (_OFC_PATH *) _path;
     OFC_LPCTSTR server;
