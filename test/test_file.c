@@ -20,7 +20,7 @@
 #include "ofc/file.h"
 
 #define OFC_FS_TEST_INTERVAL 1000
-#define OFC_FILE_TEST_COUNT 2
+#define OFC_FILE_TEST_COUNT 50
 
 /*
  * This application demonstrates the API to the Open File I/O Facility
@@ -2252,7 +2252,7 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
 	{
 	  OFC_WIN32_FILE_ATTRIBUTE_DATA fadFile;
 	  OFC_BOOL bret;
-	  ofc_printf("Trying an OfcGetFileAttributesExW on /");
+	  ofc_printf("Trying an OfcGetFileAttributesExW on /\n");
 	  bret = OfcGetFileAttributesExW(TSTR("/"),
 					 OfcGetFileExInfoStandard,
 					 &fadFile);
