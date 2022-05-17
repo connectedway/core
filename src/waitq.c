@@ -260,6 +260,21 @@ ofc_waitq_get_event_handle(OFC_HANDLE qHandle) {
 }
 
 OFC_CORE_LIB OFC_VOID
+ofc_waitq_wake(OFC_HANDLE qHandle) {
+    WAIT_QUEUE *pWaitQueue;
+    OFC_HANDLE hEvent;
+
+    hEvent = OFC_HANDLE_NULL;
+
+    pWaitQueue = ofc_handle_lock(qHandle);
+    if (pWaitQueue != OFC_NULL) {
+        hEvent = pWaitQueue->hEvent;
+	ofc_event_set(hEvent);
+        ofc_handle_unlock(qHandle);
+    }
+}
+
+OFC_CORE_LIB OFC_VOID
 ofc_waitq_block(OFC_HANDLE waitq) {
     WAIT_QUEUE *pWaitQueue;
 

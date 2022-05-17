@@ -357,6 +357,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock(OFC_HANDLE handle) {
     handle_context->trace_idx = (handle_context->trace_idx+1) % 100 ;
 #endif
 
+    ofc_unlock(HandleLock);
     if (handle_context->destroy && handle_context->reference == 0) {
 #if defined(OFC_HANDLE_DEBUG)
         ofc_handle_debug_free(handle_context) ;
@@ -364,10 +365,8 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock(OFC_HANDLE handle) {
 #if defined(OFC_HANDLE_PERF)
         ofc_handle_print_interval("Handle: ", handle) ;
 #endif
-        ofc_unlock(HandleLock);
         ofc_free(handle_context);
-    } else
-        ofc_unlock(HandleLock);
+    }
 }
 
 OFC_CORE_LIB OFC_VOID ofc_handle_destroy(OFC_HANDLE handle) {

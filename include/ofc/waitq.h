@@ -125,6 +125,17 @@ ofc_waitq_clear(OFC_HANDLE qHandle);
 OFC_CORE_LIB OFC_HANDLE
 ofc_waitq_get_event_handle(OFC_HANDLE qHandle);
 /**
+ * Wake up the waitq without queueing anything
+ *
+ * \param qHandle
+ * Handle to the wait queue
+ *
+ * \returns
+ * nothing
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_waitq_wake(OFC_HANDLE qHandle);
+/**
  * Wait for an element to be placed on the wait queue
  *
  * \param waitq

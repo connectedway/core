@@ -135,6 +135,7 @@
  * converted character
  */
 #define OFC_TOLOWER(c) (OFC_ISUPPER(c)?c+('a'-'A'):c)
+#define OFC_TTOLOWER(c) (OFC_TISUPPER(c)?c+(TCHAR('a')-TCHAR('A')):c)
 /**
  * Convert a lower case wide character to upper case wide character
  *

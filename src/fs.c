@@ -154,6 +154,8 @@ OFC_VOID OfcFSAndroidStartup(OFC_VOID);
 
 OFC_VOID OfcFSWinCEShutdown(OFC_VOID);
 
+OFC_VOID OfcFSPipeShutdown(OFC_VOID);
+
 OFC_VOID OfcFSDarwinShutdown(OFC_VOID);
 
 OFC_VOID OfcFSLinuxShutdown(OFC_VOID);
@@ -168,11 +170,12 @@ OFC_VOID OfcFSBookmarksShutdown(OFC_VOID);
 
 OFC_VOID OfcFSMailslotShutdown(OFC_VOID);
 
-OFC_VOID OfcFSPipeShutdown(OFC_VOID);
-
 OFC_CORE_LIB OFC_VOID
 ofc_fs_init(OFC_VOID) {
     ofc_fs_register(OFC_FST_UNKNOWN, &ofc_fs_unknown);
+#if defined (OFC_FS_PIPE)
+    OfcFSPipeStartup() ;
+#endif
 #if defined (OFC_FS_WIN32)
     OfcFSWin32Startup() ;
 #endif
@@ -204,13 +207,16 @@ ofc_fs_init(OFC_VOID) {
 #endif
 #if defined(OFC_LANMAN)
     OfcFSMailslotStartup () ;
-    OfcFSPipeStartup() ;
 #endif
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_fs_destroy(OFC_VOID) {
     ofc_fs_register(OFC_FST_UNKNOWN, &ofc_fs_unknown);
+#if defined (OFC_FS_PIPE)
+    ofc_fs_register (OFC_FST_PIPE, &ofc_fs_unknown);
+    OfcFSPipeShutdown();
+#endif
 #if defined (OFC_FS_WIN32)
     ofc_fs_register (OFC_FST_WIN32, &ofc_fs_unknown);
 #endif
@@ -250,8 +256,6 @@ ofc_fs_destroy(OFC_VOID) {
 #if defined(OFC_LANMAN)
     OfcFSMailslotShutdown () ;
     ofc_fs_register (OFC_FST_MAILSLOT, &ofc_fs_unknown);
-    OfcFSPipeShutdown() ;
-    ofc_fs_register (OFC_FST_PIPE, &ofc_fs_unknown);
 #endif
 }
 

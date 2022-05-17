@@ -5,6 +5,7 @@ set(SRCS
         src/app.c
         src/console.c
         src/core.c
+	src/dce.c
         src/dom.c
         src/env.c
         src/event.c
@@ -32,6 +33,11 @@ set(SRCS
         src/waitq.c
         src/waitset.c
         )
+
+if (DEFINED CACHE{OFC_FS_PIPE})
+    message("Adding FS Pipe")
+    list(APPEND fs_library_list of_core_fs_pipe)
+endif ()
 
 if (DEFINED CACHE{OFC_FS_DARWIN})
     message("Adding FS Darwin")

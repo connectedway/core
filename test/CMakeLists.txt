@@ -17,6 +17,10 @@ target_sources(unityextras INTERFACE
         )
 
 
+if (DEFINED CACHE{OFC_FS_PIPE})
+  list(APPEND TEST_EXTRA test_pipe.c)
+endif()
+
 if (DEFINED CACHE{OFC_FS_DARWIN})
    list(APPEND TEST_EXTRA test_fs_darwin.c)
 endif()
@@ -92,6 +96,11 @@ add_executable(test_path test_path.c)
 target_link_libraries(test_path PRIVATE of_core_static unityextras)
 add_test(NAME path COMMAND $<TARGET_FILE:test_path>)
 
+if (DEFINED CACHE{OFC_FS_PIPE})
+   add_executable(test_pipe test_pipe.c test_startup.c)
+   target_link_libraries(test_pipe PRIVATE of_core_static unityextras)
+   add_test(NAME pipe COMMAND $<TARGET_FILE:test_pipe> --config ${OPEN_FILES_HOME})
+endif()
 if (DEFINED CACHE{OFC_FS_DARWIN})
    add_executable(test_fs_darwin test_fs_darwin.c test_file.c)
    target_link_libraries(test_fs_darwin PRIVATE of_core_static unityextras)
