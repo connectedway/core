@@ -18,6 +18,9 @@
 #include "ofc/net_internal.h"
 #include "ofc/env.h"
 #include "ofc/version.h"
+#if defined(OFC_NETMON)
+#include "ofc/netmon.h"
+#endif
 
 #include "ofc/heap.h"
 

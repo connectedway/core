@@ -9,6 +9,8 @@
 #include "ofc/types.h"
 #include "ofc/libc.h"
 #include "ofc/time.h"
+#include "ofc/perf.h"
+#include "ofc/event.h"
 #include "ofc/impl/timeimpl.h"
 
 #if defined(OFC_64BIT_INTEGER)
@@ -190,6 +192,8 @@ ofc_dos_date_time_to_elements(OFC_WORD FatDate,
 #if defined(OFC_PERF_STATS)
 
 static OFC_PERF_STAT ofc_perf_stats[OFC_PERF_NUM];
+static struct perf_measurement *measurement = OFC_NULL;
+static struct perf_queue *pqueue[OFC_PERF_NUM];
 
 static OFC_CHAR *ofc_perf_names[OFC_PERF_NUM] =
         {
@@ -203,6 +207,17 @@ static OFC_CHAR *ofc_perf_names[OFC_PERF_NUM] =
                 "Session Write"
         };
 
+static OFC_CTCHAR *ofc_perf_tnames[OFC_PERF_NUM] =
+  {
+    TSTR("App Read"),
+    TSTR("App Write"),
+    TSTR("Client Read"),
+    TSTR("Client Write"),
+    TSTR("Server Read"),
+    TSTR("Server Write"),
+    TSTR("Session Read"),
+    TSTR("Session Write")
+  };
 
 OFC_CORE_LIB OFC_MSTIME
 ofc_get_runtime(OFC_VOID) {
@@ -210,16 +225,21 @@ ofc_get_runtime(OFC_VOID) {
 }
 
 OFC_CORE_LIB OFC_MSTIME
-ofc_perf_start(OFC_TIME_PERF_ID id) {
-    OFC_MSTIME stamp;
+ofc_perf_start(OFC_TIME_PERF_ID id)
+{
+  OFC_MSTIME stamp;
 
-    stamp = ofc_time_get_now();
+  stamp = ofc_time_get_now();
 
-    ofc_perf_stats[id].depth++;
+  ofc_perf_stats[id].depth++;
 
-    if (ofc_perf_stats[id].runtime_start == 0)
-        ofc_perf_stats[id].runtime_start = ofc_get_runtime();
-    return (stamp);
+  if (ofc_perf_stats[id].runtime_start == 0)
+    ofc_perf_stats[id].runtime_start = ofc_get_runtime();
+
+  if (measurement != OFC_HANDLE_NULL)
+    perf_request_start(measurement, pqueue[id]);
+  
+  return (stamp);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -231,13 +251,33 @@ ofc_perf_stop(OFC_TIME_PERF_ID id, OFC_MSTIME stamp,
     ofc_perf_stats[id].count++;
     ofc_perf_stats[id].depth--;
     ofc_perf_stats[id].runtime_end = ofc_get_runtime();
+
+    if (measurement != OFC_HANDLE_NULL)
+      perf_request_stop(measurement, pqueue[id], bytes_transferred);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_perf_reset(OFC_VOID) {
-    OFC_INT id;
+ofc_perf_count(OFC_VOID)
+{
+  OFC_INT id;
+  for (id = 0; id < OFC_PERF_NUM; id++)
+    {
+      if (ofc_perf_stats[id].depth > 0)
+	{
+	  ofc_perf_stats[id].depthsum += ofc_perf_stats[id].depth ;
+	  ofc_perf_stats[id].count++;
+	}
+    }
+}
 
-    for (id = 0; id < OFC_PERF_NUM; id++) {
+
+OFC_CORE_LIB OFC_VOID
+ofc_perf_reset(OFC_VOID)
+{
+  OFC_INT id;
+
+  for (id = 0; id < OFC_PERF_NUM; id++)
+    {
         ofc_perf_stats[id].id = id;
         ofc_perf_stats[id].elapsed = 0;
         ofc_perf_stats[id].totalbytes = 0;
@@ -247,6 +287,22 @@ ofc_perf_reset(OFC_VOID) {
         ofc_perf_stats[id].runtime_start = 0;
         ofc_perf_stats[id].runtime_end = 0;
     }
+
+  if (measurement != OFC_NULL)
+    {
+      ofc_printf("someone resetting before stopping\n");
+      measurement_stop (measurement, OFC_HANDLE_NULL);
+      measurement = OFC_NULL;
+    }
+
+  measurement = measurement_alloc();
+  for (id = 0; id < OFC_PERF_NUM; id++)
+    {
+      pqueue[id] = perf_queue_create(measurement,
+				     ofc_perf_tnames[id],
+				     0);
+    }
+  measurement_start(measurement);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -259,40 +315,57 @@ ofc_perf_destroy(OFC_VOID) {
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_perf_dump(OFC_VOID) {
-    OFC_INT i;
-    OFC_MSTIME uspio;
-    OFC_MSTIME bpsec;
-    OFC_MSTIME uspq;
-    OFC_MSTIME count;
-    OFC_MSTIME depth;
-    OFC_MSTIME runtime;
-    OFC_LONG bpio;
+ofc_perf_dump(OFC_VOID)
+{
+  OFC_INT i;
+  OFC_MSTIME uspio;
+  OFC_MSTIME bpsec;
+  OFC_MSTIME uspq;
+  OFC_MSTIME count;
+  OFC_MSTIME depth;
+  OFC_MSTIME runtime;
+  OFC_LONG bpio;
+  OFC_HANDLE wait_event;
 
-    ofc_printf("ID      Name      us/io  byte/sec  us/q   count  b/io  "
-               "depth runtime(us) \n");
+  ofc_printf("ID      Name      us/io  byte/sec    us/q   count  b/io  "
+	     "depth runtime(us) \n");
 
-    for (i = 0; i < OFC_PERF_NUM; i++) {
-        count = ofc_perf_stats[i].count;
-        if (count > 0) {
-            depth = ofc_perf_stats[i].depthsum / count;
-            uspq = (ofc_perf_stats[i].elapsed * 1000) / count;
-            if (ofc_perf_stats[i].depthsum == 0)
-                uspio = 0;
-            else
-                uspio = (ofc_perf_stats[i].elapsed * 1000) /
-                        ofc_perf_stats[i].depthsum;
-            bpio = ofc_perf_stats[i].totalbytes / count;
-            if (uspio == 0)
-                bpsec = 0;
-            else
-                bpsec = (bpio * 1000 * 1000) / uspio;
-            runtime = ofc_perf_stats[i].runtime_end -
-                      ofc_perf_stats[i].runtime_start;
-            ofc_printf("%2d %-14s %6d %8d %6d %6d %5d %5d %7d\n",
-                       i, ofc_perf_names[i],
-                       uspio, bpsec, uspq, count, bpio, depth, runtime);
-        }
+  for (i = 0; i < OFC_PERF_NUM; i++)
+    {
+      count = ofc_perf_stats[i].count;
+      if (count > 0)
+	{
+	  depth = ofc_perf_stats[i].depthsum / count;
+	  uspq = (ofc_perf_stats[i].elapsed * 1000) / count;
+	  if (ofc_perf_stats[i].depthsum == 0)
+	    uspio = 0;
+	  else
+	    uspio = (ofc_perf_stats[i].elapsed * 1000) /
+	      ofc_perf_stats[i].depthsum;
+	  bpio = ofc_perf_stats[i].totalbytes / count;
+	  if (uspio == 0)
+	    bpsec = 0;
+	  else
+	    bpsec = (bpio * 1000 * 1000) / uspio;
+	  runtime = ofc_perf_stats[i].runtime_end -
+	    ofc_perf_stats[i].runtime_start;
+	  ofc_printf("%2d %-14s %6d %10u %6d %6d %5d %5d %7d\n",
+		     i, ofc_perf_names[i],
+		     uspio, bpsec, uspq, count, bpio, depth, runtime);
+	}
+    }
+
+  if (measurement != OFC_HANDLE_NULL)
+    {
+      wait_event = ofc_event_create(OFC_EVENT_AUTO);
+      measurement_stop(measurement, wait_event);
+      ofc_event_wait(wait_event);
+      ofc_event_destroy(wait_event);
+
+      measurement_statistics(measurement);
+
+      measurement_free(measurement);
+      measurement = OFC_NULL;
     }
 }
 

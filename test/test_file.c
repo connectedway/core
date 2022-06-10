@@ -20,7 +20,7 @@
 #include "ofc/file.h"
 
 #define OFC_FS_TEST_INTERVAL 1000
-#define OFC_FILE_TEST_COUNT 50
+#define OFC_FILE_TEST_COUNT 100
 
 /*
  * This application demonstrates the API to the Open File I/O Facility
@@ -346,8 +346,8 @@ static OFC_TCHAR *MakeFilename(OFC_CTCHAR *device, OFC_CTCHAR *name) {
  */
 
 /* 2 MB */
-//#define CREATE_SIZE (2*1024*1024)
-#define CREATE_SIZE (2*1024)
+#define CREATE_SIZE (2*1024*1024)
+//#define CREATE_SIZE (2*1024)
 
 static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device) {
     OFC_HANDLE write_file;
@@ -2246,6 +2246,7 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
     while (count != OFC_FILE_TEST_COUNT) {
         test_result = OFC_TRUE;
 
+#if 0
 	/*
 	 * OfcGetFileAttributesExW on "/" (initially failed with java)
 	 */
@@ -2264,7 +2265,7 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
 	  else
 	    ofc_printf("Succeeded\n");
 	}
-
+#endif
         /*
        * First, create a random file
        */
@@ -2273,6 +2274,7 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
             ofc_printf("  *** Create File Test Failed *** \n");
             test_result = OFC_FALSE;
         }
+#if 0
         ofc_printf("  Dismount Test\n");
         if (OfcDismountTest(device) == OFC_FALSE) {
             ofc_printf("  *** Dismount Test Failed ***\n");
@@ -2291,6 +2293,7 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
 #else
 	ofc_sleep(500);
 #endif
+#endif
         /*
        * Then see if we can copy files
        */
@@ -2299,6 +2302,7 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
             ofc_printf("  *** Copy File Test Failed *** \n");
             test_result = OFC_FALSE;
         }
+#if 0
         ofc_printf("  List Directory Test\n");
         if (OfcListDirTest(device) == OFC_FALSE) {
             ofc_printf("  *** List Directory Test Failed *** \n");
@@ -2363,7 +2367,7 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
             ofc_printf("  *** Get Volume Information Failed ***\n");
             test_result = OFC_FALSE;
         }
-
+#endif
         if (test_result == OFC_FALSE)
             ofc_printf("*** File Test Failed ***\n");
         else

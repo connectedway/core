@@ -71,6 +71,7 @@ typedef enum {
 					overlapped buffer */
     OFC_HANDLE_FSANDROID_OVERLAPPED, /**< The handle is for a Nucleus filex
 					 overlapped buffer */
+    OFC_HANDLE_FSRESOLVER_OVERLAPPED, /**< Resolver (android) buffer */
     OFC_HANDLE_FSDARWIN_FILE,    /**< The handle is for a posix file */
     OFC_HANDLE_FSLINUX_FILE,    /**< The handle for a linux file  */
     OFC_HANDLE_FSFILEX_FILE,    /**< The handle for a threadx filex file */

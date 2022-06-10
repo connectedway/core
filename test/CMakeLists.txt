@@ -45,6 +45,7 @@ add_executable(test_all
         test_all.c
         test_timer.c
         test_event.c
+	test_perf.c
         test_waitq.c
         test_thread.c
         test_dg.c
@@ -74,6 +75,10 @@ add_test(NAME timer COMMAND $<TARGET_FILE:test_timer> --config ${OPEN_FILES_HOME
 add_executable(test_event test_event.c test_startup.c)
 target_link_libraries(test_event PRIVATE of_core_static unityextras)
 add_test(NAME event COMMAND $<TARGET_FILE:test_event> --config ${OPEN_FILES_HOME})
+
+add_executable(test_perf test_perf.c test_startup.c)
+target_link_libraries(test_perf PRIVATE of_core_static unityextras)
+add_test(NAME perf COMMAND $<TARGET_FILE:test_perf>)
 
 add_executable(test_waitq test_waitq.c test_startup.c)
 target_link_libraries(test_waitq PRIVATE of_core_static unityextras)

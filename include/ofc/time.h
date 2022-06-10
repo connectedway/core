@@ -37,13 +37,14 @@ typedef enum {
 typedef struct {
     OFC_TIME_PERF_ID id;    /**< This perf id */
     OFC_MSTIME elapsed;        /**< The total wait time  */
-    OFC_TIME_PERF_ID depthsum;        /**< The cumulative queue depth  */
-    OFC_TIME_PERF_ID depth;        /**< The current queue depth  */
-    OFC_TIME_PERF_ID count;        /**< The number of I/Os */
+    OFC_ULONG depthsum;        /**< The cumulative queue depth  */
+    OFC_ULONG depth;        /**< The current queue depth  */
+    OFC_ULONG count;        /**< The number of I/Os */
     OFC_LONG totalbytes;    /**< Sum of bytes  */
     OFC_MSTIME runtime_start;    /**< Runtime at the last reset */
     OFC_MSTIME runtime_end;    /**< Runtime at the last measurement */
 } OFC_PERF_STAT;
+
 #endif
 
 /**
@@ -274,6 +275,9 @@ ofc_perf_reset(OFC_VOID);
 
 OFC_CORE_LIB OFC_VOID
 ofc_perf_dump(OFC_VOID);
+
+OFC_CORE_LIB OFC_VOID
+ofc_perf_count(OFC_VOID);
 
 #endif
 

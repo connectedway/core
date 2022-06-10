@@ -163,7 +163,7 @@ ofc_app_get_data(OFC_HANDLE hApp);
 OFC_CORE_LIB OFC_VOID
 ofc_app_set_wait(OFC_HANDLE hApp, OFC_HANDLE hNotify);
 
-#if defined(OFC_PARAM_APP_DEBUG)
+#if defined(OFC_APP_DEBUG)
 /**
  * Dump the state of the app
  *

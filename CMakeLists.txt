@@ -21,6 +21,7 @@ set(SRCS
         src/net.c
         src/ntop.c
         src/path.c
+	src/perf.c
         src/persist.c
         src/process.c
         src/queue.c
@@ -33,6 +34,10 @@ set(SRCS
         src/waitq.c
         src/waitset.c
         )
+
+if(DEFINED CACHE{OFC_NETMON})
+    list(APPEND SRCS src/netmon.c)
+endif()
 
 if (DEFINED CACHE{OFC_FS_PIPE})
     message("Adding FS Pipe")

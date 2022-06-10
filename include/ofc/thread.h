@@ -48,6 +48,7 @@
 #define OFC_THREAD_XACTION_TEST  "BLXCTT"
 #define OFC_THREAD_SCHED         "BLSKED"
 #define OFC_THREAD_SOCKET        "BLSOCK"
+#define OFC_THREAD_MEASUREMENT_PERF "OFPERF"
 
 /**
  * The detach states
