@@ -298,8 +298,7 @@ OFC_CORE_LIB OFC_VOID *ofc_handle_lock(OFC_HANDLE handle) {
     handle_context->trace[handle_context->trace_idx].reference =
       handle_context->reference ;
     handle_context->trace[handle_context->trace_idx].destroy =
-      handle_context->lock) ;
-  handle_context->destroy ;
+      handle_context->destroy ;
     handle_context->trace[handle_context->trace_idx].caller1 =
       __builtin_return_address(1) ;
     handle_context->trace[handle_context->trace_idx].caller2 =
@@ -339,6 +338,9 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock(OFC_HANDLE handle) {
     ofc_lock(HandleLock);
 
     handle_context->reference--;
+    ofc_assert(handle_context->reference >= 0,
+	       "Invalid handle reference count");
+
 #if defined(DISABLED)
     handle_context->trace[handle_context->trace_idx].event =
       HANDLE_EVENT_UNLOCK ;
@@ -357,8 +359,9 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock(OFC_HANDLE handle) {
     handle_context->trace_idx = (handle_context->trace_idx+1) % 100 ;
 #endif
 
-    ofc_unlock(HandleLock);
-    if (handle_context->destroy && handle_context->reference == 0) {
+    if (handle_context->destroy && handle_context->reference == 0)
+      {
+	ofc_unlock(HandleLock);
 #if defined(OFC_HANDLE_DEBUG)
         ofc_handle_debug_free(handle_context) ;
 #endif
@@ -367,6 +370,8 @@ OFC_CORE_LIB OFC_VOID ofc_handle_unlock(OFC_HANDLE handle) {
 #endif
         ofc_free(handle_context);
     }
+    else
+      ofc_unlock(HandleLock);
 }
 
 OFC_CORE_LIB OFC_VOID ofc_handle_destroy(OFC_HANDLE handle) {
@@ -396,8 +401,11 @@ OFC_CORE_LIB OFC_VOID ofc_handle_destroy(OFC_HANDLE handle) {
     handle_context->trace_idx = (handle_context->trace_idx+1) % 100 ;
 #endif
 
-    ofc_unlock(HandleLock);
-    if (handle_context->reference == 0) {
+    handle_context->destroy = OFC_TRUE;
+
+    if (handle_context->reference == 0)
+      {
+	ofc_unlock(HandleLock);
 
 #if defined(OFC_HANDLE_DEBUG)
         ofc_handle_debug_free(handle_context) ;
@@ -406,8 +414,9 @@ OFC_CORE_LIB OFC_VOID ofc_handle_destroy(OFC_HANDLE handle) {
         ofc_handle_print_interval("Handle: ", handle) ;
 #endif
         ofc_free(handle_context);
-    } else
-        handle_context->destroy = OFC_TRUE;
+      }
+    else
+      ofc_unlock(HandleLock);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -643,6 +652,7 @@ static OFC_CHAR *type2str (OFC_HANDLE_TYPE type)
     { OFC_HANDLE_FSWIN32_OVERLAPPED, "Win32 Buffer" },
     { OFC_HANDLE_FSSMB_OVERLAPPED, "Cifs Buffer" },
     { OFC_HANDLE_FSDARWIN_OVERLAPPED, "Darwin Buffer" },
+    { OFC_HANDLE_FSRESOLVER_OVERLAPPED, "Resolver Buffer" },
     { OFC_HANDLE_FSLINUX_OVERLAPPED, "Linux Buffer" },
     { OFC_HANDLE_FSFILEX_OVERLAPPED, "FILEX Buffer" },
     { OFC_HANDLE_FSNUFILE_OVERLAPPED, "NUFILE Buffer" },
