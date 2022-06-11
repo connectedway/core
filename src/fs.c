@@ -150,6 +150,8 @@ OFC_VOID OfcFSPipeStartup(OFC_VOID);
 
 OFC_VOID OfcFSBookmarksStartup(OFC_VOID);
 
+OFC_VOID of_resolver_fs_startup(OFC_VOID);
+
 OFC_VOID OfcFSAndroidStartup(OFC_VOID);
 
 OFC_VOID OfcFSWinCEShutdown(OFC_VOID);
@@ -165,6 +167,8 @@ OFC_VOID OfcFSFileXShutdown(OFC_VOID);
 OFC_VOID OfcFSAndroidShutdown(OFC_VOID);
 
 OFC_VOID OfcFSNUFileShutdown(OFC_VOID);
+
+OFC_VOID of_resolver_fs_shutdown(OFC_VOID);
 
 OFC_VOID OfcFSBookmarksShutdown(OFC_VOID);
 
@@ -205,6 +209,9 @@ ofc_fs_init(OFC_VOID) {
 #if defined(OFC_FS_BOOKMARKS)
     OfcFSBookmarksStartup();
 #endif
+#if defined(OF_RESOLVER_FS)
+    of_resolver_fs_startup();
+#endif
 #if defined(OFC_LANMAN)
     OfcFSMailslotStartup () ;
 #endif
@@ -243,6 +250,9 @@ ofc_fs_destroy(OFC_VOID) {
 #if defined(OFC_FS_NUFILE)
     OfcFSNUFileShutdown() ;
     ofc_fs_register (OFC_FST_NUFILE, &ofc_fs_unknown);
+#endif
+#if defined(OF_RESOLVER_FS)
+    of_resolver_fs_shutdown();
 #endif
 #if defined(OFC_FS_BROWSER)
     ofc_fs_register (OFC_FST_BROWSE_WORKGROUPS, &ofc_fs_unknown);
