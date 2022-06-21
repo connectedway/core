@@ -90,34 +90,57 @@ typedef enum {
 #define SIZEOF_U64 8
 #define SIZEOF_I64 8
 
+#define MAX_MAP 4
+
+struct map_entry
+{
+  /**
+   * Type of Allocation
+   */
+  MSG_ALLOC_TYPE alloc;
+  /**
+   * Message Data
+   */
+  OFC_CHAR *ptr;
+  /**
+   * Size of Message
+   */
+  OFC_SIZET length;
+};
+
 /**
  * Format of a Message Header
  */
-typedef struct _OFC_MESSAGE {
-    /**
-     * Type of Allocation
-     */
-    MSG_ALLOC_TYPE alloc;
-    /**
-     * Endianess of Message
-     */
-    MSG_ENDIAN endian;
-    /**
-     * Size of Message
-     */
-    OFC_SIZET length;
-    /**
-     * Source or destination IP address of Message for UDP
-     */
-    OFC_IPADDR ip;
-    /**
-     * Source or destination port of message for UDP
-     */
-    OFC_UINT16 port;
-    /**
-     * Message Data
-     */
-    OFC_CHAR *msg;
+typedef struct _OFC_MESSAGE
+{
+  /**
+   * Endianess of Message
+   */
+  MSG_ENDIAN endian;
+  /**
+   * Source or destination IP address of Message for UDP
+   */
+  OFC_IPADDR ip;
+  /**
+   * Source or destination port of message for UDP
+   */
+  OFC_UINT16 port;
+#if 0
+  /**
+   * Type of Allocation
+   */
+  MSG_ALLOC_TYPE alloc;
+  /**
+   * Message Data
+   */
+  OFC_CHAR *msg;
+  /**
+   * Size of Message
+   */
+  OFC_SIZET length;
+#else
+  struct map_entry map[MAX_MAP];
+#endif
     /**
      * Current Pointer into Message
      */
@@ -1337,6 +1360,21 @@ OFC_CORE_LIB OFC_BOOL ofc_message_destroy_after_send(OFC_MESSAGE *msg);
 
 OFC_CORE_LIB OFC_VOID ofc_message_set_destroy_after_send(OFC_MESSAGE *msg);
 
+OFC_VOID ofc_message_param_put_indirect(OFC_MESSAGE *msg,
+                                        OFC_INT offset,
+                                        OFC_VOID *buffer,
+                                        OFC_SIZET size);
+OFC_VOID ofc_message_put_indirect(OFC_MESSAGE *msg,
+                                  OFC_INT offset,
+                                  OFC_VOID *buffer,
+                                  OFC_SIZET size);
+OFC_VOID ofc_message_get_map(OFC_MESSAGE *msg,
+                             OFC_SIZET total,
+                             OFC_SIZET *num_elem,
+                             const OFC_UCHAR **addr,
+                             OFC_SIZET *len);
+OFC_CHAR *message_map(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET len,
+                      OFC_SIZET *seg_size);
 #if defined(__cplusplus)
 }
 #endif

@@ -73,11 +73,11 @@ static OFC_DWORD OfcFSTestApp(OFC_PATH *path);
  *
  * The Buffer Size
  */
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE (32*1024)
 /*
  * And the number of buffers
  */
-#define NUM_FILE_BUFFERS 4
+#define NUM_FILE_BUFFERS 6
 /*
  * Define buffer states.
  */
@@ -164,7 +164,12 @@ AsyncRead(OFC_HANDLE wait_set, OFC_HANDLE read_file,
    * the status to fail and the last error to be OFC_ERROR_IO_PENDING
    */
     if (status == OFC_TRUE)
+      {
+        if (*((OFC_ULONG *)(buffer->data)) != buffer->offset)
+          ofc_printf("got bad buffer in async read 0x%08x, 0x%08x\n",
+                     *((OFC_ULONG *)(buffer->data)), buffer->offset);
         result = ASYNC_RESULT_DONE;
+      }
     else {
         OFC_DWORD dwLastError;
         /*
@@ -229,7 +234,13 @@ static ASYNC_RESULT AsyncReadResult(OFC_HANDLE wait_set,
         if (*dwLen == 0) {
             result = ASYNC_RESULT_EOF;
         } else {
-            result = ASYNC_RESULT_DONE;
+          if (*((OFC_ULONG *)(buffer->data)) != buffer->offset) 
+            {
+              ofc_printf("got bad buffer in async read result 0x%0x, 0x%0x\n",
+                       *((OFC_ULONG*)(buffer->data)), buffer->offset);
+              ofc_process_crash("foobar");
+            }
+          result = ASYNC_RESULT_DONE;
         }
     } else {
         OFC_DWORD dwLastError;
@@ -346,7 +357,7 @@ static OFC_TCHAR *MakeFilename(OFC_CTCHAR *device, OFC_CTCHAR *name) {
  */
 
 /* 2 MB */
-#define CREATE_SIZE (2*1024*1024)
+#define CREATE_SIZE (4*1024*1024)
 //#define CREATE_SIZE (2*1024)
 
 static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device) {
@@ -407,7 +418,7 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device) {
 	       * Fill in the buffer with an random data
 	       */
                 for (i = 0; i < (BUFFER_SIZE / sizeof(OFC_ULONG)); i++) {
-                    *p++ = i;
+                    *p++ = size;
                 }
 
                 /*
@@ -768,6 +779,267 @@ static OFC_BOOL OfcCopyFileTest(OFC_CTCHAR *device) {
         ofc_printf("Copy Test Failed\n");
     return (ret);
 }
+
+static OFC_BOOL OfcReadFileTest(OFC_CTCHAR *device)
+{
+  OFC_HANDLE read_file;
+  OFC_MSTIME start_time;
+  OFC_LARGE_INTEGER offset;
+  OFC_BOOL eof;
+  OFC_INT pending;
+  OFC_HANDLE buffer_list;
+  OFC_FILE_BUFFER *buffer;
+  OFC_INT i;
+  OFC_HANDLE wait_set;
+  OFC_DWORD dwLen;
+  OFC_BOOL status;
+  ASYNC_RESULT result;
+  OFC_HANDLE hEvent;
+  OFC_TCHAR *rfilename;
+  OFC_BOOL ret;
+
+  ret = OFC_TRUE;
+
+  rfilename = MakeFilename(device, FS_TEST_READ);
+  /*
+   * Get the time for simple performance analysis
+   */
+  status = OFC_TRUE;
+  start_time = ofc_time_get_now();
+#if defined(OFC_PERF_STATS)
+  ofc_perf_reset();
+#endif
+  /*
+   * Open up our read file.  This file should
+   * exist
+   */
+  read_file = OfcCreateFile(rfilename,
+                            OFC_GENERIC_READ,
+                            OFC_FILE_SHARE_READ,
+                            OFC_NULL,
+                            OFC_OPEN_EXISTING,
+                            OFC_FILE_ATTRIBUTE_NORMAL |
+                            OFC_FILE_FLAG_OVERLAPPED,
+                            OFC_HANDLE_NULL);
+
+  if (read_file == OFC_INVALID_HANDLE_VALUE)
+    {
+      ofc_printf("Failed to open Copy Source %A, Error Code %d\n",
+                 rfilename, OfcGetLastError());
+      ret = OFC_FALSE;
+    }
+  else
+    {
+      /*
+       * Now, create a wait set that we will wait for
+       */
+      wait_set = ofc_waitset_create();
+      /*
+       * And create our own buffer list that we will manage
+       */
+      buffer_list = ofc_queue_create();
+      /*
+       * Set some flags
+       */
+      eof = OFC_FALSE;
+      OFC_LARGE_INTEGER_SET(offset, 0, 0);
+      pending = 0;
+      /*
+       * Prime the engine.  Priming involves obtaining a buffer
+       * for each overlapped I/O and initilizing them
+       */
+      for (i = 0; i < NUM_FILE_BUFFERS && !eof; i++)
+        {
+          /*
+           * Get the buffer descriptor and the data buffer
+           */
+          buffer = ofc_malloc(sizeof(OFC_FILE_BUFFER));
+          if (buffer == OFC_NULL)
+            {
+              ofc_printf("test_file: Failed to alloc buffer context\n");
+              ret = OFC_FALSE;
+            }
+          else
+            {
+              buffer->data = ofc_malloc(BUFFER_SIZE);
+              if (buffer->data == OFC_NULL)
+                {
+                  ofc_printf("test_file: Failed to allocate "
+                             "memory buffer\n");
+                  ofc_free(buffer);
+                  buffer = OFC_NULL;
+                  ret = OFC_FALSE;
+                }
+              else
+                {
+                  /*
+                   * Initialize the offset to the file
+                   */
+                  buffer->offset = offset;
+                  /*
+                   * And initialize the overlapped handles
+                   */
+                  buffer->readOverlapped = OfcCreateOverlapped(read_file);
+
+                  if (buffer->readOverlapped == OFC_HANDLE_NULL)
+                    ofc_process_crash("An Overlapped Handle is NULL");
+
+                  /*
+                   * Add it to our buffer list
+                   */
+                  ofc_enqueue(buffer_list, buffer);
+                  dwLen = BUFFER_SIZE;
+                  /*
+                   * Issue the read (pre increment the pending to
+                   * avoid races
+                   */
+                  pending++;
+                  result = AsyncRead(wait_set, read_file, buffer, dwLen);
+                  if (result != ASYNC_RESULT_PENDING)
+                    {
+                      /*
+                       * discount pending and set eof
+                       */
+                      pending--;
+                      if (result == ASYNC_RESULT_ERROR)
+                        {
+                          ret = OFC_FALSE;
+                        }
+                      /*
+                       * Set eof either because it really is eof, or we
+                       * want to clean up.
+                       */
+                      eof = OFC_TRUE;
+                    }
+                  /*
+                   * Prepare for the next buffer
+                   */
+#if defined(OFC_64BIT_INTEGER)
+                  offset += BUFFER_SIZE;
+#else
+                  offset.low += BUFFER_SIZE ;
+#endif
+                }
+            }
+        }
+
+      /*
+       * Now all our buffers should be busy doing reads.  Keep pumping
+       * more data to read and service writes
+       */
+      while (pending > 0)
+        {
+          /*
+           * Wait for some buffer to finish (may be a read if we've
+           * just finished priming, but it may be a write also if
+           * we've been in this loop a bit
+           */
+          hEvent = ofc_waitset_wait(wait_set);
+          if (hEvent != OFC_HANDLE_NULL)
+            {
+              /*
+               * We use the app of the event as a pointer to the
+               * buffer descriptor.  Yeah, this isn't really nice but
+               * the alternative is to add a context to each handle.
+               * That may be cleaner, but basically unnecessary.  If
+               * we did this kind of thing a lot, I'm all for a
+               * new property of a handle
+               */
+              buffer = (OFC_FILE_BUFFER *) ofc_handle_get_app(hEvent);
+
+              if (buffer->state == BUFFER_STATE_READ)
+                {
+                  /*
+                   * Read, so let's see the result of the read
+                   */
+                  result = AsyncReadResult(wait_set, read_file,
+                                           buffer, &dwLen);
+                  if (result == ASYNC_RESULT_ERROR)
+                    {
+                      ret = OFC_FALSE;
+                    }
+                  else if (result == ASYNC_RESULT_DONE)
+                    {
+                      /*
+                       * Only report on MB boundaries
+                       */
+                      if (buffer->offset % (1024 * 1024) == 0)
+                        ofc_printf("Read %d MB\n",
+                                   (buffer->offset / (1024 * 1024)) + 1);
+
+                      OFC_LARGE_INTEGER_ASSIGN (buffer->offset, offset);
+#if defined(OFC_64BIT_INTEGER)
+                      offset += BUFFER_SIZE;
+#else
+                      offset.low += BUFFER_SIZE ;
+#endif
+                      /*
+                       * And start a read on the next chunk
+                       */
+                      result = AsyncRead(wait_set, read_file,
+                                         buffer, BUFFER_SIZE);
+
+                    }
+
+                  if (result == ASYNC_RESULT_ERROR ||
+                      result == ASYNC_RESULT_EOF ||
+                      (result == ASYNC_RESULT_DONE && status == OFC_FALSE))
+                    {
+                      /*
+                       * The I/O is no longer pending.
+                       */
+                      pending--;
+                      eof = OFC_TRUE;
+                    }
+                }
+            }
+        }
+      /*
+       * The pending count is zero so we've gotten completions
+       * either due to errors or eof on all of our outstanding
+       * reads and writes.
+       */
+      for (buffer = ofc_dequeue(buffer_list);
+           buffer != OFC_NULL;
+           buffer = ofc_dequeue(buffer_list))
+        {
+          /*
+           * Destroy the overlapped I/O handle for each buffer
+           */
+          OfcDestroyOverlapped(read_file, buffer->readOverlapped);
+          /*
+           * Free the data buffer and the buffer descriptor
+           */
+          ofc_free(buffer->data);
+          ofc_free(buffer);
+        }
+      /*
+       * Destroy the buffer list
+       */
+      ofc_queue_destroy(buffer_list);
+      /*
+       * And destroy the wait list
+       */
+      ofc_waitset_destroy(wait_set);
+      /*
+       * And close the read file
+       */
+      OfcCloseHandle(read_file);
+    }
+
+  ofc_free(rfilename);
+
+#if defined(OFC_PERF_STATS)
+  ofc_perf_dump();
+#endif
+  if (ret == OFC_TRUE)
+    ofc_printf("Read Done, Elapsed Time %dms\n",
+               ofc_time_get_now() - start_time);
+  else
+    ofc_printf("Read Test Failed\n");
+  return (ret);
+}
+
 
 /*
  * Delete File Test
@@ -2294,9 +2566,16 @@ OFC_INT test_file(OFC_LPCSTR test_root) {
 	ofc_sleep(500);
 #endif
 #endif
+
+        if (OfcReadFileTest(device) == OFC_FALSE)
+          {
+            ofc_printf("  *** Read File Test Failed *** \n");
+            test_result = OFC_FALSE;
+          }
+        
         /*
-       * Then see if we can copy files
-       */
+         * Then see if we can copy files
+         */
         ofc_printf("  Copy File Test\n");
         if (OfcCopyFileTest(device) == OFC_FALSE) {
             ofc_printf("  *** Copy File Test Failed *** \n");

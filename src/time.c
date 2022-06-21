@@ -288,21 +288,17 @@ ofc_perf_reset(OFC_VOID)
         ofc_perf_stats[id].runtime_end = 0;
     }
 
-  if (measurement != OFC_NULL)
+  if (measurement == OFC_NULL)
     {
-      ofc_printf("someone resetting before stopping\n");
-      measurement_stop (measurement, OFC_HANDLE_NULL);
-      measurement = OFC_NULL;
+      measurement = measurement_alloc();
+      for (id = 0; id < OFC_PERF_NUM; id++)
+        {
+          pqueue[id] = perf_queue_create(measurement,
+                                         ofc_perf_tnames[id],
+                                         0);
+        }
+      measurement_start(measurement);
     }
-
-  measurement = measurement_alloc();
-  for (id = 0; id < OFC_PERF_NUM; id++)
-    {
-      pqueue[id] = perf_queue_create(measurement,
-				     ofc_perf_tnames[id],
-				     0);
-    }
-  measurement_start(measurement);
 }
 
 OFC_CORE_LIB OFC_VOID

@@ -9,6 +9,7 @@
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
+#include "ofc/lock.h"
 
 /** \{ */
 
@@ -21,6 +22,7 @@ struct perf_measurement {
   OFC_HANDLE notify;
   OFC_HANDLE hThread;
   OFC_UINT instance;
+  OFC_LOCK lock;
 } ;
   
 struct perf_queue {
@@ -46,6 +48,8 @@ struct perf_statistics {
   OFC_LONG basis;
   OFC_LONG overhead;
   OFC_LONG normalized_throughput;
+  OFC_LONG depth_samples;
+  OFC_LONG total_depth;
 };
 
 #if defined(__cplusplus)

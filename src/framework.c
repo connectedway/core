@@ -18,6 +18,7 @@
 #include "ofc/net_internal.h"
 #include "ofc/env.h"
 #include "ofc/version.h"
+#include "ofc/time.h"
 #if defined(OFC_NETMON)
 #include "ofc/netmon.h"
 #endif
@@ -381,7 +382,20 @@ OFC_VOID ofc_framework_dump_heap(OFC_VOID) {
     ofc_heap_dump();
 }
 
+static OFC_BOOL perf_started = OFC_FALSE;
+
 OFC_VOID ofc_framework_stats_heap(OFC_VOID) {
+  if (perf_started == OFC_FALSE)
+    {
+      perf_started = OFC_TRUE;
+      ofc_perf_reset();
+    }
+  else
+    {
+      ofc_perf_dump();
+      perf_started = OFC_FALSE;
+    }
+
     ofc_heap_dump_stats();
 }
 

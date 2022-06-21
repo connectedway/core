@@ -95,7 +95,7 @@ ofc_message_debug_dump(OFC_VOID)
   for (msg = OfcMessageAlloc ; msg != OFC_NULL ; msg = msg->dbgnext)
     {
       ofc_printf ("%-10p %-10d %-10p %-10p %-10p %-10p\n",
-           msg, msg->length, msg->caller1, msg->caller2, msg->caller3,
+           msg, msg->map[0].length, msg->caller1, msg->caller2, msg->caller3,
            msg->caller4) ;
     }
 #else
@@ -103,7 +103,7 @@ ofc_message_debug_dump(OFC_VOID)
 
   for (msg = OfcMessageAlloc ; msg != OFC_NULL ; msg = msg->dbgnext)
     {
-      ofc_printf ("%-20p %-10d %-20p\n", msg, msg->length, msg->caller) ;
+      ofc_printf ("%-20p %-10d %-20p\n", msg, msg->map[0].length, msg->caller) ;
     }
 #endif
   ofc_printf ("\n") ;
@@ -115,38 +115,60 @@ OFC_CORE_LIB OFC_MESSAGE *
 ofc_message_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
                    OFC_VOID *msgData) {
     OFC_MESSAGE *msg;
+    OFC_INT i;
 
     msg = ofc_malloc(sizeof(OFC_MESSAGE));
     if (msg == OFC_NULL)
         ofc_process_crash("message: Couldn't alloc message\n");
     else {
-        msg->length = msgDataLength;
         msg->destroy_after_send = OFC_FALSE;
         msg->offset = 0;
         msg->context = OFC_NULL;
         msg->send_size = msgDataLength;
         msg->count = msg->send_size;
-        msg->alloc = msgType;
+        if (msg->count < 0)
+          ofc_process_crash("here\n");
         msg->endian = MSG_ENDIAN_BIG;
         msg->FIFO1base = 0;
         msg->FIFO1 = 0;
         msg->FIFO1size = 0;
         msg->FIFO1rem = 0;
         msg->base = 0;
-        if (msgData == OFC_NULL) {
-            if (msg->alloc == MSG_ALLOC_HEAP) {
-                msg->msg = ofc_malloc(msg->length);
-                if (msg->msg == OFC_NULL) {
+        for (i = 0 ; i < MAX_MAP; i++)
+          {
+            msg->map[i].ptr = OFC_NULL;
+          }
+
+        if (msgData == OFC_NULL)
+          {
+            if (msgType == MSG_ALLOC_HEAP)
+              {
+                msg->map[0].length = msgDataLength;
+                msg->map[0].alloc = msgType;
+                msg->map[0].ptr = ofc_malloc(msgDataLength);
+                if (msg->map[0].ptr == OFC_NULL)
+                  {
                     ofc_free(msg);
                     msg = OFC_NULL;
-                }
-            } else
-                msg->msg = OFC_NULL;
-        } else
-            msg->msg = msgData;
+                  }
+              }
+            else
+              {
+                msg->map[0].length = msgDataLength;
+                msg->map[0].alloc = msgType;
+                msg->map[0].ptr = OFC_NULL;
+              }
+          }
+        else
+          {
+            msg->map[0].length = msgDataLength;
+            msg->map[0].alloc = msgType;
+            msg->map[0].ptr = msgData;
+          }
+
 #if defined(OFC_MESSAGE_DEBUG)
         if (msg != OFC_NULL)
-      ofc_message_debug_alloc(msg, RETURN_ADDRESS()) ;
+          ofc_message_debug_alloc(msg, RETURN_ADDRESS()) ;
 #endif
     }
     return (msg);
@@ -157,10 +179,11 @@ ofc_message_realloc(OFC_MESSAGE *msg, OFC_SIZET msgDataLength) {
     OFC_BOOL ret;
 
     ret = OFC_FALSE;
-    if (msg->alloc == MSG_ALLOC_HEAP) {
-        msg->length = msgDataLength;
-        msg->msg = ofc_realloc(msg->msg, msg->length);
-        if (msg->msg != OFC_NULL)
+    if (msg->map[0].alloc == MSG_ALLOC_HEAP)
+      {
+        msg->map[0].length = msgDataLength;
+        msg->map[0].ptr = ofc_realloc(msg->map[0].ptr, msg->map[0].length);
+        if (msg->map[0].ptr != OFC_NULL)
             ret = OFC_TRUE;
     }
     return (ret);
@@ -186,15 +209,19 @@ ofc_datagram_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_message_destroy(OFC_MESSAGE *msg) {
-    if (msg->msg != OFC_NULL) {
-        if (msg->alloc == MSG_ALLOC_HEAP)
-            ofc_free(msg->msg);
-#if defined(OFC_MESSAGE_DEBUG)
-        ofc_message_debug_free(msg) ;
-#endif
+ofc_message_destroy(OFC_MESSAGE *msg)
+{
+  OFC_INT i;
+
+  for (i = 0 ; msg->map[i].ptr != OFC_NULL ; i++)
+    {
+      if (msg->map[i].alloc == MSG_ALLOC_HEAP)
+        ofc_free(msg->map[i].ptr);
     }
-    ofc_free(msg);
+#if defined(OFC_MESSAGE_DEBUG)
+  ofc_message_debug_free(msg) ;
+#endif
+  ofc_free(msg);
 }
 
 OFC_CORE_LIB OFC_BOOL
@@ -213,15 +240,15 @@ ofc_message_done(OFC_MESSAGE *msg) {
 
 OFC_CORE_LIB OFC_VOID *
 ofc_message_data(OFC_MESSAGE *msg) {
-    return (msg->msg);
+    return (msg->map[0].ptr);
 }
 
 OFC_CORE_LIB OFC_VOID *
 ofc_message_unload_data(OFC_MESSAGE *msg) {
     OFC_VOID *data;
 
-    data = msg->msg;
-    msg->msg = OFC_NULL;
+    data = msg->map[0].ptr;
+    msg->map[0].ptr = OFC_NULL;
 
     return (data);
 }
@@ -235,6 +262,8 @@ OFC_CORE_LIB OFC_VOID
 ofc_message_set_send_size(OFC_MESSAGE *msg, OFC_SIZET size) {
     msg->send_size = size;
     msg->count = msg->send_size;
+    if (msg->count < 0)
+      ofc_process_crash("here\n");
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -248,6 +277,8 @@ ofc_message_addr(OFC_MESSAGE *msg, OFC_IPADDR *ip, OFC_UINT16 *port) {
 OFC_CORE_LIB OFC_VOID
 ofc_message_reset(OFC_MESSAGE *msg) {
     msg->count = msg->send_size;
+    if (msg->count < 0)
+      ofc_process_crash("here\n");
     msg->offset = 0;
     msg->FIFO1 = msg->FIFO1base;
     msg->FIFO1rem = msg->FIFO1size;
@@ -272,106 +303,283 @@ ofc_message_get_base(OFC_MESSAGE *msg) {
 }
 
 OFC_CORE_LIB OFC_SIZET
-ofc_message_get_length(OFC_MESSAGE *msg) {
-    return (msg->length);
+ofc_message_get_length(OFC_MESSAGE *msg)
+{
+  OFC_INT i;
+  OFC_SIZET len;
+
+  len = 0;
+  for (i = 0 ; msg->map[i].ptr != OFC_NULL ; i++)
+    {
+      len += msg->map[i].length;
+    }
+  return (len);
+}
+
+OFC_VOID ofc_message_param_put_indirect(OFC_MESSAGE *msg,
+                                        OFC_INT offset,
+                                        OFC_VOID *buffer,
+                                        OFC_SIZET size)
+{
+  ofc_message_put_indirect(msg, offset + msg->param_offset,
+                           buffer, size);
+}
+  
+OFC_VOID ofc_message_put_indirect(OFC_MESSAGE *msg,
+                                  OFC_INT offset,
+                                  OFC_VOID *buffer,
+                                  OFC_SIZET size)
+{
+  OFC_INT i;
+  OFC_INT j;
+  OFC_SIZET loc;
+  OFC_OFFT map_off;
+  OFC_CHAR *rest;
+  OFC_SIZET rem;
+
+  loc = 0;
+  offset += msg->base;
+
+  for (i = 0; ((msg->map[i].ptr != OFC_NULL) &&
+               (loc + msg->map[i].length <= offset));
+       i++)
+    loc += msg->map[i].length;
+
+  map_off = offset - loc;
+
+  /*
+   * Insert segment here
+   */
+  for (j = i; msg->map[j].ptr != OFC_NULL ; j++);
+
+  if (map_off == 0)
+    {
+      /*
+       * If we're inserting right at the beginning of the buffer,
+       * then we don't need to split it.  Just insert this buffer
+       * in maps.  make room
+       */
+      for ( ; j > i; j--)
+        {
+          msg->map[j] = msg->map[j-1];
+        }
+
+      msg->map[i].ptr = buffer;
+      msg->map[i].alloc = MSG_ALLOC_HEAP;
+      msg->map[i].length = size;
+    }
+  else
+    {
+      /*
+       * Insert two spots
+       */
+      j++;
+      for ( ; j > (i+1); j--)
+        {
+          msg->map[j] = msg->map[j-2];
+        }
+
+      rem = msg->map[i].length - map_off - size;
+      rest = (OFC_CHAR *) msg->map[i].ptr + map_off + size;
+      msg->map[i].length = map_off;
+      msg->map[i+1].ptr = buffer;
+      msg->map[i+1].alloc = MSG_ALLOC_HEAP;
+      msg->map[i+1].length = size;
+      msg->map[i+2].ptr = rest;
+      msg->map[i+2].alloc = MSG_ALLOC_STATIC;
+      msg->map[i+2].length = rem;
+    }
+}  
+
+OFC_VOID ofc_message_get_map(OFC_MESSAGE *msg,
+                             OFC_SIZET total,
+                             OFC_SIZET *num_elem,
+                             const OFC_UCHAR **addr,
+                             OFC_SIZET *len)
+{
+  OFC_INT i;
+  OFC_SIZET offset = 0;
+
+  offset += msg->base;
+
+  for (i = 0 ; total > 0; i++)
+    {
+      OFC_SIZET seg_size;
+      addr[i] = (const OFC_UCHAR *) message_map(msg, offset, 0, &seg_size);
+      len[i] = OFC_MIN(seg_size, total);
+      total -= len[i];
+      offset += len[i];
+    }
+  *num_elem = i;
+}
+
+OFC_CHAR *message_map(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET len,
+                      OFC_SIZET *seg_size)
+{
+  OFC_INT i;
+  OFC_SIZET loc;
+  OFC_OFFT map_off;
+  OFC_CHAR *ret;
+
+  loc = 0;
+  for (i = 0; ((msg->map[i].ptr != OFC_NULL) &&
+               (loc + msg->map[i].length <= offset));
+       i++)
+    loc += msg->map[i].length;
+
+  map_off = offset - loc;
+
+  if ((msg->map[i].ptr != OFC_NULL) &&
+      (map_off + len <= msg->map[i].length))
+    {
+      ret = msg->map[i].ptr + map_off;
+      if (seg_size != OFC_NULL)
+        *seg_size = msg->map[i].length - map_off;
+    }
+  else
+    {
+      ret = OFC_NULL;
+      if (seg_size != OFC_NULL)
+        *seg_size = 0;
+    }
+
+  return (ret);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_message_put_u8(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT8 value) {
-    OFC_BOOL ret;
+ofc_message_put_u8(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT8 value)
+{
+  OFC_BOOL ret;
+  OFC_CHAR *ptr;
 
-    ret = OFC_FALSE;
-    offset += msg->base;
-    if (offset + SIZEOF_U8 <= msg->length) {
-        ret = OFC_TRUE;
-        if (msg->endian == MSG_ENDIAN_BIG) {
-            OFC_NET_CTON (msg->msg, offset, value);
-        } else {
-            OFC_NET_CTOSMB (msg->msg, offset, value);
+  ret = OFC_FALSE;
+  offset += msg->base;
+  ptr = message_map(msg, offset, sizeof(OFC_UINT8), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
+      ret = OFC_TRUE;
+      if (msg->endian == MSG_ENDIAN_BIG)
+        {
+          OFC_NET_CTON (ptr, 0, value);
+        }
+      else
+        {
+          OFC_NET_CTOSMB (ptr, 0, value);
         }
     }
     return (ret);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_message_put_u16(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT16 value) {
-    OFC_BOOL ret;
+ofc_message_put_u16(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT16 value)
+{
+  OFC_BOOL ret;
+  OFC_CHAR *ptr;
 
-    ret = OFC_FALSE;
-    offset += msg->base;
-    if (offset + SIZEOF_U16 <= msg->length) {
-        ret = OFC_TRUE;
-        if (msg->endian == MSG_ENDIAN_BIG) {
-            OFC_NET_STON (msg->msg, offset, value);
-        } else {
-            OFC_NET_STOSMB (msg->msg, offset, value);
+  ret = OFC_FALSE;
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, sizeof(OFC_UINT16), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
+      ret = OFC_TRUE;
+      if (msg->endian == MSG_ENDIAN_BIG)
+        {
+          OFC_NET_STON (ptr, 0, value);
+        }
+      else
+        {
+          OFC_NET_STOSMB (ptr, 0, value);
         }
     }
     return (ret);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_message_put_u32(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT32 value) {
-    OFC_BOOL ret;
+ofc_message_put_u32(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT32 value)
+{
+  OFC_BOOL ret;
+  OFC_CHAR *ptr;
 
-    ret = OFC_FALSE;
-    offset += msg->base;
-    if (offset + SIZEOF_U32 <= msg->length) {
-        ret = OFC_TRUE;
-        if (msg->endian == MSG_ENDIAN_BIG) {
-            OFC_NET_LTON (msg->msg, offset, value);
-        } else {
-            OFC_NET_LTOSMB (msg->msg, offset, value);
+  ret = OFC_FALSE;
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, sizeof(OFC_UINT32), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
+      ret = OFC_TRUE;
+      if (msg->endian == MSG_ENDIAN_BIG)
+        {
+          OFC_NET_LTON (ptr, 0, value);
+        }
+      else
+        {
+          OFC_NET_LTOSMB (ptr, 0, value);
         }
     }
     return (ret);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_message_put_u64(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value) {
-    OFC_BOOL ret;
+ofc_message_put_u64(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value)
+{
+  OFC_BOOL ret;
+  OFC_CHAR *ptr;
 
-    ret = OFC_FALSE;
-    offset += msg->base;
-    if (offset + SIZEOF_U64 <= msg->length) {
-        ret = OFC_TRUE;
+  ret = OFC_FALSE;
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, sizeof(OFC_UINT64), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
+      ret = OFC_TRUE;
 #if defined (OFC_64BIT_INTEGER)
-        if (msg->endian == MSG_ENDIAN_BIG) {
-            OFC_NET_LLTON (msg->msg, offset, *value);
-        } else {
-            OFC_NET_LLTOSMB (msg->msg, offset, *value);
+      if (msg->endian == MSG_ENDIAN_BIG)
+        {
+          OFC_NET_LLTON (ptr, 0, *value);
+        }
+      else
+        {
+          OFC_NET_LLTOSMB (ptr, 0, *value);
         }
 #else
-        if (msg->endian == MSG_ENDIAN_BIG)
-      {
-        OFC_NET_LTON (msg->msg, offset, value->low) ;
-        OFC_NET_LTON (msg->msg, offset+4, value->high) ;
-      }
-        else
-      {
-        OFC_NET_LTOSMB (msg->msg, offset+4, value->low) ;
-        OFC_NET_LTOSMB (msg->msg, offset, value->high) ;
-      }
+      if (msg->endian == MSG_ENDIAN_BIG)
+        {
+          OFC_NET_LTON (ptr, 0, value->low) ;
+          OFC_NET_LTON (ptr, 4, value->high) ;
+        }
+      else
+        {
+          OFC_NET_LTOSMB (ptr, 4, value->low) ;
+          OFC_NET_LTOSMB (ptr, 0, value->high) ;
+        }
 #endif
     }
     return (ret);
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_message_put_tstr(OFC_MESSAGE *msg, OFC_INT offset, OFC_LPCTSTR str) {
-    OFC_BOOL ret;
-    OFC_SIZET len;
-    OFC_CTCHAR *p;
-    OFC_INT i;
+ofc_message_put_tstr(OFC_MESSAGE *msg, OFC_INT offset, OFC_LPCTSTR str)
+{
+  OFC_BOOL ret;
+  OFC_SIZET len;
+  OFC_CTCHAR *p;
+  OFC_INT i;
 
-    ret = OFC_TRUE;
-    if (str != OFC_NULL) {
-        len = (ofc_tstrlen(str) + 1) * sizeof(OFC_WORD);
+  ret = OFC_TRUE;
+  if (str != OFC_NULL)
+    {
+      len = (ofc_tstrlen(str) + 1) * sizeof(OFC_WORD);
 
-        p = str;
-        for (i = 0, p = str; i < len && ret == OFC_TRUE;
-             i += sizeof(OFC_WORD), p++) {
-            ret = ofc_message_put_u16(msg, offset + i, *p) ;
+      p = str;
+      for (i = 0, p = str; i < len && ret == OFC_TRUE;
+           i += sizeof(OFC_WORD), p++)
+        {
+          ret = ofc_message_put_u16(msg, offset + i, *p) ;
         }
     }
     return (ret);
@@ -379,25 +587,27 @@ ofc_message_put_tstr(OFC_MESSAGE *msg, OFC_INT offset, OFC_LPCTSTR str) {
 
 OFC_CORE_LIB OFC_SIZET
 ofc_message_get_tstring_len(OFC_MESSAGE *msg, OFC_INT offset,
-                            OFC_SIZET max_len) {
-    OFC_INT i;
-    OFC_TCHAR c;
-    OFC_BOOL done;
+                            OFC_SIZET max_len)
+{
+  OFC_INT i;
+  OFC_TCHAR c;
+  OFC_BOOL done;
 
-    /*
-     * Include the EOS in the string len
-     */
-    done = OFC_FALSE;
-    /*
-     * This loop counts the EOS if the string is less then max_len
-     * which is what we want
-     */
-    for (i = 0; i < max_len && !done; i++) {
-        c = ofc_message_get_u16(msg, offset + (i * sizeof(OFC_WORD)));
-        if (c == TCHAR_EOS)
-            done = OFC_TRUE;
+  /*
+   * Include the EOS in the string len
+   */
+  done = OFC_FALSE;
+  /*
+   * This loop counts the EOS if the string is less then max_len
+   * which is what we want
+   */
+  for (i = 0; i < max_len && !done; i++)
+    {
+      c = ofc_message_get_u16(msg, offset + (i * sizeof(OFC_WORD)));
+      if (c == TCHAR_EOS)
+        done = OFC_TRUE;
     }
-    return (i);
+  return (i);
 }
 
 OFC_CORE_LIB OFC_BOOL
@@ -406,11 +616,13 @@ ofc_message_get_tstr(OFC_MESSAGE *msg, OFC_INT offset, OFC_LPTSTR *str) {
     OFC_TCHAR *p;
     OFC_INT i;
     OFC_SIZET string_len;
+    OFC_SIZET max_len;
 
     ret = OFC_TRUE;
 
 
-    string_len = ofc_message_get_tstring_len(msg, offset, msg->length - offset);
+    max_len = ofc_message_get_length(msg);
+    string_len = ofc_message_get_tstring_len(msg, offset, max_len - offset);
 
     *str = ofc_malloc(string_len * sizeof(OFC_TCHAR));
 
@@ -499,84 +711,115 @@ ofc_message_put_cstr(OFC_MESSAGE *msg, OFC_INT offset, OFC_LPCSTR str) {
 }
 
 OFC_CORE_LIB OFC_UINT8
-ofc_message_get_u8(OFC_MESSAGE *msg, OFC_INT offset) {
-    OFC_UINT8 value;
+ofc_message_get_u8(OFC_MESSAGE *msg, OFC_INT offset)
+{
+  OFC_UINT8 value;
+  OFC_CHAR *ptr;
 
-    value = 0;
-    offset += msg->base;
-    if (offset + SIZEOF_U8 <= msg->length) {
-        if (msg->endian == MSG_ENDIAN_BIG)
-            value = OFC_NET_NTOC (msg->msg, offset);
-        else
-            value = OFC_NET_SMBTOC (msg->msg, offset);
+  value = 0;
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, sizeof(OFC_UINT8), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
+      if (msg->endian == MSG_ENDIAN_BIG)
+        value = OFC_NET_NTOC (ptr, 0);
+      else
+        value = OFC_NET_SMBTOC (ptr, 0);
     }
-    return (value);
+  return (value);
 }
 
 OFC_CORE_LIB OFC_UINT16
-ofc_message_get_u16(OFC_MESSAGE *msg, OFC_INT offset) {
-    OFC_UINT16 value;
+ofc_message_get_u16(OFC_MESSAGE *msg, OFC_INT offset)
+{
+  OFC_UINT16 value;
+  OFC_CHAR *ptr;
 
-    value = 0;
-    offset += msg->base;
-    if (offset + SIZEOF_U16 <= msg->length) {
-        if (msg->endian == MSG_ENDIAN_BIG)
-            value = OFC_NET_NTOS (msg->msg, offset);
-        else
-            value = OFC_NET_SMBTOS (msg->msg, offset);
+  value = 0;
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, sizeof(OFC_UINT16), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
+      if (msg->endian == MSG_ENDIAN_BIG)
+        value = OFC_NET_NTOS (ptr, 0);
+      else
+        value = OFC_NET_SMBTOS (ptr, 0);
     }
-    return (value);
+  return (value);
 }
 
 OFC_CORE_LIB OFC_UINT32
-ofc_message_get_u32(OFC_MESSAGE *msg, OFC_INT offset) {
-    OFC_UINT32 value;
+ofc_message_get_u32(OFC_MESSAGE *msg, OFC_INT offset)
+{
+  OFC_UINT32 value;
+  OFC_VOID *ptr;
 
-    value = 0;
-    offset += msg->base;
-    if (offset + SIZEOF_U32 <= msg->length) {
-        if (msg->endian == MSG_ENDIAN_BIG)
-            value = OFC_NET_NTOL (msg->msg, offset);
-        else
-            value = OFC_NET_SMBTOL (msg->msg, offset);
+  value = 0;
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, sizeof(OFC_UINT32), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
+      if (msg->endian == MSG_ENDIAN_BIG)
+        value = OFC_NET_NTOL (ptr, 0);
+      else
+        value = OFC_NET_SMBTOL (ptr, 0);
     }
-    return (value);
+  return (value);
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_message_get_u64(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value) {
+ofc_message_get_u64(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value)
+{
+  OFC_CHAR *ptr;
+
 #if defined(OFC_64BIT_INTEGER)
-    *value = 0;
+  *value = 0;
 #else
-    value->low = 0 ;
-    value->high = 0 ;
+  value->low = 0 ;
+  value->high = 0 ;
 #endif
-    offset += msg->base;
-    if (offset + SIZEOF_U64 <= msg->length) {
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, sizeof(OFC_UINT64), OFC_NULL);
+
+  if (ptr != OFC_NULL)
+    {
 #if defined (OFC_64BIT_INTEGER)
-        if (msg->endian == MSG_ENDIAN_BIG)
-            *value = OFC_NET_NTOLL (msg->msg, offset);
-        else
-            *value = OFC_NET_SMBTOLL (msg->msg, offset);
+      if (msg->endian == MSG_ENDIAN_BIG)
+        *value = OFC_NET_NTOLL (ptr, 0);
+      else
+        *value = OFC_NET_SMBTOLL (ptr, 0);
 #else
-        if (msg->endian == MSG_ENDIAN_BIG)
-      {
-        value->low = OFC_NET_NTOL (msg->msg, offset) ;
-        value->high = OFC_NET_NTOL (msg->msg, offset+4) ;
-      }
-        else
-      {
-        value->low = OFC_NET_SMBTOL (msg->msg, offset+4) ;
-        value->high = OFC_NET_SMBTOL (msg->msg, offset) ;
-      }
+      if (msg->endian == MSG_ENDIAN_BIG)
+        {
+          value->low = OFC_NET_NTOL (ptr, 0) ;
+          value->high = OFC_NET_NTOL (ptr, 4) ;
+        }
+      else
+        {
+          value->low = OFC_NET_SMBTOL (ptr, 4) ;
+          value->high = OFC_NET_SMBTOL (ptr, 0) ;
+        }
 #endif
     }
 }
 
 OFC_CORE_LIB OFC_VOID *
-ofc_message_get_pointer(OFC_MESSAGE *msg, OFC_INT offset) {
-    offset += msg->base;
-    return (msg->msg + offset);
+ofc_message_get_pointer(OFC_MESSAGE *msg, OFC_INT offset)
+{
+  OFC_CHAR *ptr;
+
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, 0, OFC_NULL);
+
+  return (ptr);
 }
 
 OFC_CORE_LIB OFC_VOID

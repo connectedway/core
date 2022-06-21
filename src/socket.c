@@ -12,6 +12,7 @@
 #include "ofc/socket.h"
 #include "ofc/libc.h"
 #include "ofc/impl/socketimpl.h"
+#include "ofc/process.h"
 
 #include "ofc/heap.h"
 
@@ -430,62 +431,68 @@ ofc_socket_accept(OFC_HANDLE hMasterSocket) {
  *   True if we wrote something, false otherwise
  */
 OFC_CORE_LIB OFC_BOOL
-ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg) {
-    OFC_SIZET nbytes;
-    OFC_SOCKET *socket;
-    OFC_BOOL progress;
+ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg)
+{
+  OFC_SIZET nbytes;
+  OFC_SOCKET *socket;
+  OFC_BOOL progress;
+  OFC_SIZET count;
+  OFC_SIZET len;
+  OFC_VOID *ptr;
 
-    socket = ofc_handle_lock(hSocket);
-    nbytes = -1;
-    progress = OFC_FALSE;
-    if (socket != OFC_NULL) {
-        /*
-         * Do we have bytes to send?
-         */
-        if (msg->count > 0) {
-            /*
-             * Yes, so try to send it
-             */
-            if (socket->type == SOCKET_TYPE_STREAM) {
-                nbytes = ofc_socket_impl_send(socket->impl,
-                                              msg->msg + msg->offset,
-                                              msg->count);
-            } else if (socket->type == SOCKET_TYPE_DGRAM ||
-                       socket->type == SOCKET_TYPE_ICMP) {
-                nbytes = ofc_socket_impl_sendto(socket->impl,
-                                                msg->msg + msg->offset,
-                                                msg->count,
-                                                &msg->ip,
-                                                msg->port);
+  socket = ofc_handle_lock(hSocket);
+  nbytes = 0;
+
+  progress = OFC_FALSE;
+  if (socket != OFC_NULL)
+    {
+      /*
+       * Do we have bytes to send?
+       */
+      len = 0;
+      while (msg->count > 0)
+        {
+          /*
+           * Yes, so try to send it
+           */
+          ptr = message_map(msg, msg->offset, 0, &count);
+          count = OFC_MIN(count, msg->count);
+
+          if (socket->type == SOCKET_TYPE_STREAM)
+            {
+              len = ofc_socket_impl_send(socket->impl, ptr, count);
             }
-        } else
-            nbytes = 0;
-
-        if (nbytes > 0) {
-            if (nbytes > msg->count) {
-                ofc_printf("nbytes %d is greater then count %d\n",
-                           nbytes, msg->count);
-                nbytes = msg->count;
+          else if (socket->type == SOCKET_TYPE_DGRAM ||
+                   socket->type == SOCKET_TYPE_ICMP)
+            {
+              len = ofc_socket_impl_sendto(socket->impl,
+                                           ptr, count,
+                                           &msg->ip,
+                                           msg->port);
             }
-            msg->count -= nbytes;
-            msg->offset += nbytes;
-            progress = OFC_TRUE;
-        }
-        if ((nbytes < 0) ||
-            ((socket->type == SOCKET_TYPE_DGRAM) && (nbytes == 0))) {
-            OFC_VOID *handle;
 
-            handle = ofc_handle_lock(socket->impl);
-
-            ofc_printf("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
-                       socket->type, socket->impl, handle, msg->count);
-            /*
-             * Force message to retire
-             */
-            msg->count = 0;
-
-            if (handle != OFC_NULL)
-                ofc_handle_unlock(socket->impl);
+          if ((len < 0) ||
+              ((socket->type == SOCKET_TYPE_DGRAM) && (len == 0)))
+            {
+              OFC_VOID *handle;
+              handle = ofc_handle_lock(socket->impl);
+              ofc_printf("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
+                         socket->type, socket->impl, handle, msg->count);
+              /*
+               * Force message to retire
+               */
+              msg->count = 0;
+              ofc_handle_unlock(socket->impl);
+            }
+          else
+            {
+              progress = OFC_TRUE;
+              msg->count -= len;
+              if (msg->count < 0)
+                ofc_process_crash("here\n");
+              msg->offset += len;
+              nbytes += len;
+            }
         }
 
         ofc_handle_unlock(hSocket);
@@ -519,14 +526,14 @@ ofc_socket_read(OFC_HANDLE hSocket, OFC_MESSAGE *msg) {
              */
             if (socket->type == SOCKET_TYPE_STREAM) {
                 len = ofc_socket_impl_recv(socket->impl,
-                                           msg->msg + msg->offset,
+                                           msg->map[0].ptr + msg->offset,
                                            msg->count);
                 msg->ip = socket->ip;
                 msg->port = socket->port;
             } else if (socket->type == SOCKET_TYPE_DGRAM ||
                        socket->type == SOCKET_TYPE_ICMP) {
                 len = ofc_socket_impl_recv_from(socket->impl,
-                                                msg->msg + msg->offset,
+                                                msg->map[0].ptr + msg->offset,
                                                 msg->count,
                                                 &msg->ip, &msg->port);
             }
@@ -535,6 +542,9 @@ ofc_socket_read(OFC_HANDLE hSocket, OFC_MESSAGE *msg) {
         if (len > 0) {
             msg->offset += len;
             msg->count -= len;
+            if (msg->count < 0)
+              ofc_process_crash("here\n");
+
             progress = OFC_TRUE;
         }
 
