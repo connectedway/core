@@ -126,8 +126,6 @@ ofc_message_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
         msg->context = OFC_NULL;
         msg->send_size = msgDataLength;
         msg->count = msg->send_size;
-        if (msg->count < 0)
-          ofc_process_crash("here\n");
         msg->endian = MSG_ENDIAN_BIG;
         msg->FIFO1base = 0;
         msg->FIFO1 = 0;
