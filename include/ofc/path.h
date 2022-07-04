@@ -382,6 +382,7 @@ OFC_CORE_LIB OFC_PATH *ofc_map_path(OFC_LPCTSTR lpFileName,
                                     OFC_LPTSTR *lppMappedName);
 
 OFC_CORE_LIB OFC_BOOL ofc_path_remote(OFC_PATH *path);
+OFC_CORE_LIB OFC_BOOL ofc_path_hidden(OFC_PATH *path);
 
 OFC_CORE_LIB OFC_VOID ofc_path_free_server(OFC_PATH *path);
 

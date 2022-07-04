@@ -133,6 +133,7 @@
 #define REF_ID_SHARE_INFO 0x0306af84
 #define REF_ID_SHARE_NAME_INFO 0x0360af8e
 #define REF_ID_NETSHARE_CTR1 0x00001
+#define REF_ID_RESUME_HANDLE 0x00020044
 
 #if defined(__cplusplus)
 extern "C"

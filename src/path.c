@@ -1361,6 +1361,23 @@ OFC_CORE_LIB OFC_BOOL ofc_path_remote(OFC_PATH *_path) {
     return (ret);
 }
 
+OFC_CORE_LIB OFC_BOOL ofc_path_hidden(OFC_PATH *_path)
+{
+  OFC_BOOL ret;
+  OFC_LPCTSTR filename;
+
+  ret = OFC_FALSE;
+
+  filename = ofc_path_filename(_path);
+  if (filename != OFC_NULL && ofc_tstrlen(filename) > 0)
+    {
+      if (*filename == TCHAR('.'))
+        ret = OFC_TRUE;
+    }
+
+  return (ret);
+}
+
 OFC_CORE_LIB OFC_INT ofc_path_port(OFC_PATH *_path) {
     _OFC_PATH *path = (_OFC_PATH *) _path;
     OFC_INT port;
