@@ -279,6 +279,7 @@ OFC_CORE_LIB OFC_MSTIME ofc_handle_get_avg_interval (OFC_HANDLE hHandle,
 OFC_CORE_LIB OFC_VOID ofc_handle_print_interval_header (OFC_VOID) ;
 OFC_CORE_LIB OFC_VOID ofc_handle_print_interval (OFC_CHAR *prefix,
                          OFC_HANDLE hHandle) ;
+OFC_CORE_LIB OFC_VOID OfcHandle16DebugDump(OFC_VOID);
 #endif
 #if defined(__cplusplus)
 }

@@ -380,6 +380,7 @@ OFC_VOID ofc_framework_update(OFC_VOID) {
 
 OFC_VOID ofc_framework_dump_heap(OFC_VOID) {
     ofc_heap_dump();
+    OfcHandle16DebugDump();
 }
 
 static OFC_BOOL perf_started = OFC_FALSE;

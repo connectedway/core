@@ -74,6 +74,13 @@ typedef struct {
 
 typedef struct {
     OFC_HANDLE find_file;
+    OFC_UINT64 CreationTime;
+    OFC_UINT64 LastAccessTime;
+    OFC_UINT64 LastWriteTime;
+    OFC_UINT64 LastChangeTime;
+    OFC_UINT32 FileAttributes;
+    OFC_UINT64 AllocationSize;
+    OFC_UINT64 EndOfFile;
 } FILE_CALL_CLOSE;
 
 typedef struct {
