@@ -405,11 +405,13 @@ ofc_socket_accept(OFC_HANDLE hMasterSocket) {
         if (socket->impl == OFC_HANDLE_NULL) {
             ofc_socket_free(socket);
         } else {
-            ofc_socket_impl_no_block(socket->impl, OFC_TRUE);
+          OFC_BOOL ret;
 
-            hSocket = ofc_handle_create(OFC_HANDLE_SOCKET, socket);
-            if (hSocket == OFC_HANDLE_NULL)
-                ofc_socket_free(socket);
+          ret = ofc_socket_impl_no_block(socket->impl, OFC_TRUE);
+          ofc_assert (ret == OFC_TRUE, "Could not set socket to non blocking");
+          hSocket = ofc_handle_create(OFC_HANDLE_SOCKET, socket);
+          if (hSocket == OFC_HANDLE_NULL)
+            ofc_socket_free(socket);
         }
         ofc_handle_unlock(hMasterSocket);
     }
@@ -450,7 +452,7 @@ ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg)
        * Do we have bytes to send?
        */
       len = 0;
-      while (msg->count > 0)
+      if (msg->count > 0)
         {
           /*
            * Yes, so try to send it
