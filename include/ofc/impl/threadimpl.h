@@ -182,7 +182,10 @@ OFC_CORE_LIB OFC_VOID
 ofc_thread_init_impl(OFC_VOID);
 
 OFC_CORE_LIB OFC_VOID
-ofc_thred_destroy_impl(OFC_VOID);
+ofc_thread_destroy_impl(OFC_VOID);
+
+OFC_CORE_LIB OFC_VOID
+ofc_thread_detach_impl(OFC_HANDLE hThread);
 
 #if defined(__cplusplus)
 }

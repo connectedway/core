@@ -95,6 +95,13 @@ ofc_thread_create(OFC_THREAD_FN scheduler,
                   OFC_THREAD_DETACHSTATE detachstate,
                   OFC_HANDLE hNotify);
 /**
+ * Detaches a thread. 
+ *
+ * The thread will clean up on it's own.  
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_thread_detach(OFC_HANDLE hThread);
+/**
  * Delete a thread
  *
  * This routine will cause the target thread to begin deletion.  It

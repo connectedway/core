@@ -25,6 +25,12 @@ ofc_thread_create(OFC_DWORD(scheduler)(OFC_HANDLE hThread,
 }
 
 OFC_CORE_LIB OFC_VOID
+ofc_thread_detach(OFC_HANDLE hThread)
+{
+  ofc_thread_detach_impl(hThread);
+}
+
+OFC_CORE_LIB OFC_VOID
 ofc_thread_set_wait(OFC_HANDLE hThread, OFC_HANDLE wait_set) {
     ofc_thread_set_waitset_impl(hThread, wait_set);
 }
@@ -91,5 +97,5 @@ ofc_thread_init(OFC_VOID) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_thread_destroy(OFC_VOID) {
-    ofc_thred_destroy_impl();
+    ofc_thread_destroy_impl();
 }
