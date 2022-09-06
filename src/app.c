@@ -20,7 +20,7 @@
  */
 typedef struct _OFC_APP {
     OFC_APP_TEMPLATE *def;    /* Pointer to app definition */
-    OFC_HANDLE scheduler;    /* Scheduler Hanlder */
+    OFC_HANDLE scheduler;    /* Scheduler Handler */
     OFC_BOOL destroy;        /* Flag to destroy app */
     OFC_VOID *app_data;
     OFC_HANDLE hNotify;
@@ -160,7 +160,7 @@ ofc_app_preselect(OFC_HANDLE hApp) {
  *
  * Accepts:
  *    hApp - The handle of the app doing the postselect for
- *    events - The events that have occured
+ *    events - The events that have occurred
  */
 OFC_CORE_LIB OFC_HANDLE
 ofc_app_postselect(OFC_HANDLE hApp, OFC_HANDLE hEvent) {
