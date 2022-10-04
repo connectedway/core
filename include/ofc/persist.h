@@ -122,6 +122,26 @@ ofc_persist_default(OFC_VOID);
 OFC_CORE_LIB OFC_VOID
 ofc_persist_load(OFC_LPCTSTR lpFileName);
 /**
+ * Load a Persistent Configuration Buffer
+ *
+ * This routine loads a persistent configuration from a memory resident
+ * buffer.
+ *
+ * In order to use this routine, you must have OFC_PERSIST
+ * defined.  It will load the configuration from an XML formatted buffer..
+ * This routine will only set those fields present in the XML buffer.
+ * A developer may wish to set default configuration info before calling
+ * the load routine so that default values for fields not specified in
+ * the XML buffer can be present.
+ *
+ * \param buf Pointer to the buffer containing xml
+ *
+ * \param len Number of characters in the XML Buffer
+ */
+
+OFC_CORE_LIB OFC_VOID
+ofc_persist_loadbuf(OFC_LPVOID buf, OFC_SIZET len);
+/**
  * Saves a Configuration to a Persisten File
  *
  * This routine saves an Open Files configuration

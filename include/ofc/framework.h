@@ -104,12 +104,30 @@ ofc_framework_shutdown(OFC_VOID);
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename);
 /**
+ * Load the ConnectedSMB configuration from a buffer
+ *
+ * This is an optional call mainly used for SMB Server configuration.
+ * It is not needed by the client unless you have stored drive
+ * maps in the configuration file
+ */
+OFC_CORE_LIB OFC_VOID ofc_framework_loadbuf(OFC_LPVOID buf, OFC_SIZET len);
+/**
  * Save the current configuration to a file
  *
  * Useful if you've configured the stack using the various API calls
  * and wish to capture them so they can be later loaded.
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename);
+/**
+ * Save the current configuration to heap allocated buffer
+ *
+ * Useful if you've configured the stack using the various API calls
+ * and wish to capture them so they can be later loaded.
+ *
+ * NOTE: buf must be freed by caller
+ */
+OFC_CORE_LIB OFC_VOID ofc_framework_savebuf(OFC_LPVOID *buf, OFC_SIZET *len);
+
 /**
  * Find the application directory (i.e. directory that config file is in
  *

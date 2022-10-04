@@ -879,6 +879,11 @@ typedef struct {
     OFC_HANDLE handle;
 } FILE_CONTEXT;
 
+typedef struct {
+  OFC_CHAR *buf;
+  OFC_SIZET len;
+} BUF_CONTEXT;
+
 static OFC_SIZET
 readFile(OFC_VOID *context, OFC_LPVOID buf, OFC_DWORD bufsize) {
     FILE_CONTEXT *fileContext;
@@ -891,7 +896,24 @@ readFile(OFC_VOID *context, OFC_LPVOID buf, OFC_DWORD bufsize) {
                      &bytes_read, OFC_HANDLE_NULL))
         ret = -1;
     else
+      {
         ret = bytes_read;
+      }
+    return (ret);
+}
+
+static OFC_SIZET
+readBuf(OFC_VOID *context, OFC_LPVOID buf, OFC_DWORD bufsize) {
+    BUF_CONTEXT *bufContext;
+    OFC_DWORD bytes_read;
+    OFC_SIZET ret;
+
+    bufContext = (BUF_CONTEXT *) context;
+
+    ret = OFC_MIN(bufsize, bufContext->len);
+    ofc_memcpy(buf, bufContext->buf, ret);
+    bufContext->len -= ret;
+    bufContext->buf += ret;
 
     return (ret);
 }
@@ -929,6 +951,37 @@ ofc_persist_load(OFC_LPCTSTR lpFileName) {
             ofc_printf("Could not load config file %S\n", lpFileName);
 
         ofc_free(fileContext);
+
+        if (config_dom != OFC_NULL) {
+            ofc_persist_free();
+            ofc_persist_parse_dom(config_dom);
+            ofc_dom_destroy_document(config_dom);
+        }
+
+        ofc_persist_unlock();
+    }
+}
+
+OFC_CORE_LIB OFC_VOID
+ofc_persist_loadbuf(OFC_LPVOID buf, OFC_SIZET len) {
+    BUF_CONTEXT *bufContext;
+    OFC_DOMNode *config_dom;
+
+    OFC_CONFIG *ofc_persist;
+
+    ofc_persist = ofc_get_config();
+    if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
+
+        config_dom = OFC_NULL;
+
+        bufContext = (BUF_CONTEXT *) ofc_malloc(sizeof(BUF_CONTEXT));
+        bufContext->buf = buf;
+        bufContext->len = len;
+
+        config_dom = ofc_dom_load_document(readBuf,
+                                           (OFC_VOID *) bufContext);
+        ofc_free(bufContext);
 
         if (config_dom != OFC_NULL) {
             ofc_persist_free();

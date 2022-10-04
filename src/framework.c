@@ -103,6 +103,16 @@ OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename) {
 #endif
 }
 
+OFC_CORE_LIB OFC_VOID ofc_framework_loadbuf(OFC_LPVOID buf, OFC_SIZET len)
+{
+#if defined(OFC_PERSIST)
+  ofc_printf("Loading Secure Config\n");
+  ofc_persist_loadbuf(buf, len);
+#else
+  ofc_printf("Configuration Files Disabled\n") ;
+#endif
+}
+
 OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename) {
 #if defined(OFC_PERSIST)
     if (filename == OFC_NULL)
@@ -116,6 +126,16 @@ OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename) {
 #endif
 }
 
+OFC_CORE_LIB OFC_VOID ofc_framework_savebuf(OFC_LPVOID *buf, OFC_SIZET *len)
+{
+#if defined(OFC_PERSIST)
+  ofc_printf("Saving Secure Config%S\n");
+  ofc_persist_print(buf, len);
+#else
+  ofc_printf("Configuration Files Disabled\n") ;
+#endif
+}
+
 OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir, OFC_SIZET len)
 {
   OFC_BOOL ret;
@@ -124,12 +144,11 @@ OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir, OFC_SIZET len)
     {
       OFC_PATH *path;
       OFC_SIZET rem;
-      OFC_SIZET size;
       OFC_TCHAR *dir;
       
       path = ofc_path_createW(config_filename);
       ofc_path_free_filename(path);
-      rem = 128;
+      rem = len;
       dir = config_dir;
       ofc_path_printW(path, &dir, &rem);
       ofc_path_delete(path);
