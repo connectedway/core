@@ -41,14 +41,13 @@ struct perf_statistics {
   OFC_INT instance;
   OFC_LONG elapsed_ms;
   OFC_LONG total_byte_count;
-  OFC_LONG byte_throughput;
   OFC_LONG num_requests;
+  OFC_LONG avg_packet_size;
   OFC_LONG request_throughput;
-  OFC_LONG average_depth_x100;
+  OFC_LONG average_depth_x1000;
   OFC_LONG basis;
-  OFC_LONG overhead;
-  OFC_LONG normalized_throughput;
   OFC_LONG depth_samples;
+  OFC_LONG lead_x1000;
   OFC_LONG total_depth;
 };
 
@@ -77,7 +76,7 @@ extern "C"
 			       struct perf_queue *queue);
   OFC_VOID perf_request_stop (struct perf_measurement *measurement,
 			      struct perf_queue *queue,
-			      OFC_ULONG byte_count);
+			      OFC_LONG byte_count);
   OFC_VOID perf_queue_poll(struct perf_measurement *measurement,
 			   struct perf_queue *queue);
   OFC_VOID perf_statistics_print(struct perf_statistics *statistics);

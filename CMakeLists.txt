@@ -35,41 +35,41 @@ set(SRCS
         src/waitset.c
         )
 
-if(DEFINED CACHE{OFC_NETMON})
+if(OFC_NETMON)
     list(APPEND SRCS src/netmon.c)
 endif()
 
-if (DEFINED CACHE{OF_RESOLVER_FS})
+if (OF_RESOLVER_FS)
     message("Adding FS Resolver")
     list(APPEND fs_library_list of_resolver_fs)
 endif ()
 
-if (DEFINED CACHE{OFC_FS_PIPE})
+if (OFC_FS_PIPE)
     message("Adding FS Pipe")
     list(APPEND fs_library_list of_core_fs_pipe)
 endif ()
 
-if (DEFINED CACHE{OFC_FS_DARWIN})
+if (OFC_FS_DARWIN})
     message("Adding FS Darwin")
     list(APPEND fs_library_list of_core_fs_darwin)
 endif ()
 
-if (DEFINED CACHE{OFC_FS_WIN32})
+if (OFC_FS_WIN32)
     message("Adding FS Windows")
     list(APPEND fs_library_list of_core_fs_windows)
 endif ()
 
-if (DEFINED CACHE{OFC_FS_LINUX})
+if (OFC_FS_LINUX)
     message("Adding FS Linux")
     list(APPEND fs_library_list of_core_fs_linux)
 endif ()
 
-if (DEFINED CACHE{OFC_FS_ANDROID})
+if (OFC_FS_ANDROID)
     message("Adding FS Android")
     list(APPEND fs_library_list of_core_fs_android)
 endif ()
 
-if (DEFINED CACHE{OFC_FS_BOOKMARKS})
+if (OFC_FS_BOOKMARKS)
     message("Adding FS Bookmarks")
     list(APPEND fs_library_list of_core_fs_bookmarks)
 endif ()

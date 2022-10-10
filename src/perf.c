@@ -18,6 +18,35 @@
 #include "ofc/thread.h"
 #include "ofc/lock.h"
 
+/*
+ * Little's Law Brief
+
+L = λ x W
+Work in Progress (L) is the number of items in process in any system.
+Throughput (λ) represents the rate at which items arrive in/out of the system.
+Lead time (W) is the average time one item spends in the system.
+
+WIP = Throughput x Lead Time
+Throughput = WIP / Lead time
+
+WIP(packets) is number of packets in the system
+Throughput(packets) is the number of packets per second.
+Lead(packets) is average time a packet spends in the system.
+
+WIP(packets) = Number of requests = 250
+Average Queue Depth x 1000 = 5000
+Lead(packets) = Queue Basis(ms) / Average Queue Depth x 1000 = 5.06 (s)
+
+Throughput(packets/sec) = WIP(packets) / Lead(packets) = 49.40 p/sec
+
+Total Byte Count = 256000
+Number of Requests = 250
+average bytes per packet = Total Byte Count / Number of requests = 1024
+Throughput(bytes/sec) = Throughput (packets/sec) * average bytes per packet
+Throughput(bytes/sec) = 49.40 * 1024 = 50585 bytes/second
+
+*/
+
 struct perf_measurement *measurement_alloc (OFC_VOID)
 {
   struct perf_measurement *measurement;
@@ -103,6 +132,33 @@ OFC_BOOL measurement_statistics(struct perf_measurement *measurement)
   struct perf_queue *queue;
   struct perf_statistics statistics;
 
+  static char *perf_stats_header =
+    "%13s %8s %10s %9s %10s %10s %10s\n";
+  ofc_printf(perf_stats_header,
+	     "    Queue    ",
+	     " Elapsed",
+	     "Total Byte",
+	     "Number of",
+	     " Avg Queue",
+	     "    Req   ",
+	     "   Byte   ");
+  ofc_printf(perf_stats_header,
+	     "     Name    ",
+	     "  Time  ",
+	     "   Count  ",
+	     "  Requests",
+	     "   Depth  ",
+	     "Throughput",
+	     "Throughput");
+  ofc_printf(perf_stats_header,
+	     "             ",
+	     "  (ms)  ",
+	     "          ",
+	     "         ",
+	     "          ",
+	     "   (pps)  ",
+	     "  (Kbps)  ");
+
   for (queue = ofc_queue_first(measurement->queues);
        queue != OFC_NULL;
        queue = ofc_queue_next(measurement->queues, queue))
@@ -143,11 +199,6 @@ OFC_BOOL measurement_notify(struct perf_measurement *measurement)
 	    ofc_event_set(measurement->notify);
 	  ret = OFC_TRUE;
 	}
-      else
-	{
-	  ofc_printf("Waiting for %S, depth %d\n",
-		     queue->description, queue->depth);
-	}
     }
   return (ret);
 }
@@ -185,21 +236,20 @@ OFC_VOID perf_queue_destroy(struct perf_measurement *measurement,
 				   
 OFC_VOID perf_statistics_print(struct perf_statistics *statistics)
 {
-  ofc_printf("queue %S:%d\n", statistics->description, statistics->instance);
-  ofc_printf("Elapsed MS %d\n", statistics->elapsed_ms);
-  ofc_printf("Total Byte Count %d\n", statistics->total_byte_count);
-  ofc_printf("Byte throughput %d Bps\n", statistics->byte_throughput);
-  ofc_printf("Number of requests %d\n", statistics->num_requests);
-  ofc_printf("Request Throughput %d REQps\n", statistics->request_throughput);
-  ofc_printf("Depth Samples %d\n", statistics->depth_samples);
-  ofc_printf("Total Depty %d\n", statistics->total_depth);
-  ofc_printf("Average Queue Depth (x100) %d\n",
-	     statistics->average_depth_x100) ;
-  ofc_printf("Queue Basis %d\n", statistics->basis);
-  ofc_printf("Queue Overhead %d ms/request\n", statistics->overhead);
-  ofc_printf("Queue Throughput %d byte/sec\n",
-	     statistics->normalized_throughput);
-  ofc_printf("\n");
+  static char *perf_stats_format =
+    "%10.10S:%02d %8d %10d %9d %6d.%03d %10d %10d\n";
+
+  ofc_printf(perf_stats_format,
+	     statistics->description,
+	     statistics->instance,
+	     statistics->elapsed_ms,
+	     statistics->total_byte_count,
+	     statistics->num_requests,
+	     statistics->average_depth_x1000 / 1000,
+	     statistics->average_depth_x1000 % 1000,
+	     statistics->request_throughput,
+	     (statistics->request_throughput * statistics->avg_packet_size) /
+	     1000);
 }
 
 OFC_VOID perf_queue_statistics(struct perf_measurement *measurement,
@@ -211,21 +261,17 @@ OFC_VOID perf_queue_statistics(struct perf_measurement *measurement,
   statistics->instance = queue->instance;
   statistics->elapsed_ms = measurement->stop_stamp - measurement->start_stamp;
   statistics->total_byte_count = queue->total_byte_count;
-  statistics->byte_throughput = (queue->total_byte_count * 1000) /
-    statistics->elapsed_ms;
   statistics->num_requests = queue->num_requests;
-  statistics->request_throughput = (queue->num_requests * 1000) /
-    statistics->elapsed_ms;
+  statistics->avg_packet_size = queue->total_byte_count / queue->num_requests;
   statistics->depth_samples = queue->depth_samples;
   statistics->total_depth = queue->total_depth;
-  statistics->average_depth_x100 = (queue->total_depth * 100) /
+  statistics->average_depth_x1000 = (queue->total_depth * 1000) /
     queue->depth_samples;
   statistics->basis = queue->basis;
-  statistics->overhead = (queue->basis * 100) /
-    statistics->average_depth_x100;
-  statistics->normalized_throughput = (queue->total_byte_count *
-				       queue->basis * 100) /
-    statistics->average_depth_x100;
+  statistics->lead_x1000 = (queue->basis * 1000) /
+    statistics->average_depth_x1000 ;
+  statistics->request_throughput = (queue->num_requests * 1000) /
+    statistics->lead_x1000;
   ofc_unlock(measurement->lock);
 }
 
@@ -244,14 +290,15 @@ OFC_VOID perf_request_start (struct perf_measurement *measurement,
 
 OFC_VOID perf_request_stop (struct perf_measurement *measurement,
 			    struct perf_queue *queue,
-			    OFC_ULONG byte_count)
+			    OFC_LONG byte_count)
 {
   ofc_lock(measurement->lock);
   if (queue->depth > 0)
     {
       queue->basis += ofc_time_get_now();
       queue->depth--;
-      queue->total_byte_count += byte_count;
+      if (byte_count > 0)
+	queue->total_byte_count += byte_count;
 
       measurement_notify(measurement);
     }

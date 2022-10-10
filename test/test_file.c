@@ -356,9 +356,8 @@ static OFC_TCHAR *MakeFilename(OFC_CTCHAR *device, OFC_CTCHAR *name) {
  * (sequential) algorithm
  */
 
-/* 2 MB */
-#define CREATE_SIZE (4*1024*1024)
-//#define CREATE_SIZE (2*1024)
+/* 4 MB */
+#define CREATE_SIZE (64*1024*1024)
 
 static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device) {
     OFC_HANDLE write_file;
@@ -432,8 +431,10 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device) {
                                OfcGetLastError());
                     ret = OFC_FALSE;
                 } else {
+#if 0
                     if (size % (1024 * 1024) == 0)
                         ofc_printf("Wrote %d MB\n", (size / (1024 * 1024)) + 1);
+#endif
                 }
             }
             ofc_free(buffer);
@@ -700,9 +701,11 @@ static OFC_BOOL OfcCopyFileTest(OFC_CTCHAR *device) {
                             /*
 			   * Only report on MB boundaries
 			   */
+#if 0
                             if (buffer->offset % (1024 * 1024) == 0)
                                 ofc_printf("Copied %d MB\n",
                                            (buffer->offset / (1024 * 1024)) + 1);
+#endif
 
                             OFC_LARGE_INTEGER_ASSIGN (buffer->offset, offset);
 #if defined(OFC_64BIT_INTEGER)
@@ -963,10 +966,11 @@ static OFC_BOOL OfcReadFileTest(OFC_CTCHAR *device)
                       /*
                        * Only report on MB boundaries
                        */
+#if 0
                       if (buffer->offset % (1024 * 1024) == 0)
                         ofc_printf("Read %d MB\n",
                                    (buffer->offset / (1024 * 1024)) + 1);
-
+#endif
                       OFC_LARGE_INTEGER_ASSIGN (buffer->offset, offset);
 #if defined(OFC_64BIT_INTEGER)
                       offset += BUFFER_SIZE;

@@ -399,7 +399,7 @@ OFC_VOID ofc_framework_update(OFC_VOID) {
 
 OFC_VOID ofc_framework_dump_heap(OFC_VOID) {
     ofc_heap_dump();
-#if defined(OFC_HEAP_DEBUG)
+#if defined(OFC_HANDLE_DEBUG)
     OfcHandle16DebugDump();
 #endif
 }

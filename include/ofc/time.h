@@ -276,9 +276,6 @@ ofc_perf_reset(OFC_VOID);
 OFC_CORE_LIB OFC_VOID
 ofc_perf_dump(OFC_VOID);
 
-OFC_CORE_LIB OFC_VOID
-ofc_perf_count(OFC_VOID);
-
 #endif
 
 #if defined(__cplusplus)
