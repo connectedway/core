@@ -189,6 +189,11 @@ ofc_dos_date_time_to_elements(OFC_WORD FatDate,
             OFC_DOS_YEAR_BASE;
 }
 
+OFC_CORE_LIB OFC_MSTIME
+ofc_get_runtime(OFC_VOID) {
+    return (ofc_get_runtime_impl());
+}
+
 #if defined(OFC_PERF_STATS)
 
 static struct perf_measurement *measurement = OFC_NULL;
@@ -217,11 +222,6 @@ static OFC_CTCHAR *ofc_perf_tnames[OFC_PERF_NUM] =
     TSTR("Session Read"),
     TSTR("Session Write")
   };
-
-OFC_CORE_LIB OFC_MSTIME
-ofc_get_runtime(OFC_VOID) {
-    return (ofc_get_runtime_impl());
-}
 
 OFC_CORE_LIB OFC_MSTIME
 ofc_perf_start(OFC_TIME_PERF_ID id)

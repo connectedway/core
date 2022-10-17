@@ -14,6 +14,10 @@
 
 #endif
 
+#if defined(__linux__)
+#include <stdlib.h>
+#endif
+
 #include "ofc/core.h"
 #include "ofc/config.h"
 #include "ofc/types.h"
@@ -872,6 +876,9 @@ ofc_memcmp(OFC_LPCVOID a, OFC_LPCVOID b, OFC_SIZET size) {
 OFC_CORE_LIB OFC_LPVOID
 ofc_memcpy(OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size) {
     OFC_LPVOID dst;
+#if defined(__linux__)
+    dst = memcpy (out, in, size);
+#else
     OFC_UINT32 *puint32;
     const OFC_UINT32 *pcuint32;
     OFC_UINT16 *puint16;
@@ -922,6 +929,7 @@ ofc_memcpy(OFC_LPVOID out, OFC_LPCVOID in, OFC_SIZET size) {
             }
         }
     }
+#endif
     return (dst);
 }
 

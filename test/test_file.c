@@ -509,6 +509,7 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device)
                   /*
                    * Fill in the buffer with an random data
                    */
+                  p = (OFC_ULONG *) buffer->data;
                   for (i = 0; i < (BUFFER_SIZE / sizeof(OFC_ULONG)); i++)
                     {
                       *p++ = size;
@@ -625,6 +626,7 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device)
                        */
                       if (size < CREATE_SIZE && ret == OFC_TRUE)
                         {
+                          p = (OFC_ULONG *) buffer->data;
                           for (i = 0; i < (BUFFER_SIZE / sizeof(OFC_ULONG)); i++)
                             {
                               *p++ = size;
@@ -743,7 +745,7 @@ static OFC_BOOL OfcCopyFileTest(OFC_CTCHAR *device)
   OFC_TCHAR *rfilename;
   OFC_TCHAR *wfilename;
   OFC_BOOL ret;
-#if defined(PERF_STATS)
+#if defined(OFC_PERF_STATS)
   struct perf_queue *pqueue_read;
   struct perf_queue *pqueue_write;
   struct perf_rt *prt;
