@@ -14,6 +14,9 @@
 #include "ofc/net.h"
 #include "ofc/time.h"
 #include "ofc/thread.h"
+#if defined(OFC_PERF_STATS)
+#include "ofc/perf.h"
+#endif
 
 #if defined(OFC_MESSAGE_DEBUG)
 #include "ofc/message.h"
@@ -39,18 +42,18 @@ ofc_core_load(OFC_VOID) {
     ofc_trace_init();
     ofc_path_init();
     ofc_net_init();
+#if defined(OFC_PERF_STATS)
+    measurement_init();
+#endif
     ofc_fs_init();
     OfcFileInit();
     ofc_persist_init();
-#if defined(OFC_PERF_STATS)
-    ofc_perf_init();
-#endif
 }
 
 OFC_UNLOAD OFC_CORE_LIB OFC_VOID
 ofc_core_unload(OFC_VOID) {
 #if defined(OFC_PERF_STATS)
-    ofc_perf_destroy();
+  measurement_destroy();
 #endif
 
     ofc_persist_unload();

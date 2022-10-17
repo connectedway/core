@@ -16,6 +16,9 @@
 #include "ofc/sched.h"
 #include "ofc/event.h"
 #include "ofc/time.h"
+#if defined(OFC_PERF_STATS)
+#include "ofc/perf.h"
+#endif
 
 #include "ofc/heap.h"
 
@@ -37,6 +40,9 @@ typedef struct _SCHEDULER {
     OFC_UINT32 avg_count ;
 #endif
     OFC_HANDLE hEvent;
+#if defined(OFC_PERF_STATS)
+    struct perf_queue *pqueue_poll;
+#endif
 } SCHEDULER;
 
 static OFC_INT g_instance = 0;
@@ -54,6 +60,7 @@ OFC_CORE_LIB OFC_HANDLE
 ofc_sched_create(OFC_VOID) {
     SCHEDULER *scheduler;
     OFC_HANDLE hScheduler;
+    static OFC_INT instance = 0;
     /*
      * Try to allocate room for the scheduler
      */
@@ -62,7 +69,9 @@ ofc_sched_create(OFC_VOID) {
     scheduler->quit = OFC_FALSE;
     scheduler->significant_event = OFC_FALSE;
     scheduler->hEvent = OFC_HANDLE_NULL;
-
+#if defined(OFC_PERF_STATS)
+    scheduler->pqueue_poll = perf_queue_create(g_measurement, TSTR("Poll"), instance++);
+#endif
     scheduler->hEventSet = ofc_waitset_create();
 
     scheduler->applications = ofc_queue_create();
@@ -299,7 +308,13 @@ ofc_sched_wait(OFC_HANDLE hScheduler) {
 #if defined(OFC_HANDLE_PERF)
             sleep = ofc_time_get_now() ;
 #endif
+#if defined(OFC_PERF_STATS)
+            perf_request_start(g_measurement, scheduler->pqueue_poll);
+#endif
             scheduler->hTriggered = ofc_waitset_wait(scheduler->hEventSet);
+#if defined(OFC_PERF_STATS)
+            perf_request_stop(g_measurement, scheduler->pqueue_poll, 1);
+#endif
 #if defined(OFC_HANDLE_PERF)
             slept = ofc_time_get_now() - sleep ;
             if (slept > scheduler->avg_sleep)
@@ -373,6 +388,9 @@ ofc_sched_destroy(OFC_HANDLE hScheduler) {
          * And get rid of the scheduler
          */
         ofc_waitset_destroy(scheduler->hEventSet);
+#if defined(OFC_PERF_STATS)
+        perf_queue_destroy(g_measurement, scheduler->pqueue_poll);
+#endif
         ofc_free(scheduler);
         ofc_handle_destroy(hScheduler);
         ofc_handle_unlock(hScheduler);
@@ -497,11 +515,21 @@ static OFC_DWORD
 ofc_scheduler_loop(OFC_HANDLE hThread, OFC_VOID *context) {
     OFC_HANDLE hScheduler;
     SCHEDULER *scheduler;
+#if defined(OFC_PERF_STATS)
+    struct perf_rt *perf_rt_sched;
+    static OFC_INT instance = 0;
+#endif
 
+#if defined(OFC_PERF_STATS)
+    perf_rt_sched = perf_rt_create(g_measurement, TSTR("sched"), instance++);
+#endif    
     hScheduler = (OFC_HANDLE) context;
     scheduler = ofc_handle_lock(hScheduler);
 
     while (!ofc_thread_is_deleting(hThread)) {
+#if defined(OFC_PERF_STATS)
+      perf_rt_start(perf_rt_sched);
+#endif
 #if defined(OFC_PRESELECT_PASS)
         /*
          * Do a preselect path
@@ -519,8 +547,14 @@ ofc_scheduler_loop(OFC_HANDLE hThread, OFC_VOID *context) {
          * And do a post select pas
          */
         ofc_sched_postselect(hScheduler);
+#if defined(OFC_PERF_STATS)
+        perf_rt_stop(perf_rt_sched);
+#endif
     }
 
+#if defined(OFC_PERF_STATS)
+    perf_rt_destroy(g_measurement, perf_rt_sched);
+#endif
     ofc_sched_destroy(hScheduler);
     ofc_handle_unlock(hScheduler);
     return (0);

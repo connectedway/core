@@ -18,7 +18,9 @@ struct perf_measurement {
   OFC_MSTIME stop_stamp;
   OFC_BOOL stop;
   OFC_INT nqueues;
+  OFC_INT nrts;
   OFC_HANDLE queues;
+  OFC_HANDLE rts;
   OFC_HANDLE notify;
   OFC_HANDLE hThread;
   OFC_UINT instance;
@@ -34,6 +36,14 @@ struct perf_queue {
   OFC_UINT depth_samples;
   OFC_CTCHAR *description;
   OFC_INT instance;
+  OFC_LOCK lock;
+};
+
+struct perf_rt {
+  OFC_CTCHAR *description;
+  OFC_INT instance;
+  OFC_MSTIME total;
+  OFC_MSTIME start;
 };
 
 struct perf_statistics {
@@ -51,10 +61,16 @@ struct perf_statistics {
   OFC_LONG total_depth;
 };
 
+extern struct perf_measurement *g_measurement;
+
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
+  OFC_VOID measurement_init(OFC_VOID);
+  OFC_VOID measurement_destroy(OFC_VOID);
+  OFC_VOID measurement_wait(struct perf_measurement *measurement);
+
   struct perf_measurement *measurement_alloc (OFC_VOID);
   OFC_VOID measurement_free(struct perf_measurement *measurement);
   OFC_BOOL measurement_start(struct perf_measurement *measurement);
@@ -63,6 +79,16 @@ extern "C"
 			    OFC_HANDLE notify);
   OFC_VOID measurement_poll(struct perf_measurement *measurement);
   OFC_BOOL measurement_notify(struct perf_measurement *measurement);
+  OFC_VOID perf_queue_reset(struct perf_queue *queue);
+  struct perf_rt *
+  perf_rt_create (struct perf_measurement *measurement,
+		  OFC_CTCHAR *description,
+		  OFC_INT instance);
+  OFC_VOID perf_rt_destroy(struct perf_measurement *measurement,
+			   struct perf_rt *rt);
+  OFC_VOID perf_rt_reset(struct perf_rt *rt);
+  OFC_VOID perf_rt_start(struct perf_rt *rt);
+  OFC_VOID perf_rt_stop(struct perf_rt *rt);
   struct perf_queue *
   perf_queue_create (struct perf_measurement *measurement,
 		     OFC_CTCHAR *description,
