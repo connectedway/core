@@ -16,6 +16,7 @@
 
 #if defined(__linux__)
 #include <stdlib.h>
+#include <string.h>
 #endif
 
 #include "ofc/core.h"
