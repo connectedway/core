@@ -49,7 +49,7 @@ if (OFC_FS_PIPE)
     list(APPEND fs_library_list of_core_fs_pipe)
 endif ()
 
-if (OFC_FS_DARWIN})
+if (OFC_FS_DARWIN)
     message("Adding FS Darwin")
     list(APPEND fs_library_list of_core_fs_darwin)
 endif ()
