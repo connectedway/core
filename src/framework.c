@@ -27,6 +27,7 @@
 
 static OFC_LPTSTR config_filename = OFC_NULL;
 
+
 /**
  * \defgroup init Initialization
  * \ingroup Applications
@@ -129,11 +130,17 @@ OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename) {
 OFC_CORE_LIB OFC_VOID ofc_framework_savebuf(OFC_LPVOID *buf, OFC_SIZET *len)
 {
 #if defined(OFC_PERSIST)
-  ofc_printf("Saving Secure Config%S\n");
+  ofc_printf("Saving Secure Config\n");
   ofc_persist_print(buf, len);
 #else
   ofc_printf("Configuration Files Disabled\n") ;
 #endif
+}
+
+OFC_CORE_LIB OFC_VOID ofc_set_config_path(OFC_TCHAR *filename)
+{
+  if (config_filename == OFC_NULL)
+    config_filename = ofc_tstrdup(filename);
 }
 
 OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir, OFC_SIZET len)

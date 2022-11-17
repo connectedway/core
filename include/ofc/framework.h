@@ -135,6 +135,8 @@ OFC_CORE_LIB OFC_VOID ofc_framework_savebuf(OFC_LPVOID *buf, OFC_SIZET *len);
  */
 OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir,
 					 OFC_SIZET len);
+OFC_CORE_LIB OFC_VOID ofc_set_config_path(OFC_TCHAR *filename);
+
 /**
  * Set the host name of the running instance
  *
