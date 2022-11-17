@@ -76,7 +76,7 @@ static OFC_DWORD OfcFSTestApp(OFC_PATH *path);
  *
  * The Buffer Size
  */
-#define BUFFER_SIZE (64*1024)
+#define BUFFER_SIZE OFC_MAX_IO
 /*
  * And the number of buffers
  */
@@ -3128,7 +3128,6 @@ OFC_INT test_file(OFC_LPCSTR test_root)
           ofc_printf("  *** Copy File Test Failed *** \n");
           test_result = OFC_FALSE;
         }
-#if 0
       ofc_printf("  List Directory Test\n");
       if (OfcListDirTest(device) == OFC_FALSE)
         {
@@ -3203,7 +3202,6 @@ OFC_INT test_file(OFC_LPCSTR test_root)
           ofc_printf("  *** Get Volume Information Failed ***\n");
           test_result = OFC_FALSE;
         }
-#endif
       if (test_result == OFC_FALSE)
         ofc_printf("*** File Test Failed ***\n");
       else
