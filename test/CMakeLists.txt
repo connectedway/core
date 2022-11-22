@@ -46,6 +46,7 @@ add_executable(test_all
         test_timer.c
         test_event.c
 	test_perf.c
+        test_iovec.c
         test_waitq.c
         test_thread.c
         test_dg.c
@@ -100,6 +101,10 @@ add_test(NAME stream COMMAND $<TARGET_FILE:test_stream> --config ${OPEN_FILES_HO
 add_executable(test_path test_path.c)
 target_link_libraries(test_path PRIVATE of_core_static unityextras)
 add_test(NAME path COMMAND $<TARGET_FILE:test_path>)
+
+add_executable(test_iovec test_iovec.c)
+target_link_libraries(test_iovec PRIVATE of_core_static unityextras)
+add_test(NAME iovec COMMAND $<TARGET_FILE:test_iovec>)
 
 if (OFC_FS_PIPE)
    add_executable(test_pipe test_pipe.c test_startup.c)

@@ -14,6 +14,7 @@ set(SRCS
         src/framework.c
         src/fs.c
         src/handle.c
+        src/iovec.c
         src/heap.c
         src/libc.c
         src/lock.c

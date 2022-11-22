@@ -19,6 +19,7 @@ static void runAllTests(void) {
     RUN_TEST_GROUP(dg);
     RUN_TEST_GROUP(stream);
     RUN_TEST_GROUP(path);
+    RUN_TEST_GROUP(iovec);
 #if defined(OFC_FS_DARWIN)
     RUN_TEST_GROUP(fs_darwin);
 #endif
