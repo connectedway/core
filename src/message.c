@@ -15,6 +15,7 @@
 #include "ofc/lock.h"
 #include "ofc/thread.h"
 #include "ofc/process.h"
+#include "ofc/iovec.h"
 
 #include "ofc/heap.h"
 #include "ofc/persist.h"
@@ -95,7 +96,7 @@ ofc_message_debug_dump(OFC_VOID)
   for (msg = OfcMessageAlloc ; msg != OFC_NULL ; msg = msg->dbgnext)
     {
       ofc_printf ("%-10p %-10d %-10p %-10p %-10p %-10p\n",
-           msg, msg->map[0].length, msg->caller1, msg->caller2, msg->caller3,
+           msg, 0, msg->caller1, msg->caller2, msg->caller3,
            msg->caller4) ;
     }
 #else
@@ -103,7 +104,7 @@ ofc_message_debug_dump(OFC_VOID)
 
   for (msg = OfcMessageAlloc ; msg != OFC_NULL ; msg = msg->dbgnext)
     {
-      ofc_printf ("%-20p %-10d %-20p\n", msg, msg->map[0].length, msg->caller) ;
+      ofc_printf ("%-20p %-10d %-20p\n", 0, msg->caller) ;
     }
 #endif
   ofc_printf ("\n") ;
@@ -132,36 +133,24 @@ ofc_message_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
         msg->FIFO1size = 0;
         msg->FIFO1rem = 0;
         msg->base = 0;
-        for (i = 0 ; i < MAX_MAP; i++)
-          {
-            msg->map[i].ptr = OFC_NULL;
-          }
-
+        msg->map = ofc_iovec_new();
         if (msgData == OFC_NULL)
           {
             if (msgType == MSG_ALLOC_HEAP)
               {
-                msg->map[0].length = msgDataLength;
-                msg->map[0].alloc = msgType;
-                msg->map[0].ptr = ofc_malloc(msgDataLength);
-                if (msg->map[0].ptr == OFC_NULL)
-                  {
-                    ofc_free(msg);
-                    msg = OFC_NULL;
-                  }
+                ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_HEAP,
+                                 OFC_NULL, msgDataLength);
               }
             else
               {
-                msg->map[0].length = msgDataLength;
-                msg->map[0].alloc = msgType;
-                msg->map[0].ptr = OFC_NULL;
+                ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_STATIC,
+                                 OFC_NULL, msgDataLength);
               }
           }
         else
           {
-            msg->map[0].length = msgDataLength;
-            msg->map[0].alloc = msgType;
-            msg->map[0].ptr = msgData;
+            ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_STATIC,
+                             msgData, msgDataLength);
           }
 
 #if defined(OFC_MESSAGE_DEBUG)
@@ -173,18 +162,12 @@ ofc_message_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
 }
 
 OFC_CORE_LIB OFC_BOOL
-ofc_message_realloc(OFC_MESSAGE *msg, OFC_SIZET msgDataLength) {
-    OFC_BOOL ret;
+ofc_message_realloc(OFC_MESSAGE *msg, OFC_SIZET msgDataLength)
+{
+  OFC_BOOL ret = OFC_TRUE;
 
-    ret = OFC_FALSE;
-    if (msg->map[0].alloc == MSG_ALLOC_HEAP)
-      {
-        msg->map[0].length = msgDataLength;
-        msg->map[0].ptr = ofc_realloc(msg->map[0].ptr, msg->map[0].length);
-        if (msg->map[0].ptr != OFC_NULL)
-            ret = OFC_TRUE;
-    }
-    return (ret);
+  ofc_iovec_realloc(msg->map, msgDataLength);
+  return (ret);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -211,11 +194,8 @@ ofc_message_destroy(OFC_MESSAGE *msg)
 {
   OFC_INT i;
 
-  for (i = 0 ; msg->map[i].ptr != OFC_NULL ; i++)
-    {
-      if (msg->map[i].alloc == MSG_ALLOC_HEAP)
-        ofc_free(msg->map[i].ptr);
-    }
+  ofc_iovec_destroy(msg->map);
+  msg->map = OFC_NULL;
 #if defined(OFC_MESSAGE_DEBUG)
   ofc_message_debug_free(msg) ;
 #endif
@@ -237,10 +217,12 @@ ofc_message_done(OFC_MESSAGE *msg) {
 }
 
 OFC_CORE_LIB OFC_VOID *
-ofc_message_data(OFC_MESSAGE *msg) {
-    return (msg->map[0].ptr);
+ofc_message_data(OFC_MESSAGE *msg)
+{
+  return(ofc_iovec_lookup(msg->map, 0, 0));
 }
 
+#if 0
 OFC_CORE_LIB OFC_VOID *
 ofc_message_unload_data(OFC_MESSAGE *msg) {
     OFC_VOID *data;
@@ -250,6 +232,7 @@ ofc_message_unload_data(OFC_MESSAGE *msg) {
 
     return (data);
 }
+#endif
 
 OFC_CORE_LIB OFC_INT
 ofc_message_offset(OFC_MESSAGE *msg) {
@@ -306,11 +289,7 @@ ofc_message_get_length(OFC_MESSAGE *msg)
   OFC_INT i;
   OFC_SIZET len;
 
-  len = 0;
-  for (i = 0 ; msg->map[i].ptr != OFC_NULL ; i++)
-    {
-      len += msg->map[i].length;
-    }
+  len = ofc_iovec_length(msg->map);
   return (len);
 }
 
@@ -328,120 +307,22 @@ OFC_VOID ofc_message_put_indirect(OFC_MESSAGE *msg,
                                   OFC_VOID *buffer,
                                   OFC_SIZET size)
 {
-  OFC_INT i;
-  OFC_INT j;
-  OFC_SIZET loc;
-  OFC_OFFT map_off;
-  OFC_CHAR *rest;
-  OFC_SIZET rem;
-
-  loc = 0;
-  offset += msg->base;
-
-  for (i = 0; ((msg->map[i].ptr != OFC_NULL) &&
-               (loc + msg->map[i].length <= offset));
-       i++)
-    loc += msg->map[i].length;
-
-  map_off = offset - loc;
-
-  /*
-   * Insert segment here
-   */
-  for (j = i; msg->map[j].ptr != OFC_NULL ; j++);
-
-  if (map_off == 0)
-    {
-      /*
-       * If we're inserting right at the beginning of the buffer,
-       * then we don't need to split it.  Just insert this buffer
-       * in maps.  make room
-       */
-      for ( ; j > i; j--)
-        {
-          msg->map[j] = msg->map[j-1];
-        }
-
-      msg->map[i].ptr = buffer;
-      msg->map[i].alloc = MSG_ALLOC_HEAP;
-      msg->map[i].length = size;
-    }
-  else
-    {
-      /*
-       * Insert two spots
-       */
-      j++;
-      for ( ; j > (i+1); j--)
-        {
-          msg->map[j] = msg->map[j-2];
-        }
-
-      rem = msg->map[i].length - map_off - size;
-      rest = (OFC_CHAR *) msg->map[i].ptr + map_off + size;
-      msg->map[i].length = map_off;
-      msg->map[i+1].ptr = buffer;
-      msg->map[i+1].alloc = MSG_ALLOC_HEAP;
-      msg->map[i+1].length = size;
-      msg->map[i+2].ptr = rest;
-      msg->map[i+2].alloc = MSG_ALLOC_STATIC;
-      msg->map[i+2].length = rem;
-    }
+  ofc_iovec_insert(msg->map, offset, IOVEC_ALLOC_HEAP,
+                   buffer, size);
 }  
 
 OFC_VOID ofc_message_get_map(OFC_MESSAGE *msg,
                              OFC_SIZET total,
-                             OFC_SIZET *num_elem,
-                             const OFC_UCHAR **addr,
-                             OFC_SIZET *len)
+                             OFC_IOVEC **iovec,
+                             OFC_INT *veclen)
 {
-  OFC_INT i;
-  OFC_SIZET offset = 0;
-
-  offset += msg->base;
-
-  for (i = 0 ; total > 0; i++)
-    {
-      OFC_SIZET seg_size;
-      addr[i] = (const OFC_UCHAR *) message_map(msg, offset, 0, &seg_size);
-      len[i] = OFC_MIN(seg_size, total);
-      total -= len[i];
-      offset += len[i];
-    }
-  *num_elem = i;
+  ofc_iovec_get(msg->map, msg->base, total, iovec, veclen);
 }
 
-OFC_CHAR *message_map(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET len,
-                      OFC_SIZET *seg_size)
+
+OFC_CHAR *message_map(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET len)
 {
-  OFC_INT i;
-  OFC_SIZET loc;
-  OFC_OFFT map_off;
-  OFC_CHAR *ret;
-
-  loc = 0;
-  for (i = 0; ((msg->map[i].ptr != OFC_NULL) &&
-               (loc + msg->map[i].length <= offset));
-       i++)
-    loc += msg->map[i].length;
-
-  map_off = offset - loc;
-
-  if ((msg->map[i].ptr != OFC_NULL) &&
-      (map_off + len <= msg->map[i].length))
-    {
-      ret = msg->map[i].ptr + map_off;
-      if (seg_size != OFC_NULL)
-        *seg_size = msg->map[i].length - map_off;
-    }
-  else
-    {
-      ret = OFC_NULL;
-      if (seg_size != OFC_NULL)
-        *seg_size = 0;
-    }
-
-  return (ret);
+  return ((OFC_CHAR *) ofc_iovec_lookup(msg->map, offset, len));
 }
 
 OFC_CORE_LIB OFC_BOOL
@@ -452,7 +333,7 @@ ofc_message_put_u8(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT8 value)
 
   ret = OFC_FALSE;
   offset += msg->base;
-  ptr = message_map(msg, offset, sizeof(OFC_UINT8), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT8));
 
   if (ptr != OFC_NULL)
     {
@@ -478,7 +359,7 @@ ofc_message_put_u16(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT16 value)
   ret = OFC_FALSE;
   offset += msg->base;
 
-  ptr = message_map(msg, offset, sizeof(OFC_UINT16), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT16));
 
   if (ptr != OFC_NULL)
     {
@@ -504,7 +385,7 @@ ofc_message_put_u32(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT32 value)
   ret = OFC_FALSE;
   offset += msg->base;
 
-  ptr = message_map(msg, offset, sizeof(OFC_UINT32), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT32));
 
   if (ptr != OFC_NULL)
     {
@@ -530,7 +411,7 @@ ofc_message_put_u64(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value)
   ret = OFC_FALSE;
   offset += msg->base;
 
-  ptr = message_map(msg, offset, sizeof(OFC_UINT64), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT64));
 
   if (ptr != OFC_NULL)
     {
@@ -717,7 +598,7 @@ ofc_message_get_u8(OFC_MESSAGE *msg, OFC_INT offset)
   value = 0;
   offset += msg->base;
 
-  ptr = message_map(msg, offset, sizeof(OFC_UINT8), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT8));
 
   if (ptr != OFC_NULL)
     {
@@ -738,7 +619,7 @@ ofc_message_get_u16(OFC_MESSAGE *msg, OFC_INT offset)
   value = 0;
   offset += msg->base;
 
-  ptr = message_map(msg, offset, sizeof(OFC_UINT16), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT16));
 
   if (ptr != OFC_NULL)
     {
@@ -759,7 +640,7 @@ ofc_message_get_u32(OFC_MESSAGE *msg, OFC_INT offset)
   value = 0;
   offset += msg->base;
 
-  ptr = message_map(msg, offset, sizeof(OFC_UINT32), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT32));
 
   if (ptr != OFC_NULL)
     {
@@ -784,7 +665,7 @@ ofc_message_get_u64(OFC_MESSAGE *msg, OFC_INT offset, OFC_UINT64 *value)
 #endif
   offset += msg->base;
 
-  ptr = message_map(msg, offset, sizeof(OFC_UINT64), OFC_NULL);
+  ptr = message_map(msg, offset, sizeof(OFC_UINT64));
 
   if (ptr != OFC_NULL)
     {
@@ -815,7 +696,7 @@ ofc_message_get_pointer(OFC_MESSAGE *msg, OFC_INT offset)
 
   offset += msg->base;
 
-  ptr = message_map(msg, offset, 0, OFC_NULL);
+  ptr = message_map(msg, offset, 0);
 
   return (ptr);
 }

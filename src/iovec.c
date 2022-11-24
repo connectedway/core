@@ -227,6 +227,26 @@ OFC_SIZET ofc_iovec_length(OFC_IOMAP list)
   return (iovec->end_offset);
 }
 
+OFC_VOID ofc_iovec_realloc(OFC_IOMAP list, OFC_SIZET len)
+{
+  struct iovec_list *iovec = list;
+  /*
+   * There is an implicit implication here that the message only
+   * has one vector.  If it has more than one, then we can accomplish
+   * a message change by using inserts
+   */
+  ofc_assert(iovec->num_vecs == 1,
+             "MESSAGE: Too many vectors for realloc");
+
+  if (iovec->iovecs[0].type == IOVEC_ALLOC_HEAP)
+    {
+      iovec->iovecs[0].length = len;
+      iovec->iovecs[0].data =
+        ofc_realloc(iovec->iovecs[0].data, len);
+      iovec->end_offset = len;
+    }
+}
+
 OFC_UCHAR *ofc_iovec_lookup(OFC_IOMAP list, OFC_OFFT offset,
                             OFC_SIZET len)
 {
@@ -252,4 +272,61 @@ OFC_UCHAR *ofc_iovec_lookup(OFC_IOMAP list, OFC_OFFT offset,
         }
     }
   return (data);
+}
+
+OFC_VOID ofc_iovec_get(OFC_IOMAP inp,
+                       OFC_INT offset,
+                       OFC_INT last_offset,
+                       OFC_IOVEC **iovec,
+                       OFC_INT *veclen)
+{
+  struct iovec_list *list = inp;
+  OFC_INT i;
+  OFC_INT j;
+  OFC_INT begin_index;
+  OFC_INT end_index;
+  OFC_SIZET pre_len;
+  OFC_SIZET post_len;
+  OFC_INT end_offset;
+  
+  /*
+   * Find out how many vectors there are
+   */
+  begin_index = ofc_iovec_find(list, offset);
+  end_index = ofc_iovec_find(list, last_offset-1);
+
+  *veclen = 0;
+  for (i = begin_index; i <= end_index; i++)
+    {
+      if (list->iovecs[i].type != IOVEC_ALLOC_NONE)
+        (*veclen)++;
+    }
+  
+  *iovec = ofc_malloc(sizeof (OFC_IOVEC) * (*veclen));
+
+  j = 0;
+  end_offset = last_offset - list->iovecs[end_index].offset;
+
+  /*
+   * looping on index is not quite the right thing to do.  if the get
+   * includes the last byte of the message, then end_index will be
+   * past the message.  If the last byte is within the last segment,
+   * the index will be the segment itself.
+   */
+  for (i = begin_index ; i <= end_index; i++)
+    {
+      if (list->iovecs[i].type != IOVEC_ALLOC_NONE)
+        {
+          pre_len = offset - list->iovecs[i].offset;
+          post_len = 0;
+          if (last_offset <= list->iovecs[i].offset + list->iovecs[i].length)
+            post_len = list->iovecs[i].length - end_offset;
+
+          (*iovec)[j].iov_base = (OFC_CHAR *) list->iovecs[i].data + pre_len;
+          (*iovec)[j].iov_len = list->iovecs[i].length - (pre_len + post_len);
+
+          offset += (*iovec)[j].iov_len;
+          j++;
+        }
+    }
 }

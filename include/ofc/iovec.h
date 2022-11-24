@@ -62,15 +62,17 @@ extern "C"
   OFC_SIZET ofc_iovec_length(OFC_IOMAP list);
   OFC_UCHAR *ofc_iovec_lookup(OFC_IOMAP list, OFC_OFFT offset,
                               OFC_SIZET len);
+  OFC_VOID ofc_iovec_realloc(OFC_IOMAP list, OFC_SIZET len);
   /*
    * This is really private but needed for test
    */
   OFC_INT ofc_iovec_find(OFC_IOMAP list, OFC_OFFT offset);
 
-#if defined(__APPLE__)
-  OFC_VOID ofc_iovec_get(OFC_IOMAP inp, OFC_VOID **iovec,
+  OFC_VOID ofc_iovec_get(OFC_IOMAP inp,
+                         OFC_INT offset,
+                         OFC_INT last_offset,
+                         OFC_IOVEC **iovec,
                          OFC_INT *veclen);
-#endif
 
 #if defined(__cplusplus)
 }

@@ -10,6 +10,7 @@
 #include "ofc/types.h"
 #include "ofc/config.h"
 #include "ofc/net.h"
+#include "ofc/iovec.h"
 
 /**
  * \defgroup message Open Files Message Handling Facility
@@ -90,24 +91,6 @@ typedef enum {
 #define SIZEOF_U64 8
 #define SIZEOF_I64 8
 
-#define MAX_MAP 4
-
-struct map_entry
-{
-  /**
-   * Type of Allocation
-   */
-  MSG_ALLOC_TYPE alloc;
-  /**
-   * Message Data
-   */
-  OFC_CHAR *ptr;
-  /**
-   * Size of Message
-   */
-  OFC_SIZET length;
-};
-
 /**
  * Format of a Message Header
  */
@@ -125,22 +108,7 @@ typedef struct _OFC_MESSAGE
    * Source or destination port of message for UDP
    */
   OFC_UINT16 port;
-#if 0
-  /**
-   * Type of Allocation
-   */
-  MSG_ALLOC_TYPE alloc;
-  /**
-   * Message Data
-   */
-  OFC_CHAR *msg;
-  /**
-   * Size of Message
-   */
-  OFC_SIZET length;
-#else
-  struct map_entry map[MAX_MAP];
-#endif
+  OFC_IOMAP map;
     /**
      * Current Pointer into Message
      */
@@ -1370,11 +1338,9 @@ OFC_VOID ofc_message_put_indirect(OFC_MESSAGE *msg,
                                   OFC_SIZET size);
 OFC_VOID ofc_message_get_map(OFC_MESSAGE *msg,
                              OFC_SIZET total,
-                             OFC_SIZET *num_elem,
-                             const OFC_UCHAR **addr,
-                             OFC_SIZET *len);
-OFC_CHAR *message_map(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET len,
-                      OFC_SIZET *seg_size);
+                             OFC_IOVEC **iovec,
+                             OFC_INT *veclen);
+OFC_CHAR *message_map(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET len);
 #if defined(__cplusplus)
 }
 #endif

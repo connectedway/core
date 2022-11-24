@@ -45,6 +45,9 @@ TEST(iovec, test_iovec) {
   OFC_IOMAP list = ofc_iovec_new();
   OFC_UCHAR *data;
   OFC_UCHAR *lookup;
+  OFC_IOVEC *iovec;
+  OFC_INT veclen;
+
 
   data = ofc_iovec_append(list, IOVEC_ALLOC_HEAP, OFC_NULL, 100);
   ofc_assert(data != OFC_NULL, "IOVEC: Bad append");
@@ -152,11 +155,8 @@ TEST(iovec, test_iovec) {
   for (int i = 0; i < 50; i++)
     ofc_assert(lookup[i] == 0x04, "IOVEC: Bad data");
 
-#if defined(__APPLE__)
-  struct iovec *iovec;
-  OFC_INT veclen;
-
-  ofc_iovec_get(list, (OFC_VOID **) &iovec, &veclen);
+  ofc_iovec_get(list, 0, ofc_iovec_length(list),
+                &iovec, &veclen);
   ofc_assert (veclen == 7, "IOVEC: Bad get");
 
   for (int i = 0; i < 7; i++)
@@ -205,7 +205,7 @@ TEST(iovec, test_iovec) {
             ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x04,
                        "IOVEC: Bad iovec");
         }
-      else if (i == 5)
+      else if (i == 6)
         {
           ofc_assert(iovec[i].iov_len == 100, "IOVEC: Bad iovec");
           for (OFC_INT j = 0; j < 100; j++)
@@ -213,9 +213,74 @@ TEST(iovec, test_iovec) {
                        "IOVEC: Bad iovec");
         }
     }
+  ofc_free(iovec);
+
+  /*
+   * This one should have the same number of vectors, but it should be
+   * 100 bytes shorter.  50 less in the first one and 50 less in the last
+   * one.
+   */
+  ofc_iovec_get(list, 50, 
+                ofc_iovec_length(list)-50,
+                &iovec, &veclen);
+  ofc_assert (veclen == 7, "IOVEC: Bad get");
+
+  for (int i = 0; i < 7; i++)
+    {
+      if (i == 0)
+        {
+          ofc_assert(iovec[i].iov_len == 50, "IOVEC: Bad iovec");
+          for (OFC_INT j = 0; j < 50; j++)
+            {
+              ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x01,
+                         "IOVEC: Bad iovec");
+            }
+        }
+      else if (i == 1)
+        {
+          ofc_assert(iovec[i].iov_len == 100, "IOVEC: Bad iovec");
+          for (OFC_INT j = 0; j < 100; j++)
+            ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x02,
+                       "IOVEC: Bad iovec");
+        }
+      else if (i == 2)
+        {
+          ofc_assert(iovec[i].iov_len == 50, "IOVEC: Bad iovec");
+          for (OFC_INT j = 0; j < 50; j++)
+            ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x03,
+                       "IOVEC: Bad iovec");
+        }
+      else if (i == 3)
+        {
+          ofc_assert(iovec[i].iov_len == 50, "IOVEC: Bad iovec");
+          for (OFC_INT j = 0; j < 50; j++)
+            ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x35,
+                       "IOVEC: Bad iovec");
+        }
+      else if (i == 4)
+        {
+          ofc_assert(iovec[i].iov_len == 50, "IOVEC: Bad iovec");
+          for (OFC_INT j = 0; j < 50; j++)
+            ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x03,
+                       "IOVEC: Bad iovec");
+        }
+      else if (i == 5)
+        {
+          ofc_assert(iovec[i].iov_len == 100, "IOVEC: Bad iovec");
+          for (OFC_INT j = 0; j < 100; j++)
+            ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x04,
+                       "IOVEC: Bad iovec");
+        }
+      else if (i == 6)
+        {
+          ofc_assert(iovec[i].iov_len == 50, "IOVEC: Bad iovec");
+          for (OFC_INT j = 0; j < 50; j++)
+            ofc_assert(((OFC_UCHAR *)(iovec[i].iov_base))[j] == 0x05,
+                       "IOVEC: Bad iovec");
+        }
+    }
   
   ofc_free(iovec);
-#endif
   
   ofc_iovec_destroy(list);
 }          

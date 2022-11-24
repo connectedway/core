@@ -454,11 +454,15 @@ ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg)
       len = 0;
       if (msg->count > 0)
         {
+          OFC_IOVEC *iovec;
+          OFC_INT veclen;
           /*
            * Yes, so try to send it
            */
-          ptr = message_map(msg, msg->offset, 0, &count);
-          count = OFC_MIN(count, msg->count);
+          ofc_iovec_get(msg->map, msg->offset, msg->count,
+                        &iovec, &veclen);
+          ptr = iovec[0].iov_base;
+          count = iovec[0].iov_len;
 
           if (socket->type == SOCKET_TYPE_STREAM)
             {
@@ -522,20 +526,23 @@ ofc_socket_read(OFC_HANDLE hSocket, OFC_MESSAGE *msg) {
     progress = OFC_FALSE;
     if (socket != OFC_HANDLE_NULL) {
         len = 0;
-        if (msg->count > 0) {
+        if (msg->count > 0)
+          {
             /*
              * Yes, so try to receive it.
              */
-            if (socket->type == SOCKET_TYPE_STREAM) {
-                len = ofc_socket_impl_recv(socket->impl,
-                                           msg->map[0].ptr + msg->offset,
+            OFC_UCHAR *ptr;
+            ptr = ofc_iovec_lookup(msg->map, msg->offset, msg->count);
+            if (socket->type == SOCKET_TYPE_STREAM)
+              {
+                len = ofc_socket_impl_recv(socket->impl, ptr,
                                            msg->count);
                 msg->ip = socket->ip;
                 msg->port = socket->port;
             } else if (socket->type == SOCKET_TYPE_DGRAM ||
                        socket->type == SOCKET_TYPE_ICMP) {
                 len = ofc_socket_impl_recv_from(socket->impl,
-                                                msg->map[0].ptr + msg->offset,
+                                                ptr,
                                                 msg->count,
                                                 &msg->ip, &msg->port);
             }
