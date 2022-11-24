@@ -134,6 +134,7 @@ ofc_message_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
         msg->FIFO1rem = 0;
         msg->base = 0;
         msg->map = ofc_iovec_new();
+        msg->param_offset = 0;
         if (msgData == OFC_NULL)
           {
             if (msgType == MSG_ALLOC_HEAP)
@@ -307,7 +308,7 @@ OFC_VOID ofc_message_put_indirect(OFC_MESSAGE *msg,
                                   OFC_VOID *buffer,
                                   OFC_SIZET size)
 {
-  ofc_iovec_insert(msg->map, offset, IOVEC_ALLOC_HEAP,
+  ofc_iovec_insert(msg->map, offset + msg->base, IOVEC_ALLOC_HEAP,
                    buffer, size);
 }  
 
@@ -316,7 +317,7 @@ OFC_VOID ofc_message_get_map(OFC_MESSAGE *msg,
                              OFC_IOVEC **iovec,
                              OFC_INT *veclen)
 {
-  ofc_iovec_get(msg->map, msg->base, total, iovec, veclen);
+  ofc_iovec_get(msg->map, msg->base, total+msg->base, iovec, veclen);
 }
 
 

@@ -459,10 +459,11 @@ ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg)
           /*
            * Yes, so try to send it
            */
-          ofc_iovec_get(msg->map, msg->offset, msg->count,
+          ofc_iovec_get(msg->map, msg->offset, msg->offset + msg->count,
                         &iovec, &veclen);
           ptr = iovec[0].iov_base;
-          count = iovec[0].iov_len;
+          count = OFC_MIN(count, iovec[0].iov_len);
+          ofc_free(iovec);
 
           if (socket->type == SOCKET_TYPE_STREAM)
             {

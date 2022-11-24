@@ -74,6 +74,7 @@ extern "C"
                          OFC_IOVEC **iovec,
                          OFC_INT *veclen);
 
+  OFC_VOID ofc_iovec_check(OFC_IOMAP list);
 #if defined(__cplusplus)
 }
 #endif

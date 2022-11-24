@@ -92,7 +92,8 @@ OFC_UCHAR * ofc_iovec_insert(OFC_IOMAP list, OFC_OFFT offset,
       iovec->iovecs[index].offset = iovec->end_offset;
       iovec->iovecs[index].type = alloc_type;
       iovec->iovecs[index].length = length;
-      if (iovec->iovecs[index].type == IOVEC_ALLOC_HEAP)
+      if (iovec->iovecs[index].type == IOVEC_ALLOC_HEAP &&
+          data == OFC_NULL)
         data = ofc_malloc(iovec->iovecs[index].length);
       iovec->iovecs[index].data = data;
       iovec->end_offset += length;
@@ -111,7 +112,10 @@ OFC_UCHAR * ofc_iovec_insert(OFC_IOMAP list, OFC_OFFT offset,
           iovec->iovecs = ofc_realloc(iovec->iovecs,
                                       iovec->num_vecs *
                                       sizeof (struct iovec_entry));
-          for (OFC_INT i = iovec->num_vecs; i > index; i--)
+          /* say we have seven vecs.  The last index is 6 (one less)
+           * say we're inserting at 3.  We want to move down to 4.
+           */
+          for (OFC_INT i = iovec->num_vecs-1; i > index+1; i--)
             {
               iovec->iovecs[i] = iovec->iovecs[i-1];
               /*
@@ -125,7 +129,8 @@ OFC_UCHAR * ofc_iovec_insert(OFC_IOMAP list, OFC_OFFT offset,
            */
           iovec->iovecs[index].type = alloc_type;
           iovec->iovecs[index].length = length;
-          if (iovec->iovecs[index].type == IOVEC_ALLOC_HEAP)
+          if (iovec->iovecs[index].type == IOVEC_ALLOC_HEAP &&
+              data == OFC_NULL)
             data = ofc_malloc(iovec->iovecs[index].length);
           iovec->iovecs[index].data = data;
           iovec->end_offset += length;
@@ -140,7 +145,7 @@ OFC_UCHAR * ofc_iovec_insert(OFC_IOMAP list, OFC_OFFT offset,
           iovec->iovecs = ofc_realloc(iovec->iovecs,
                                       iovec->num_vecs *
                                       sizeof(struct iovec_entry));
-          for (OFC_INT i = iovec->num_vecs; i > (index + 1); i--)
+          for (OFC_INT i = iovec->num_vecs-1; i > (index + 2); i--)
             {
               iovec->iovecs[i] = iovec->iovecs[i-2];
               /*
@@ -180,7 +185,8 @@ OFC_UCHAR * ofc_iovec_insert(OFC_IOMAP list, OFC_OFFT offset,
           iovec->iovecs[index+1].offset = offset;
           iovec->iovecs[index+1].type = alloc_type;
           iovec->iovecs[index+1].length = length;
-          if (iovec->iovecs[index+1].type == IOVEC_ALLOC_HEAP)
+          if (iovec->iovecs[index+1].type == IOVEC_ALLOC_HEAP &&
+              data == OFC_NULL)
             data = ofc_malloc(iovec->iovecs[index+1].length);
           iovec->iovecs[index+1].data = data;
           /*
@@ -212,13 +218,31 @@ OFC_UCHAR * ofc_iovec_prepend(OFC_IOMAP iovec,
 OFC_VOID ofc_iovec_destroy(OFC_IOMAP list)
 {
   struct iovec_list *iovec = list;
+
   for (OFC_INT i = 0 ; i < iovec->num_vecs; i++)
     {
       if (iovec->iovecs[i].type == IOVEC_ALLOC_HEAP)
-        ofc_free(iovec->iovecs[i].data);
+        {
+          ofc_free(iovec->iovecs[i].data);
+          iovec->iovecs[i].type = IOVEC_ALLOC_NONE;
+          iovec->iovecs[i].data = OFC_NULL;
+        }
     }
   ofc_free(iovec->iovecs);
   ofc_free(iovec);
+}
+
+OFC_VOID ofc_iovec_check(OFC_IOMAP list)
+{
+  struct iovec_list *iovec = list;
+
+  for (OFC_INT i = 0 ; i < iovec->num_vecs; i++)
+    {
+      if (iovec->iovecs[i].type == IOVEC_ALLOC_HEAP)
+        ofc_heap_check_alloc(iovec->iovecs[i].data);
+    }
+  ofc_heap_check_alloc(iovec->iovecs);
+  ofc_heap_check_alloc(iovec);
 }
 
 OFC_SIZET ofc_iovec_length(OFC_IOMAP list)
