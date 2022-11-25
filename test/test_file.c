@@ -3043,7 +3043,7 @@ OFC_INT test_file(OFC_LPCSTR test_root)
   OFC_TCHAR *device;
   OFC_BOOL test_result;
   OFC_INT count;
-  OFC_PATH *test_path;
+  OFC_PATH * test_path;
 
   /*
    * If there is a path named "test" in the persistent file, use it
@@ -3063,7 +3063,9 @@ OFC_INT test_file(OFC_LPCSTR test_root)
       device = ofc_malloc(sizeof(OFC_TCHAR) * rem);
       ptr = device;
       ofc_path_printW(test_path, &ptr, &rem);
-      ofc_path_delete(test_path);
+      /*
+       * Do not delete the path.  It is still mapped
+       */
     }
 
   ofc_printf("Starting File Test with %S\n\n", device);
