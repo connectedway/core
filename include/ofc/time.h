@@ -18,35 +18,6 @@
 
 /** \{ */
 
-#if defined(OFC_PERF_STATS)
-/**
- * A structure for helping us measure queing delay
- */
-typedef enum {
-    OFC_PERF_FSSMB_READ = 0,
-    OFC_PERF_FSSMB_WRITE = 1,
-    OFC_PERF_CLIENT_READ = 2,
-    OFC_PERF_CLIENT_WRITE = 3,
-    OFC_PERF_SERVER_READ = 4,
-    OFC_PERF_SERVER_WRITE = 5,
-    OFC_PERF_SESSION_READ = 6,
-    OFC_PERF_SESSION_WRITE = 7,
-    OFC_PERF_NUM = 8
-} OFC_TIME_PERF_ID;
-
-typedef struct {
-    OFC_TIME_PERF_ID id;    /**< This perf id */
-    OFC_MSTIME elapsed;        /**< The total wait time  */
-    OFC_ULONG depthsum;        /**< The cumulative queue depth  */
-    OFC_ULONG depth;        /**< The current queue depth  */
-    OFC_ULONG count;        /**< The number of I/Os */
-    OFC_LONG totalbytes;    /**< Sum of bytes  */
-    OFC_MSTIME runtime_start;    /**< Runtime at the last reset */
-    OFC_MSTIME runtime_end;    /**< Runtime at the last measurement */
-} OFC_PERF_STAT;
-
-#endif
-
 /**
  * Definition for DOS Day Field in DOS Day Word
  */
@@ -256,27 +227,6 @@ ofc_dos_date_time_to_elements(OFC_WORD FatDate, OFC_WORD FatTime,
  */
 OFC_CORE_LIB OFC_MSTIME
 ofc_get_runtime(OFC_VOID);
-
-#if defined(OFC_PERF_STATS)
-OFC_CORE_LIB OFC_MSTIME
-ofc_perf_start(OFC_TIME_PERF_ID id);
-
-OFC_CORE_LIB OFC_VOID
-ofc_perf_stop(OFC_TIME_PERF_ID id, OFC_MSTIME stamp, OFC_LONG bytes);
-
-OFC_CORE_LIB OFC_VOID
-ofc_perf_init(OFC_VOID);
-
-OFC_CORE_LIB OFC_VOID
-ofc_perf_destroy(OFC_VOID);
-
-OFC_CORE_LIB OFC_VOID
-ofc_perf_reset(OFC_VOID);
-
-OFC_CORE_LIB OFC_VOID
-ofc_perf_dump(OFC_VOID);
-
-#endif
 
 #if defined(__cplusplus)
 }

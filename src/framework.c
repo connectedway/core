@@ -411,23 +411,7 @@ OFC_VOID ofc_framework_dump_heap(OFC_VOID) {
 #endif
 }
 
-#if defined(OFC_PERF_STATS)
-static OFC_BOOL perf_started = OFC_FALSE;
-#endif
-
 OFC_VOID ofc_framework_stats_heap(OFC_VOID) {
-#if defined(OFC_PERF_STATS)
-  if (perf_started == OFC_FALSE)
-    {
-      perf_started = OFC_TRUE;
-      ofc_perf_reset();
-    }
-  else
-    {
-      ofc_perf_dump();
-      perf_started = OFC_FALSE;
-    }
-#endif
     ofc_heap_dump_stats();
 }
 

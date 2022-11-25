@@ -61,6 +61,21 @@ struct perf_statistics {
   OFC_LONG total_depth;
 };
 
+/**
+ * A structure for helping us measure queing delay
+ */
+typedef enum {
+    OFC_PERF_FSSMB_READ = 0,
+    OFC_PERF_FSSMB_WRITE = 1,
+    OFC_PERF_CLIENT_READ = 2,
+    OFC_PERF_CLIENT_WRITE = 3,
+    OFC_PERF_SERVER_READ = 4,
+    OFC_PERF_SERVER_WRITE = 5,
+    OFC_PERF_SESSION_READ = 6,
+    OFC_PERF_SESSION_WRITE = 7,
+    OFC_PERF_NUM = 8
+} OFC_PERF_ID;
+
 extern struct perf_measurement *g_measurement;
 
 #if defined(__cplusplus)

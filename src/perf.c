@@ -86,6 +86,7 @@ struct perf_measurement *measurement_alloc (OFC_VOID)
   measurement->notify = OFC_HANDLE_NULL;
   measurement->stop = OFC_FALSE;
   measurement->lock = ofc_lock_init();
+  measurement->hThread = OFC_HANDLE_NULL;
   return (measurement);
 }
 
@@ -94,7 +95,7 @@ OFC_VOID measurement_free(struct perf_measurement *measurement)
   struct perf_queue *queue;
   struct perf_rt *rt;
 
-  if (measurement->hThread != OFC_NULL)
+  if (measurement->hThread != OFC_HANDLE_NULL)
     {
       ofc_thread_delete(measurement->hThread);
       ofc_thread_wait(measurement->hThread);
@@ -130,6 +131,7 @@ static OFC_DWORD measurement_thread(OFC_HANDLE hThread, OFC_VOID *context)
       ofc_sleep(10);
       measurement_poll(measurement);
     }
+
   return(0);
 }
 
@@ -156,13 +158,16 @@ OFC_BOOL measurement_start(struct perf_measurement *measurement)
       perf_rt_reset(rt);
     }
 
-  measurement->instance = instance++;
-  measurement->hThread = ofc_thread_create(&measurement_thread,
-					   OFC_THREAD_MEASUREMENT_PERF,
-					   measurement->instance,
-					   measurement,
-					   OFC_THREAD_JOIN,
-					   OFC_HANDLE_NULL);
+  if (measurement->hThread == OFC_HANDLE_NULL)
+    {
+      measurement->instance = instance++;
+      measurement->hThread = ofc_thread_create(&measurement_thread,
+                                               OFC_THREAD_MEASUREMENT_PERF,
+                                               measurement->instance,
+                                               measurement,
+                                               OFC_THREAD_JOIN,
+                                               OFC_HANDLE_NULL);
+    }
   return (OFC_TRUE);
 }
   
@@ -270,7 +275,9 @@ OFC_BOOL measurement_notify(struct perf_measurement *measurement)
 	{
 	  measurement->stop_stamp = ofc_time_get_now();
 	  if (measurement->notify != OFC_HANDLE_NULL)
-	    ofc_event_set(measurement->notify);
+            {
+              ofc_event_set(measurement->notify);
+            }
 	  ret = OFC_TRUE;
 	}
     }
