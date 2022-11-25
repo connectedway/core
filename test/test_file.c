@@ -3043,19 +3043,36 @@ OFC_INT test_file(OFC_LPCSTR test_root)
   OFC_TCHAR *device;
   OFC_BOOL test_result;
   OFC_INT count;
+  OFC_PATH *test_path;
 
   /*
-   * Map the test device to the test path.  Determine what
-   * File System Handler we should test.
+   * If there is a path named "test" in the persistent file, use it
+   * otherwise use the default that was passed in.
    */
-  ofc_printf("Starting File Test with %s\n\n", test_root);
+  test_path = ofc_path_map_deviceW(TSTR("test"));
+  if (test_path == OFC_NULL)
+    device = ofc_cstr2tstr(test_root);
+  else
+    {
+      OFC_SIZET path_size;
+      OFC_SIZET rem;
+      OFC_TCHAR *ptr;
+      rem = 0;
+      path_size = ofc_path_printW(test_path, OFC_NULL, &rem);
+      rem = path_size + 1;
+      device = ofc_malloc(sizeof(OFC_TCHAR) * rem);
+      ptr = device;
+      ofc_path_printW(test_path, &ptr, &rem);
+      ofc_path_delete(test_path);
+    }
+
+  ofc_printf("Starting File Test with %S\n\n", device);
 
   ofc_sleep(3000);
   ofc_thread_create_local_storage();
 
   count = 0;
 
-  device = ofc_cstr2tstr(test_root);
 
   while (count != OFC_FILE_TEST_COUNT)
     {
