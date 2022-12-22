@@ -52,10 +52,6 @@ ofc_core_load(OFC_VOID) {
 
 OFC_UNLOAD OFC_CORE_LIB OFC_VOID
 ofc_core_unload(OFC_VOID) {
-#if defined(OFC_PERF_STATS)
-  measurement_destroy();
-#endif
-
     ofc_persist_unload();
     OfcFileDestroy();
 
@@ -68,6 +64,10 @@ ofc_core_unload(OFC_VOID) {
     ofc_trace_destroy();
 
     ofc_thread_destroy();
+
+#if defined(OFC_PERF_STATS)
+  measurement_destroy();
+#endif
 
     ofc_handle16_free();
 
