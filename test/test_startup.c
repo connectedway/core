@@ -37,7 +37,7 @@ static OFC_INT test_startup_persist(OFC_VOID) {
 	    tpath = OFC_NULL;
 #else
 	    ret = -1;
-#enddif
+#endif
 	  }
       }
 
