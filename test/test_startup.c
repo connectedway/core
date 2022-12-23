@@ -31,7 +31,14 @@ static OFC_INT test_startup_persist(OFC_VOID) {
       {
 	tpath = ofc_malloc((OFC_MAX_PATH+1)*sizeof(OFC_TCHAR));
 	if (ofc_env_get(OFC_ENV_HOME, tpath, OFC_MAX_PATH) == OFC_FALSE)
-	  ret = 1;
+	  {
+#if defined(__linux__)
+	    ofc_free(tpath);
+	    tpath = OFC_NULL;
+#else
+	    ret = -1;
+#enddif
+	  }
       }
 
     if (ret == 0)

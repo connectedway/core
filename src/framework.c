@@ -92,7 +92,15 @@ ofc_framework_shutdown(OFC_VOID) {
 #endif
 }
 
-OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename) {
+OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)
+{
+#if defined(__linux__)
+  if (filename == OFC_NULL)
+    {
+      filename = TSTR("/etc/openfiles.xml");
+    }
+#endif
+
     if (config_filename == OFC_NULL)
         config_filename = ofc_tstrdup(filename);
 
