@@ -85,6 +85,7 @@ set_target_properties(of_core_shared PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(of_core_static PROPERTIES VERSION ${PROJECT_VERSION})
 
 set(OFC_HEADERS
+    ${openfiles_BINARY_DIR}/ofc/config.h
     include/ofc/core.h
     include/ofc/file.h
     include/ofc/fstype.h
@@ -96,13 +97,7 @@ set(OFC_HEADERS
 
 set_target_properties(of_core_shared PROPERTIES
     SOVERSION 1
-    PUBLIC_HEADER include/ofc/core.h
-    PUBLIC_HEADER include/ofc/file.h
-    PUBLIC_HEADER include/ofc/fstype.h
-    PUBLIC_HEADER include/ofc/handle.h
-    PUBLIC_HEADER include/ofc/queue.h
-    PUBLIC_HEADER include/ofc/types.h
-    PUBLIC_HEADER include/ofc/waitset.h
+    PUBLIC_HEADER "${OFC_HEADERS}"
 )
 set_target_properties(of_core_static PROPERTIES
     SOVERSION 1
