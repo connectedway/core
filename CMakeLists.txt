@@ -120,8 +120,8 @@ target_link_libraries(of_core_shared PUBLIC
 add_subdirectory(test)
 
 install(TARGETS of_core_shared of_core_static
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/openfiles
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/openfiles
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/openfiles
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/openfiles
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ofc
         )

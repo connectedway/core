@@ -10,7 +10,6 @@
 #include "ofc/types.h"
 #include "ofc/config.h"
 #include "ofc/handle.h"
-#include "ofc/waitq.h"
 #include "ofc/fstype.h"
 
 /**
