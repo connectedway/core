@@ -69,6 +69,8 @@ static OFC_INT test_startup_default(OFC_VOID) {
 
 OFC_INT test_startup(OFC_VOID) {
     OFC_INT ret;
+    ret = OFC_TRUE;
+
     ofc_framework_init();
 #if defined(OFC_PERSIST)
     ret = test_startup_persist();

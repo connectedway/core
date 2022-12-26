@@ -40,9 +40,7 @@ ofc_framework_init(OFC_VOID) {
     /*
      * Load Open Files if not done as part of library load
      */
-#if !defined(INIT_ON_LOAD)
     ofc_core_load();
-#endif
 
     /*
      * Print out the banner
@@ -59,9 +57,7 @@ ofc_framework_destroy(OFC_VOID) {
         ofc_free(config_filename);
         config_filename = OFC_NULL;
     }
-#if !defined(INIT_ON_LOAD)
     ofc_core_unload() ;
-#endif
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -90,6 +86,18 @@ ofc_framework_shutdown(OFC_VOID) {
     ofc_netmon_shutdown (hScheduler, OFC_HANDLE_NULL) ;
 #endif
 #endif
+}
+
+OFC_LOAD OFC_VOID ofc_load(OFC_VOID)
+{
+  ofc_framework_init();
+  ofc_framework_load(OFC_NULL);
+}  
+  
+OFC_UNLOAD OFC_VOID ofc_unload(OFC_VOID)
+{
+  ofc_framework_shutdown();
+  ofc_framework_destroy();
 }
 
 OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)

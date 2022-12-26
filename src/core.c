@@ -34,7 +34,7 @@
 /*
  * Heap must be loaded first
  */
-OFC_LOAD OFC_CORE_LIB OFC_VOID
+OFC_CORE_LIB OFC_VOID
 ofc_core_load(OFC_VOID) {
     ofc_heap_load();
     ofc_handle16_init();
@@ -50,7 +50,7 @@ ofc_core_load(OFC_VOID) {
     ofc_persist_init();
 }
 
-OFC_UNLOAD OFC_CORE_LIB OFC_VOID
+OFC_CORE_LIB OFC_VOID
 ofc_core_unload(OFC_VOID) {
     ofc_persist_unload();
     OfcFileDestroy();
