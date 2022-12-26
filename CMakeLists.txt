@@ -84,8 +84,24 @@ add_library(of_core_shared SHARED $<TARGET_OBJECTS:of_core>)
 set_target_properties(of_core_shared PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(of_core_static PROPERTIES VERSION ${PROJECT_VERSION})
 
-set_target_properties(of_core_shared PROPERTIES SOVERSION 1)
-set_target_properties(of_core_static PROPERTIES SOVERSION 1)
+set(OFC_HEADERS \
+    include/ofc/core.h \
+    include/ofc/file.h \
+    include/ofc/fstype.h \
+    include/ofc/handle.h \
+    include/ofc/queue.h \
+    include/ofc/types.h \
+    include/ofc/waitset.h \
+    )
+
+set_target_properties(of_core_shared PROPERTIES
+    SOVERSION 1
+    PUBLIC_HEADERS ${OFC_HEADERS}
+)
+set_target_properties(of_core_static PROPERTIES
+    SOVERSION 1
+    PUBLIC_HEADERS ${OFC_HEADERS}
+    )
 
 target_include_directories(of_core PUBLIC include)
 
@@ -101,3 +117,9 @@ target_link_libraries(of_core_shared PUBLIC
         )
 
 add_subdirectory(test)
+
+install(TARGETS of_smb_shared of_smb_static
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/openfiles
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/openfiles
+        PUBLIC_HEADERS DESTINATION ${CMAKE_INSTALL_INCDIR}/openfiles
+        )
