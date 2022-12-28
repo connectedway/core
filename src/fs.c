@@ -10,6 +10,7 @@
 #include "ofc/types.h"
 #include "ofc/config.h"
 #include "ofc/fs.h"
+#include "ofc/thread.h"
 
 static OFC_FILE_FSINFO *ofc_fs_table[OFC_FST_NUM];
 

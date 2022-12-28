@@ -99,6 +99,7 @@ OFC_VOID measurement_free(struct perf_measurement *measurement)
     {
       ofc_thread_delete(measurement->hThread);
       ofc_thread_wait(measurement->hThread);
+      measurement->hThread = OFC_HANDLE_NULL;
     }
 
   for (queue = ofc_dequeue(measurement->queues);

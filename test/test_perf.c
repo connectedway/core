@@ -34,7 +34,6 @@ TEST_TEAR_DOWN(perf) {
 struct perf_context
 {
   OFC_HANDLE hThread;
-  OFC_HANDLE hNotify;
   struct perf_measurement *measurement;
   struct perf_queue *queue;
 } ;
@@ -80,14 +79,13 @@ TEST(perf, test_perf)
     {
       perf_context[i].measurement = measurement;
       perf_context[i].queue = perf_queue_create(measurement, description, i);
-      perf_context[i].hNotify = ofc_event_create(OFC_EVENT_AUTO);
 
       perf_context[i].hThread = 
 	ofc_thread_create(&perf_thread,
 			  OFC_THREAD_THREAD_TEST, i,
 			  &perf_context[i],
 			  OFC_THREAD_JOIN,
-			  perf_context[i].hNotify);
+                          OFC_HANDLE_NULL);
     }
 
   measurement_start(measurement);
@@ -102,7 +100,7 @@ TEST(perf, test_perf)
   for (i = 0; i < NQUEUES; i++)
     {
       ofc_thread_delete(perf_context[i].hThread);
-      ofc_event_wait(perf_context[i].hNotify);
+      ofc_thread_wait(perf_context[i].hThread);
     }
 
   measurement_statistics(measurement);
@@ -110,7 +108,6 @@ TEST(perf, test_perf)
   for (i = 0; i < NQUEUES; i++)
     {
       perf_queue_destroy(measurement, perf_context[i].queue);
-      ofc_event_destroy (perf_context[i].hNotify);
     }
 
   measurement_free(measurement);
