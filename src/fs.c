@@ -13,23 +13,40 @@
 
 static OFC_FILE_FSINFO *ofc_fs_table[OFC_FST_NUM];
 
-static OFC_HANDLE ofc_fs_unknown_handle_inv(OFC_VOID) {
-    return (OFC_INVALID_HANDLE_VALUE);
+static OFC_HANDLE ofc_fs_unknown_handle_inv(OFC_VOID)
+{
+  ofc_thread_set_variable(OfcLastError,
+			  (OFC_DWORD_PTR) OFC_ERROR_NOT_SUPPORTED);
+  
+  return (OFC_INVALID_HANDLE_VALUE);
 }
 
-static OFC_HANDLE ofc_fs_unknown_handle_null(OFC_VOID) {
-    return (OFC_HANDLE_NULL);
+static OFC_HANDLE ofc_fs_unknown_handle_null(OFC_VOID)
+{
+  ofc_thread_set_variable(OfcLastError,
+			  (OFC_DWORD_PTR) OFC_ERROR_NOT_SUPPORTED);
+
+  return (OFC_HANDLE_NULL);
 }
 
-static OFC_BOOL ofc_fs_unknown_bool(OFC_VOID) {
-    return (OFC_FALSE);
+static OFC_BOOL ofc_fs_unknown_bool(OFC_VOID)
+{
+  ofc_thread_set_variable(OfcLastError,
+			  (OFC_DWORD_PTR) OFC_ERROR_NOT_SUPPORTED);
+  return (OFC_FALSE);
 }
 
-static OFC_DWORD ofc_fs_unknown_dword(OFC_VOID) {
-    return (OFC_INVALID_SET_FILE_POINTER);
+static OFC_DWORD ofc_fs_unknown_dword(OFC_VOID)
+{
+  ofc_thread_set_variable(OfcLastError,
+			  (OFC_DWORD_PTR) OFC_ERROR_NOT_SUPPORTED);
+  return (OFC_INVALID_SET_FILE_POINTER);
 }
 
-static OFC_VOID ofc_fs_unknown_void(OFC_VOID) {
+static OFC_VOID ofc_fs_unknown_void(OFC_VOID)
+{
+  ofc_thread_set_variable(OfcLastError,
+			  (OFC_DWORD_PTR) OFC_ERROR_NOT_SUPPORTED);
 }
 
 static OFC_FILE_FSINFO ofc_fs_unknown =
@@ -175,8 +192,13 @@ OFC_VOID OfcFSBookmarksShutdown(OFC_VOID);
 OFC_VOID OfcFSMailslotShutdown(OFC_VOID);
 
 OFC_CORE_LIB OFC_VOID
-ofc_fs_init(OFC_VOID) {
-    ofc_fs_register(OFC_FST_UNKNOWN, &ofc_fs_unknown);
+ofc_fs_init(OFC_VOID)
+{
+  for (int i = 0 ; i < OFC_FST_NUM; i++)
+    {
+      ofc_fs_register(i, &ofc_fs_unknown);
+    }
+
 #if defined (OFC_FS_PIPE)
     OfcFSPipeStartup() ;
 #endif

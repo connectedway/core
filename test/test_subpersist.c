@@ -19,13 +19,17 @@
 #define CONFIG_PATH "./test.xml"
 
 static OFC_INT test_startup(OFC_VOID) {
+#if !defined(INIT_ON_LOAD)
     ofc_framework_init();
+#endif
     return (0);
 }
 
 static OFC_VOID test_shutdown(OFC_VOID) {
+#if !defined(INIT_ON_LOAD)
     ofc_framework_shutdown();
     ofc_framework_destroy();
+#endif
 }
 
 TEST_GROUP(subpersist);

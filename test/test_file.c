@@ -23,7 +23,7 @@
 #include "ofc/file.h"
 
 #define OFC_FS_TEST_INTERVAL 1000
-#define OFC_FILE_TEST_COUNT 100
+#define OFC_FILE_TEST_COUNT 5
 
 /*
  * This application demonstrates the API to the Open File I/O Facility
@@ -445,8 +445,10 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device)
 
   if (write_file == OFC_INVALID_HANDLE_VALUE)
     {
-      ofc_printf("Failed to open Copy Destination %A, Error Code %d\n",
-                 wfilename, OfcGetLastError());
+      ofc_printf("Failed to open Copy Destination %A, %s(%d)\n",
+                 wfilename, 
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       ret = OFC_FALSE;
     }
   else
@@ -780,8 +782,10 @@ static OFC_BOOL OfcCopyFileTest(OFC_CTCHAR *device)
 
   if (read_file == OFC_INVALID_HANDLE_VALUE)
     {
-      ofc_printf("Failed to open Copy Source %A, Error Code %d\n",
-                 rfilename, OfcGetLastError());
+      ofc_printf("Failed to open Copy Source %A, %s(%d)\n",
+                 rfilename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       ret = OFC_FALSE;
     }
   else
@@ -800,8 +804,10 @@ static OFC_BOOL OfcCopyFileTest(OFC_CTCHAR *device)
 
       if (write_file == OFC_INVALID_HANDLE_VALUE)
         {
-          ofc_printf("Failed to open Copy Destination %A, Error Code %d\n",
-                     wfilename, OfcGetLastError());
+          ofc_printf("Failed to open Copy Destination %A, %s(%d)\n",
+                     wfilename,
+		     ofc_get_error_string(OfcGetLastError()),
+		     OfcGetLastError());
           ret = OFC_FALSE;
         }
       else
@@ -1180,8 +1186,10 @@ static OFC_BOOL OfcReadFileTest(OFC_CTCHAR *device)
 
   if (read_file == OFC_INVALID_HANDLE_VALUE)
     {
-      ofc_printf("Failed to open Copy Source %A, Error Code %d\n",
-                 rfilename, OfcGetLastError());
+      ofc_printf("Failed to open Copy Source %A, %s(%d)\n",
+                 rfilename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       ret = OFC_FALSE;
     }
   else
@@ -1468,8 +1476,10 @@ OfcDeleteTest(OFC_CTCHAR *device)
 
   if (write_file == OFC_INVALID_HANDLE_VALUE)
     {
-      ofc_printf("Failed to create delete file %A, Error Code %d\n",
-                 filename, OfcGetLastError());
+      ofc_printf("Failed to create delete file %A, %s(%d)\n",
+                 filename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       ret = OFC_FALSE;
     }
   else
@@ -1501,7 +1511,8 @@ OfcDeleteTest(OFC_CTCHAR *device)
            * We failed writing, complain
            */
           dwLastError = OfcGetLastError();
-          ofc_printf("Write to Delete File Failed with Error %d\n",
+          ofc_printf("Write to Delete File Failed with %s(%d)\n",
+		     ofc_get_error_string(OfcGetLastError()),
                      dwLastError);
           ret = OFC_FALSE;
         }
@@ -1513,7 +1524,8 @@ OfcDeleteTest(OFC_CTCHAR *device)
           if (status != OFC_TRUE)
             {
               dwLastError = OfcGetLastError();
-              ofc_printf("Close of Delete File Failed with Error %d\n",
+              ofc_printf("Close of Delete File Failed with %s(%d)\n",
+			 ofc_get_error_string(OfcGetLastError()),
                          dwLastError);
               ret = OFC_FALSE;
             }
@@ -1535,8 +1547,9 @@ OfcDeleteTest(OFC_CTCHAR *device)
               if (write_file == OFC_INVALID_HANDLE_VALUE)
                 {
                   ofc_printf("Failed to create delete on close file %A, "
-                             "Error Code %d\n",
+                             "%s(%d)\n",
                              filename,
+			     ofc_get_error_string(OfcGetLastError()),
                              OfcGetLastError());
                   ret = OFC_FALSE;
                 }
@@ -1549,7 +1562,8 @@ OfcDeleteTest(OFC_CTCHAR *device)
                     {
                       dwLastError = OfcGetLastError();
                       ofc_printf("Close of Delete on close File "
-                                 "Failed with Error %d\n",
+                                 "Failed with %s(%d)\n",
+				 ofc_get_error_string(dwLastError),
                                  dwLastError);
                       ret = OFC_FALSE;
                     }
@@ -1616,8 +1630,10 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
 
       if (rename_file == OFC_INVALID_HANDLE_VALUE)
         {
-          ofc_printf("Failed to create rename file %A, Error Code %d\n",
-                     filename, OfcGetLastError());
+          ofc_printf("Failed to create rename file %A, %s(%d)\n",
+                     filename,
+		     ofc_get_error_string(OfcGetLastError()),
+		     OfcGetLastError());
           ret = OFC_FALSE;
         }
       else
@@ -1642,7 +1658,8 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
           if (status != OFC_TRUE)
             {
               dwLastError = OfcGetLastError();
-              ofc_printf("Write to Rename File Failed with Error %d\n",
+              ofc_printf("Write to Rename File Failed with %s(%d)\n",
+			 ofc_get_error_string(dwLastError),
                          dwLastError);
               ret = OFC_FALSE;
             }
@@ -1654,7 +1671,8 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
               if (status != OFC_TRUE)
                 {
                   dwLastError = OfcGetLastError();
-                  ofc_printf("Close of Rename File Failed with Error %d\n",
+                  ofc_printf("Close of Rename File Failed with %s(%d)\n",
+			     ofc_get_error_string(dwLastError),
                              dwLastError);
                   ret = OFC_FALSE;
                 }
@@ -1675,7 +1693,8 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
                       else
                         {
                           dwLastError = OfcGetLastError();
-                          ofc_printf("Delete Rename File Failed with Error %d\n",
+                          ofc_printf("Delete Rename File Failed with %s(%d)\n",
+				     ofc_get_error_string(dwLastError),
                                      dwLastError);
                           ret = OFC_FALSE;
                         }
@@ -1683,7 +1702,8 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
                   else
                     {
                       dwLastError = OfcGetLastError();
-                      ofc_printf("Rename File Failed with Error %d\n",
+                      ofc_printf("Rename File Failed with %s(%d)\n",
+				 ofc_get_error_string(dwLastError),
                                  dwLastError);
                       ret = OFC_FALSE;
                     }
@@ -1698,7 +1718,8 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
       if (status != OFC_TRUE)
         {
           dwLastError = OfcGetLastError();
-          ofc_printf("Couldn't delete directory, failed with error %d\n",
+          ofc_printf("Couldn't delete directory, failed with %s(%d)\n",
+		     ofc_get_error_string(dwLastError),
                      dwLastError);
         }
 #else
@@ -1714,8 +1735,9 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
       if (dirHandle == OFC_INVALID_HANDLE_VALUE)
         {
           ofc_printf("Failed to create delete on close dir %A, "
-                     "Error Code %d\n",
+                     "%s(%d)\n",
                      dirname,
+		     ofc_get_error_string(OfcGetLastError()),
                      OfcGetLastError ()) ;
           ret = OFC_FALSE ;
         }
@@ -1728,7 +1750,8 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
             {
               dwLastError = OfcGetLastError () ;
               ofc_printf ("Close of Delete on close dir "
-                          "Failed with Error %d\n",
+                          "Failed with %s(%d)\n",
+			  ofc_get_error_string(dwLastError),
                           dwLastError) ;
               ret = OFC_FALSE ;
             }
@@ -1738,7 +1761,8 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
   else
     {
       dwLastError = OfcGetLastError();
-      ofc_printf("Create of Directory Failed with Error %d\n",
+      ofc_printf("Create of Directory Failed with %s(%d)\n",
+		 ofc_get_error_string(dwLastError),
                  dwLastError);
       ret = OFC_FALSE;
     }
@@ -1793,8 +1817,10 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
 
       if (rename_file == OFC_INVALID_HANDLE_VALUE)
         {
-          ofc_printf("Failed to create rename file %A, Error Code %d\n",
-                     filename, OfcGetLastError());
+          ofc_printf("Failed to create rename file %A, %s(%d)\n",
+                     filename,
+		     ofc_get_error_string(OfcGetLastError()),
+		     OfcGetLastError());
           ret = OFC_FALSE;
         }
       else
@@ -1819,7 +1845,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
           if (status != OFC_TRUE)
             {
               dwLastError = OfcGetLastError();
-              ofc_printf("Write to Rename File Failed with Error %d\n",
+              ofc_printf("Write to Rename File Failed with %s(%d)\n",
+			 ofc_get_error_string(dwLastError),
                          dwLastError);
               ret = OFC_FALSE;
             }
@@ -1831,7 +1858,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
               if (status != OFC_TRUE)
                 {
                   dwLastError = OfcGetLastError();
-                  ofc_printf("Close of Rename File Failed with Error %d\n",
+                  ofc_printf("Close of Rename File Failed with %s(%d)\n",
+			     ofc_get_error_string(dwLastError),
                              dwLastError);
                   ret = OFC_FALSE;
                 }
@@ -1848,8 +1876,9 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
                   if (rename_file == OFC_INVALID_HANDLE_VALUE)
                     {
                       ofc_printf("Failed to create rename file %S, "
-                                 "Error Code %d\n",
+                                 "%s(%d)\n",
                                  filename,
+				 ofc_get_error_string(OfcGetLastError()),
                                  OfcGetLastError());
                       ret = OFC_FALSE;
                     }
@@ -1882,7 +1911,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
                         {
                           dwLastError = OfcGetLastError();
                           ofc_printf("Set File Info on rename File "
-                                     "Failed with Error %d\n",
+                                     "Failed with %s(%d)\n",
+				     ofc_get_error_string(dwLastError),
                                      dwLastError);
                           ret = OFC_FALSE;
                         }
@@ -1892,7 +1922,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
                         {
                           dwLastError = OfcGetLastError();
                           ofc_printf("Close of rename File after Rename"
-                                     "Failed with Error %d\n",
+                                     "Failed with %s(%d)\n",
+				     ofc_get_error_string(dwLastError),
                                      dwLastError);
                           ret = OFC_FALSE;
                         }
@@ -1905,7 +1936,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
                       else
                         {
                           dwLastError = OfcGetLastError();
-                          ofc_printf("Delete Rename File Failed with Error %d\n",
+                          ofc_printf("Delete Rename File Failed with %s(%d)\n",
+				     ofc_get_error_string(dwLastError),
                                      dwLastError);
                           ret = OFC_FALSE;
                         }
@@ -1922,7 +1954,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
       if (status != OFC_TRUE)
         {
           dwLastError = OfcGetLastError();
-          ofc_printf("Couldn't delete directory, failed with error %d\n",
+          ofc_printf("Couldn't delete directory, failed with %s(%d)\n",
+		     ofc_get_error_string(dwLastError),
                      dwLastError);
         }
 #else
@@ -1938,8 +1971,9 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
       if (dirHandle == OFC_INVALID_HANDLE_VALUE)
         {
           ofc_printf ("Failed to create delete on close dir %A, "
-                      "Error Code %d\n",
+                      "%s(%d)\n",
                       dirname,
+		      ofc_get_error_string(OfcGetLastError()),
                       OfcGetLastError ()) ;
           ret = OFC_FALSE ;
         }
@@ -1952,7 +1986,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
             {
               dwLastError = OfcGetLastError () ;
               ofc_printf ("Close of Delete on close dir "
-                          "Failed with Error %d\n",
+                          "Failed with %s(%d)\n",
+			  ofc_get_error_string(dwLastError),
                           dwLastError) ;
               ret = OFC_FALSE ;
             }
@@ -1962,7 +1997,8 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
   else
     {
       dwLastError = OfcGetLastError();
-      ofc_printf("Create of Directory Failed with Error %d\n",
+      ofc_printf("Create of Directory Failed with %s(%d)\n",
+		 ofc_get_error_string(dwLastError),
                  dwLastError);
       ret = OFC_FALSE;
     }
@@ -2002,8 +2038,10 @@ static OFC_BOOL OfcFlushTest(OFC_CTCHAR *device)
 
   if (flush_file == OFC_INVALID_HANDLE_VALUE)
     {
-      ofc_printf("Failed to create flush file %A, Error Code %d\n",
-                 filename, OfcGetLastError());
+      ofc_printf("Failed to create flush file %A, %s(%d)\n",
+                 filename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       ret = OFC_FALSE;
     }
   else
@@ -2025,7 +2063,8 @@ static OFC_BOOL OfcFlushTest(OFC_CTCHAR *device)
           if (status != OFC_TRUE)
             {
               dwLastError = OfcGetLastError();
-              ofc_printf("Write to Flush File Failed with Error %d\n",
+              ofc_printf("Write to Flush File Failed with %s(%d)\n",
+			 ofc_get_error_string(dwLastError),
                          dwLastError);
               ret = OFC_FALSE;
             }
@@ -2038,7 +2077,8 @@ static OFC_BOOL OfcFlushTest(OFC_CTCHAR *device)
               if (status != OFC_TRUE)
                 {
                   dwLastError = OfcGetLastError();
-                  ofc_printf("Flush to Flush File Failed with Error %d\n",
+                  ofc_printf("Flush to Flush File Failed with %s(%d)\n",
+			     ofc_get_error_string(dwLastError),
                              dwLastError);
                   ret = OFC_FALSE;
                 }
@@ -2053,7 +2093,8 @@ static OFC_BOOL OfcFlushTest(OFC_CTCHAR *device)
       if (status != OFC_TRUE)
         {
           dwLastError = OfcGetLastError();
-          ofc_printf("Close of Flush File Failed with Error %d\n",
+          ofc_printf("Close of Flush File Failed with %s(%d)\n",
+		     ofc_get_error_string(dwLastError),
                      dwLastError);
           ret = OFC_FALSE;
         }
@@ -2068,7 +2109,8 @@ static OFC_BOOL OfcFlushTest(OFC_CTCHAR *device)
           else
             {
               dwLastError = OfcGetLastError();
-              ofc_printf("Delete of Flush File Failed with Error %d\n",
+              ofc_printf("Delete of Flush File Failed with %s(%d)\n",
+			 ofc_get_error_string(dwLastError),
                          dwLastError);
               ret = OFC_FALSE;
             }
@@ -2096,7 +2138,8 @@ static OFC_BOOL OfcCreateDirectoryTest(OFC_CTCHAR *device)
   else
     {
       dwLastError = OfcGetLastError();
-      ofc_printf("Create of Directory Failed with Error %d\n",
+      ofc_printf("Create of Directory Failed with %s(%d)\n",
+		 ofc_get_error_string(dwLastError),
                  dwLastError);
       ret = OFC_FALSE;
     }
@@ -2123,7 +2166,8 @@ static OFC_BOOL OfcDeleteDirectoryTest(OFC_CTCHAR *device)
   if (status != OFC_TRUE)
     {
       dwLastError = OfcGetLastError();
-      ofc_printf("Couldn't delete directory, failed with error %d\n",
+      ofc_printf("Couldn't delete directory, failed with %s(%d)\n",
+		 ofc_get_error_string(dwLastError),
                  dwLastError);
     }
 #else
@@ -2139,8 +2183,9 @@ static OFC_BOOL OfcDeleteDirectoryTest(OFC_CTCHAR *device)
   if (dirhandle == OFC_INVALID_HANDLE_VALUE)
     {
       ofc_printf ("Failed to create delete on close dir %A, "
-                  "Error Code %d\n",
+                  "%s(%d)\n",
                   filename,
+		  ofc_get_error_string(OfcGetLastError()),
                   OfcGetLastError ()) ;
       ret = OFC_FALSE ;
     }
@@ -2153,7 +2198,8 @@ static OFC_BOOL OfcDeleteDirectoryTest(OFC_CTCHAR *device)
         {
           dwLastError = OfcGetLastError () ;
           ofc_printf ("Close of Delete on close dir "
-                      "Failed with Error %d\n",
+                      "Failed with %s(%d)\n",
+		      ofc_get_error_string(dwLastError),
                       dwLastError) ;
           ret = OFC_FALSE ;
         }
@@ -2194,8 +2240,10 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
 
   if (seteof_file == OFC_INVALID_HANDLE_VALUE)
     {
-      ofc_printf("Failed to create seteof file %A, Error Code %d\n",
-                 filename, OfcGetLastError());
+      ofc_printf("Failed to create seteof file %A, %s(%d)\n",
+                 filename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       ret = OFC_FALSE;
     }
   else
@@ -2220,7 +2268,8 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
       if (status != OFC_TRUE)
         {
           dwLastError = OfcGetLastError();
-          ofc_printf("Write to SetEOF File Failed with Error %d\n",
+          ofc_printf("Write to SetEOF File Failed with %s(%d)\n",
+		     ofc_get_error_string(dwLastError),
                      dwLastError);
           ret = OFC_FALSE;
         }
@@ -2232,7 +2281,8 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
           if (status != OFC_TRUE)
             {
               dwLastError = OfcGetLastError();
-              ofc_printf("Close of SetEOF File Failed with Error %d\n",
+              ofc_printf("Close of SetEOF File Failed with %s(%d)\n",
+			 ofc_get_error_string(dwLastError),
                          dwLastError);
               ret = OFC_FALSE;
             }
@@ -2253,8 +2303,10 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
               if (seteof_file == OFC_INVALID_HANDLE_VALUE)
                 {
                   ofc_printf("Failed to open seteof file %A, "
-                             "Error Code %d\n",
-                             filename, OfcGetLastError());
+                             "%s(%d)\n",
+                             filename,
+			     ofc_get_error_string(OfcGetLastError()),
+			     OfcGetLastError());
                   ret = OFC_FALSE;
                 }
               else
@@ -2270,7 +2322,8 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
                   if (pos == OFC_INVALID_SET_FILE_POINTER &&
                       dwLastError != OFC_ERROR_SUCCESS)
                     {
-                      ofc_printf("SetFilePosition Failed with Error %d\n",
+                      ofc_printf("SetFilePosition Failed with %s(%d)\n",
+				 ofc_get_error_string(dwLastError),
                                  dwLastError);
                       ret = OFC_FALSE;
                     }
@@ -2283,7 +2336,8 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
                       if (status != OFC_TRUE)
                         {
                           dwLastError = OfcGetLastError();
-                          ofc_printf("Set End Of File Failed with %d\n",
+                          ofc_printf("Set End Of File Failed with %s(%d)\n",
+				     ofc_get_error_string(dwLastError),
                                      dwLastError);
                           ret = OFC_FALSE;
                         }
@@ -2301,7 +2355,8 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
                           if (status != OFC_TRUE)
                             {
                               dwLastError = OfcGetLastError () ;
-                              ofc_printf ("Cannot get end of file position %d\n",
+                              ofc_printf ("Cannot get end of file position %s(%d)\n",
+					  ofc_get_error_string(dwLastError),
                                           dwLastError) ;
                               ret = OFC_FALSE ;
                             }
@@ -2324,7 +2379,8 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
                     {
                       dwLastError = OfcGetLastError();
                       ofc_printf("Close of SetEOF File "
-                                 "after pos Failed with Error %d\n",
+                                 "after pos Failed with %s(%d)\n",
+				 ofc_get_error_string(dwLastError),
                                  dwLastError);
                       ret = OFC_FALSE;
                     }
@@ -2338,7 +2394,8 @@ static OFC_BOOL OfcSetEOFTest(OFC_CTCHAR *device)
               else
                 {
                   dwLastError = OfcGetLastError();
-                  ofc_printf("SetEOF Delete File Failed with Error %d\n",
+                  ofc_printf("SetEOF Delete File Failed with %s(%d)\n",
+			     ofc_get_error_string(dwLastError),
                              dwLastError);
                   ret = OFC_FALSE;
                 }
@@ -2547,8 +2604,10 @@ static OFC_BOOL OfcListDirTest(OFC_CTCHAR *device)
       else
         {
           last_error = OfcGetLastError();
-          ofc_printf("Failed to list dir %A, Error Code %d\n",
-                     filename, last_error);
+          ofc_printf("Failed to list dir %A, %s(%d)\n",
+                     filename,
+		     ofc_get_error_string(last_error),
+		     last_error);
           /*
            * LOGON_FAILURE can be returned if authentication failed
            * ACCESS_DENIED if authentication succeeded but no access to share
@@ -2612,7 +2671,8 @@ static OFC_BOOL OfcListDirTest(OFC_CTCHAR *device)
               last_error = OfcGetLastError();
               if (last_error != OFC_ERROR_NO_MORE_FILES)
                 {
-                  ofc_printf("Failed to Find Next, Error Code %d\n",
+                  ofc_printf("Failed to Find Next, %s(%d)\n",
+			     ofc_get_error_string(last_error),
                              last_error);
                   ret = OFC_FALSE;
                 }
@@ -2651,8 +2711,10 @@ static OFC_BOOL OfcGetFileAttributesTest(OFC_CTCHAR *device)
 
   if (getex_file == OFC_INVALID_HANDLE_VALUE)
     {
-      ofc_printf("Failed to create getex file %A, Error Code %d\n",
-                 filename, OfcGetLastError());
+      ofc_printf("Failed to create getex file %A, %s(%d)\n",
+                 filename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       ret = OFC_FALSE;
     }
   else
@@ -2677,7 +2739,8 @@ static OFC_BOOL OfcGetFileAttributesTest(OFC_CTCHAR *device)
       if (status != OFC_TRUE)
         {
           dwLastError = OfcGetLastError();
-          ofc_printf("Write to GetEX File Failed with Error %d\n",
+          ofc_printf("Write to GetEX File Failed with %s(%d)\n",
+		     ofc_get_error_string(dwLastError),
                      dwLastError);
           ret = OFC_FALSE;
         }
@@ -2689,7 +2752,8 @@ static OFC_BOOL OfcGetFileAttributesTest(OFC_CTCHAR *device)
           if (status != OFC_TRUE)
             {
               dwLastError = OfcGetLastError();
-              ofc_printf("Close of GetEX File Failed with Error %d\n",
+              ofc_printf("Close of GetEX File Failed with %s(%d)\n",
+			 ofc_get_error_string(dwLastError),
                          dwLastError);
               ret = OFC_FALSE;
             }
@@ -2701,7 +2765,8 @@ static OFC_BOOL OfcGetFileAttributesTest(OFC_CTCHAR *device)
               if (status != OFC_TRUE)
                 {
                   dwLastError = OfcGetLastError();
-                  ofc_printf("GetEx Get File Info Failed with Error %d\n",
+                  ofc_printf("GetEx Get File Info Failed with %s(%d)\n",
+			     ofc_get_error_string(dwLastError),
                              dwLastError);
                   ret = OFC_FALSE;
                 }
@@ -2717,7 +2782,8 @@ static OFC_BOOL OfcGetFileAttributesTest(OFC_CTCHAR *device)
               if (status != OFC_TRUE)
                 {
                   dwLastError = OfcGetLastError();
-                  ofc_printf("GetEx Delete File Failed with Error %d\n",
+                  ofc_printf("GetEx Delete File Failed with %s(%d)\n",
+			     ofc_get_error_string(dwLastError),
                              dwLastError);
                   ret = OFC_FALSE;
                 }
@@ -2746,8 +2812,10 @@ static OFC_BOOL OfcGetDiskFreeSpaceTest(OFC_CTCHAR *device)
                                &TotalNumberOfClusters);
   if (result == OFC_FALSE)
     {
-      ofc_printf("Failed to get disk free space on %A, Error Code %d\n",
-                 filename, OfcGetLastError());
+      ofc_printf("Failed to get disk free space on %A, %s(%d)\n",
+                 filename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       /*
        * Disk Free Space and Volume Information only works on Shares.
        * (ie. there is no file name).  No, reverse connections are tricky.
@@ -2804,8 +2872,10 @@ static OFC_BOOL OfcGetVolumeInformationTest(OFC_CTCHAR *device)
                                    OFC_MAX_PATH + 1);
   if (result == OFC_FALSE)
     {
-      ofc_printf("Failed to get volume info on %A, Error Code %d\n",
-                 filename, OfcGetLastError());
+      ofc_printf("Failed to get volume info on %A, %s(%d)\n",
+                 filename,
+		 ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
       /*
        * Disk Free Space and Volume Information only works on Shares.
        * (ie. there is no file name).  No, reverse connections are tricky.
@@ -2973,9 +3043,13 @@ static OFC_BOOL OfcBadFileNamesTest(OFC_CTCHAR *device)
           ret = OFC_FALSE;
         }
 
-      ofc_printf("%s: last error %d, expected error %d or %d\n",
+      ofc_printf("%s: last error %s(%d), expected error %s(%d) or %s(%d)\n",
                  test_status == OFC_TRUE ? "SUCCESS" : "FAILURE",
-                 lasterror, test_paths[i].expected_error1,
+		 ofc_get_error_string(lasterror),
+                 lasterror,
+		 ofc_get_error_string(test_paths[i].expected_error1),
+		 test_paths[i].expected_error1,
+		 ofc_get_error_string(test_paths[i].expected_error2),
                  test_paths[i].expected_error2);
       OfcDismountA(uncfilename);
       /*
@@ -3021,9 +3095,13 @@ static OFC_BOOL OfcBadFileNamesTest(OFC_CTCHAR *device)
           ret = OFC_FALSE;
         }
 
-      ofc_printf("%s: last error %d, expected error %d or %d\n",
+      ofc_printf("%s: last error %s(%d), expected error %s(%d) or %s(%d)\n",
                  test_status == OFC_TRUE ? "SUCCESS" : "FAILURE",
-                 lasterror, test_paths[i].expected_error1,
+		 ofc_get_error_string(lasterror),
+                 lasterror,
+		 ofc_get_error_string(test_paths[i].expected_error1),
+		 test_paths[i].expected_error1,
+		 ofc_get_error_string(test_paths[i].expected_error2),
                  test_paths[i].expected_error2);
       OfcDismountA(uncfilename);
     }
@@ -3044,6 +3122,7 @@ OFC_INT test_file(OFC_LPCSTR test_root)
   OFC_BOOL test_result;
   OFC_INT count;
   OFC_PATH * test_path;
+  OFC_HANDLE test_dir;
 
   /*
    * If there is a path named "test" in the persistent file, use it
@@ -3070,11 +3149,27 @@ OFC_INT test_file(OFC_LPCSTR test_root)
 
   ofc_printf("Starting File Test with %S\n\n", device);
 
-  ofc_sleep(3000);
+  ofc_sleep(1000);
   ofc_thread_create_local_storage();
 
-  count = 0;
-
+  /*
+   * Create the test directory if it doesn't exist
+   */
+  test_result = OfcCreateDirectory(device, OFC_NULL);
+  if (test_result == OFC_FALSE &&
+      (OfcGetLastError() != OFC_ERROR_ALREADY_EXISTS &&
+       OfcGetLastError() != OFC_ERROR_FILE_EXISTS))
+    {
+      ofc_printf("Failed to Validate Destination %S, %s(%d)\n",
+                 device, ofc_get_error_string(OfcGetLastError()),
+		 OfcGetLastError());
+      ret = OFC_FALSE;
+      count = OFC_FILE_TEST_COUNT;
+    }
+  else
+    {
+      count = 0;
+    }
 
   while (count != OFC_FILE_TEST_COUNT)
     {
@@ -3093,8 +3188,10 @@ OFC_INT test_file(OFC_LPCSTR test_root)
                                        &fadFile);
         if (bret != OFC_TRUE)
           {
-            ofc_printf ("%s: OfcGetFileAttributesExW failed for %S, Last Error %d\n",
-                        __func__, TSTR("/"), OfcGetLastError()) ;
+            ofc_printf ("%s: OfcGetFileAttributesExW failed for %S, %s(%d)\n",
+                        __func__, TSTR("/"),
+			ofc_get_error_string(OfcGetLastError()),
+			OfcGetLastError()) ;
           }
         else
           ofc_printf("Succeeded\n");

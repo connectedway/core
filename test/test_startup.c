@@ -69,13 +69,15 @@ static OFC_INT test_startup_default(OFC_VOID) {
 
 OFC_INT test_startup(OFC_VOID) {
     OFC_INT ret;
-    ret = OFC_TRUE;
+    ret = 0;
 
+#if !defined(INIT_ON_LOAD)
     ofc_framework_init();
 #if defined(OFC_PERSIST)
     ret = test_startup_persist();
 #else
     ret = test_startup_default();
+#endif
 #endif
     hScheduler = ofc_sched_create();
     hDone = ofc_event_create(OFC_EVENT_AUTO);
@@ -86,7 +88,9 @@ OFC_INT test_startup(OFC_VOID) {
 OFC_VOID test_shutdown(OFC_VOID) {
     ofc_event_destroy(hDone);
     ofc_sched_quit(hScheduler);
+#if !defined(INIT_ON_LOAD)
     ofc_framework_shutdown();
     ofc_framework_destroy();
+#endif
 }
 
