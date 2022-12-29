@@ -45,10 +45,10 @@ ofc_framework_init(OFC_VOID) {
     /*
      * Print out the banner
      */
-    ofc_printf("OpenFiles (%s) %d.%d %s\n",
-               OFC_SHARE_VARIANT,
-               OFC_SHARE_MAJOR, OFC_SHARE_MINOR,
-               OFC_SHARE_TAG);
+    ofc_log(OFC_LOG_INFO, "OpenFiles (%s) %d.%d %s\n",
+	    OFC_SHARE_VARIANT,
+	    OFC_SHARE_MAJOR, OFC_SHARE_MINOR,
+	    OFC_SHARE_TAG);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -113,20 +113,20 @@ OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)
         config_filename = ofc_tstrdup(filename);
 
 #if defined(OFC_PERSIST)
-    ofc_printf("Loading %S\n", filename);
+    ofc_log(OFC_LOG_INFO, "Loading %S\n", filename);
     ofc_persist_load(filename);
 #else
-    ofc_printf("Configuration Files Disabled\n") ;
+    ofc_log(OFC_LOG_INFO, "Configuration Files Disabled\n") ;
 #endif
 }
 
 OFC_CORE_LIB OFC_VOID ofc_framework_loadbuf(OFC_LPVOID buf, OFC_SIZET len)
 {
 #if defined(OFC_PERSIST)
-  ofc_printf("Loading Secure Config\n");
+  ofc_log(OFC_LOG_INFO, "Loading Secure Config\n");
   ofc_persist_loadbuf(buf, len);
 #else
-  ofc_printf("Configuration Files Disabled\n") ;
+  ofc_log(OFC_LOG_INFO, "Configuration Files Disabled\n") ;
 #endif
 }
 
@@ -134,22 +134,23 @@ OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename) {
 #if defined(OFC_PERSIST)
     if (filename == OFC_NULL)
         filename = config_filename;
-    if (filename != OFC_NULL) {
-        ofc_printf("Saving %S\n", filename);
+    if (filename != OFC_NULL)
+      {
+	ofc_log(OFC_LOG_INFO, "Saving %S\n", filename);
         ofc_persist_save(filename);
     }
 #else
-    ofc_printf("Configuration Files Disabled\n") ;
+    ofc_log(OFC_LOG_INFO, "Configuration Files Disabled\n") ;
 #endif
 }
 
 OFC_CORE_LIB OFC_VOID ofc_framework_savebuf(OFC_LPVOID *buf, OFC_SIZET *len)
 {
 #if defined(OFC_PERSIST)
-  ofc_printf("Saving Secure Config\n");
+  ofc_log(OFC_LOG_INFO, "Saving Secure Config\n");
   ofc_persist_print(buf, len);
 #else
-  ofc_printf("Configuration Files Disabled\n") ;
+  ofc_log(OFC_LOG_INFO, "Configuration Files Disabled\n") ;
 #endif
 }
 

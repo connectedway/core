@@ -1664,6 +1664,28 @@ ofc_snprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...) {
     return ret;
 }
 
+OFC_CORE_LIB OFC_VOID
+ofc_log(OFC_LOG_LEVEL level, OFC_CCHAR *fmt, ...)
+{
+  OFC_CHAR *obuf;
+  OFC_SIZET len;
+  OFC_SIZET tlen;
+
+  va_list ap;
+
+  va_start(ap, fmt);
+  len = ofc_vsnprintf(OFC_NULL, 0, fmt, ap);
+  va_end(ap);
+
+  obuf = ofc_malloc(len + 1);
+  va_start(ap, fmt);
+  ofc_vsnprintf(obuf, len + 1, fmt, ap);
+  va_end(ap);
+
+  ofc_write_log(level, obuf, len);
+
+  ofc_free(obuf);
+}
 
 OFC_CORE_LIB OFC_VOID
 ofc_printf(OFC_CCHAR *fmt, ...) {

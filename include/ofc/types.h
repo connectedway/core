@@ -551,6 +551,14 @@ enum {
     OFC_TRUE = 1
 };
 
+typedef enum
+  {
+   OFC_LOG_DEBUG,
+   OFC_LOG_INFO,
+   OFC_LOG_WARN,
+   OFC_LOG_FATAL
+  } OFC_LOG_LEVEL;
+
 /**
  * A NULL Pointer
  */

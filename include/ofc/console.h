@@ -38,6 +38,8 @@ extern "C"
  */
 OFC_CORE_LIB OFC_VOID
 ofc_write_stdout(OFC_CCHAR *obuf, OFC_SIZET len);
+OFC_CORE_LIB OFC_VOID
+ofc_write_log(OFC_LOG_LEVEL level, OFC_CCHAR *obuf, OFC_SIZET len);
 
 /**
  * Writes a null terminated string to the console

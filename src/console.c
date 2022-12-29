@@ -15,6 +15,11 @@ ofc_write_stdout(OFC_CCHAR *obuf, OFC_SIZET len) {
 }
 
 OFC_CORE_LIB OFC_VOID
+ofc_write_log(OFC_LOG_LEVEL level, OFC_CCHAR *obuf, OFC_SIZET len) {
+  ofc_write_log_impl(level, obuf, len);
+}
+
+OFC_CORE_LIB OFC_VOID
 ofc_write_console(OFC_CCHAR *obuf) {
     ofc_write_console_impl(obuf);
 }

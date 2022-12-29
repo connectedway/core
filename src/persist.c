@@ -518,8 +518,9 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
 
         if (!error_state) {
             value = ofc_dom_get_element_cdata(config_dom, "devicename");
-            if (value != OFC_NULL) {
-                ofc_printf("Device Name: %s\n", value);
+            if (value != OFC_NULL)
+	      {
+		ofc_log(OFC_LOG_INFO, "Device Name: %s\n", value);
                 tstr = ofc_cstr2tstr(value);
                 ofc_persist->workstation_name = tstr;
             }
@@ -948,7 +949,7 @@ ofc_persist_load(OFC_LPCTSTR lpFileName) {
 
             OfcCloseHandle(fileContext->handle);
         } else
-            ofc_printf("Could not load config file %S\n", lpFileName);
+	  ofc_log(OFC_LOG_WARN, "Could not load config file %S\n", lpFileName);
 
         ofc_free(fileContext);
 

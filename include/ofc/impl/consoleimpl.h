@@ -38,6 +38,8 @@ extern "C"
  */
 OFC_VOID
 ofc_write_stdout_impl(OFC_CCHAR *obuf, OFC_SIZET len);
+OFC_VOID
+ofc_write_log_impl(OFC_LOG_LEVEL level, OFC_CCHAR *obuf, OFC_SIZET len);
 
 OFC_CORE_LIB OFC_VOID
 ofc_write_console_impl(OFC_CCHAR *obuf);

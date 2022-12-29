@@ -820,6 +820,9 @@ ofc_snprintf(OFC_CHAR *str, OFC_SIZET count, OFC_CCHAR *fmt, ...);
 OFC_CORE_LIB OFC_VOID
 ofc_printf(OFC_CCHAR *fmt, ...);
 
+OFC_CORE_LIB OFC_VOID
+ofc_log(OFC_LOG_LEVEL level, OFC_CCHAR *fmt, ...);
+
 OFC_CORE_LIB OFC_CHAR *
 ofc_saprintf(OFC_CCHAR *fmt, ...);
 /**

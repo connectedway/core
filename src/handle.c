@@ -559,7 +559,7 @@ OFC_CORE_LIB OFC_VOID ofc_handle16_destroy(OFC_HANDLE16 hHandle) {
         }
     } else {
         ofc_unlock(OfcHandle16Mutex);
-        ofc_printf("Bad Handle being destroyed 0x%08x, %d\n",
+        ofc_log(OFC_LOG_FATAL, "Bad Handle being destroyed 0x%08x, %d\n",
                    hHandle, id);
         ofc_process_crash("Bad Handle being destroyed\n");
     }
@@ -705,16 +705,16 @@ ofc_handle_print_interval(OFC_CHAR *prefix, OFC_HANDLE hHandle)
   if (count > 0)
     {
       if (type == OFC_HANDLE_TIMER)
-    {
-      ofc_printf ("%s%-15.15s  %12lu ms  %15lu  %s\n", prefix,
-               type2str(type),
-               interval, count, ofc_timer_id (hHandle)) ;
-    }
+	{
+	  ofc_printf ("%s%-15.15s  %12lu ms  %15lu  %s\n", prefix,
+		      type2str(type),
+		      interval, count, ofc_timer_id (hHandle)) ;
+	}
       else
-    {
-      ofc_printf ("%s%-15.15s  %12lu ms  %15lu\n", prefix,
-               type2str(type), interval, count) ;
-    }
+	{
+	  ofc_printf ("%s%-15.15s  %12lu ms  %15lu\n", prefix,
+		      type2str(type), interval, count) ;
+	}
     }
 }
 #endif

@@ -483,8 +483,9 @@ ofc_socket_write(OFC_HANDLE hSocket, OFC_MESSAGE *msg)
             {
               OFC_VOID *handle;
               handle = ofc_handle_lock(socket->impl);
-              ofc_printf("Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
-                         socket->type, socket->impl, handle, msg->count);
+              ofc_log(OFC_LOG_WARN,
+		      "Socket Error on write, type %d, Impl 0x%08x, handle 0x%08x, count %d\n",
+		      socket->type, socket->impl, handle, msg->count);
               /*
                * Force message to retire
                */
