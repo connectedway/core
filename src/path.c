@@ -648,29 +648,40 @@ ofc_path_printW(OFC_PATH *_path, OFC_LPTSTR *filename, OFC_SIZET *rem) {
             len += ofc_path_out_char(delimeter, filename, rem);
     }
 
-    if (path->remote) {
-        if (path->username != OFC_NULL) {
-            len += ofc_path_out_escaped(path->username, filename, rem);
-
-            if (path->password != OFC_NULL || path->domain != OFC_NULL) {
+    if (path->remote)
+      {
+	/*
+	 * We want to output credentials if either username or domain is
+	 * not null.  It is possible for username to be null and domain not
+	 * to be null in the case of active directory authentication where
+	 * we are using the domain as the name of the cache
+	 */
+        if (path->username != OFC_NULL || path->domain != OFC_NULL)
+	  {
+	    if (path->username != OFC_NULL)
+	      len += ofc_path_out_escaped(path->username, filename, rem);
+	    /*
+	     * We may have output a username, or we may not have.  we
+	     * want to put a ':' out if we have either a password or domain
+	     * yet to be output
+	     */
+	    if (path->password != OFC_NULL || path->domain != OFC_NULL)
+	      {
                 len += ofc_path_out_char(TCHAR_COLON, filename, rem);
+	      }
 
-                if (path->password != OFC_NULL &&
-                    path->password[0] != TCHAR_EOS) {
-                    len += ofc_path_out_escaped(path->password, filename, rem);
-
-                    if (path->domain != OFC_NULL) {
-                        len += ofc_path_out_char(TCHAR_COLON, filename, rem);
-                    }
-                }
-
-                if (path->domain != OFC_NULL) {
-                    len += ofc_path_out_escaped(path->domain, filename, rem);
-                }
-            }
+	    if (path->password != OFC_NULL && path->password[0] != TCHAR_EOS)
+	      {
+		len += ofc_path_out_escaped(path->password, filename, rem);
+	      }
+	    if (path->domain != OFC_NULL)
+	      {
+		len += ofc_path_out_char(TCHAR_COLON, filename, rem);
+		len += ofc_path_out_escaped(path->domain, filename, rem);
+	      }
             len += ofc_path_out_char(TCHAR_AMP, filename, rem);
-        }
-    }
+	  }
+      }
 
     for (i = 0; i < path->num_dirs; i++) {
         if (path->dir[i] != OFC_NULL &&
