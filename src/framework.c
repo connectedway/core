@@ -102,7 +102,7 @@ OFC_UNLOAD OFC_VOID ofc_unload(OFC_VOID)
 
 OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)
 {
-#if defined(__linux__)
+#if defined(__linux__) || defined(__APPLE__)
   if (filename == OFC_NULL)
     {
       filename = TSTR("/etc/openfiles.xml");

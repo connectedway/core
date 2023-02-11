@@ -120,8 +120,40 @@ TEST(path, test_path) {
     ofc_free(cfilename);
 }
 
+TEST(path, test_path_insert)
+{
+  OFC_PATH *file_path;
+  OFC_PATH *prefix;
+  OFC_TCHAR *filename;
+
+  file_path = ofc_path_createW(TSTR("//server/share/dir1/dir2/dir3"));
+
+  prefix = ofc_path_createW(TSTR("/server2/share2/dir12"));
+  ofc_path_promote_dirs(file_path, 2);
+
+  for (OFC_UINT ix = 0 ; ix < ofc_path_num_dirs(prefix) ; ix++)
+    {
+      ofc_path_insert_dir (file_path, ix,
+                           ofc_path_dir(prefix, ix));
+    }
+
+  filename = ofc_path_print_alloc(file_path);
+  /*
+   * filename should be /server2/share2/dir12/dir1/dir2/dir3
+   */
+  if (ofc_tstrcmp (filename,
+                   TSTR("/server2/share2/dir12/dir1/dir2/dir3")) == 0)
+    ofc_printf("insert path worked\n");
+  else
+    ofc_printf("insert path failed\n");
+  ofc_free(filename);
+  ofc_path_delete(file_path);
+  ofc_path_delete(prefix);
+}
+
 TEST_GROUP_RUNNER(path) {
     RUN_TEST_CASE(path, test_path);
+    RUN_TEST_CASE(path, test_path_insert);
 }
 
 #if !defined(NO_MAIN)

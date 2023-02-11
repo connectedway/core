@@ -185,6 +185,8 @@ ofc_path_printW(OFC_PATH *path, OFC_LPTSTR *filename, OFC_SIZET *rem);
 OFC_CORE_LIB OFC_SIZET
 ofc_path_printA(OFC_PATH *path, OFC_LPSTR *filename, OFC_SIZET *rem);
 
+OFC_CORE_LIB OFC_TCHAR *ofc_path_print_alloc(OFC_PATH *path);
+
 /**
  * Construct a URL suitable for passing into Open File APIs as the
  * remote escaped file name.
@@ -395,7 +397,7 @@ OFC_CORE_LIB OFC_VOID ofc_path_set_port(OFC_PATH *_path, OFC_INT port);
 OFC_CORE_LIB OFC_VOID ofc_path_set_device(OFC_PATH *_path, OFC_LPCTSTR device);
 
 OFC_CORE_LIB OFC_VOID
-ofc_path_set_server(OFC_PATH *path, OFC_LPTSTR server);
+ofc_path_set_server(OFC_PATH *path, OFC_LPCTSTR server);
 
 OFC_CORE_LIB OFC_VOID
 ofc_path_set_share(OFC_PATH *_path, OFC_LPCTSTR share);
@@ -472,6 +474,9 @@ OFC_CORE_LIB OFC_INT ofc_path_num_dirs(OFC_PATH *path);
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_dir(OFC_PATH *path, OFC_UINT ix);
 
 OFC_CORE_LIB OFC_VOID ofc_path_free_dirs(OFC_PATH *path);
+
+OFC_CORE_LIB OFC_VOID ofc_path_insert_dir(OFC_PATH *path, OFC_UINT ix,
+                                          OFC_CTCHAR *dir);
 
 OFC_CORE_LIB OFC_VOID ofc_path_debug(OFC_PATH *path);
 

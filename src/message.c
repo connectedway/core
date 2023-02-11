@@ -702,6 +702,19 @@ ofc_message_get_pointer(OFC_MESSAGE *msg, OFC_INT offset)
   return (ptr);
 }
 
+OFC_CORE_LIB OFC_VOID *
+ofc_message_get_pointer_length(OFC_MESSAGE *msg, OFC_INT offset,
+                               OFC_SIZET len)
+{
+  OFC_CHAR *ptr;
+
+  offset += msg->base;
+
+  ptr = message_map(msg, offset, len);
+
+  return (ptr);
+}
+
 OFC_CORE_LIB OFC_VOID
 ofc_message_fifo_set(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET size) {
     msg->FIFO1base = offset;

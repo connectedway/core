@@ -345,155 +345,180 @@ static OFC_VOID ofc_path_update_type(OFC_PATH *path) {
 }
 
 OFC_CORE_LIB OFC_PATH *
-ofc_path_createW(OFC_LPCTSTR lpFileName) {
-    _OFC_PATH *path;
-    OFC_LPCTSTR cursor;
-    OFC_LPCTSTR p;
-    OFC_TCHAR *portw;
-    OFC_CHAR *porta;
-    OFC_LPTSTR dir;
-    OFC_TCHAR *credentials;
-    OFC_BOOL wild;
+ofc_path_createW(OFC_LPCTSTR lpFileName)
+{
+  _OFC_PATH *path;
+  OFC_LPCTSTR cursor;
+  OFC_LPCTSTR p;
+  OFC_TCHAR *portw;
+  OFC_CHAR *porta;
+  OFC_LPTSTR dir;
+  OFC_TCHAR *credentials;
+  OFC_BOOL wild;
 
-    path = ofc_path_init_path();
-    cursor = lpFileName;
-    /*
-     * path_parse - Parse a path into it's requisite parts.
-     *
-     * A path is in the form of:
-     *   [uri:][\\[user[:pass[:domain]]@]server[:port]][\share][\][path\]file
-     *   where uri can be smb, or drive letter
-     */
-    /*
-     * parse a device.  The path either begins with a device or a
-     * network credential.  If it starts with a network credential, there
-     * is no device.
-     *
-     * See if it's a network path that begins with a network terminator
-     * (\\ or //)
-     */
-    p = ofc_tstrtok(cursor, TSTR("\\/:"));
-    if (*p == TCHAR_COLON) {
-        path->device = ParseUnescaped(cursor, &cursor, TSTR(":"));
-        cursor++;
-        if ((ofc_tstrcmp(path->device, TSTR("cifs")) == 0) ||
-            (ofc_tstrcmp(path->device, TSTR("smb")) == 0) ||
-            (ofc_tstrcmp(path->device, TSTR("proxy")) == 0))
-            path->remote = OFC_TRUE;
-        /*
-         * We expect a device, colon and two separators for a uri
-         * We expect a device, colon and one separator for an absolute DOS path
-         * We expect a device, colong and no separators for a relative DOS path
-         */
-        if ((cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH) &&
-            (cursor[1] == TCHAR_SLASH || cursor[1] == TCHAR_BACKSLASH)) {
-            cursor += 2;
-            path->absolute = OFC_TRUE;
-        } else if (cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH) {
-            cursor++;
-            path->absolute = OFC_TRUE;
-        }
-    } else if ((cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH) &&
-               (cursor[1] == TCHAR_SLASH || cursor[1] == TCHAR_BACKSLASH)) {
-        /* UNC path */
-        cursor += 2;
+  path = ofc_path_init_path();
+  cursor = lpFileName;
+  /*
+   * path_parse - Parse a path into it's requisite parts.
+   *
+   * A path is in the form of:
+   *   [uri:][\\[user[:pass[:domain]]@]server[:port]][\share][\][path\]file
+   *   where uri can be smb, or drive letter
+   */
+  /*
+   * parse a device.  The path either begins with a device or a
+   * network credential.  If it starts with a network credential, there
+   * is no device.
+   *
+   * See if it's a network path that begins with a network terminator
+   * (\\ or //)
+   */
+  p = ofc_tstrtok(cursor, TSTR("\\/:"));
+  if (*p == TCHAR_COLON)
+    {
+      path->device = ParseUnescaped(cursor, &cursor, TSTR(":"));
+      cursor++;
+      if ((ofc_tstrcmp(path->device, TSTR("cifs")) == 0) ||
+          (ofc_tstrcmp(path->device, TSTR("smb")) == 0) ||
+          (ofc_tstrcmp(path->device, TSTR("proxy")) == 0))
         path->remote = OFC_TRUE;
-        path->absolute = OFC_TRUE;
-    } else if (cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH) {
-        cursor++;
-        path->absolute = OFC_TRUE;
+      /*
+       * We expect a device, colon and two separators for a uri
+       * We expect a device, colon and one separator for an absolute DOS path
+       * We expect a device, colon and no separators for a relative DOS path
+       */
+      if ((cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH) &&
+          (cursor[1] == TCHAR_SLASH || cursor[1] == TCHAR_BACKSLASH))
+        {
+          cursor += 2;
+          path->absolute = OFC_TRUE;
+        }
+      else if (cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH)
+        {
+          cursor++;
+          path->absolute = OFC_TRUE;
+        }
+    }
+  else if ((cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH) &&
+           (cursor[1] == TCHAR_SLASH || cursor[1] == TCHAR_BACKSLASH))
+    {
+      /* UNC path */
+      cursor += 2;
+      path->remote = OFC_TRUE;
+      path->absolute = OFC_TRUE;
+    }
+  else if (cursor[0] == TCHAR_SLASH || cursor[0] == TCHAR_BACKSLASH)
+    {
+      cursor++;
+      path->absolute = OFC_TRUE;
     }
 
-    path->num_dirs = 0;
-    if (path->remote) {
-        /*
-         * There's an authority (remote access)
-         * Find out if there's a credential.  There will be an unescapedd "@"
-         */
-        credentials = ParseEscaped(cursor, &p, TSTR("@"));
-        ofc_free(credentials);
+  path->num_dirs = 0;
+  if (path->remote)
+    {
+      /*
+       * There's an authority (remote access)
+       * Find out if there's a credential.  There will be an unescapedd "@"
+       */
+      credentials = ParseEscaped(cursor, &p, TSTR("@"));
+      ofc_free(credentials);
 
-        if (*p == TCHAR_AMP) {
-            /*
-             * we have user:pass:domain
-             */
-            path->username = ParseEscaped(cursor, &cursor, TSTR(":@"));
-            if (*cursor == TCHAR_COLON) {
-                cursor++;
-                /*
-                 * we have a password:domain
-                 */
-                path->password = ParseEscaped(cursor, &cursor, TSTR(":@"));
+      if (*p == TCHAR_AMP)
+        {
+          /*
+           * we have user:pass:domain
+           */
+          path->username = ParseEscaped(cursor, &cursor, TSTR(":@"));
+          if (*cursor == TCHAR_COLON)
+            {
+              cursor++;
+              /*
+               * we have a password:domain
+               */
+              path->password = ParseEscaped(cursor, &cursor, TSTR(":@"));
             }
 
-            if (*cursor == TCHAR_COLON) {
-                cursor++;
-                /*
-                 * we have a domain
-                 */
-                path->domain = ParseEscaped(cursor, &cursor, TSTR("@"));
+          if (*cursor == TCHAR_COLON)
+            {
+              cursor++;
+              /*
+               * we have a domain
+               */
+              path->domain = ParseEscaped(cursor, &cursor, TSTR("@"));
             }
-            cursor++;
+          cursor++;
         }
     }
 
-    while (*cursor != TCHAR_EOS) {
-        dir = ParseUnescaped(cursor, &cursor, TSTR("\\/:"));
+  while (*cursor != TCHAR_EOS)
+    {
+      dir = ParseUnescaped(cursor, &cursor, TSTR("\\/:"));
 
-        if (dir != OFC_NULL) {
-            wild = ofc_path_is_wild(dir);
+      if (dir != OFC_NULL)
+        {
+          wild = ofc_path_is_wild(dir);
 
-            if (ofc_tstrcmp(dir, TSTR("..")) == 0) {
-                if (path->num_dirs > 0) {
-                    path->num_dirs--;
-                    ofc_free(path->dir[path->num_dirs]);
-                    path->dir = ofc_realloc(path->dir,
-                                            sizeof(OFC_LPCTSTR *) *
-                                            (path->num_dirs));
+          if (ofc_tstrcmp(dir, TSTR("..")) == 0)
+            {
+              if (path->num_dirs > 0)
+                {
+                  path->num_dirs--;
+                  ofc_free(path->dir[path->num_dirs]);
+                  path->dir = ofc_realloc(path->dir,
+                                          sizeof(OFC_LPCTSTR *) *
+                                          (path->num_dirs));
                 }
-                ofc_free(dir);
-            } else if (ofc_tstrcmp(dir, TSTR(".")) == 0) {
-                /* Skip it */
-                ofc_free(dir);
+              ofc_free(dir);
             }
-                /*
-                 * if we're remote and if dir index is 1 we're looking at a share or
-                 * potentially a server if dir index 0 is a workgroup.  In the latter
-                 * case, if the current item is not a wildcard, we want to strip the
-                 * workgroup.
-                 */
-            else if (path->remote && path->num_dirs == 1 && !wild &&
-                     lookup_workgroup(path->dir[0])) {
-                /*
-                 * Strip the workgroup.
-                 * Free the old one, and replace it with this one.
-                 */
-                ofc_free(path->dir[0]);
-                path->dir[0] = dir;
-            } else {
-                path->dir = ofc_realloc(path->dir,
-                                        sizeof(OFC_LPCTSTR *) *
-                                        (path->num_dirs + 1));
-                path->dir[path->num_dirs] = dir;
-                path->num_dirs++;
+          else if (ofc_tstrcmp(dir, TSTR(".")) == 0)
+            {
+              /* Skip it */
+              ofc_free(dir);
+            }
+          /*
+           * if we're remote and if dir index is 1 we're looking at a share or
+           * potentially a server if dir index 0 is a workgroup.  In the latter
+           * case, if the current item is not a wildcard, we want to strip the
+           * workgroup.
+           */
+          else if (path->remote && path->num_dirs == 1 && !wild &&
+                   lookup_workgroup(path->dir[0]))
+            {
+              /*
+               * Strip the workgroup.
+               * Free the old one, and replace it with this one.
+               */
+              ofc_free(path->dir[0]);
+              path->dir[0] = dir;
+            }
+          else
+            {
+              path->dir = ofc_realloc(path->dir,
+                                      sizeof(OFC_LPCTSTR *) *
+                                      (path->num_dirs + 1));
+              path->dir[path->num_dirs] = dir;
+              path->num_dirs++;
             }
 
-            if ((*cursor == TCHAR(':')) && path->remote && (path->num_dirs == 1)) {
-                cursor++;
-                portw = ParseUnescaped(cursor, &cursor, TSTR("\\/"));
-                porta = ofc_tstr2cstr(portw);
-                path->port = (OFC_INT) ofc_strtoul(porta, OFC_NULL, 10);
-                ofc_free(portw);
-                ofc_free(porta);
+          if ((*cursor == TCHAR(':')) &&
+              path->remote &&
+              (path->num_dirs == 1))
+            {
+              cursor++;
+              portw = ParseUnescaped(cursor, &cursor, TSTR("\\/"));
+              porta = ofc_tstr2cstr(portw);
+              path->port = (OFC_INT) ofc_strtoul(porta, OFC_NULL, 10);
+              ofc_free(portw);
+              ofc_free(porta);
             }
         }
-        if (*cursor != TCHAR_EOS)
-            cursor++;
+      if (*cursor != TCHAR_EOS)
+        cursor++;
     }
 
-    ofc_path_update_type((OFC_PATH *) path);
+  ofc_path_update_type((OFC_PATH *) path);
 
-    return ((OFC_PATH *) path);
+  return ((OFC_PATH *) path);
 }
 
 OFC_CORE_LIB OFC_PATH *
@@ -734,6 +759,23 @@ ofc_path_printA(OFC_PATH *_path, OFC_LPSTR *filename, OFC_SIZET *rem) {
     }
     ofc_free(tfilename);
     return (ret);
+}
+
+OFC_CORE_LIB OFC_TCHAR *ofc_path_print_alloc(OFC_PATH *path)
+{
+  OFC_TCHAR *cursor;
+  OFC_SIZET size;
+  OFC_TCHAR *filename;
+
+  cursor = OFC_NULL ;
+  size = 0 ;
+
+  size = ofc_path_print(path, &cursor, &size) ;
+  filename = ofc_malloc ((size+1) * sizeof (OFC_TCHAR)) ;
+  cursor = filename ;
+  size++ ;
+  ofc_path_print(path, &cursor, &size) ;
+  return (filename);
 }
 
 OFC_CORE_LIB OFC_FST_TYPE ofc_path_type(OFC_PATH *_path) {
@@ -1435,20 +1477,24 @@ OFC_CORE_LIB OFC_VOID ofc_path_free_server(OFC_PATH *_path) {
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_path_set_server(OFC_PATH *_path, OFC_LPTSTR server) {
-    _OFC_PATH *path = (_OFC_PATH *) _path;
+ofc_path_set_server(OFC_PATH *_path, OFC_LPCTSTR server)
+{
+  _OFC_PATH *path = (_OFC_PATH *) _path;
 
-    if (path->remote) {
-        if (path->num_dirs > 0) {
-            ofc_free(path->dir[0]);
-        } else {
-            path->num_dirs++;
-            path->dir = ofc_realloc(path->dir, (path->num_dirs *
-                                                sizeof(OFC_LPCSTR)));
+  if (path->remote)
+    {
+      if (path->num_dirs > 0)
+        {
+          ofc_free(path->dir[0]);
         }
-        path->dir[0] = (OFC_LPTSTR) server;
-    } else
-        ofc_free(server);
+      else
+        {
+          path->num_dirs++;
+          path->dir = ofc_realloc(path->dir, (path->num_dirs *
+                                              sizeof(OFC_LPCSTR)));
+        }
+      path->dir[0] = ofc_tstrdup(server);
+    }
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -1687,6 +1733,24 @@ ofc_path_promote_dirs(OFC_PATH *_path, OFC_UINT num_dirs) {
 
     path->num_dirs -= num_dirs;
 }
+
+OFC_CORE_LIB OFC_VOID ofc_path_insert_dir(OFC_PATH *_path, OFC_UINT ix,
+                                          OFC_CTCHAR *dir)
+{
+  _OFC_PATH *path = (_OFC_PATH *) _path;
+  OFC_UINT i;
+
+  path->num_dirs++;
+  path->dir = ofc_realloc(path->dir, (path->num_dirs *
+                                      sizeof(OFC_LPCSTR)));
+
+  for (i = ix; i < path->num_dirs-1; i++)
+    {
+      path->dir[i+1] = path->dir[i];
+    }
+
+  path->dir[ix] = ofc_tstrdup(dir);
+}  
 
 OFC_CORE_LIB OFC_VOID ofc_path_set_local(OFC_PATH *_path) {
     _OFC_PATH *path = (_OFC_PATH *) _path;

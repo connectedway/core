@@ -290,6 +290,9 @@ ofc_message_unload_data(OFC_MESSAGE *msg);
  */
 OFC_CORE_LIB OFC_VOID *
 ofc_message_get_pointer(OFC_MESSAGE *msg, OFC_INT offset);
+OFC_CORE_LIB OFC_VOID *
+ofc_message_get_pointer_length(OFC_MESSAGE *msg, OFC_INT offset,
+                               OFC_SIZET len);
 /**
  * Return the offset of the current byte pointer
  *
