@@ -126,7 +126,7 @@ TEST(path, test_path_insert)
   OFC_PATH *prefix;
   OFC_TCHAR *filename;
 
-  file_path = ofc_path_createW(TSTR("//server/share/dir1/dir2/dir3"));
+  file_path = ofc_path_createW(TSTR("/server/share/dir1/dir2/dir3"));
 
   prefix = ofc_path_createW(TSTR("/server2/share2/dir12"));
   ofc_path_promote_dirs(file_path, 2);

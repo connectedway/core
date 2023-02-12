@@ -1744,9 +1744,12 @@ OFC_CORE_LIB OFC_VOID ofc_path_insert_dir(OFC_PATH *_path, OFC_UINT ix,
   path->dir = ofc_realloc(path->dir, (path->num_dirs *
                                       sizeof(OFC_LPCSTR)));
 
-  for (i = ix; i < path->num_dirs-1; i++)
+  /*
+   * Copy from the back
+   */
+  for (i = path->num_dirs-1; i > ix; i--)
     {
-      path->dir[i+1] = path->dir[i];
+      path->dir[i] = path->dir[i-1];
     }
 
   path->dir[ix] = ofc_tstrdup(dir);
