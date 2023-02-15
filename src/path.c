@@ -1877,12 +1877,6 @@ OFC_CORE_LIB OFC_VOID ofc_path_free_dirs(OFC_PATH *_path) {
 OFC_VOID ofc_path_debug(OFC_PATH *_path) {
     _OFC_PATH *path = (_OFC_PATH *) _path;
     OFC_UINT i;
-    OFC_CHAR *test;
-
-    test = (OFC_CHAR *) TSTR("NULL");
-
-    for (i = 0; i < (5 * sizeof(OFC_TCHAR)); i++)
-        ofc_printf("Test[%d]: 0x%02x\n", i, test[i]);
 
     ofc_printf("Path:\n");
     ofc_printf("  Type: %d\n", path->type);

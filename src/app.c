@@ -65,6 +65,7 @@ ofc_app_create(OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
     ofc_app_event_sig(hApp) ;
 #else
     ofc_app_preselect(hApp);
+    ofc_sched_wake(app->scheduler);
 #endif
     /*
      * Return the application pointer
