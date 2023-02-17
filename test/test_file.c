@@ -3200,12 +3200,14 @@ OFC_INT test_file(OFC_LPCSTR test_root)
       /*
        * First, create a random file
        */
+#if 1
       ofc_printf("Create File Test\n");
       if (OfcCreateFileTest(device) == OFC_FALSE)
         {
           ofc_printf("  *** Create File Test Failed *** \n");
           test_result = OFC_FALSE;
         }
+#endif
 #if 0
       ofc_printf("  Dismount Test\n");
       if (OfcDismountTest(device) == OFC_FALSE)
@@ -3228,34 +3230,41 @@ OFC_INT test_file(OFC_LPCSTR test_root)
 #endif
 #endif
 
+#if 1
       ofc_printf("Read File Test\n");
       if (OfcReadFileTest(device) == OFC_FALSE)
         {
           ofc_printf("  *** Read File Test Failed *** \n");
           test_result = OFC_FALSE;
         }
-        
+#endif        
       /*
        * Then see if we can copy files
        */
+#if 1
       ofc_printf("Copy File Test\n");
       if (OfcCopyFileTest(device) == OFC_FALSE)
         {
           ofc_printf("  *** Copy File Test Failed *** \n");
           test_result = OFC_FALSE;
         }
+#endif
+#if 1
       ofc_printf("  List Directory Test\n");
       if (OfcListDirTest(device) == OFC_FALSE)
         {
           ofc_printf("  *** List Directory Test Failed *** \n");
           test_result = OFC_FALSE;
         }
+#endif
+#if 1
       ofc_printf("  Delete File Test\n");
       if (OfcDeleteTest(device) == OFC_FALSE)
         {
           ofc_printf("  *** Delete File Test Failed ***\n");
           test_result = OFC_FALSE;
         }
+#endif
       /* This one only works in SMBv2, we can update SMBv1 to support
        *  this style
        * Since the API is only supported on SMBv2, we should use the

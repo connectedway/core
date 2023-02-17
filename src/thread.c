@@ -77,7 +77,9 @@ ofc_thread_get_variable(OFC_DWORD var) {
 OFC_CORE_LIB OFC_VOID
 ofc_thread_set_variable(OFC_DWORD var, OFC_DWORD_PTR val) {
     if (var != OfcLastError || val != (OFC_DWORD_PTR) OFC_ERROR_SUCCESS)
-        ofc_thread_set_variable_impl(var, val);
+      {
+	ofc_thread_set_variable_impl(var, val);
+      }
 }
 
 OFC_CORE_LIB OFC_VOID

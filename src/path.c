@@ -310,7 +310,7 @@ ofc_path_init_path(OFC_VOID) {
     path->username = OFC_NULL;
     path->password = OFC_NULL;
     path->domain = OFC_NULL;
-    path->port = 0;
+    path->port = 445;
     path->num_dirs = 0;
     path->dir = OFC_NULL;
     path->absolute = OFC_FALSE;
