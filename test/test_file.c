@@ -3149,7 +3149,7 @@ OFC_INT test_file(OFC_LPCSTR test_root)
 
   ofc_printf("Starting File Test with %S\n\n", device);
 
-  ofc_sleep(1000);
+  //ofc_sleep(1000);
   ofc_thread_create_local_storage();
 
   /*
@@ -3226,7 +3226,8 @@ OFC_INT test_file(OFC_LPCSTR test_root)
       ofc_printf("  Dismount Test with No connection\n");
       OfcDismountTest(device);
 #else
-      ofc_sleep(500);
+      /* sleep not necessary */
+      //ofc_sleep(500);
 #endif
 #endif
 
