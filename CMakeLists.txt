@@ -93,6 +93,7 @@ set(OFC_HEADERS
     include/ofc/queue.h
     include/ofc/types.h
     include/ofc/waitset.h
+    include/ofc/path.h
     )
 
 set_target_properties(of_core_shared PROPERTIES

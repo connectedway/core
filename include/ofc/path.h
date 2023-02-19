@@ -11,7 +11,6 @@
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/file.h"
-#include "ofc/fs.h"
 
 /**
  * \defgroup path Open Files Path Handling Facility

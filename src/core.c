@@ -14,6 +14,7 @@
 #include "ofc/net.h"
 #include "ofc/time.h"
 #include "ofc/thread.h"
+#include "ofc/fs.h"
 #if defined(OFC_PERF_STATS)
 #include "ofc/perf.h"
 #endif
