@@ -251,9 +251,10 @@ ofc_strndup(OFC_CCHAR *astr, OFC_SIZET len) {
         ret = OFC_NULL;
     else {
         slen = ofc_strnlen(astr, len);
-        size = OFC_MIN(slen, len) + 1;
-        ret = ofc_malloc(size);
+        size = OFC_MIN(slen, len);
+        ret = ofc_malloc(size+1);
         ofc_strncpy(ret, astr, size);
+	ret[size] = TCHAR_EOS;
     }
     return (ret);
 }
@@ -268,9 +269,10 @@ ofc_tstrndup(OFC_CTCHAR *astr, OFC_SIZET len) {
         ret = OFC_NULL;
     else {
         slen = ofc_tstrnlen(astr, len);
-        size = OFC_MIN(slen, len) + 1;
-        ret = ofc_malloc(size * sizeof(OFC_TCHAR));
+        size = OFC_MIN(slen, len);
+        ret = ofc_malloc((size+1) * sizeof(OFC_TCHAR));
         ofc_tstrncpy(ret, astr, size);
+	ret[size] = TCHAR_EOS;
     }
     return (ret);
 }
