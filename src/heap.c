@@ -158,11 +158,10 @@ ofc_heap_debug_free(struct heap_chunk *chunk) {
 OFC_CORE_LIB OFC_VOID
 ofc_heap_dump_stats(OFC_VOID) {
     OFC_CHAR obuf[OBUF_SIZE];
-    OFC_SIZET len;
 
-    len = ofc_snprintf(obuf, OBUF_SIZE,
-                       "Total Allocated Memory %d, Max Allocated Memory %d\n",
-                       ofc_heap_stats.Total, ofc_heap_stats.Max);
+    ofc_snprintf(obuf, OBUF_SIZE,
+		 "Total Allocated Memory %d, Max Allocated Memory %d\n",
+		 ofc_heap_stats.Total, ofc_heap_stats.Max);
     ofc_write_console(obuf);
 }
 

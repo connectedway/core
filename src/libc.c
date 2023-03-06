@@ -1671,7 +1671,6 @@ ofc_log(OFC_LOG_LEVEL level, OFC_CCHAR *fmt, ...)
 {
   OFC_CHAR *obuf;
   OFC_SIZET len;
-  OFC_SIZET tlen;
 
   va_list ap;
 

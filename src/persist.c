@@ -492,7 +492,6 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
     OFC_CONFIG_MODE netbios_mode;
     OFC_CONFIG_ICONFIG_TYPE itype;
     OFC_TCHAR *tstr;
-    OFC_CCHAR *cstr;
     OFC_IPADDR *iparray;
     OFC_CONFIG *ofc_persist;
     PERSIST_REGISTER *subconfig;
@@ -906,7 +905,6 @@ readFile(OFC_VOID *context, OFC_LPVOID buf, OFC_DWORD bufsize) {
 static OFC_SIZET
 readBuf(OFC_VOID *context, OFC_LPVOID buf, OFC_DWORD bufsize) {
     BUF_CONTEXT *bufContext;
-    OFC_DWORD bytes_read;
     OFC_SIZET ret;
 
     bufContext = (BUF_CONTEXT *) context;

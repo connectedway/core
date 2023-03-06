@@ -19,6 +19,8 @@ OFC_HANDLE hDone;
 
 OFC_CHAR config_path[OFC_MAX_PATH+1] = {0};
 
+#if !defined(INIT_ON_LOAD)
+#if defined(OFC_PERSIST)
 static OFC_INT test_startup_persist(OFC_VOID) {
     OFC_INT ret = 0;
     OFC_TCHAR *tpath = OFC_NULL;
@@ -51,7 +53,9 @@ static OFC_INT test_startup_persist(OFC_VOID) {
 
     return (ret);
 }
+#endif
 
+#if !defined(OFC_PERSIST)
 static OFC_INT test_startup_default(OFC_VOID) {
     static OFC_UUID uuid =
             {
@@ -66,6 +70,8 @@ static OFC_INT test_startup_default(OFC_VOID) {
     ofc_persist_set_uuid(&uuid);
     return (0);
 }
+#endif
+#endif
 
 OFC_INT test_startup(OFC_VOID) {
     OFC_INT ret;

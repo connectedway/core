@@ -76,7 +76,7 @@ typedef struct {
  */
 #define OFC_INADDR_ANY ((OFC_UINT32) 0x00000000)
 
-#define OFC_IN6ADDR_ANY_INIT {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+#define OFC_IN6ADDR_ANY_INIT {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},0}
 extern OFC_IN6ADDR ofc_in6addr_any;
 
 /**
@@ -84,19 +84,19 @@ extern OFC_IN6ADDR ofc_in6addr_any;
  */
 #define OFC_INADDR_LOOPBACK ((OFC_UINT32) 0x7f000001)
 
-#define OFCIN6ADDR_LOOPBACK_INIT { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 }
+#define OFCIN6ADDR_LOOPBACK_INIT {{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 },0}
 extern OFC_IN6ADDR ofc_in6addr_loopback;
 /**
  * Representation of the Interface Generic Broadcast Address
  */
 #define OFC_INADDR_BROADCAST ((OFC_UINT32) 0xffffffff)
-#define OFC_IN6ADDR_BCAST_INIT { 0xFF,0x02,0,0,0,0,0,0,0,0,0,0,0,0,0,1 }
+#define OFC_IN6ADDR_BCAST_INIT {{ 0xFF,0x02,0,0,0,0,0,0,0,0,0,0,0,0,0,1 },0}
 extern OFC_IN6ADDR ofc_in6addr_bcast;
 /**
  * Representation of an unspecified IP Address
  */
 #define OFC_INADDR_NONE ((OFC_UINT32) 0xffffffff)
-#define OFC_IN6ADDR_NONE_INIT { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF }
+#define OFC_IN6ADDR_NONE_INIT {{ 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF },0}
 extern OFC_IN6ADDR ofc_in6addr_none;
 
 /**

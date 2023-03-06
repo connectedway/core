@@ -116,7 +116,6 @@ OFC_CORE_LIB OFC_MESSAGE *
 ofc_message_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
                    OFC_VOID *msgData) {
     OFC_MESSAGE *msg;
-    OFC_INT i;
 
     msg = ofc_malloc(sizeof(OFC_MESSAGE));
     if (msg == OFC_NULL)
@@ -193,8 +192,6 @@ ofc_datagram_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
 OFC_CORE_LIB OFC_VOID
 ofc_message_destroy(OFC_MESSAGE *msg)
 {
-  OFC_INT i;
-
   ofc_iovec_destroy(msg->map);
   msg->map = OFC_NULL;
 #if defined(OFC_MESSAGE_DEBUG)
@@ -287,7 +284,6 @@ ofc_message_get_base(OFC_MESSAGE *msg) {
 OFC_CORE_LIB OFC_SIZET
 ofc_message_get_length(OFC_MESSAGE *msg)
 {
-  OFC_INT i;
   OFC_SIZET len;
 
   len = ofc_iovec_length(msg->map);

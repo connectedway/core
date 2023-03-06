@@ -44,8 +44,6 @@ TEST_TEAR_DOWN(subpersist) {
 
 OFC_VOID subpersist_parse(OFC_DOMNode *doc, OFC_DOMNode *sub)
 {
-  OFC_BOOL error_state;
-
   OFC_DOMNode *node;
   OFC_DOMNode *new_node;
   OFC_DOMNodelist *nodelist;
@@ -189,7 +187,6 @@ TEST(subpersist, test_subpersist_init) {
 
 TEST(subpersist, test_subpersist_save)
 {
-    OFC_BOOL ret;
     OFC_TCHAR *tpath = OFC_NULL;
     OFC_LPVOID buf;
     OFC_SIZET len;

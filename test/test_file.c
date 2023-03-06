@@ -39,11 +39,6 @@
  */
 
 /*
- * Forward declaration of the File System Test Thread
- */
-static OFC_DWORD OfcFSTestApp(OFC_PATH *path);
-
-/*
  * This test utility will map the destination file location to the device
  * 'FS_TEST'.  The typical situation would likely have the application
  * specifying the path directly and not using a map.  In our case, the
@@ -398,7 +393,6 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device)
   struct perf_rt *prt;
 #endif
   OFC_INT i;
-  OFC_BOOL status;
   OFC_TCHAR *wfilename;
   OFC_BOOL ret;
   OFC_INT size;
@@ -423,7 +417,6 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device)
   /*
    * Get the time for simple performance analysis
    */
-  status = OFC_TRUE;
   start_time = ofc_time_get_now();
 #if defined(OFC_PERF_STATS)
   pqueue = perf_queue_create(g_measurement, TSTR("App Write"), 0);
@@ -704,9 +697,9 @@ static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device)
   return (ret);
 }
 
+#if 0
 static OFC_BOOL OfcDismountTest(OFC_CTCHAR *device)
 {
-  OFC_BOOL status;
   OFC_TCHAR *wfilename;
   OFC_BOOL ret;
 
@@ -717,7 +710,6 @@ static OFC_BOOL OfcDismountTest(OFC_CTCHAR *device)
    */
   wfilename = MakeFilename(device, FS_TEST_READ);
 
-  status = OFC_TRUE;
   /*
    * Dismount the file
    */
@@ -727,6 +719,7 @@ static OFC_BOOL OfcDismountTest(OFC_CTCHAR *device)
 
   return (ret);
 }
+#endif
 
 static OFC_BOOL OfcCopyFileTest(OFC_CTCHAR *device)
 {
@@ -1770,6 +1763,7 @@ static OFC_BOOL OfcMoveTest(OFC_CTCHAR *device)
   return (ret);
 }
 
+#if 0
 /*
  * Rename file test
  */
@@ -2005,6 +1999,7 @@ static OFC_BOOL OfcRenameTest(OFC_CTCHAR *device)
   ofc_free(dirname);
   return (ret);
 }
+#endif
 
 /*
  * Flush file test
@@ -2921,6 +2916,7 @@ struct _test_path
   OFC_UINT32 expected_error2;
 };
 
+#if 0
 static struct _test_path test_paths[] =
   {
     /* Test 0, Good case */
@@ -3107,6 +3103,7 @@ static OFC_BOOL OfcBadFileNamesTest(OFC_CTCHAR *device)
     }
   return (ret);
 }
+#endif
 
 /*
  * Startup Entry point to the test
@@ -3117,12 +3114,10 @@ static OFC_BOOL OfcBadFileNamesTest(OFC_CTCHAR *device)
  */
 OFC_INT test_file(OFC_LPCSTR test_root)
 {
-  OFC_DWORD ret;
   OFC_TCHAR *device;
   OFC_BOOL test_result;
   OFC_INT count;
   OFC_PATH * test_path;
-  OFC_HANDLE test_dir;
 
   /*
    * If there is a path named "test" in the persistent file, use it
@@ -3163,7 +3158,6 @@ OFC_INT test_file(OFC_LPCSTR test_root)
       ofc_printf("Failed to Validate Destination %S, %s(%d)\n",
                  device, ofc_get_error_string(OfcGetLastError()),
 		 OfcGetLastError());
-      ret = OFC_FALSE;
       count = OFC_FILE_TEST_COUNT;
     }
   else

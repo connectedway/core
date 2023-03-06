@@ -581,11 +581,9 @@ ofc_socket_get_impl(OFC_HANDLE hSocket) {
 OFC_CORE_LIB OFC_SOCKET_EVENT_TYPE
 ofc_socket_test(OFC_HANDLE hSocket) {
     OFC_SOCKET_EVENT_TYPE ret;
-    OFC_HANDLE impl;
     OFC_SOCKET *sock;
 
     ret = OFC_FALSE;
-    impl = OFC_HANDLE_NULL;
     sock = ofc_handle_lock(hSocket);
     if (sock != OFC_NULL) {
         ret = ofc_socket_impl_test(sock->impl);
@@ -597,11 +595,9 @@ ofc_socket_test(OFC_HANDLE hSocket) {
 OFC_CORE_LIB OFC_BOOL
 ofc_socket_enable(OFC_HANDLE hSocket, OFC_SOCKET_EVENT_TYPE type) {
     OFC_BOOL ret;
-    OFC_HANDLE impl;
     OFC_SOCKET *sock;
 
     ret = OFC_FALSE;
-    impl = OFC_HANDLE_NULL;
     sock = ofc_handle_lock(hSocket);
     if (sock != OFC_NULL) {
         ret = ofc_socket_impl_enable(sock->impl, type);
