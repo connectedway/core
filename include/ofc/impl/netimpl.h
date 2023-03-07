@@ -45,6 +45,13 @@ OFC_VOID ofc_net_init_impl(OFC_VOID);
  */
 OFC_INT
 ofc_net_interface_count_impl(OFC_VOID);
+/**
+ * Set the Network Handle
+ *
+ * Noop for all but Android
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_net_set_handle_impl(OFC_UINT64 network_handle);
 
 /**
  * Return IP information for an interface

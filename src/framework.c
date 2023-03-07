@@ -282,6 +282,11 @@ OFC_VOID ofc_framework_set_interface_discovery(OFC_BOOL on) {
     ofc_persist_set_interface_type(itype);
 }
 
+OFC_VOID ofc_framework_set_network_handle(OFC_UINT64 network_handle)
+{
+  ofc_net_set_handle(network_handle);
+}
+
 OFC_BOOL ofc_framework_get_interface_discovery(OFC_VOID) {
     OFC_BOOL ret;
 

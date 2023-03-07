@@ -210,6 +210,12 @@ ofc_pton(const OFC_CHAR *src, OFC_IPADDR *dst);
 OFC_CORE_LIB OFC_INT
 ofc_net_interface_count(OFC_VOID);
 /**
+ * Set the network handle.
+ * Noop for all but Android
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_net_set_handle(OFC_UINT64 network_handle);
+/**
  * Return ip address info for an interface
  *
  * \param index

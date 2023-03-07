@@ -33,6 +33,12 @@ ofc_net_destroy(OFC_VOID) {
 #endif
 }
 
+OFC_CORE_LIB OFC_VOID
+ofc_net_set_handle(OFC_UINT64 network_handle)
+{
+  ofc_net_set_handle_impl(network_handle);
+}
+
 OFC_CORE_LIB OFC_INT
 ofc_net_interface_count(OFC_VOID) {
     OFC_INT ret;

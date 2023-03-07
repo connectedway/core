@@ -209,7 +209,11 @@ OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir(OFC_LPTSTR str);
  * configuration is done manually or not
  */
 OFC_VOID ofc_framework_set_interface_discovery(OFC_BOOL on);
-
+/**
+ * Set the Network Handle for use by the Android NDK code.
+ * Not needed after API 31
+ */
+OFC_VOID ofc_framework_set_network_handle(OFC_UINT64 network_handle);
 /**
  * Return the setting of interface discovery
  */
