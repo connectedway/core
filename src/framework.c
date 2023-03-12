@@ -76,7 +76,6 @@ ofc_framework_startup_ev(OFC_HANDLE hScheduler, OFC_HANDLE hEvent) {
 #if defined(OFC_NETMON)
     ofc_netmon_startup (hScheduler, OFC_HANDLE_NULL) ;
 #endif
-
 }
 
 OFC_CORE_LIB OFC_VOID

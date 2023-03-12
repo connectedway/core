@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.20.0)
 project(of_core VERSION 1.0.1 DESCRIPTION "OpenFiles Core Library")
 
+include_directories(
+	${of_core_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_BINARY_DIR}
+	${openfiles_SOURCE_DIR}/of_netbios/include
+	)
+
 set(SRCS
         src/app.c
         src/console.c

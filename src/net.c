@@ -5,18 +5,30 @@
  */
 #define __OFC_CORE_DLL__
 
+#include "ofc/config.h"
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/libc.h"
 #include "ofc/net.h"
 #include "ofc/impl/netimpl.h"
-
+#if defined(OF_NETBIOS)
+#include "ofc/waitq.h"
+#include "ofc/process.h"
+#include "of_netbios/of_name_api.h"
+#endif
 #include "ofc/heap.h"
 
 OFC_IN6ADDR ofc_in6addr_any = OFC_IN6ADDR_ANY_INIT;
 OFC_IN6ADDR ofc_in6addr_loopback = OFCIN6ADDR_LOOPBACK_INIT;
 OFC_IN6ADDR ofc_in6addr_bcast = OFC_IN6ADDR_BCAST_INIT;
 OFC_IN6ADDR ofc_in6addr_none = OFC_IN6ADDR_NONE_INIT;
+
+#if defined(OF_NETBIOS)
+/*
+ * Global define for waitq
+ */
+OFC_HANDLE g_netbios_waitq = OFC_HANDLE_NULL; 
+#endif
 
 OFC_CORE_LIB OFC_VOID
 ofc_net_init(OFC_VOID) {
@@ -87,6 +99,55 @@ ofc_net_subnet_match(OFC_IPADDR *fromip, OFC_IPADDR *intip, OFC_IPADDR *mask) {
     return (ret);
 }
 
+#if defined(OF_NETBIOS)
+/*
+ * This is a duplicate of code in the netbios layer.  This one
+ * is used only by the resolve code.  This is needed here because
+ * of otherwise circular library dependencies
+ */
+static OFC_VOID 
+NameServiceQueryName (OFC_HANDLE User, OF_NAME_SERVICE service,
+		      OFC_LPCSTR name, OFC_UINT16 *num_addrs,
+		      OFC_IPADDR *ip)
+{
+  NAME_SERVICE_COMMAND *name_command;
+  OFC_MESSAGE *msg ;
+  OFC_INT i ;
+
+  *num_addrs = 0;
+  msg = ofc_message_create(MSG_ALLOC_HEAP,
+                           OFC_CALL_STACK_SIZE,
+                           OFC_NULL);
+  ofc_message_fifo_set(msg, sizeof(NAME_SERVICE_COMMAND),
+                       OFC_CALL_STACK_SIZE - sizeof(NAME_SERVICE_COMMAND));
+
+  name_command = ofc_message_get_pointer(msg, 0);
+  name_command->command = NAME_CALL_TAG_QUERY_NAME;
+  name_command->waitq = User;
+  name_command->u.query_name.service = service ;
+
+  ofc_message_fifo_push_cstr (msg, name) ;
+  ofc_message_fifo_push_cstr (msg, "") ;
+  ofc_message_fifo_reset(msg);
+  ofc_waitq_enqueue (g_netbios_waitq, msg);
+  ofc_waitq_block(User);
+  msg = ofc_waitq_dequeue(User);
+  name_command = ofc_message_get_pointer(msg, 0);
+
+  if (name_command->status == OFC_TRUE)
+    {
+      *num_addrs = OFC_MIN (name_command->u.query_name.num_addrs, *num_addrs) ;
+      for (i = 0 ; i < *num_addrs ; i++)
+        {
+          ofc_memcpy (&ip[i],
+                      ofc_message_fifo_pop (msg, sizeof (OFC_IPADDR)),
+                      sizeof (OFC_IPADDR)) ;
+        }
+    }
+  ofc_message_destroy(msg);
+}
+#endif
+
 OFC_CORE_LIB OFC_VOID
 ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
                      OFC_IPADDR *ip)
@@ -102,13 +163,29 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
   if (!resolved)
     {
       ofc_net_resolve_dns_name(name, num_addrs, ip);
+      if (num_addrs > 0)
+        resolved = OFC_TRUE;
     }
 
-#if defined (OFC_NETBIOS)
+#if defined (OF_NETBIOS)
   if (!resolved)
     {
-      ofc_name_resolve_name(name, num_addrs, ip) ;
-      if (!ofc_net_is_addr_none (&ip[0]))
+      OFC_HANDLE waitq;
+
+      waitq = ofc_waitq_create();
+      ofc_assert(waitq != OFC_HANDLE_NULL,
+                 "Couldn't create waitq for netbios resolve\n");
+      
+      NameServiceQueryName (waitq, OF_NAME_SERVICE_WORKSTATION, name, 
+                            num_addrs, ip) ;
+      if (*num_addrs == 0)
+        {
+          NameServiceQueryName (waitq, OF_NAME_SERVICE_SERVER, name, 
+                                num_addrs, ip) ;
+        }
+      ofc_waitq_destroy(waitq);
+
+      if (num_addrs > 0)
 	resolved = OFC_TRUE;
     }
 #endif

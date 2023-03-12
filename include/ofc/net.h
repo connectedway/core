@@ -6,6 +6,7 @@
 #if !defined(__OFC_NET_H__)
 #define __OFC_NET_H__
 
+#include "ofc/config.h"
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
@@ -180,6 +181,13 @@ typedef struct _OFC_SOCKADDR {
 #define ICMP_SEQUENCE 0x06
 #define ICMP_DATA 0x08
 #define ICMP_LEN 0x10
+
+#if defined(OF_NETBIOS)
+/*
+ * Define global netbios waitq
+ */
+extern OFC_HANDLE g_netbios_waitq;
+#endif
 
 #if defined(__cplusplus)
 extern "C"
