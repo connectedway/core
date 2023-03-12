@@ -114,7 +114,6 @@ NameServiceQueryName (OFC_HANDLE User, OF_NAME_SERVICE service,
   OFC_MESSAGE *msg ;
   OFC_INT i ;
 
-  *num_addrs = 0;
   msg = ofc_message_create(MSG_ALLOC_HEAP,
                            OFC_CALL_STACK_SIZE,
                            OFC_NULL);
@@ -144,6 +143,9 @@ NameServiceQueryName (OFC_HANDLE User, OF_NAME_SERVICE service,
                       sizeof (OFC_IPADDR)) ;
         }
     }
+  else
+    *num_addrs = 0;
+
   ofc_message_destroy(msg);
 }
 #endif
@@ -153,6 +155,7 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
                      OFC_IPADDR *ip)
 {
   OFC_BOOL resolved = OFC_FALSE;
+  OFC_UINT16 req_addrs = *num_addrs;
   
   if (ofc_pton (name, ip) == 1)
     {
@@ -163,7 +166,7 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
   if (!resolved)
     {
       ofc_net_resolve_dns_name(name, num_addrs, ip);
-      if (num_addrs > 0)
+      if (*num_addrs > 0)
         resolved = OFC_TRUE;
     }
 
@@ -176,16 +179,27 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
       ofc_assert(waitq != OFC_HANDLE_NULL,
                  "Couldn't create waitq for netbios resolve\n");
       
-      NameServiceQueryName (waitq, OF_NAME_SERVICE_WORKSTATION, name, 
-                            num_addrs, ip) ;
+      /*
+       * First look for a domain controller
+       */
+      *num_addrs = req_addrs;
+      NameServiceQueryName (waitq, OF_NAME_SERVICE_DOMAIN_CONTROLLER, name, 
+			    num_addrs, ip) ;
       if (*num_addrs == 0)
         {
+	  *num_addrs = req_addrs;
+	  NameServiceQueryName (waitq, OF_NAME_SERVICE_WORKSTATION, name, 
+				num_addrs, ip) ;
+	}
+      if (*num_addrs == 0)
+        {
+	  *num_addrs = req_addrs;
           NameServiceQueryName (waitq, OF_NAME_SERVICE_SERVER, name, 
                                 num_addrs, ip) ;
         }
       ofc_waitq_destroy(waitq);
 
-      if (num_addrs > 0)
+      if (*num_addrs > 0)
 	resolved = OFC_TRUE;
     }
 #endif
