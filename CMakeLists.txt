@@ -81,6 +81,10 @@ if (OFC_FS_BOOKMARKS)
     list(APPEND fs_library_list of_core_fs_bookmarks)
 endif ()
 
+if (OFC_KERBEROS)
+    list(APPEND fs_library_list of_security ${KRB5_LIBS})
+endif()
+
 add_library(of_core OBJECT ${SRCS})
 set_property(TARGET of_core PROPERTY POSITION_INDEPENDENT_CODE ON)
 

@@ -150,6 +150,8 @@ NameServiceQueryName (OFC_HANDLE User, OF_NAME_SERVICE service,
 }
 #endif
 
+OFC_CHAR *kcache_active(OFC_VOID);
+
 OFC_CORE_LIB OFC_VOID
 ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
                      OFC_IPADDR *ip)
@@ -169,6 +171,23 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
       if (*num_addrs > 0)
         resolved = OFC_TRUE;
     }
+
+#if defined(OFC_KERBEROS) && defined(__ANDROID__)
+  OFC_CHAR *domain;
+  domain = kcache_active();
+
+  if (!resolved && domain != OFC_NULL)
+    {
+      OFC_CHAR *domain_name;
+      domain_name = ofc_saprintf("%s.%s", name, domain);
+      *num_addrs = req_addrs;
+      ofc_net_resolve_dns_name(domain_name, num_addrs, ip);
+      if (*num_addrs > 0)
+        resolved = OFC_TRUE;
+      ofc_free(domain_name);
+    }
+  ofc_free(domain);
+#endif
 
 #if defined (OF_NETBIOS)
   if (!resolved)

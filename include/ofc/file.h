@@ -261,12 +261,12 @@ enum {
 
     OFC_FILE_ATTRIBUTE_INTEGRITY_STREAM = 0x8000,
 
-    OFC_FILE_ATTRIBUTE_NO_SCRUB_DATA = 0x00020000,
-
     /**
      * The file is virtual
      */
     OFC_FILE_ATTRIBUTE_VIRTUAL = 0x00010000,
+    OFC_FILE_ATTRIBUTE_NO_SCRUB_DATA = 0x00020000,
+    OFC_FILE_ATTRIBUTE_REFERRAL = 0x00040000,
     /**
      * If the file is remote, don't move back to local storage
      */
