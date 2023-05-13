@@ -35,20 +35,27 @@
 /*
  * Heap must be loaded first
  */
+static int core_loaded = 0;
+
 OFC_CORE_LIB OFC_VOID
-ofc_core_load(OFC_VOID) {
-    ofc_heap_load();
-    ofc_handle16_init();
-    ofc_thread_init();
-    ofc_trace_init();
-    ofc_path_init();
-    ofc_net_init();
+ofc_core_load(OFC_VOID)
+{
+  if (!core_loaded)
+    {
+      ofc_heap_load();
+      ofc_handle16_init();
+      ofc_thread_init();
+      ofc_trace_init();
+      ofc_path_init();
+      ofc_net_init();
 #if defined(OFC_PERF_STATS)
-    measurement_init();
+      measurement_init();
 #endif
-    ofc_fs_init();
-    OfcFileInit();
-    ofc_persist_init();
+      ofc_fs_init();
+      OfcFileInit();
+      ofc_persist_init();
+      core_loaded = 1;
+    }
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -67,12 +74,13 @@ ofc_core_unload(OFC_VOID) {
     ofc_thread_destroy();
 
 #if defined(OFC_PERF_STATS)
-  measurement_destroy();
+    measurement_destroy();
 #endif
 
     ofc_handle16_free();
 
     ofc_heap_unload();
+    core_loaded = 0;
 }
 
 /** \} */
