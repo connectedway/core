@@ -21,10 +21,12 @@
 /**
  * Supported Environment Variables
  */
+
 typedef enum {
     OFC_ENV_HOME = 0, /**< Location of configuration XML file */
     OFC_ENV_INSTALL,  /**< Unused */
     OFC_ENV_ROOT,     /**< Unused */
+    OFC_ENV_MODE,     /**< Linux Server/Client Mode [server|client]  */
     OFC_ENV_NUM	      /**< Number of Environment Variables  */
 } OFC_ENV_VALUE;
 

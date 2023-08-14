@@ -163,7 +163,7 @@ ofc_heap_dump_stats(OFC_VOID) {
     len = ofc_snprintf(obuf, OBUF_SIZE,
                        "Total Allocated Memory %d, Max Allocated Memory %d\n",
                        ofc_heap_stats.Total, ofc_heap_stats.Max);
-    ofc_write_console(obuf);
+    ofc_write_log(OFC_LOG_INFO, obuf, len);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -174,8 +174,8 @@ ofc_heap_dump(OFC_VOID) {
     OFC_SIZET len;
 #endif
 
-    ofc_heap_dump_stats();
 #if defined(OFC_HEAP_DEBUG)
+    ofc_heap_dump_stats();
 #if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
     if (ofc_heap_stats.Allocated == OFC_NULL) {
         len = ofc_snprintf(obuf, OBUF_SIZE,
