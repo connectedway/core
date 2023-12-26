@@ -157,6 +157,7 @@ ofc_heap_debug_free(struct heap_chunk *chunk) {
 #define OBUF_SIZE 200
 OFC_CORE_LIB OFC_VOID
 ofc_heap_dump_stats(OFC_VOID) {
+#if defined(OFC_HEAP_DEBUG)
     OFC_CHAR obuf[OBUF_SIZE];
     OFC_SIZET len;
 
@@ -164,6 +165,7 @@ ofc_heap_dump_stats(OFC_VOID) {
                        "Total Allocated Memory %d, Max Allocated Memory %d\n",
                        ofc_heap_stats.Total, ofc_heap_stats.Max);
     ofc_write_console(obuf);
+#endif
 }
 
 OFC_CORE_LIB OFC_VOID
