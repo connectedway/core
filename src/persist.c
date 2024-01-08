@@ -85,6 +85,7 @@ typedef struct {
     DNSLIST netbios_dns;
 
     OFC_BOOL enableAutoIP;
+    OFC_BOOL netbiosEnabled;
     OFC_BOOL loaded;
 
     OFC_UUID uuid;
@@ -212,6 +213,16 @@ ofc_persist_make_dom(OFC_VOID) {
         if (!error_state) {
             node = ofc_dom_create_element_cdata(doc, "autoip",
                                                 ofc_persist->enableAutoIP ?
+                                                "yes" : "no");
+            if (node != OFC_NULL)
+                ofc_dom_append_child(ip_node, node);
+            else
+                error_state = OFC_TRUE;
+        }
+
+        if (!error_state) {
+            node = ofc_dom_create_element_cdata(doc, "netbios",
+                                                ofc_persist->netbiosEnabled ?
                                                 "yes" : "no");
             if (node != OFC_NULL)
                 ofc_dom_append_child(ip_node, node);
@@ -543,6 +554,14 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
                         ofc_persist->enableAutoIP = OFC_TRUE;
                     else
                         ofc_persist->enableAutoIP = OFC_FALSE;
+                }
+
+                value = ofc_dom_get_element_cdata(ip_node, "netbios");
+                if (value != OFC_NULL) {
+                    if (ofc_strcmp(value, "yes") == 0)
+                        ofc_persist->netbiosEnabled = OFC_TRUE;
+                    else
+                        ofc_persist->netbiosEnabled = OFC_FALSE;
                 }
 
                 interfaces_node =
@@ -1094,6 +1113,7 @@ ofc_persist_init(OFC_VOID) {
             ofc_persist->interface_config = OFC_NULL;
             ofc_persist->netbios_dns.dns = OFC_NULL;
 	    ofc_persist->subconfigs = ofc_queue_create();
+            ofc_persist->netbiosEnabled = OFC_TRUE;
 
             ofc_set_config(ofc_persist);
 
@@ -1207,6 +1227,32 @@ ofc_persist_set_interface_type(OFC_CONFIG_ICONFIG_TYPE itype) {
             }
         }
     }
+}
+
+OFC_CORE_LIB OFC_VOID
+ofc_persist_set_netbios(OFC_BOOL enabled)
+{
+  OFC_CONFIG *ofc_persist;
+
+  ofc_persist = ofc_get_config();
+  if (ofc_persist != OFC_NULL)
+    {
+      ofc_persist->netbiosEnabled = enabled;
+    }
+}
+
+OFC_CORE_LIB OFC_BOOL
+ofc_persist_netbios(OFC_VOID)
+{
+  OFC_CONFIG *ofc_persist;
+  OFC_BOOL enabled;
+
+  ofc_persist = ofc_get_config();
+  if (ofc_persist != OFC_NULL)
+    {
+      enabled = ofc_persist->netbiosEnabled;
+    }
+  return (enabled);
 }
 
 OFC_CORE_LIB OFC_CONFIG_ICONFIG_TYPE

@@ -12,6 +12,7 @@
 #include "ofc/net.h"
 #include "ofc/impl/netimpl.h"
 #if defined(OF_NETBIOS)
+#include "ofc/persist.h"
 #include "ofc/waitq.h"
 #include "ofc/process.h"
 #include "of_netbios/of_name_api.h"
@@ -190,7 +191,7 @@ ofc_net_resolve_name(OFC_LPCSTR name, OFC_UINT16 *num_addrs,
 #endif
 
 #if defined (OF_NETBIOS)
-  if (!resolved)
+  if (!resolved && ofc_persist_netbios() == OFC_TRUE)
     {
       OFC_HANDLE waitq;
 

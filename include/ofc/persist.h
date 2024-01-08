@@ -285,6 +285,9 @@ ofc_persist_set_interface_config(OFC_INT i,
                                  OFC_CHAR *master,
                                  OFC_INT num_wins,
                                  OFC_IPADDR *winslist);
+OFC_CORE_LIB OFC_VOID ofc_persist_set_netbios(OFC_BOOL enabled);
+OFC_CORE_LIB OFC_BOOL ofc_persist_netbios(OFC_VOID);
+
 /**
  * Return the number of interfaces in use by Open Files
  *
