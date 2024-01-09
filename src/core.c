@@ -15,6 +15,7 @@
 #include "ofc/time.h"
 #include "ofc/thread.h"
 #include "ofc/fs.h"
+#include "ofc/app.h"
 #if defined(OFC_PERF_STATS)
 #include "ofc/perf.h"
 #endif
@@ -46,6 +47,7 @@ ofc_core_load(OFC_VOID)
       ofc_handle16_init();
       ofc_thread_init();
       ofc_trace_init();
+      ofc_app_init();
       ofc_path_init();
       ofc_net_init();
 #if defined(OFC_PERF_STATS)
@@ -68,6 +70,8 @@ ofc_core_unload(OFC_VOID) {
     ofc_net_destroy();
 
     ofc_path_destroy();
+
+    ofc_app_uninit();
 
     ofc_trace_destroy();
 
