@@ -57,8 +57,6 @@ typedef struct _OFC_APP_TEMPLATE {
 extern "C"
 {
 #endif
-  OFC_CORE_LIB OFC_VOID ofc_app_init(OFC_VOID);
-  OFC_CORE_LIB OFC_VOID ofc_app_uninit(OFC_VOID);
 /**
  * Create an application
  *

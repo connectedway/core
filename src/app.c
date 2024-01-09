@@ -12,7 +12,6 @@
 #include "ofc/sched.h"
 #include "ofc/app.h"
 #include "ofc/event.h"
-#include "ofc/lock.h"
 
 #include "ofc/heap.h"
 
@@ -26,20 +25,6 @@ typedef struct _OFC_APP {
     OFC_VOID *app_data;
     OFC_HANDLE hNotify;
 } OFC_APP;
-
-
-OFC_LOCK app_lock = OFC_NULL;
-
-OFC_CORE_LIB OFC_VOID ofc_app_init(OFC_VOID)
-{
-  app_lock = ofc_lock_init();
-}
-
-OFC_CORE_LIB OFC_VOID ofc_app_uninit(OFC_VOID)
-{
-  ofc_lock_destroy(app_lock);
-  app_lock = OFC_NULL;
-}
 
 /*
  * STATE_create - Create an application
@@ -75,13 +60,11 @@ ofc_app_create(OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
     /*
      * Application was initialized, add to scheduler
      */
+    ofc_sched_add(scheduler, hApp);
 #if defined(OFC_PRESELECT_PASS)
     ofc_app_event_sig(hApp) ;
-    ofc_sched_add(scheduler, hApp);
 #else
-    ofc_app_preselect(hApp);
-    ofc_sched_add(scheduler, hApp);
-    ofc_sched_wake(app->scheduler);
+    ofc_sched_wake(scheduler);
 #endif
     /*
      * Return the application pointer
@@ -163,8 +146,6 @@ OFC_CORE_LIB OFC_VOID
 ofc_app_preselect(OFC_HANDLE hApp) {
     OFC_APP *app;
 
-    app_lock = ofc_lock_init();
-    ofc_lock(app_lock);
     app = ofc_handle_lock(hApp);
     if (app != OFC_NULL) {
         if (!app->destroy) {
@@ -172,7 +153,6 @@ ofc_app_preselect(OFC_HANDLE hApp) {
         }
         ofc_handle_unlock(hApp);
     }
-    ofc_unlock(app_lock);
 }
 
 /*
