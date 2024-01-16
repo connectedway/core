@@ -28,6 +28,7 @@
 #include "ofc/socket.h"
 #include "ofc/message.h"
 #include "ofc/time.h"
+#include "ofc/persist.h"
 
 #include "ofc/heap.h"
 
@@ -1675,18 +1676,25 @@ ofc_log(OFC_LOG_LEVEL level, OFC_CCHAR *fmt, ...)
 
   va_list ap;
 
-  va_start(ap, fmt);
-  len = ofc_vsnprintf(OFC_NULL, 0, fmt, ap);
-  va_end(ap);
+  if (level <= ofc_persist_log_level())
+    {
+      va_start(ap, fmt);
+      len = ofc_vsnprintf(OFC_NULL, 0, fmt, ap);
+      va_end(ap);
 
-  obuf = ofc_malloc(len + 1);
-  va_start(ap, fmt);
-  ofc_vsnprintf(obuf, len + 1, fmt, ap);
-  va_end(ap);
+      obuf = ofc_malloc(len + 1);
+      va_start(ap, fmt);
+      ofc_vsnprintf(obuf, len + 1, fmt, ap);
+      va_end(ap);
 
-  ofc_write_log(level, obuf, len);
+      ofc_write_log(level, obuf, len);
 
-  ofc_free(obuf);
+
+      if (ofc_persist_log_console())
+        ofc_write_stdout(obuf, len);
+
+      ofc_free(obuf);
+    }
 }
 
 OFC_CORE_LIB OFC_VOID

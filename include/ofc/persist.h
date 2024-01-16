@@ -435,6 +435,12 @@ ofc_persist_update(OFC_VOID);
  */
 OFC_CORE_LIB OFC_VOID
 ofc_persist_unload(OFC_VOID);
+
+OFC_CORE_LIB OFC_UINT
+ofc_persist_log_level(OFC_VOID);
+
+OFC_CORE_LIB OFC_BOOL
+ofc_persist_log_console(OFC_VOID);
 /**
  * Register a DOM config section
  *

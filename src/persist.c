@@ -75,6 +75,8 @@ typedef struct {
 
 typedef struct {
     OFC_LOCK *config_lock;
+    OFC_BOOL log_console;
+    OFC_UINT log_level;
     OFC_TCHAR *workstation_name;
     OFC_TCHAR *workstation_domain;
     OFC_TCHAR *workstation_desc;
@@ -130,6 +132,7 @@ ofc_persist_make_dom(OFC_VOID) {
     OFC_DOMNode *drives_node;
     OFC_DOMNode *wins_node;
     OFC_DOMNode *map_node;
+    OFC_DOMNode *log_node;
     OFC_BOOL error_state;
     OFC_CHAR *cstr;
     OFC_CONFIG_ICONFIG *interface_config;
@@ -166,6 +169,45 @@ ofc_persist_make_dom(OFC_VOID) {
             } else
                 error_state = OFC_TRUE;
         }
+
+        if (!error_state)
+          {
+            log_node = ofc_dom_create_element(doc, "logging");
+            if (log_node != OFC_NULL)
+              {
+                ofc_dom_append_child(config_node, log_node);
+              }
+            else
+              error_state = OFC_TRUE;
+          }
+
+        if (!error_state)
+          {
+            node =
+              ofc_dom_create_element_cdata(doc, "console", 
+                                           ofc_persist->log_console ==
+                                           OFC_TRUE ? "yes" : "no");
+            if (node != OFC_NULL)
+              {
+                ofc_dom_append_child(log_node, node);
+              }
+            else
+              error_state = OFC_TRUE;
+          }
+
+        if (!error_state)
+          {
+            OFC_CHAR *level = ofc_saprintf("%d", ofc_persist->log_level);
+            node =
+              ofc_dom_create_element_cdata(doc, "level", level);
+            if (node != OFC_NULL)
+              {
+                ofc_dom_append_child(log_node, node);
+              }
+            else
+              error_state = OFC_TRUE;
+            ofc_free(level);
+          }
 
         if (!error_state) {
             cstr =
@@ -491,6 +533,7 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
     OFC_DOMNode *drives_node;
     OFC_DOMNodelist *drives_nodelist;
     OFC_DOMNode *map_node;
+    OFC_DOMNode *log_node;
     OFC_DOMNodelist *interface_nodelist;
     OFC_CHAR *version;
     OFC_CHAR *value;
@@ -525,6 +568,24 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
                     error_state = OFC_TRUE;
             } else
                 error_state = OFC_TRUE;
+        }
+
+        if (!error_state) {
+          log_node = ofc_dom_get_element(config_dom, "logging");
+          if (log_node != OFC_NULL)
+            {
+              OFC_ULONG level;
+              value = ofc_dom_get_element_cdata(log_node, "console");
+              if (value != OFC_NULL)
+                {
+                  if (ofc_strcmp(value, "yes") == 0)
+                    ofc_persist->log_console = OFC_TRUE;
+                  else
+                    ofc_persist->log_console = OFC_FALSE;
+                }
+              level = ofc_dom_get_element_cdata_ulong(log_node, "level");
+              ofc_persist->log_level = (OFC_UINT) level;
+            }
         }
 
         if (!error_state) {
@@ -1106,6 +1167,8 @@ ofc_persist_init(OFC_VOID) {
 
             ofc_persist->update_count = 0;
             ofc_persist->config_lock = ofc_lock_init();
+            ofc_persist->log_level = OFC_LOG_DEFAULT;
+            ofc_persist->log_console = OFC_LOG_CONSOLE;
             ofc_persist->loaded = OFC_FALSE;
             ofc_persist->workstation_name = OFC_NULL;
             ofc_persist->workstation_domain = OFC_NULL;
@@ -1632,6 +1695,38 @@ ofc_persist_set_node_name(OFC_LPCTSTR name,
     }
 }
 
+OFC_CORE_LIB OFC_UINT
+ofc_persist_log_level(OFC_VOID)
+{
+    OFC_CONFIG *ofc_persist;
+    OFC_UINT level;
+
+    level = OFC_LOG_DEFAULT;
+    
+    ofc_persist = ofc_get_config();
+    if (ofc_persist != OFC_NULL)
+      {
+        level = ofc_persist->log_level;
+      }
+    return (level);
+}
+  
+OFC_CORE_LIB OFC_BOOL
+ofc_persist_log_console(OFC_VOID)
+{
+    OFC_CONFIG *ofc_persist;
+    OFC_BOOL console;
+
+    console = OFC_LOG_CONSOLE;
+    
+    ofc_persist = ofc_get_config();
+    if (ofc_persist != OFC_NULL)
+      {
+        console = ofc_persist->log_console;
+      }
+    return (console);
+}
+  
 OFC_CORE_LIB OFC_VOID
 ofc_persist_uuid(OFC_UUID *uuid) {
     OFC_CONFIG *ofc_persist;

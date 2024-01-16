@@ -553,10 +553,10 @@ enum {
 
 typedef enum
   {
-   OFC_LOG_DEBUG,
-   OFC_LOG_INFO,
-   OFC_LOG_WARN,
-   OFC_LOG_FATAL
+    OFC_LOG_FATAL = 0,
+    OFC_LOG_WARN = 1,
+    OFC_LOG_INFO = 2,
+    OFC_LOG_DEBUG = 3,
   } OFC_LOG_LEVEL;
 
 /**
