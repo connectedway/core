@@ -27,6 +27,9 @@
 #define DBG_EXIT()
 #endif
 
+#define hextoa(a) ((a) >= 10 ? 'A' + ((a) - 10) : '0' + (a))
+#define atohex(a) ((a) >= '0' && (a) <= '9' ? ((a) - '0') : \
+    (a) >= 'a' && (a) <= 'f' ? ((a) - 'a' + 10) : ((a) - 'A' + 10))
 /**
  * Determine if a character is a whitespace
  *

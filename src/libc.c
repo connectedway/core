@@ -1861,9 +1861,6 @@ OFC_CORE_LIB OFC_VOID ofc_dump_trace(OFC_VOID)
 #endif
 
 /* xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx */
-#define hextoa(a) ((a) >= 10 ? 'A' + ((a) - 10) : '0' + (a))
-#define atohex(a) ((a) >= '0' && (a) <= '9' ? ((a) - '0') : \
-    (a) >= 'a' && (a) <= 'f' ? ((a) - 'a' + 10) : ((a) - 'A' + 10))
 
 OFC_VOID
 ofc_uuidtoa(OFC_UUID uuid, OFC_CHAR *out) {
