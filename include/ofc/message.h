@@ -109,71 +109,70 @@ typedef struct _OFC_MESSAGE
    */
   OFC_UINT16 port;
   OFC_IOMAP map;
-    /**
-     * Current Pointer into Message
-     */
-    OFC_INT offset;
-    /**
-     * Current Size of Message
-     */
-    OFC_SIZET send_size;
-    /**
-     * Number of bytes still to be sent
-     */
-    OFC_SIZET count;
-    /**
-     * FIFO 1 Pointer.  FIFOs are useful for certain protocols that place
-     * data sequentially at a particular offset in the message.
-     */
-    OFC_INT FIFO1;
-    /**
-     * The amount of space left in the fifo
-     */
-    OFC_SIZET FIFO1rem;
-    /**
-     * FIFO base
-     */
-    OFC_INT FIFO1base;
-    /**
-     * FIFO size
-     */
-    OFC_INT FIFO1size;
-    /**
-     * Parameter offset
-     */
-    OFC_INT param_offset;
-    /**
-     * Parameter Length
-     */
-    OFC_SIZET param_len;
-    /**
-     * Message Base
-     */
-    OFC_INT base;
+  /**
+   * Current Pointer into Message
+   */
+  OFC_INT offset;
+  /**
+   * Current Size of Message
+   */
+  OFC_SIZET send_size;
+  /**
+   * Number of bytes still to be sent
+   */
+  OFC_SIZET count;
+  /**
+   * FIFO 1 Pointer.  FIFOs are useful for certain protocols that place
+   * data sequentially at a particular offset in the message.
+   */
+  OFC_INT FIFO1;
+  /**
+   * The amount of space left in the fifo
+   */
+  OFC_SIZET FIFO1rem;
+  /**
+   * FIFO base
+   */
+  OFC_INT FIFO1base;
+  /**
+   * FIFO size
+   */
+  OFC_INT FIFO1size;
+  /**
+   * Parameter offset
+   */
+  OFC_INT param_offset;
+  /**
+   * Parameter Length
+   */
+  OFC_SIZET param_len;
+  /**
+   * Message Base
+   */
+  OFC_INT base;
 #if defined(OFC_MESSAGE_DEBUG)
-    /**
-     * link to next message on debug lists
-     */
-    struct _OFC_MESSAGE * dbgnext ;
-    /**
-     * link to previous message on debug liests
-     */
-    struct _OFC_MESSAGE * dbgprev ;
-    /**
-     * Pointer to return address of caller that allocated message
-     */
+  /**
+   * link to next message on debug lists
+   */
+  struct _OFC_MESSAGE * dbgnext ;
+  /**
+   * link to previous message on debug liests
+   */
+  struct _OFC_MESSAGE * dbgprev ;
+  /**
+   * Pointer to return address of caller that allocated message
+   */
 #if defined(__GNUC__)
-    OFC_VOID *caller1 ;
-    OFC_VOID *caller2 ;
-    OFC_VOID *caller3 ;
-    OFC_VOID *caller4 ;
+  OFC_VOID *caller1 ;
+  OFC_VOID *caller2 ;
+  OFC_VOID *caller3 ;
+  OFC_VOID *caller4 ;
 #else
-    OFC_VOID *caller ;
+  OFC_VOID *caller ;
 #endif
 #endif
-    OFC_VOID *context;
-    OFC_BOOL destroy_after_send;
-
+  OFC_VOID *context;
+  OFC_BOOL destroy_after_send;
 } OFC_MESSAGE;
 
 #if defined(__cplusplus)
@@ -1344,6 +1343,7 @@ OFC_VOID ofc_message_get_map(OFC_MESSAGE *msg,
                              OFC_IOVEC **iovec,
                              OFC_INT *veclen);
 OFC_CHAR *message_map(OFC_MESSAGE *msg, OFC_INT offset, OFC_SIZET len);
+
 #if defined(__cplusplus)
 }
 #endif
