@@ -386,8 +386,14 @@ static OFC_TCHAR *MakeFilename(OFC_CTCHAR *device, OFC_CTCHAR *name)
  * (sequential) algorithm
  */
 
-/* 4 MB */
+/*
+ * Test File Size.  Keep small for AWS.  We pay for it
+ */
+#if 1
+#define CREATE_SIZE (64*1024)
+#else
 #define CREATE_SIZE (64*1024*1024)
+#endif
 
 static OFC_BOOL OfcCreateFileTest(OFC_CTCHAR *device)
 {
