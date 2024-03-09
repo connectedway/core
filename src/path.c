@@ -1908,7 +1908,7 @@ OFC_CORE_LIB OFC_VOID destroy_workgroups(OFC_VOID) {
     for (pWorkgroup = ofc_queue_first(hWorkgroups);
          pWorkgroup != OFC_NULL;
          pWorkgroup = ofc_queue_first(hWorkgroups))
-        remove_workgroup(pWorkgroup);
+      remove_workgroup(pWorkgroup);
 
     ofc_queue_destroy(hWorkgroups);
 
