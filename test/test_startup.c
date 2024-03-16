@@ -68,10 +68,10 @@ static OFC_INT test_startup_default(OFC_VOID) {
 }
 
 OFC_INT test_startup(OFC_VOID) {
-    OFC_INT ret;
-    ret = 0;
-
-#if !defined(INIT_ON_LOAD)
+    OFC_INT ret = 0;
+#if defined(INIT_ON_LOAD)
+  volatile OFC_VOID *init = ofc_framework_init;
+#else
     ofc_framework_init();
 #if defined(OFC_PERSIST)
     ret = test_startup_persist();
