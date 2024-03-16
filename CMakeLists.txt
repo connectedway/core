@@ -9,6 +9,7 @@ include_directories(
 
 set(SRCS
         src/app.c
+        src/backtrace.c
         src/console.c
         src/core.c
 	src/dce.c

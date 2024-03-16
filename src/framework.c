@@ -87,13 +87,13 @@ ofc_framework_shutdown(OFC_VOID) {
 #endif
 }
 
-OFC_LOAD OFC_VOID ofc_load(OFC_VOID)
+OFC_LOAD_CORE OFC_VOID ofc_load(OFC_VOID)
 {
   ofc_framework_init();
   ofc_framework_load(OFC_NULL);
 }  
   
-OFC_UNLOAD OFC_VOID ofc_unload(OFC_VOID)
+OFC_UNLOAD_CORE OFC_VOID ofc_unload(OFC_VOID)
 {
   ofc_framework_shutdown();
   ofc_framework_destroy();

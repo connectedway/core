@@ -15,7 +15,9 @@
 #include "test_file.h"
 
 static OFC_INT test_startup(OFC_VOID) {
-#if !defined(INIT_ON_LOAD)
+#if defined(INIT_ON_LOAD)
+  volatile OFC_VOID *init = ofc_framework_init;
+#else
     ofc_framework_init();
 #endif
     return (0);

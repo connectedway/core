@@ -62,7 +62,7 @@ ofc_app_create(OFC_HANDLE scheduler, OFC_APP_TEMPLATE *templatep,
      */
     ofc_sched_add(scheduler, hApp);
 #if defined(OFC_PRESELECT_PASS)
-    ofc_app_event_sig(hApp) ;
+    ofc_app_sig_event(hApp);
 #else
     ofc_sched_wake(scheduler);
 #endif

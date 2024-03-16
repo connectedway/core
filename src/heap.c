@@ -14,7 +14,7 @@
 #include "ofc/thread.h"
 #include "ofc/process.h"
 #include "ofc/heap.h"
-
+#include "ofc/backtrace.h"
 #include "ofc/impl/heapimpl.h"
 
 struct heap_chunk {
@@ -85,14 +85,20 @@ ofc_heap_unload(OFC_VOID) {
     ofc_heap_stats.lock = OFC_NULL;
     ofc_lock_destroy(save);
     ofc_heap_unload_impl();
+#if !defined(OF_SMB_SERVER)
+    /* The server doesn't shutdown */
     ofc_heap_dump();
+    ofc_heap_unmap_impl();
+#endif
 }
 
 #if defined(OFC_HEAP_DEBUG)
 
 static OFC_VOID
-ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk,
-                     OFC_VOID *ret) {
+ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk)
+{
+    void *trace[8];
+
     ofc_lock(ofc_heap_stats.lock);
     chunk->dbgnext = ofc_heap_stats.Allocated;
     if (ofc_heap_stats.Allocated != OFC_NULL)
@@ -100,21 +106,13 @@ ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk,
     ofc_heap_stats.Allocated = chunk;
     chunk->dbgprev = 0;
 
-#if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
-#if defined(__cyg_profile)
-    chunk->caller1 = __cyg_profile_return_address(1) ;
-    chunk->caller2 = __cyg_profile_return_address(2) ;
-    chunk->caller3 = __cyg_profile_return_address(3) ;
-    chunk->caller4 = __cyg_profile_return_address(4) ;
-#else
-    chunk->caller1 = __builtin_return_address(1);
-    chunk->caller2 = __builtin_return_address(2);
-    chunk->caller3 = __builtin_return_address(3);
-    chunk->caller4 = __builtin_return_address(4);
-#endif
-#else
-    chunk->caller = ret ;
-#endif
+    ofc_backtrace(trace, 8);
+
+    chunk->caller1 = trace[4];
+    chunk->caller2 = trace[5];
+    chunk->caller3 = trace[6];
+    chunk->caller4 = trace[7];
+
     chunk->snap = OFC_FALSE;
 
     ofc_unlock(ofc_heap_stats.lock);
@@ -126,29 +124,42 @@ ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk,
 
 static OFC_VOID
 ofc_heap_debug_free(struct heap_chunk *chunk) {
+    void *trace[8];
     /*
      * Pull off the allocation queue
      */
     ofc_lock(ofc_heap_stats.lock);
+    /*
+     * If there is a previous to our chunk, tell it that it's next
+     * is our next.
+     * If there is no previous to our chunk, it means that we were
+     * the head of the list.  This implies that the Allocated pointer
+     * will have been us.  Set the allocated pointer to the next guy.
+     */
     if (chunk->dbgprev != OFC_NULL)
         chunk->dbgprev->dbgnext = chunk->dbgnext;
     else
+      {
+        ofc_assert (ofc_heap_stats.Allocated == chunk, "Head should be us");
         ofc_heap_stats.Allocated = chunk->dbgnext;
+      }
+
+    /* 
+     * if there is a next to us, we want the next's previous to
+     * be our previous.
+     * if there isn't a next to us, it means we are the end of the list.
+     * The previous to the head
+     */
     if (chunk->dbgnext != OFC_NULL)
         chunk->dbgnext->dbgprev = chunk->dbgprev;
-#if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
-#if defined(__cyg_profile)
-    chunk->caller1 = __cyg_profile_return_address(1) ;
-    chunk->caller2 = __cyg_profile_return_address(2) ;
-    chunk->caller3 = __cyg_profile_return_address(3) ;
-    chunk->caller4 = __cyg_profile_return_address(4) ;
-#else
-    chunk->caller1 = __builtin_return_address(1);
-    chunk->caller2 = __builtin_return_address(2);
-    chunk->caller3 = __builtin_return_address(3);
-    chunk->caller4 = __builtin_return_address(4);
-#endif
-#endif
+
+    ofc_backtrace(trace, 8);
+
+    chunk->caller1 = trace[4];
+    chunk->caller2 = trace[5];
+    chunk->caller3 = trace[6];
+    chunk->caller4 = trace[7];
+
     ofc_unlock(ofc_heap_stats.lock);
 }
 
@@ -297,7 +308,7 @@ ofc_malloc(OFC_SIZET size) {
     if (chunk != OFC_NULL) {
         ofc_heap_malloc_acct(size, chunk);
 #if defined(OFC_HEAP_DEBUG)
-        ofc_heap_debug_alloc(size, chunk, RETURN_ADDRESS());
+        ofc_heap_debug_alloc(size, chunk);
 #endif
         mem = (OFC_LPVOID) (++chunk);
     } else {
@@ -349,7 +360,7 @@ ofc_realloc(OFC_LPVOID ptr, OFC_SIZET size) {
 
         if (newchunk != OFC_NULL) {
 #if defined(OFC_HEAP_DEBUG)
-            ofc_heap_debug_alloc(size, newchunk, RETURN_ADDRESS());
+          ofc_heap_debug_alloc(size, newchunk);
 #endif
             ofc_heap_malloc_acct(size, newchunk);
             chunk = newchunk;

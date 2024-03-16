@@ -104,6 +104,13 @@ OFC_VOID ofc_heap_init_impl(OFC_VOID);
 OFC_VOID ofc_heap_unload_impl(OFC_VOID);
 
 /**
+ * Unmap the heap implementation
+ * This should be called by the heap manager after calling unload and
+ * after checking for any left over crumps
+ */
+OFC_VOID ofc_heap_unmap_impl(OFC_VOID);
+
+/**
  * Deallocate a chunk of memory
  *
  * This may be mapped to a free on many platforms.
