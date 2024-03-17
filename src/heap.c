@@ -79,14 +79,13 @@ ofc_heap_load(OFC_VOID) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_heap_unload(OFC_VOID) {
+#if !defined(OF_SMB_SERVER) && !defined(OF_SMB_CLIENT)
+    /* The client or server doesn't shutdown */
     OFC_LOCK save;
-
     save = ofc_heap_stats.lock;
     ofc_heap_stats.lock = OFC_NULL;
     ofc_lock_destroy(save);
     ofc_heap_unload_impl();
-#if !defined(OF_SMB_SERVER) && !defined(OF_SMB_CLIENT)
-    /* The server doesn't shutdown */
     ofc_heap_dump();
     ofc_heap_unmap_impl();
 #endif

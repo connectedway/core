@@ -1689,7 +1689,6 @@ ofc_log(OFC_LOG_LEVEL level, OFC_CCHAR *fmt, ...)
 
       ofc_write_log(level, obuf, len);
 
-
       if (ofc_persist_log_console())
         ofc_write_stdout(obuf, len);
 
