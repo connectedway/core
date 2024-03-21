@@ -47,11 +47,6 @@ if(OFC_NETMON)
     list(APPEND SRCS src/netmon.c)
 endif()
 
-if (OF_RESOLVER_FS)
-    message("Adding FS Resolver")
-    list(APPEND fs_library_list of_resolver_fs)
-endif ()
-
 if (OFC_FS_PIPE)
     message("Adding FS Pipe")
     list(APPEND fs_library_list of_core_fs_pipe)

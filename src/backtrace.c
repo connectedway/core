@@ -8,7 +8,7 @@
 #include "ofc/types.h"
 #include "ofc/impl/backtraceimpl.h"
 
-OFC_VOID ofc_backtrace(OFC_VOID **trace, OFC_SIZET len)
+OFC_VOID ofc_backtrace(OFC_VOID ***trace, OFC_SIZET len)
 {
   ofc_backtrace_impl(trace, len);
 }

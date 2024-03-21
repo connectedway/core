@@ -6,13 +6,74 @@
 
 #define __OFC_CORE_DLL__
 
+#include "ofc/config.h"
 #include "ofc/core.h"
 #include "ofc/types.h"
 #include "ofc/config.h"
 #include "ofc/fs.h"
+#include "ofc/process.h"
 #include "ofc/thread.h"
 
+#if defined(OF_RESOLVER_FS)
+#include <dlfcn.h>
+#endif
+
 static OFC_FILE_FSINFO *ofc_fs_table[OFC_FST_NUM];
+
+#if defined(OF_RESOLVER_FS)
+typedef OFC_VOID (*fs_resolver_fs_startup_func)(OFC_VOID);
+/*
+ * Resolver requires JNI.  It is a reverse JNI module
+ * that lets us call back into the Java App.
+ * The problem is, we build the android waitset into
+ * the core.  It is not linked with the JNI layer.
+ * So, even though we would hope we can do dynamic linking
+ * the build will fail if we call the resolver here.  So,
+ * let's see if we can do our own dynamic binding
+ */
+static OFC_VOID fs_resolver_fs_startup(OFC_VOID)
+{
+  static fs_resolver_fs_startup_func fs_startup = OFC_NULL;
+
+  if (fs_startup == OFC_NULL)
+    {
+      /*
+       * Bind to the function
+       */
+      fs_startup = 
+        (fs_resolver_fs_startup_func) dlsym(RTLD_DEFAULT,
+                                   "of_resolver_fs_startup");
+      if (fs_startup == OFC_NULL)
+        {
+          ofc_process_crash(dlerror());
+        }
+    }
+
+  fs_startup();
+}
+
+typedef OFC_VOID (*fs_resolver_fs_shutdown_func)(OFC_VOID);
+static OFC_VOID fs_resolver_fs_shutdown(OFC_VOID)
+{
+  static fs_resolver_fs_shutdown_func fs_shutdown = OFC_NULL;
+
+  if (fs_shutdown == OFC_NULL)
+    {
+      /*
+       * Bind to the function
+       */
+      fs_shutdown = 
+        (fs_resolver_fs_shutdown_func) dlsym(RTLD_DEFAULT,
+                                             "of_resolver_fs_shutdown");
+      if (fs_shutdown == OFC_NULL)
+        {
+          ofc_process_crash(dlerror());
+        }
+    }
+
+  fs_shutdown();
+}
+#endif
 
 static OFC_HANDLE ofc_fs_unknown_handle_inv(OFC_VOID)
 {
@@ -168,8 +229,6 @@ OFC_VOID OfcFSPipeStartup(OFC_VOID);
 
 OFC_VOID OfcFSBookmarksStartup(OFC_VOID);
 
-OFC_VOID of_resolver_fs_startup(OFC_VOID);
-
 OFC_VOID OfcFSAndroidStartup(OFC_VOID);
 
 OFC_VOID OfcFSWinCEShutdown(OFC_VOID);
@@ -185,8 +244,6 @@ OFC_VOID OfcFSFileXShutdown(OFC_VOID);
 OFC_VOID OfcFSAndroidShutdown(OFC_VOID);
 
 OFC_VOID OfcFSNUFileShutdown(OFC_VOID);
-
-OFC_VOID of_resolver_fs_shutdown(OFC_VOID);
 
 OFC_VOID OfcFSBookmarksShutdown(OFC_VOID);
 
@@ -233,7 +290,7 @@ ofc_fs_init(OFC_VOID)
     OfcFSBookmarksStartup();
 #endif
 #if defined(OF_RESOLVER_FS)
-    of_resolver_fs_startup();
+    fs_resolver_fs_startup();
 #endif
 #if defined(OFC_LANMAN)
     OfcFSMailslotStartup () ;
@@ -275,7 +332,7 @@ ofc_fs_destroy(OFC_VOID) {
     ofc_fs_register (OFC_FST_NUFILE, &ofc_fs_unknown);
 #endif
 #if defined(OF_RESOLVER_FS)
-    of_resolver_fs_shutdown();
+    fs_resolver_fs_shutdown();
 #endif
 #if defined(OFC_FS_BROWSER)
     ofc_fs_register (OFC_FST_BROWSE_WORKGROUPS, &ofc_fs_unknown);
