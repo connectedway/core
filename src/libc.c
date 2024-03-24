@@ -335,7 +335,7 @@ OFC_TCHAR *ofc_tstrnupr(OFC_TCHAR *src, OFC_SIZET len) {
         psrc = src;
 
         while (*psrc != '\0' && len > 0) {
-            *psrc = OFC_TOUPPER(*psrc);
+            *psrc = OFC_TTOUPPER(*psrc);
             psrc++;
             len--;
         }

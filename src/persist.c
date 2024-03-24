@@ -1241,6 +1241,7 @@ ofc_persistResetInterfaceConfig(OFC_VOID) {
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (ofc_persist->interface_config != OFC_NULL) {
             interface_config = ofc_persist->interface_config;
             for (i = 0; i < ofc_persist->interface_count; i++) {
@@ -1255,6 +1256,7 @@ ofc_persistResetInterfaceConfig(OFC_VOID) {
         }
         ofc_persist->interface_count = 0;
         ofc_persist->interface_config = OFC_NULL;
+        ofc_persist_unlock();
     }
 }
 
@@ -1340,10 +1342,12 @@ ofc_persist_wins_count(OFC_INT index) {
     ret = 0;
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (index < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
             ret = interface_config[index].num_wins;
         }
+        ofc_persist_unlock();
     }
     return (ret);
 }
@@ -1359,6 +1363,7 @@ ofc_persist_wins_addr(OFC_INT xface, OFC_INT index, OFC_IPADDR *addr) {
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (xface < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
 
@@ -1367,6 +1372,7 @@ ofc_persist_wins_addr(OFC_INT xface, OFC_INT index, OFC_IPADDR *addr) {
                 ofc_memcpy(addr, &iparray[index], sizeof(OFC_IPADDR));
             }
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1380,6 +1386,7 @@ ofc_persist_set_interface_count(OFC_INT count) {
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         interface_config = ofc_persist->interface_config;
 
         old_count = ofc_persist->interface_count;
@@ -1405,6 +1412,7 @@ ofc_persist_set_interface_count(OFC_INT count) {
             interface_config[i].winslist = OFC_NULL;
             interface_config[i].num_wins = 0;
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1417,6 +1425,7 @@ ofc_persist_remove_interface_config(OFC_IPADDR *ip) {
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         interface_config = ofc_persist->interface_config;
 
         for (idx = 0; idx < ofc_persist->interface_count &&
@@ -1457,6 +1466,7 @@ ofc_persist_remove_interface_config(OFC_IPADDR *ip) {
                                 ofc_persist->interface_count);
             ofc_persist->interface_config = interface_config;
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1477,6 +1487,7 @@ ofc_persist_set_interface_config(OFC_INT i,
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (i < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
 
@@ -1509,6 +1520,7 @@ ofc_persist_set_interface_config(OFC_INT i,
                 interface_config[i].master = cstr;
             }
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1519,10 +1531,12 @@ ofc_persist_set_private(OFC_INT index, OFC_VOID *private) {
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (index < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
             interface_config[index].private = private;
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1534,10 +1548,12 @@ ofc_persist_private(OFC_INT index, OFC_VOID **private) {
     *private = OFC_NULL;
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (index < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
             *private = interface_config[index].private;
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1549,6 +1565,7 @@ ofc_persist_set_local_master(OFC_INT index, OFC_LPCSTR local_master) {
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (index < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
 
@@ -1560,6 +1577,7 @@ ofc_persist_set_local_master(OFC_INT index, OFC_LPCSTR local_master) {
                 interface_config[index].master = cstr;
             }
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1584,10 +1602,12 @@ ofc_persist_local_master(OFC_INT index, OFC_LPCSTR *local_master) {
     *local_master = OFC_NULL;
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (index < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
             *local_master = interface_config[index].master;
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1602,6 +1622,7 @@ ofc_persist_interface_addr(OFC_INT index, OFC_IPADDR *addr,
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (index < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
 
@@ -1615,6 +1636,7 @@ ofc_persist_interface_addr(OFC_INT index, OFC_IPADDR *addr,
                 ofc_memcpy(pmask, &interface_config[index].mask,
                            sizeof(OFC_IPADDR));
         }
+        ofc_persist_unlock();
     }
 }
 
@@ -1631,6 +1653,7 @@ ofc_persist_interface_mode(OFC_INT index, OFC_INT *num_wins,
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        ofc_persist_lock();
         if (index < ofc_persist->interface_count) {
             interface_config = ofc_persist->interface_config;
             mode = interface_config[index].netbios_mode;
@@ -1649,6 +1672,7 @@ ofc_persist_interface_mode(OFC_INT index, OFC_INT *num_wins,
                 }
             }
         }
+        ofc_persist_unlock();
     }
 
     return (mode);

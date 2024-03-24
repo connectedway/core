@@ -960,7 +960,7 @@ ofc_path_add_mapW(OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
                 map->type = fsType;
                 free->lpDevice = ofc_tstrdup(lpDevice);
                 for (lc = free->lpDevice; *lc != TCHAR_EOS; lc++)
-                    *lc = OFC_TOLOWER(*lc);
+                    *lc = OFC_TTOLOWER(*lc);
                 free->lpDesc = ofc_tstrdup(lpDesc);
                 free->map = map;
                 free->thumbnail = thumbnail;
@@ -1073,7 +1073,7 @@ ofc_path_map_deviceW(OFC_LPCTSTR lpDevice) {
         tstrDevice[len] = TCHAR_EOS;
 
         for (lc = tstrDevice; *lc != TCHAR_EOS; lc++)
-            *lc = OFC_TOLOWER(*lc);
+            *lc = OFC_TTOLOWER(*lc);
 
         pathEntry = OFC_NULL;
 
