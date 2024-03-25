@@ -107,7 +107,13 @@ OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)
 #if !defined(__ANDROID__) && (defined(__linux__) || defined(__APPLE__))
   if (filename == OFC_NULL)
     {
-      filename = TSTR("/etc/openfiles.xml");
+      OFC_TCHAR env_filename[OFC_MAX_PATH];
+      if (ofc_env_get(OFC_ENV_HOME, env_filename, OFC_MAX_PATH) == OFC_TRUE)
+        {
+          filename = env_filename;
+        }
+      else
+        filename = TSTR("/etc/openfiles.xml");
     }
 #endif
 
