@@ -2822,22 +2822,6 @@ static OFC_BOOL OfcGetDiskFreeSpaceTest(OFC_CTCHAR *device)
                  filename,
 		 ofc_get_error_string(OfcGetLastError()),
 		 OfcGetLastError());
-      /*
-       * Disk Free Space and Volume Information only works on Shares.
-       * (ie. there is no file name).  No, reverse connections are tricky.
-       * The way we build names for a reverse connection uses the server
-       * as the gateway and the share as the server.  It's not until the
-       * first directory that we actually specify the share.  Unfortunately,
-       * the SMB protocol only accepts the share id in the request.  That
-       * would imply the server.  So getting free space or volume info on
-       * a server just doesn't make sense.  In order to support this through
-       * a proxy, there needs to be a one to one correspondence between
-       * client share, proxy share, and server share.  This makes proxying
-       * pretty useless since we could not proxy multiple servers through the
-       * same proxy.  I think this is the only limitation.
-       */
-      ofc_printf("Not supported on reverse connections, "
-                 "see code comment\n");
       ret = OFC_TRUE;
     }
   else
