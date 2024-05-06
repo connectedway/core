@@ -6,13 +6,13 @@
 #if !defined(__OFC_PATH_H__)
 #define __OFC_PATH_H__
 
-#define AUTHENTICATE
-
 #include "ofc/core.h"
 #include "ofc/types.h"
+#include "ofc/config.h"
 #include "ofc/file.h"
 
 /**
+ * \{
  * \defgroup path Open Files Path Handling Facility
  *
  * The Open Files Path facility provides parsing of local and network paths as 
@@ -39,14 +39,10 @@
 \\[username[:password[:domain]]@]server[:port]\share\path\file 
 \endverbatim
  * 
- * To specify credentials, modify the server portion as follows:
- *
- * username:password:domain@server
- *
  * The SMB URL format is:
  *
 \verbatim
-smb://[username[:passowrd[:domain]]@]/server/share/path/file
+smb://[username[:password[:domain]]@]/server/share/path/file
 \endverbatim
  *
  * The IPC device allows file I/O through the Open Files Pipe file handlers.
@@ -80,9 +76,42 @@ SHARES:\\server
 \endverbatim
  *
  * where server is the server to browse for shares on.
+ * 
+ * Typical use cases of the Open Files Stack will not need to 
+ * manipulate paths.  In the event that path manipulation is required,
+ * the following APIs are available
+ *
+ * Function | Decription
+ * ---------|-----------
+ * \ref ofc_path_init | Initialize Path Subsystem
+ * \ref ofc_path_destroy | Destroy Path Subsystem
+ * \ref ofc_path_add_mapW | Add a Map to the system (wide)
+ * \ref ofc_path_add_map | Add a Map to the system (normal)
+ * \ref ofc_path_add_map | Add a Map to the system (default)
+ * \ref ofc_path_createW | Create a path (wide)
+ * \ref ofc_path_createA | Create a path (normal)
+ * \ref ofc_path_create | Create a path (default)
+ * \ref ofc_path_init_path | Create an empty path
+ * \ref ofc_path_update | Map a path through another path
+ * \ref ofc_path_printW | convert a path to a string (wide)
+ * \ref ofc_path_printA | convert a path to a string (normal)
+ * \ref ofc_path_print | convert a path to a string (default)
+ * \ref ofc_path_print_alloc | Convert path to wide string and allocate
+ * \ref ofc_path_make_urlW | Create a path from components (wide)
+ * \ref ofc_path_make_urlA | Create a path from components (normal)
+ * \ref ofc_path_make_url | Create a path from components (default)
+ * \ref ofc_path_delete | Delete a path
+ * \ref ofc_path_mapW | Map a local path to a target path (wide)
+ * \ref ofc_path_mapA | Map a local path to a target path (normal)
+ * \ref ofc_path_map | Map a local path to a target path (default)
+ * \ref ofc_path_delete_mapW | Delete a map (wide)
+ * \ref ofc_path_delete_mapA | Delete a map (normal)
+ * \ref ofc_path_delete_map | Delete a map (default)
+ * \ref ofc_path_map_deviceW | Return Map for a device (wide)
+ * \ref ofc_path_map_deviceA | Return Map for a device (normal)
+ * \ref ofc_path_map_device | Return Map for a device (default)
+ * \ref ofc_path_is_wild | Is the path a wildcard path
  */
-
-/** \{ */
 
 /**
  * The Internal Represenation of a Path
@@ -104,7 +133,11 @@ extern "C"
  */
 OFC_CORE_LIB OFC_VOID
 ofc_path_init(OFC_VOID);
-
+/**
+ * Destroy the Open Files Path Mapping
+ *
+ * This should only be called by framework_init
+ */
 OFC_CORE_LIB OFC_VOID
 ofc_path_destroy(OFC_VOID);
 /**
@@ -113,11 +146,17 @@ ofc_path_destroy(OFC_VOID);
  * \param lpDevice
  * The Device Name to use for the path
  *
+ * \param lpDesc
+ * A Description for the map
+ *
  * \param map
  * path to use for translating virtual path
  *
  * \param fsType
  * File System Handler to use for the map
+ *
+ * \param thumbnail
+ * Display map contents using thumbnails (info only)
  *
  * \returns
  * OFC_TRUE if success, OFC_FALSE otherwise
@@ -125,7 +164,9 @@ ofc_path_destroy(OFC_VOID);
 OFC_CORE_LIB OFC_BOOL
 ofc_path_add_mapW(OFC_LPCTSTR lpDevice, OFC_LPCTSTR lpDesc,
                   OFC_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail);
-
+/**
+ * \see ofc_path_add_mapW
+ */
 OFC_CORE_LIB OFC_BOOL
 ofc_path_add_mapA(OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
                   OFC_PATH *map, OFC_FST_TYPE fsType, OFC_BOOL thumbnail);
@@ -140,7 +181,9 @@ ofc_path_add_mapA(OFC_LPCSTR lpDevice, OFC_LPCSTR lpDesc,
  */
 OFC_CORE_LIB OFC_PATH *
 ofc_path_createW(OFC_LPCTSTR lpFileName);
-
+  /**
+   * \see ofc_path_createW
+   */
 OFC_CORE_LIB OFC_PATH *
 ofc_path_createA(OFC_LPCSTR lpFileName);
 
@@ -180,10 +223,23 @@ ofc_path_update(OFC_PATH *path, OFC_PATH *map);
  */
 OFC_CORE_LIB OFC_SIZET
 ofc_path_printW(OFC_PATH *path, OFC_LPTSTR *filename, OFC_SIZET *rem);
-
+  /**
+   * \see ofc_path_printW
+   */
 OFC_CORE_LIB OFC_SIZET
 ofc_path_printA(OFC_PATH *path, OFC_LPSTR *filename, OFC_SIZET *rem);
-
+  /**
+   * Print a wide character path and allocate string
+   *
+   * \param path
+   * Path to print
+   *
+   * \returns
+   * Wide character string
+   *
+   * \note
+   * String must be freed by call to \ref ofc_free
+   */
 OFC_CORE_LIB OFC_TCHAR *ofc_path_print_alloc(OFC_PATH *path);
 
 /**
@@ -256,7 +312,9 @@ ofc_path_make_urlW(OFC_LPTSTR *filename,
                    OFC_LPCTSTR share,
                    OFC_LPCTSTR path,
                    OFC_LPCTSTR file);
-
+  /**
+   * \see ofc_path_make_urlW
+   */
 OFC_CORE_LIB OFC_SIZET
 ofc_path_make_urlA(OFC_LPSTR *filename,
                    OFC_SIZET *rem,
@@ -267,7 +325,6 @@ ofc_path_make_urlA(OFC_LPSTR *filename,
                    OFC_LPCSTR share,
                    OFC_LPCSTR path,
                    OFC_LPCSTR file);
-
 /**
  * Delete a path structure
  *
@@ -291,7 +348,9 @@ ofc_path_delete(OFC_PATH *path);
 OFC_CORE_LIB OFC_VOID
 ofc_path_mapW(OFC_LPCTSTR lpFileName, OFC_LPTSTR *lppMappedName,
               OFC_FST_TYPE *filesystem);
-
+  /**
+   * \see ofc_path_mapW
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_mapA(OFC_LPCSTR lpFileName, OFC_LPSTR *lppMappedName,
               OFC_FST_TYPE *filesystem);
@@ -327,7 +386,9 @@ ofc_root_path_mapA(OFC_LPCSTR lpRootPath, OFC_LPSTR *lppMappedPath,
  */
 OFC_CORE_LIB OFC_VOID
 ofc_path_delete_mapW(OFC_LPCTSTR lpVirtual);
-
+  /**
+   * \see ofc_path_delete_mapW
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_delete_mapA(OFC_LPCSTR lpVirtual);
 /**
@@ -341,16 +402,23 @@ ofc_path_delete_mapA(OFC_LPCSTR lpVirtual);
  */
 OFC_CORE_LIB OFC_PATH *
 ofc_path_map_deviceW(OFC_LPCTSTR lpDevice);
-
+  /**
+   * \see ofc_path_map_deviceW
+   */
 OFC_CORE_LIB OFC_PATH *
 ofc_path_map_deviceA(OFC_LPCSTR lpDevice);
 
-
+  /**
+   * \cond
+   */
+#define AUTHENTICATE
 #if defined(AUTHENTICATE)
 OFC_CORE_LIB OFC_VOID
 ofc_path_update_credentialsW(OFC_LPCTSTR filename, OFC_LPCTSTR username,
                              OFC_LPCTSTR password, OFC_LPCTSTR domain);
-
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_update_credentialsA(OFC_LPCSTR filename, OFC_LPCSTR username,
                              OFC_LPCSTR password, OFC_LPCSTR domain);
@@ -363,130 +431,293 @@ OFC_CORE_LIB OFC_VOID
 ofc_path_update_credentialsA(OFC_PATH *path, OFC_LPCSTR username,
                 OFC_LPCSTR password, OFC_LPCSTR domain) ;
 #endif
+  /**
+   * \endcond
+   */
 
+  /**
+   * Is directory a wildcard
+   *
+   * \param dir
+   * pointer to directory
+   *
+   * \returns
+   * True if wild
+   */
 OFC_BOOL ofc_path_is_wild(OFC_LPCTSTR dir);
-
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_get_rootW(OFC_CTCHAR *lpFileName, OFC_TCHAR **lpRootName,
                    OFC_FST_TYPE *filesystem);
-
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_get_rootA(OFC_CCHAR *lpFileName, OFC_CHAR **lpRootName,
                    OFC_FST_TYPE *filesystem);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_get_mapW(OFC_INT idx, OFC_LPCTSTR *lpDevice,
                   OFC_LPCTSTR *lpDesc, OFC_PATH **map,
                   OFC_BOOL *thumbnail);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_PATH *ofc_map_path(OFC_LPCTSTR lpFileName,
                                     OFC_LPTSTR *lppMappedName);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL ofc_path_remote(OFC_PATH *path);
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL ofc_path_hidden(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_free_server(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_server(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_INT ofc_path_port(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_port(OFC_PATH *_path, OFC_INT port);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_device(OFC_PATH *_path, OFC_LPCTSTR device);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_set_server(OFC_PATH *path, OFC_LPCTSTR server);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_set_share(OFC_PATH *_path, OFC_LPCTSTR share);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_set_filename(OFC_PATH *_path, OFC_LPCTSTR filename);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL
 ofc_path_server_cmp(OFC_PATH *path, OFC_LPCTSTR server);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL
 ofc_path_port_cmp(OFC_PATH *_path, OFC_UINT16 port);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_share(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL
 ofc_path_share_cmp(OFC_PATH *path, OFC_LPCTSTR share);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_username(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_username(OFC_PATH *_path,
                                             OFC_LPCTSTR username);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL
 ofc_path_username_cmp(OFC_PATH *path, OFC_LPCTSTR username);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_password(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_password(OFC_PATH *_path,
                                             OFC_LPCTSTR password);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL
 ofc_path_password_cmp(OFC_PATH *path, OFC_LPCTSTR password);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_domain(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_domain(OFC_PATH *_path,
                                           OFC_LPCTSTR domain);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_device(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_free_device(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_free_username(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_free_password(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_free_domain(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_promote_dirs(OFC_PATH *path, OFC_UINT num_dirs);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_local(OFC_PATH *_path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_remote(OFC_PATH *_path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_relative(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_set_absolute(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL ofc_path_absolute(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_FST_TYPE ofc_path_type(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_path_set_type(OFC_PATH *path, OFC_FST_TYPE fstype);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_filename(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_free_filename(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_INT ofc_path_num_dirs(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_LPCTSTR ofc_path_dir(OFC_PATH *path, OFC_UINT ix);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_free_dirs(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_insert_dir(OFC_PATH *path, OFC_UINT ix,
                                           OFC_CTCHAR *dir);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID ofc_path_debug(OFC_PATH *path);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID init_workgroups(OFC_VOID);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID destroy_workgroups(OFC_VOID);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID update_workgroup(OFC_LPCTSTR workgroup);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_VOID remove_workgroup(OFC_LPCTSTR workgroup);
 
+  /**
+   * \private
+   */
 OFC_CORE_LIB OFC_BOOL lookup_workgroup(OFC_LPCTSTR workgroup);
 
 #if defined(__cplusplus)
@@ -494,26 +725,126 @@ OFC_CORE_LIB OFC_BOOL lookup_workgroup(OFC_LPCTSTR workgroup);
 #endif
 
 #if defined(OFC_UNICODE_API)
+/**
+ * Add a map
+ *
+ * \see ofc_path_add_mapW
+ * \see ofc_path_add_mapA
+ */
 #define ofc_path_add_map ofc_path_add_mapW
+/**
+ * Create a map
+ * 
+ * \see ofc_path_createW
+ * \see ofc_path_createA
+ */
 #define ofc_path_create ofc_path_createW
+/**
+ * Convert map to string
+ *
+ * \see ofc_path_printW
+ * \see ofc_path_printA
+ */
 #define ofc_path_print ofc_path_printW
+/**
+ * Create a URL
+ *
+ * \see ofc_path_make_urlW
+ * \see ofc_path_make_urlA
+ */
 #define ofc_path_make_url ofc_path_make_urlW
+/**
+ * Map through a path
+ *
+ * \see ofc_path_mapW
+ * \see ofc_path_mapA
+ */
 #define ofc_path_map ofc_path_mapW
+/**
+ * Delete a map
+ *
+ * \see ofc_path_delete_mapW
+ * \see ofc_path_delete_mapA
+ */
 #define ofc_path_delete_map ofc_path_delete_mapW
+/**
+ * Map through a device
+ *
+ * \see ofc_path_map_deviceW
+ * \see ofc_path_map_deviceA
+ */
 #define ofc_path_map_device ofc_path_map_deviceW
+/**
+ * Update a path with credentials
+ *
+ * \see ofc_path_update_credentialsW
+ * \see ofc_path_update_credentialsA
+ */
 #define ofc_path_update_credentials ofc_path_update_credentialsW
 #define ofc_path_get_root ofc_path_get_rootW
 #else
+/**
+ * \see ofc_path_add_mapW
+ * \see ofc_path_add_mapA
+ */
 #define ofc_path_add_map ofc_path_add_mapA
+/**
+ * \see ofc_path_createW
+ * \see ofc_path_createA
+ */
 #define ofc_path_create ofc_path_createA
+/**
+ * Convert map to string
+ *
+ * \see ofc_path_printW
+ * \see ofc_path_printA
+ */
 #define ofc_path_print ofc_path_printA
+/**
+ * Create a URL
+ *
+ * \see ofc_path_make_urlW
+ * \see ofc_path_make_urlA
+ */
 #define ofc_path_make_url ofc_path_make_urlA
+/**
+ * Map through a path
+ *
+ * \see ofc_path_mapW
+ * \see ofc_path_mapA
+ */
 #define ofc_path_map ofc_path_mapA
+/**
+ * Delete a map
+ *
+ * \see ofc_path_delete_mapW
+ * \see ofc_path_delete_mapA
+ */
 #define ofc_path_delete_map ofc_path_delete_mapA
+/**
+ * Map through a device
+ *
+ * \see ofc_path_map_deviceW
+ * \see ofc_path_map_deviceA
+ */
 #define ofc_path_map_device ofc_path_map_deviceA
+/**
+ * Update a path with credentials
+ *
+ * \see ofc_path_update_credentialsW
+ * \see ofc_path_update_credentialsA
+ */
 #define ofc_path_update_credentials ofc_path_update_credentialsA
+/**
+ * Get the root of a path
+ *
+ * \see ofc_path_get_rootW
+ * \see ofc_path_get_rootA
+ */
 #define ofc_path_get_root ofc_path_get_rootA
 #endif
 
-/** \} */
+/**
+ * \} */
+
 #endif

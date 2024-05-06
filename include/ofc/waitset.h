@@ -11,15 +11,27 @@
 #include "ofc/handle.h"
 
 /**
+ * \{
  * \defgroup waitset Waitable set of waitable events
  *
  * Wait Sets are a key component of Open Files and allow for synchronization
  * of events between applications and platform threads.  The events can
  * be for network sockets, files, wait queues, semaphores, or any 
  * synchonizable abstraction supported by the platform.
+ * 
+ * APIs available for waitsets:
+ *
+ * Function | Description
+ * ---------|-------------
+ * \ref ofc_waitset_create | Create a waitset
+ * \ref ofc_waitset_destroy | Destroy a waitset
+ * \ref ofc_waitset_wait | Wait for an even within waitset
+ * \ref ofc_waitset_wake | Force wakeup of a waitset
+ * \ref ofc_waitset_add | Add a waitable resource to a waitset
+ * \ref ofc_waitset_remove | Remove a waitable resource from a waitset
+ * \ref ofc_waitset_clear | Remove all events from a waitset
+ * \ref ofc_waitset_clear_app | Disassociate an app from all events in set
  */
-
-/** \{ */
 
 /**
  * Visible definition of Wait Set
@@ -108,13 +120,27 @@ ofc_waitset_remove(OFC_HANDLE hSet, OFC_HANDLE hEvent);
  */
 OFC_CORE_LIB OFC_VOID
 ofc_waitset_clear(OFC_HANDLE handle);
-
+  /**
+   * Disassociate an app from all events in waitset
+   *
+   * \param handle
+   * Handle to the waitset
+   *
+   * \param hApp
+   * App to disassociate
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_waitset_clear_app(OFC_HANDLE handle, OFC_HANDLE hApp);
 
 #if defined(OFC_HANDLE_DEBUG)
+  /**
+   * \cond
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_waitset_log_measure(OFC_HANDLE handle)  ;
+  /**
+   * \endcond
+   */
 #endif
 
 #if defined(__cplusplus)

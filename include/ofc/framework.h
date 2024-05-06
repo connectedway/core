@@ -15,47 +15,101 @@
 #include "ofc/file.h"
 
 /**
- * \defgroup framework Management Interface to the Open Files Framework
+ * \{
+ * \defgroup framework Core Open Files Management APIs
  *
  * These APIs are for advanced use cases.  Assuming the build has been
  * configured with INIT_ON_LOAD, and OFC_PERSIST has also been configured
  * so that runtime configuration of the stack is restored from the 
  * runtime configuration file, there should be no need for an application
  * developer to call any of these routines.
+ *
+ * These APIs should be used if manual configuration of the stack is
+ * required.
+ *
+ * Function | Description
+ * ---------|------------
+ * \ref ofc_framework_init | Initialize the OpenFiles Stack
+ * \ref ofc_framework_destroy | Destory the OpenFiles Stack
+ * \ref ofc_framework_startup | Startup the OpenFiles Components
+ * \ref ofc_framework_shutdown | Shutdown the OpenFiles Components
+ * \ref ofc_framework_load | Load a Configuration File
+ * \ref ofc_framework_loadbuf | Load Configuration from Buffer
+ * \ref ofc_framework_save | Save Configuration to File
+ * \ref ofc_framework_savebuf | Save Configuration to a buffer
+ * \ref ofc_get_config_dir | Return directory of Configuration File
+ * \ref ofc_framework_set_host_name | Set the hostname
+ * \ref ofc_framework_get_host_name | Get the host name of the system
+ * \ref ofc_framework_free_host_name | Free hostname returned from ofc_get_host_name
+ * \ref ofc_framework_get_workgroup | Get the workgroup of the system
+ * \ref ofc_framework_free_workgroup | Free workgroup returned
+ * \ref ofc_framework_get_description | Get the Description of the System
+ * \ref ofc_framework_free_description | Free Description
+ * \ref ofc_framework_set_uuid | Set UUID of system
+ * \ref ofc_framework_get_uuid | Gets the UUID of the system
+ * \ref ofc_framework_free_uuid | Free the uuid
+ * \ref ofc_framework_get_root_dir | Get the root directory of stack
+ * \ref ofc_framework_free_root_dir | Free the root directory string
+ * \ref ofc_framework_set_interface_discovery | Should stack get network config from underlying system
+ * \ref ofc_framework_get_interface_discovery | Get state of discovery
+ * \ref ofc_framework_add_interface | Add an interface to stack
+ * \ref ofc_framework_remove_interface | Remove an interface
+ * \ref ofc_framework_get_interfaces | Return interfaces configured
+ * \ref ofc_framework_free_interfaces | Free Interfaces returned
+ * \ref ofc_framework_add_map | Add a map (i.e. link)
+ * \ref ofc_framework_get_maps | Return all maps
+ * \ref ofc_framework_free_maps | Free returned maps
+ * \ref ofc_framework_remove_map | Remove a map
+ * \ref ofc_framework_update | Notify components of update
+ * \ref ofc_framework_dump_heap | Dump outstanding allocations 
+ * \ref ofc_framework_stats_heap | Dump Heap Statistics
  */
 
-/** \{ */
-
+/**
+ * WINS Abstraction
+ */
 typedef struct {
-    OFC_INT num_wins;
-    OFC_IPADDR *winsaddr;
+  OFC_INT num_wins;		//!< Number of Wins IP addresses
+  OFC_IPADDR *winsaddr;		//!< Array of Wins IP addresses
 } OFC_FRAMEWORK_WINSLIST;
 
+/**
+ * An Interface Abstraction
+ */
 typedef struct {
-    OFC_CONFIG_MODE netBiosMode;
-    OFC_IPADDR ip;
-    OFC_IPADDR bcast;
-    OFC_IPADDR mask;
-    OFC_LPCSTR lmb;
-    OFC_FRAMEWORK_WINSLIST wins;
+    OFC_CONFIG_MODE netBiosMode; /*!< Netbios Mode  */
+    OFC_IPADDR ip;		 /*!< IP address of Interface  */
+    OFC_IPADDR bcast;		 /*!< Broadcast Address of Subnet  */
+    OFC_IPADDR mask;		 /*!< NetMask of Subnet  */
+    OFC_LPCSTR lmb;		 /*!< Local Master Browser of Subnet  */
+    OFC_FRAMEWORK_WINSLIST wins; /*!< WINS List of Subnet  */
 } OFC_FRAMEWORK_INTERFACE;
 
+/**
+ * Interfaces Structure
+ */
 typedef struct {
-    OFC_UINT16 num_interfaces;
-    OFC_FRAMEWORK_INTERFACE *iface;
+    OFC_UINT16 num_interfaces;	/*!< Number of interfaces in array  */
+    OFC_FRAMEWORK_INTERFACE *iface; /*!< Array of Interfaces  */
 } OFC_FRAMEWORK_INTERFACES;
 
+/**
+ * A map abstraction
+ */
 typedef struct {
-    OFC_LPTSTR prefix;
-    OFC_LPTSTR desc;
-    OFC_LPTSTR path;
-    OFC_FST_TYPE type;
-    OFC_BOOL thumbnail;
+    OFC_LPTSTR prefix;		/*!< Map Prefix (Alias) */
+    OFC_LPTSTR desc;		/*!< Description of map  */
+    OFC_LPTSTR path;		/*!< Maps Path  */
+    OFC_FST_TYPE type;		/*!< File system Type of map  */
+    OFC_BOOL thumbnail;		/*!< Thumbnail state (info only)  */
 } OFC_FRAMEWORK_MAP;
 
+/**
+ * Array of Maps
+ */
 typedef struct {
-    OFC_UINT16 numMaps;
-    OFC_FRAMEWORK_MAP *map;
+    OFC_UINT16 numMaps;		/*!< Number of maps in array  */
+    OFC_FRAMEWORK_MAP *map;	/*!< Map array  */
 } OFC_FRAMEWORK_MAPS;
 
 #if defined(__cplusplus)
@@ -63,9 +117,9 @@ extern "C"
 {
 #endif
 /**
- * Initialize the Connected SMB Stack
+ * Initialize the Open iles Stack
  *
- * This routine should be called before any other ConnectedSMB
+ * This routine should be called before any other OpenFiles
  * function.  It initializes heap and other variables
  */
 OFC_CORE_LIB OFC_VOID
@@ -81,7 +135,7 @@ OFC_CORE_LIB OFC_VOID
 ofc_framework_destroy(OFC_VOID);
 
 /**
- * Start up the Connected SMB Stack
+ * Start up the OpenFiles Stack
  *
  * This routine should be called after the stack has been
  * initialized and after all configuration has been performed.
@@ -90,9 +144,20 @@ ofc_framework_destroy(OFC_VOID);
 OFC_CORE_LIB OFC_VOID
 ofc_framework_startup(OFC_VOID);
 
+/**
+ * \private
+ * Start up the OpenFiles Stack with an Event
+ *
+ * This routine should be called after the stack has been
+ * initialized and after all configuration has been performed.
+ * It will start the various components running
+ */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_startup_ev(OFC_HANDLE hScheduler, OFC_HANDLE hEvent);
 
+/**
+ * Shutdown the OpenFiles Components
+ */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_shutdown(OFC_VOID);
 /**
@@ -101,6 +166,9 @@ ofc_framework_shutdown(OFC_VOID);
  * This is an optional call mainly used for SMB Server configuration.
  * It is not needed by the client unless you have stored drive
  * maps in the configuration file
+ *
+ * \param filename
+ * Path to filename to load configuration from
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename);
 /**
@@ -109,6 +177,12 @@ OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename);
  * This is an optional call mainly used for SMB Server configuration.
  * It is not needed by the client unless you have stored drive
  * maps in the configuration file
+ *
+ * \param buf
+ * Buffer to load configuration from
+ *
+ * \param len
+ * length of buffer
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_loadbuf(OFC_LPVOID buf, OFC_SIZET len);
 /**
@@ -116,6 +190,9 @@ OFC_CORE_LIB OFC_VOID ofc_framework_loadbuf(OFC_LPVOID buf, OFC_SIZET len);
  *
  * Useful if you've configured the stack using the various API calls
  * and wish to capture them so they can be later loaded.
+ *
+ * \param filename
+ * Path to Filename to save configuration in
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename);
 /**
@@ -125,6 +202,15 @@ OFC_CORE_LIB OFC_VOID ofc_framework_save(OFC_LPCTSTR filename);
  * and wish to capture them so they can be later loaded.
  *
  * NOTE: buf must be freed by caller
+ * 
+ * \param buf
+ * Buffer to store configuration in
+ *
+ * \param len
+ * Length of buffer
+ *
+ * \returns
+ * True if configuration stored
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_savebuf(OFC_LPVOID *buf, OFC_SIZET *len);
 
@@ -132,9 +218,24 @@ OFC_CORE_LIB OFC_VOID ofc_framework_savebuf(OFC_LPVOID *buf, OFC_SIZET *len);
  * Find the application directory (i.e. directory that config file is in
  *
  * returns a TSTR of the config directory that needs to be freed after use
+ * 
+ * \param config_dir
+ * buffer to hold config directory
+ *
+ * \param len
+ * Length of buffer
+ *
+ * \returns
+ * True if config directory stored.
  */
 OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir,
 					 OFC_SIZET len);
+/**
+ * Set Configuration File Path
+ *
+ * \param filename
+ * Path to configuration file
+ */
 OFC_CORE_LIB OFC_VOID ofc_set_config_path(OFC_TCHAR *filename);
 
 /**
@@ -142,37 +243,64 @@ OFC_CORE_LIB OFC_VOID ofc_set_config_path(OFC_TCHAR *filename);
  *
  * Mostly used to set the server name but this will also set the
  * client host name as well.
+ *
+ * \param name
+ * Name of System
+ * 
+ * \param workgroup
+ * Workgroup of System
+ *
+ * \param desc
+ * Description of system
  */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_set_host_name(OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
                             OFC_LPCTSTR desc);
 /**
- * Return the ConnectedSMB Host Name
+ * Return the OpenFiles Host Name
  *
  * This returns a hostname allocated from the heap.  You must call
  * ofc_framework_free_host_name to free the returned name
+ *
+ * /returns
+ * Hostname
  */
 OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_host_name(OFC_VOID);
 /**
  * Free the hostname returned from ofc_framework_get_host_name
+ *
+ * \param str
+ * String to free
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_free_host_name(OFC_LPTSTR str);
 /**
  * Get the workgroup that this instance is part of
  *
  * The returned workgroup name must be freed with ofc_framework_free_workgroup
+ *
+ * \returns 
+ * Workgroup
  */
 OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_workgroup(OFC_VOID);
 /**
  * Free the workgroup name returned by ofc_framework_get_workgroup
+ * 
+ * \param str
+ * Workgroup name to free
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_free_workgroup(OFC_LPTSTR str);
 /**
  * Get the description of the host
+ *
+ * \returns
+ * Description
  */
 OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_description(OFC_VOID);
 /**
  * Free the returned description of the host
+ *
+ * \param str
+ * Description String to free
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_free_description(OFC_LPTSTR str);
 
@@ -181,25 +309,38 @@ OFC_CORE_LIB OFC_VOID ofc_framework_free_description(OFC_LPTSTR str);
  *
  * This should be called to set the UUID of the host used in
  * SMB authentication.
+ *
+ * \param cuuid
+ * UUID of system
  */
 OFC_VOID ofc_framework_set_uuid(const OFC_CHAR *cuuid);
 
 /**
  * Get the stacks UUID
+ * \returns
+ * UUID
  */
 OFC_CHAR *ofc_framework_get_uuid(OFC_VOID);
 /**
  * Free the UUID returned from GetUUID
+ * \param str
+ * String to free
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_free_uuid(OFC_LPSTR str);
 /**
  * Get the Home/Root directory of the stack
  *
  * Used by the Android app only
+ *
+ * \returns
+ * Root Directory
  */
 OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_root_dir(OFC_VOID);
 /**
  * Free the string returned from getrootdir
+ *
+ * \param str
+ * String to free
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir(OFC_LPTSTR str);
 
@@ -207,15 +348,22 @@ OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir(OFC_LPTSTR str);
  * Set whether the stack should query the underlying platform for
  * available interfaces and IP addresses or whether the network
  * configuration is done manually or not
+ *
+ * \param on
+ * True if interfaces should be discovered
  */
 OFC_VOID ofc_framework_set_interface_discovery(OFC_BOOL on);
 /**
+ * \private
  * Set the Network Handle for use by the Android NDK code.
  * Not needed after API 31
  */
 OFC_VOID ofc_framework_set_network_handle(OFC_UINT64 network_handle);
 /**
  * Return the setting of interface discovery
+ *
+ * \returns
+ * True if interface discovery is enabled
  */
 OFC_BOOL ofc_framework_get_interface_discovery(OFC_VOID);
 
@@ -223,6 +371,9 @@ OFC_BOOL ofc_framework_get_interface_discovery(OFC_VOID);
  * Add an interface.
  *
  * Only useful if interface discovery is off
+ *
+ * iface
+ * Interface description to add
  */
 OFC_VOID ofc_framework_add_interface(OFC_FRAMEWORK_INTERFACE *iface);
 
@@ -230,16 +381,24 @@ OFC_VOID ofc_framework_add_interface(OFC_FRAMEWORK_INTERFACE *iface);
  * Remove an interface
  *
  * Only useful if interface discovery is off
+ *
+ * \param ip
+ * IP of interface to remove
  */
 OFC_VOID ofc_framework_remove_interface(OFC_IPADDR *ip);
 
 /**
- * Get configured interfaces
+ * Get configured interfaces.  Interface array must subsequently be freed.
+ * \returns
+ * Array of interfaces
  */
 OFC_FRAMEWORK_INTERFACES *ofc_framework_get_interfaces(OFC_VOID);
 
 /**
  * Free interfaces returned from getinterfaces
+ *
+ * \param ifaces
+ * Interface array to free
  */
 OFC_VOID ofc_framework_free_interfaces(OFC_FRAMEWORK_INTERFACES *ifaces);
 
@@ -248,26 +407,42 @@ OFC_VOID ofc_framework_free_interfaces(OFC_FRAMEWORK_INTERFACES *ifaces);
  *
  * This allows a shortened name for a path
  *
- * Optional
+ * \param map
+ * Map to add
+ *
+ * \returns
+ * Status of add
  */
 OFC_BOOL ofc_framework_add_map(OFC_FRAMEWORK_MAP *map);
 
 /**
- * Return the aliases
+ * Return the aliases, maps must subsequently be freed
+ * 
+ * \returns
+ * Array of maps
  */
 OFC_FRAMEWORK_MAPS *ofc_framework_get_maps(OFC_VOID);
 
 /**
  * Free the returned aliases
+ *
+ * \param maps
+ * Array of maps to free
  */
 OFC_VOID ofc_framework_free_maps(OFC_FRAMEWORK_MAPS *maps);
-
+/**
+ * Remove a map
+ *
+ * \param tszPrefix
+ * Prefix (i.e.alias) to remove
+ */
 OFC_VOID ofc_framework_remove_map(OFC_LPCTSTR tszPrefix);
 
 /**
  * Reconfigure the stack
  *
  * Used to propogate configuration changes to all components
+ *
  */
 OFC_VOID ofc_framework_update(OFC_VOID);
 
@@ -277,11 +452,17 @@ OFC_VOID ofc_framework_update(OFC_VOID);
  * Used in debug mode only
  */
 OFC_VOID ofc_framework_dump_heap(OFC_VOID);
-
+  /**
+   * \private
+   */
 OFC_VOID ofc_framework_set_wifi_ip(OFC_INT);
-
+  /**
+   * \private
+   */
 OFC_INT ofc_framework_get_wifi_ip(OFC_VOID);
-
+  /**
+   * Print Heap Statistics
+   */
 OFC_VOID ofc_framework_stats_heap(OFC_VOID);
 
 #if defined(__cplusplus)

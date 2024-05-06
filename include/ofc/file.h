@@ -13,8 +13,8 @@
 #include "ofc/fstype.h"
 
 /**
+ * \{
  * \defgroup file Open Files File APIs
- *
  * The Open Files File Facility provides Generic File Handling APIs to 
  * applications.
  *
@@ -44,10 +44,74 @@
  * applying these two translation rules.
  *
  * The definitive Windows documentation for the file apis can be found at
- * \ref https://docs.microsoft.com/en-us/windows/win32/api/fileapi/.
+ * [https://docs.microsoft.com/en-us/windows/win32/api/fileapi/].
+ *
+ * The Open Files Files Related APIs consist of the following functions:
+ *
+ * Function | Description
+ * ---------|------------
+ * \ref OfcCreateFileW | Open or Create a File and Return Handle (Wide)
+ * \ref OfcCreateFileA | Open or Create a File and Return Handle (Normal)
+ * \ref OfcCreateFile  | Open or Create a File and Return Handle (Default)
+ * \ref OfcCloseHandle | Close a File Handle
+ * \ref OfcCreateDirectoryW | Create a Directory (Wide)
+ * \ref OfcCreateDirectoryA | Create a Directory (Normal)
+ * \ref OfcCreateDirectory  | Create a Directory (Deault)
+ * \ref OfcDeleteFileW | Delete a File (Wide)
+ * \ref OfcDeleteFileA | Delete a File (Normal)
+ * \ref OfcDeleteFile  | Delete a File (Default)
+ * \ref OfcRemoveDirectoryW | Delete a Directory (Wide)
+ * \ref OfcRemoveDirectoryA | Delete a Directory (Normal)
+ * \ref OfcRemoveDirectory  | Delete a Directory (Default)
+ * \ref OfcFindFirstFileW   | Open a Search for File (Wide)
+ * \ref OfcFindFirstFileA   | Open a Search for File (Normal)
+ * \ref OfcFindFirstFile    | Open a Search for File (Default)
+ * \ref OfcFindNextFileW    | Return Next File (Wide)
+ * \ref OfcFindNextFileA    | Return Next File (Normal)
+ * \ref OfcFindNextFile     | Return Next File (Default)
+ * \ref OfcFindClose        | Closes a file search
+ * \ref OfcFlushFileBuffers | Flush a File
+ * \ref OfcGetFileAttributesExW | Get File Attributes by Name (Wide)
+ * \ref OfcGetFileAttributesExA | Get File Attributes by Name (Normal)
+ * \ref OfcGetFileAttributesEx  | Get File Attributes by Name (Default)
+ * \ref OfcGetFileInformationByHandleEx | Get File Attributes by Handle
+ * \ref OfcMoveFileW | Move File (Wide)
+ * \ref OfcMoveFileA | Move File (Normal)
+ * \ref OfcMoveFile  | Move File (Default)
+ * \ref OfcReadFile | Read from a File
+ * \ref OfcCreateOverlapped | Create an overlapped buffer handle
+ * \ref OfcDestroyOverlapped | Destroy an overlapped buffer handle
+ * \ref OfcSetOverlappedOffset | Set file offset in buffer handle
+ * \ref OfcGetOverlappedResult | Get the result of a overlapped buffer
+ * \ref OfcSetEndOfFile | Set End of File
+ * \ref OfcSetFileAttributesW | Set File Attributes (Wide)
+ * \ref OfcSetFileAttributesA | Set File Attributes (Normal)
+ * \ref OfcSetFileAttributes  | Set File Attributes (Default)
+ * \ref OfcSetFileInformationByHandle | Set File Attributes by Handle
+ * \ref OfcSetFilePointer | Set File Pointer
+ * \ref OfcWriteFile | Write File Buffer
+ * \ref OfcTransactNamedPipe | Perform Named Pipe Transaction
+ * \ref OfcGetLastFileError | Get Last File Error on Handle
+ * \ref OfcGetLastError | Get Last Error on Process
+ * \ref OfcGetLastFileNameErrorW | Get Last File Error on Name (Wide)
+ * \ref OfcGetLastFileNameErrorA | Get Last File Error on Name (Normal)
+ * \ref OfcGetLastFileNameError  | Get Last File Error on Name (Default)
+ * \ref ofc_get_error_string | Translate error code to string
+ * \ref OfcGetDiskFreeSpaceW | Get Disk Free Space (Wide)
+ * \ref OfcGetDiskFreeSpaceA | Get Disk Free Space (Normal)
+ * \ref OfcGetDiskFreeSpace  | Get Disk Free Space (Default)
+ * \ref OfcGetVolumeInformationW | Get Volume Information (Wide)
+ * \ref OfcGetVolumeInformationA | Get Volume Information (Normal)
+ * \ref OfcGetVolumeInformation  | Get Volume Information (Normal)
+ * \ref OfcUnlockFileEx | Unlock a file
+ * \ref OfcLockFileEx | Lock a file
+ * \ref OfcFileGetOverlappedEvent | Get Event for Overlapped Handle
+ * \ref OfcFileGetOverlappedWaitQ | Get WaitQ of Overlapped Handle
+ * \ref OfcDismountW | Dismount a share (Wide)
+ * \ref OfcDismountA | Dismount a share (Normal)
+ * \ref OfcDismount  | Dismount a share (Default)
+ * \ref OfcDeviceIoControl | Issue ioctl
  */
-
-/** \{ */
 
 /**
  * The maximum size of a path
@@ -1610,6 +1674,10 @@ OfcCreateFileW(OFC_LPCTSTR lpFileName,
                OFC_DWORD dwFlagsAndAttributes,
                OFC_HANDLE hTemplateFile);
 
+/**
+ * Create or Open a File Using Normal Characters
+ * \see OfcCreateFileW
+ */
 OFC_CORE_LIB OFC_HANDLE
 OfcCreateFileA(OFC_LPCSTR lpFileName,
                OFC_DWORD dwDesiredAccess,
@@ -1634,6 +1702,10 @@ OFC_CORE_LIB OFC_BOOL
 OfcCreateDirectoryW(OFC_LPCTSTR lpPathName,
                     OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr);
 
+/**
+ * Create a Directory Using Normal Characters
+ * \see OfcCreateDirectoryW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcCreateDirectoryA(OFC_LPCSTR lpPathName,
                     OFC_LPSECURITY_ATTRIBUTES lpSecurityAttr);
@@ -1649,6 +1721,10 @@ OfcCreateDirectoryA(OFC_LPCSTR lpPathName,
 OFC_CORE_LIB OFC_BOOL
 OfcDeleteFileW(OFC_LPCTSTR lpFileName);
 
+/**
+ * Delete a File Using Normal Characters
+ * \see OfcDeleteFileW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcDeleteFileA(OFC_LPCSTR lpFileName);
 /**
@@ -1663,10 +1739,14 @@ OfcDeleteFileA(OFC_LPCSTR lpFileName);
 OFC_CORE_LIB OFC_BOOL
 OfcRemoveDirectoryW(OFC_LPCTSTR lpPathName);
 
+/**
+ * Delete a Directory Using Normal Characters
+ * \see OfcRemoveDirectoryW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcRemoveDirectoryA(OFC_LPCSTR lpPathName);
 /**
- * Searches a director for a file or subdirectory that matches the name
+ * Searches a directory for a file or subdirectory that matches the name
  * or pattern.
  *
  * \param lpFileName
@@ -1693,6 +1773,12 @@ OfcFindFirstFileW(OFC_LPCTSTR lpFileName,
                   OFC_LPWIN32_FIND_DATAW lpFindFileData,
                   OFC_BOOL *more);
 
+/**
+ * 
+ * Searches a Directory Using a Normal Character Pattern
+ *
+ * \see OfcFindFirstFileW
+ */
 OFC_CORE_LIB OFC_HANDLE
 OfcFindFirstFileA(OFC_LPCSTR lpFileName,
                   OFC_LPWIN32_FIND_DATAA lpFindFileData,
@@ -1704,8 +1790,8 @@ OfcFindFirstFileA(OFC_LPCSTR lpFileName,
  * The search handle returned from OfcFindFirstFile
  *
  * \param lpFindFileData
- * A pointer to the OFC_WIN32_FIND_DATA structure.  See
- * http://msdn2.microsoft.com/en-us/library/aa365247.aspx
+ * A pointer to the OFC_WIN32_FIND_DATA structure.  
+ * \see http://msdn2.microsoft.com/en-us/library/aa365247.aspx
  *
  * \param more
  * Pointer to where to return more indication.  OFC_TRUE says more files are
@@ -1718,7 +1804,11 @@ OFC_CORE_LIB OFC_BOOL
 OfcFindNextFileW(OFC_HANDLE hFindFile,
                  OFC_LPWIN32_FIND_DATAW lpFindFileData,
                  OFC_BOOL *more);
-
+/**
+ * Continue a search using Normal Characters
+ *
+ * \see OfcFindNextFileW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcFindNextFileA(OFC_HANDLE hFindFile,
                  OFC_LPWIN32_FIND_DATAA lpFindFileData,
@@ -1766,13 +1856,17 @@ OFC_CORE_LIB OFC_BOOL
 OfcGetFileAttributesExW(OFC_LPCTSTR lpFileName,
                         OFC_GET_FILEEX_INFO_LEVELS fInfoLevelId,
                         OFC_LPVOID lpFileInformation);
-
+/**
+ * Retrieves File Attributes Using Normal Characters
+ *
+ * \see OfcGetFileAttriubtesExW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcGetFileAttributesExA(OFC_LPCSTR lpFileName,
                         OFC_GET_FILEEX_INFO_LEVELS fInfoLevelId,
                         OFC_LPVOID lpFileInformation);
 /**
- * Retrieves Attribute Infor for a file by File Handle
+ * Retrieves Attribute Info for a file by File Handle
  *
  * \param hFile
  * Handle to the file
@@ -1818,7 +1912,11 @@ OfcGetFileInformationByHandleEx(OFC_HANDLE hFile,
 OFC_CORE_LIB OFC_BOOL
 OfcMoveFileW(OFC_LPCTSTR lpExistingFileName,
              OFC_LPCTSTR lpNewFileName);
-
+/**
+ * Moves a file (i.e Rename) Using Normal Characters
+ *
+ * \see OfcMoveFileW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcMoveFileA(OFC_LPCSTR lpExistingFileName,
              OFC_LPCSTR lpNewFileName);
@@ -1941,7 +2039,11 @@ OfcSetEndOfFile(OFC_HANDLE hFile);
 OFC_CORE_LIB OFC_BOOL
 OfcSetFileAttributesW(OFC_LPCTSTR lpFileName,
                       OFC_DWORD dwFileAttributes);
-
+/**
+ * Set File Attributes Using Normal Characters
+ *
+ * \see OfcSetFileAttributesW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcSetFileAttributesA(OFC_LPCSTR lpFileName,
                       OFC_DWORD dwFileAttributes);
@@ -2069,6 +2171,9 @@ OfcTransactNamedPipe(OFC_HANDLE hFile,
  * Get the last file error that occured in this file handler for
  * this thread
  *
+ * \param hHandle
+ * Handle of File
+ *
  * \returns
  * Last File Error
  *
@@ -2085,7 +2190,15 @@ OfcGetLastFileError(OFC_HANDLE hHandle);
  */
 OFC_CORE_LIB OFC_DWORD
 OfcGetLastError(OFC_VOID);
-
+/**
+ * Get Error String from Error
+ *
+ * \param dwerr
+ * Error Code
+ *
+ * \returns
+ * Error String
+ */
 OFC_CORE_LIB const OFC_CHAR *ofc_get_error_string(OFC_DWORD dwerr);
 /**
  * Get the last file error that occured in the file handler for a
@@ -2101,7 +2214,11 @@ OFC_CORE_LIB const OFC_CHAR *ofc_get_error_string(OFC_DWORD dwerr);
  */
 OFC_CORE_LIB OFC_UINT32
 OfcGetLastFileNameErrorW(OFC_LPCTSTR lpFileName);
-
+/**
+ * Get Last Error for a File Using Normal Characters
+ *
+ * \see OfcGetLastFileNameErrorW
+ */
 OFC_CORE_LIB OFC_UINT32
 OfcGetLastFileNameErrorA(OFC_LPCSTR lpFileName);
 /**
@@ -2133,7 +2250,11 @@ OfcGetDiskFreeSpaceW(OFC_LPCTSTR lpRootPathName,
                      OFC_LPDWORD lpBytesPerSector,
                      OFC_LPDWORD lpNumberOfFreeClusters,
                      OFC_LPDWORD lpTotalNumberOfClusters);
-
+/**
+ * Get Disk Free Space Using Normal Characters
+ *
+ * \see OfcGetDiskFreeSpaceW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcGetDiskFreeSpaceA(OFC_LPCSTR lpRootPathName,
                      OFC_LPDWORD lpSectorsPerCluster,
@@ -2179,7 +2300,11 @@ OfcGetVolumeInformationW(OFC_LPCTSTR lpRootPathName,
                          OFC_LPDWORD lpFileSystemFlags,
                          OFC_LPTSTR lpFileSystemName,
                          OFC_DWORD nFileSystemName);
-
+/**
+ * Get Volume Information Using Normal Characters
+ *
+ * \see OfcGetVolumeInformationW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcGetVolumeInformationA(OFC_LPCSTR lpRootPathName,
                          OFC_LPSTR lpVolumeNameBuffer,
@@ -2297,7 +2422,11 @@ OfcFileGetOverlappedWaitQ(OFC_HANDLE hOverlapped);
  */
 OFC_CORE_LIB OFC_BOOL
 OfcDismountW(OFC_LPCTSTR lpFileName);
-
+/**
+ * Dismount a File Using Normal Characters
+ *
+ * \see OfcDismountW
+ */
 OFC_CORE_LIB OFC_BOOL
 OfcDismountA(OFC_LPCSTR lpFileName);
 /**
@@ -2319,21 +2448,107 @@ OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl(OFC_HANDLE hFile,
 #endif
 
 #if defined(OFC_UNICODE_API)
+/**
+ * Create or open a file using default character encoding
+ *
+ * \see OfcCreateFileW
+ * \see OfcCreateFileA
+ */
 #define OfcCreateFile OfcCreateFileW
+/**
+ * Create a directory using default character encoding
+ *
+ * \see OfcCreateDirectoryW
+ * \see OfcCreateDirectoryA
+ */
 #define OfcCreateDirectory OfcCreateDirectoryW
+/**
+ * Delete a file using default character encoding
+ *
+ * \see OfcDeleteFileW
+ * \see OfcDeleteFileA
+ */
 #define OfcDeleteFile OfcDeleteFileW
+/**
+ * Remove a directory using default character encoding
+ *
+ * \see OfcRemoveDirectoryW
+ * \see OfcRemoveDirectoryA
+ */
 #define OfcRemoveDirectory OfcRemoveDirectoryW
+/**
+ * Start a file search using default character encoding
+ *
+ * \see OfcFindFirstW
+ * \see OfcFindFirstA
+ */
 #define OfcFindFirstFile OfcFindFirstFileW
+/**
+ * Return the next file in search using default character encoding
+ *
+ * \see OfcFindNextFileW
+ * \see OfcFindNextFileA
+ */
 #define OfcFindNextFile OfcFindNextFileW
+/**
+ * Get file attributes using default file encoding
+ * 
+ * \see OfcGetFileAttributesExW
+ * \see OfcGetFileAttributesExA
+ */
 #define OfcGetFileAttributesEx OfcGetFileAttributesExW
+/**
+ * Move a file using default chracter encoding
+ *
+ * \see OfcMoveFileW
+ * \see OfcMoveFileA
+ */
 #define OfcMoveFile OfcMoveFileW
+/**
+ * Set file attributes using default character encoding
+ *
+ * \see OfcSetFileAttributesW
+ * \see OfcSetFileAttributesA
+ */
 #define OfcSetFileAttributes OfcSetFileAttributesW
+/**
+ * Get last error on file name using default character encoding
+ *
+ * \see OfcGetLastFileNameErrorW
+ * \see OfcGetLastFileNameErrorA
+ */
 #define OfcGetLastFileNameError OfcGetLastFileNameErrorW
+/**
+ * Get disk free space using default character encoding
+ *
+ * \see OfcGetDiskFreeSpaceW
+ * \see OfcGetDiskFreeSpaceA
+ */
 #define OfcGetDiskFreeSpace OfcGetDiskFreeSpaceW
+/**
+ * Get volumeinformation using default character encoding
+ *
+ * \see OfcGetVolumeInformationW
+ * \see OfcGetVolumeInformationA
+ */
 #define OfcGetVolumeInformation OfcGetVolumeInformationW
+/**
+ * Dismount share using default default character encoding
+ *
+ * \see OfcDismountW
+ * \see OfcDismountA
+ */
 #define OfcDismount OfcDismountW
 
+/**
+ * \see OFC_WIN32_FIND_DATAW
+ * \see OFC_WIN32_FIND_DATAA
+ */
 #define OFC_WIN32_FIND_DATA OFC_WIN32_FIND_DATAW
+/**
+ * \see OFC_LPWIN32_FIND_DATAW
+ * \see OFC_LPWIN32_FIND_DATAA
+ */
 #define OFC_LPWIN32_FIND_DATA OFC_LPWIN32_FIND_DATAW
 
 #else

@@ -10,14 +10,32 @@
 #include "ofc/types.h"
 
 /**
+ * \{
  * \defgroup handle Open Files Abstract Handles
  *
- * The File System Redirector is a key component of the Open Files Product
- * and is leveraged heavily by both the SMB Client and Server.  The redirector
- * defines the file system to file system API mapping.  
+ * Open Files uses a concept called `Abstract Handles` to manage 
+ * references to resources.  A resource may, or may not be `waitable`.
+ * Waitable handles can be aggregated together and waited as as a group.
+ * The APIs for maintaining handles are described here.
+ * 
+ * Function | Decription
+ * ---------|------------
+ * \ref ofc_handle_create | Create a Handle to a Resource
+ * \ref ofc_handle_lock | Lock a handle (increase reference count)
+ * \ref ofc_handle_lock_ex | Lock a handle (provides type)
+ * \ref ofc_handle_unlock | Unlock a handle (decrease reference count)
+ * \ref ofc_handle_destroy | Destroy a handle
+ * \ref ofc_handle_set_app | Associate a handle with a realtime app
+ * \ref ofc_handle_get_app | Return the application associated with a handle
+ * \ref ofc_handle_get_wait_set | Return the optional waitset associated with a handle
+ * \ref ofc_handle_get_type | Return the handles type
+ * \ref ofc_handle16_init | Initialize the indexable handles facility
+ * \ref ofc_handle16_free | Uninitialize the indexable handles facility
+ * \ref ofc_handle16_create | Create an indexable handle
+ * \ref ofc_handle16_destroy | Destroy an indexable handle
+ * \ref ofc_handle16_lock | Lock an indexable handle
+ * \ref ofc_handle_unlock | unlock an indexable handle
  */
-
-/** \{ */
 
 /**
  * The definition of the 32 bit handle
@@ -126,6 +144,19 @@ ofc_handle_create(OFC_HANDLE_TYPE hType, OFC_VOID *context);
  */
 OFC_CORE_LIB OFC_VOID *
 ofc_handle_lock(OFC_HANDLE handle);
+/**
+ * Increase the reference count of a handle and return the context.
+ * Provide a handle type for validation.
+ *
+ * \param handle
+ * The handle to reference
+ *
+ * \param type
+ * The handle type to validate
+ *
+ * \returns
+ * The context for the handle
+ */
 
 OFC_CORE_LIB OFC_VOID *
 ofc_handle_lock_ex(OFC_HANDLE handle, OFC_HANDLE_TYPE type);
@@ -216,6 +247,7 @@ ofc_handle_get_type(OFC_HANDLE hHandle);
  *
  * This should be called at system initialization/startup time to
  * create the handle database and initialize the check digits.
+
  */
 OFC_CORE_LIB OFC_VOID
 ofc_handle16_init(OFC_VOID);
@@ -272,6 +304,9 @@ OFC_CORE_LIB OFC_VOID
 ofc_handle16_unlock(OFC_HANDLE16 hHandle);
 
 #if defined(OFC_HANDLE_DEBUG)
+  /**
+   * \cond
+   */
 OFC_CORE_LIB OFC_VOID ofc_handle_measure (OFC_HANDLE hHandle) ;
 OFC_CORE_LIB OFC_MSTIME ofc_handle_get_avg_interval (OFC_HANDLE hHandle,
                             OFC_UINT32 *count,
@@ -280,6 +315,9 @@ OFC_CORE_LIB OFC_VOID ofc_handle_print_interval_header (OFC_VOID) ;
 OFC_CORE_LIB OFC_VOID ofc_handle_print_interval (OFC_CHAR *prefix,
                          OFC_HANDLE hHandle) ;
 OFC_CORE_LIB OFC_VOID OfcHandle16DebugDump(OFC_VOID);
+  /**
+   * \endcond
+   */
 #endif
 #if defined(__cplusplus)
 }

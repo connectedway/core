@@ -11,12 +11,23 @@
 #include "ofc/handle.h"
 
 /**
+ * \{
  * \defgroup queue Open Files Queue Management Facility
  *
  * Routines that provide for queue management
+ *
+ * Function | Description
+ * ---------|-------------
+ * \ref ofc_queue_create | Create a queue
+ * \ref ofc_queue_destroy | Destroy a queue
+ * \ref ofc_enqueue | Enqueue to the end of a queue
+ * \ref ofc_dequeue | Dequeue from the head of a queue
+ * \ref ofc_queue_empty | Test if queue is empty
+ * \ref ofc_queue_first | Return the head of a queue without dequeueing
+ * \ref ofc_queue_next | Return the next element after an element
+ * \ref ofc_queue_unlink | Remove an element from within the queue
+ * \ref ofc_queue_clear | Remove all elements from the queue
  */
-
-/** \{ */
 
 #if defined(__cplusplus)
 extern "C"

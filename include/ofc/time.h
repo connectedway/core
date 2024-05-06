@@ -11,12 +11,24 @@
 #include "ofc/file.h"
 
 /**
+ * \{
  * \defgroup Open Files Time Management
  *
  * This facility provides Time conversion functions
+ *
+ * Function | Description
+ * ---------|-------------
+ * \ref epoch_time_to_file_time | Convert epoch time to file time
+ * \ref file_time_to_epoch_time | Convert a file time to epoch time
+ * \ref ofc_time_get_now | Get current milliseconds since boot
+ * \ref ofc_time_get_file_time | Get time of day as a filetime
+ * \ref ofc_time_get_time_zone | Get the timezone (minutes from UTC)
+ * \ref ofc_file_time_to_dos_date_time | Convert filetime to a dos datetime.
+ * \ref ofc_dos_date_time_to_file_time | Convert dos datetime to filetime
+ * \ref ofc_time_elements_to_dos_date_time | Create a DOS Date Time
+ * \ref ofc_dos_date_time_to_elements | Decompose a DOS Date Time
+ * \ref ofc_get_runtime | Get runtime of current process
  */
-
-/** \{ */
 
 /**
  * Definition for DOS Day Field in DOS Day Word
@@ -84,11 +96,35 @@
 extern "C"
 {
 #endif
-
+  /**
+   * Convert Epoch Time to File Time.  Epoch time is number of seconds
+   * since January 1, 1900.  A file time is relative to January 1, 1980.
+   *
+   * \param tv_sec
+   * Seconds within epoch time
+   *
+   * \param tv_nsec
+   * Nanoseconds within epoch time
+   *
+   * \param filetime
+   * Pointer to filetime to return
+   */
 OFC_VOID epoch_time_to_file_time(const OFC_ULONG tv_sec,
                                  const OFC_ULONG tv_nsec,
                                  OFC_FILETIME *filetime);
+  /**
+   * Convert File Time to Epoch time.  Epoch time is number of seconds
+   * since January 1, 1900.  A file time is relative to January 1, 1980.
+   *
+   * \param filetime
+   * Pointer to filetime
 
+   * \param tv_sec
+   * Pointer to Seconds within epoch time to return
+   *
+   * \param tv_nsec
+   * Pointer to Nanoseconds within epoch time to return
+   */
 OFC_VOID file_time_to_epoch_time(const OFC_FILETIME *filetime,
                                  OFC_ULONG *tv_sec,
                                  OFC_ULONG *tv_nsec);

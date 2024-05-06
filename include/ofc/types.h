@@ -9,6 +9,7 @@
 #include "ofc/config.h"
 
 /**
+ * \{
  * \defgroup types Global Types Used by all Components
  *
  * Open Files is designed as a highly portable subsystem.  As such, it is
@@ -20,9 +21,93 @@
  * When porting Open Files to a new platform, some attention should be
  * paid to the definition of these types.  In most cases, no modification
  * to any of these definitions is necessary.  
+ *
+ * Type | Description
+ * -----|------------
+ * \ref OFC_SIZET | Represents a size
+ * \ref OFC_INT | Represents a generic integer
+ * \ref OFC_UINT | Represents a generic unsigned integer
+ * \ref OFC_INT32 | Represents a 32 bit integer
+ * \ref OFC_INT16 | Represents a 16 bit integer
+ * \ref OFC_INT8 | Represents an 8 bit integer
+ * \ref OFC_CHAR | Represents a normal character
+ * \ref OFC_BYTE | Represents a byte
+ * \ref OFC_LPBYTE | Pointer to a byte string 
+ * \ref OFC_UCHAR | Represents an unsigned character
+ * \ref OFC_VOID | Represents a null type
+ * \ref OFC_LONG | Represents a generic long integer
+ * \ref OFC_PLONG | Pointer to a generic long integer
+ * \ref OFC_SHORT | Pointer to a generic short integer
+ * \ref OFC_UINT32 | Represents a 32 bit unsigned
+ * \ref OFC_UINT16 | Represents a 16 bit unsigned
+ * \ref OFC_UINT8 | Represents a 8 bit unsigned
+ * \ref OFC_UINT64 | Represents a 64 bit unsigned
+ * \ref OFC_INT64 | Represents a 64 bit signed
+ * \ref OFC_LARGE_INTEGER | Represents a generic large (i.e. 64 bit) Integer
+ * \ref OFC_LARGE_INTEGER_HIGH | Returns high 32 bits of Large Integer
+ * \ref OFC_LARGE_INTEGER_LOW | Returns Low 32 bits of Large Integer
+ * \ref OFC_LARGE_INTEGER_ASSIGN | Assign low and high portions of Large Integer
+ * \ref OFC_LARGE_INTEGER_SET | Set a large integer
+ * \ref OFC_LARGE_INTEGER_EQUAL | Compare large integers
+ * \ref OFC_LARGE_INTEGER_INCR | Increment a large integer
+ * \ref OFC_LARGE_INTEGER_AND | Binary AND of Large Integers
+ * \ref OFC_LARGE_INTEGER_INIT | Initialize a large integer
+ * \ref OFC_OFFT | Represents a file offset
+ * \ref OFC_ULONG | Represents a generic unsigned
+ * \ref OFC_ULONG_MAX | Maximum Unsigned Long
+ * \ref OFC_LONG_MAX | Maximum Signed
+ * \ref OFC_LONG_MIN | Minimum Long
+ * \ref OFC_LPULONG | Pointer to a ULONG
+ * \ref OFC_ULONG_PTR | Pointer to a ULONG
+ * \ref OFC_CVOID | Untyped constant value
+ * \ref OFC_LPWSTR | Pointer to wide character string
+ * \ref OFC_LMSTR | Pointer to wide character string
+ * \ref OFC_CWCHAR | Represents a constant wide character
+ * \ref OFC_LPCWSTR | Pointer to constant wide character string
+ * \ref OFC_CCHAR | Constant character
+ * \ref OFC_LPSTR | Pointer to a character string
+ * \ref OFC_LPCSTR | Pointer to a constant character string
+ * \ref OFC_WORD | Represents a Generic Word
+ * \ref OFC_DWORD | Represents a Generic Double Word
+ * \ref OFC_DWORD_MASK | Mask for a double word
+ * \ref OFC_LPDWORD | Pointer to a DWORD
+ * \ref OFC_DWORD_PTR | Pointer to a DWORD
+ * \ref OFC_LPVOID | Pointer to a void type
+ * \ref OFC_PVOID | Pointer to a void type
+ * \ref OFC_LPCVOID | Pointer to a constant void type
+ * \ref OFC_TCHAR | A wide character
+ * \ref OFC_CTCHAR | A constant wide character
+ * \ref OFC_TACHAR | Default character (wide or normal)
+ * \ref OFC_CTACHAR | Default constant character (wide or normal)
+ * \ref OFC_LPTSTR | Pointer to wide character string
+ * \ref OFC_LPTASTR | Pointer to default character string (wide or normal)
+ * \ref OFC_LPCTSTR | Pointer to const wide character string
+ * \ref OFC_LPCTASTR | Pointer to default const character string (wide or normal)
+ * \ref OFC_MSTIME | Millisecond Time
+ * \ref TCHAR_BACKSLASH | Wide backslash
+ * \ref TCHAR_SLASH | Wide Forward Slash
+ * \ref TCHAR_COLON | Wide colon
+ * \ref TCHAR_EOS | Wide end of string
+ * \ref TCHAR_AMP | Wide apersand
+ * \ref TSTR | Form a wide character string
+ * \ref TCHAR | Form a wide character
+ * \ref TACHAR_BACKSLASH | Default backslash
+ * \ref TACHAR_SLASH | Default forward slash
+ * \ref TACHAR_COLON | Default colon
+ * \ref TACHAR_EOS | Default EOS
+ * \ref TACHAR_AMP | Default Ampersand
+ * \ref TASTR | Form a default string
+ * \ref TACHAR | Form a default char
+ * \ref OFC_UUID_LEN | Length of a UUID
+ * \ref OFC_UUID | Representation of a UUID
+ * \ref OFC_BOOL | Boolean
+ * \ref OFC_FALSE | False Value
+ * \ref OFC_TRUE | True Value
+ * \ref OFC_LOG_LEVEL | Level of Log Message
+ * \ref OFC_NULL | Null Pointer
+ * \ref OFC_IOVEC | Vectord Buffer
+ * \ref container_of | Get offset of member
  */
-
-/** \{ */
 
 /**
  * Represents the size of a string or structure
@@ -533,7 +618,7 @@ typedef OFC_UCHAR OFC_UUID[OFC_UUID_LEN];
 /**
  * Represents a Boolean value
  *
- * This shoudl be a 8 bit value on a windows system to be compatable with
+ * This should be a 8 bit value on a windows system to be compatable with
  * Windows BOOL
  */
 typedef OFC_UINT8 OFC_BOOL;
@@ -551,12 +636,18 @@ enum {
     OFC_TRUE = 1
 };
 
+/**
+ * Log Level
+ *
+ * Values that represent the criticality of a log message
+ * and the threshold of logging on the system
+ */
 typedef enum
   {
-    OFC_LOG_FATAL = 0,
-    OFC_LOG_WARN = 1,
-    OFC_LOG_INFO = 2,
-    OFC_LOG_DEBUG = 3,
+    OFC_LOG_FATAL = 0,		/*!< Fatal error  */
+    OFC_LOG_WARN = 1,		/*!< Warning  */
+    OFC_LOG_INFO = 2,		/*!< Info Level  */
+    OFC_LOG_DEBUG = 3,		/*!< Debug Only  */
   } OFC_LOG_LEVEL;
 
 /**
@@ -567,8 +658,8 @@ typedef enum
  * An IO Vector used by SASL
  */
 typedef struct _iovec {
-    OFC_LONG iov_len;
-    OFC_CHAR *iov_base;
+    OFC_LONG iov_len;		/*!< The Length of the region  */
+    OFC_CHAR *iov_base;		/*!< The base o the region  */
 } OFC_IOVEC;
 
 /**

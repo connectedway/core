@@ -9,7 +9,8 @@
 #include "ofc/core.h"
 #include "ofc/types.h"
 
-/**
+/** 
+ * \{
  * \defgroup heap Open Files Heap Handling
  *
  * Open Files provides routines that abstract heap functions.  A port
@@ -18,9 +19,24 @@
  *
  * The documentation of these APIs may include specific information relevant
  * only to the Open Files heap
+ *
+ * Heap Functions:
+ *
+ * Function | Description
+ * ---------|-------------
+ * \ref ofc_heap_load | Initialize Heap Subsystem
+ * \ref ofc_heap_unload | Deinitialize Heap Subsystem
+ * \ref ofc_free | Free a chunk of memory
+ * \ref ofc_heap_check_alloc | Check if a heap block is allocated
+ * \ref ofc_heap_dump_chunk | Dump info on heap chunk
+ * \ref ofc_malloc | Allocate a chunk
+ * \ref ofc_calloc | Allocate and initialize chunk
+ * \ref ofc_realloc | Realloc a chunk of memory
+ * \ref ofc_heap_dump_stats | Dump Heap Statistics
+ * \ref ofc_heap_dump | Dump info all all allocated chunks
+ * \ref ofc_heap_snap | Mark currently allocated memory as valid
  */
 
-/** \{ */
 #if defined(__cplusplus)
 extern "C"
 {
@@ -49,10 +65,22 @@ ofc_heap_unload(OFC_VOID);
  */
 OFC_CORE_LIB OFC_VOID
 ofc_free(OFC_LPVOID mem);
-
+  /**
+   * Check the allocation of a heap.
+   *
+   * This will crash if the memory is not allocated
+   *
+   * \param mem
+   * Pointer to memory chunk
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_heap_check_alloc(OFC_LPCVOID mem);
-
+  /**
+   * Dump the debug status of a memory chunk
+   *
+   * \param mem
+   * Pointer to memory chunk
+   */
 OFC_CORE_LIB OFC_VOID
 ofc_heap_dump_chunk(OFC_LPVOID mem);
 /**
@@ -68,7 +96,18 @@ ofc_heap_dump_chunk(OFC_LPVOID mem);
  */
 OFC_CORE_LIB OFC_LPVOID
 ofc_malloc(OFC_SIZET size);
-
+  /**
+   * Allocate and initiaize chunk of memory
+   *
+   * \param nmemb
+   * Number of structure to allocate
+   *
+   * \param size
+   * size of structure
+   *
+   * \returns
+   * Pointer to chunk
+   */
 OFC_CORE_LIB OFC_LPVOID
 ofc_calloc(OFC_SIZET nmemb, OFC_SIZET size);
 /**
