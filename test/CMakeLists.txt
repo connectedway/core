@@ -4,6 +4,11 @@ FetchContent_Declare(unity
         )
 FetchContent_MakeAvailable(unity)
 
+FetchContent_GetProperties(unity)
+if(NOT depname_POPULATED)
+  FetchContent_Populate(unity)
+endif()
+
 add_library(unityextras INTERFACE)
 target_link_libraries(unityextras INTERFACE unity)
 target_include_directories(unityextras INTERFACE
