@@ -263,7 +263,8 @@ ofc_xml_parse(OFC_VOID *parsertoken, OFC_CHAR *buf,
                     parser->state = XML_ENDTAG;
                 } else if (parser->state == XML_OPENTAG) {
                     parser->state = XML_ENDTAG;
-                } else
+                } else if ((parser->state == XML_XMLTAG) ||
+                           (parser->state == XML_ENDTAG))
                     *(parser->tagp++) = *p;
                 break;
             case '<':
