@@ -10,17 +10,18 @@
 #include "ofc/types.h"
 #include "ofc/message.h"
 #include "ofc/file_call.h"
+#include "ofc/process.h"
 
 OFC_CORE_LIB OFC_MESSAGE *of_file_call_create(OFC_VOID)
 {
   OFC_MESSAGE *msg;
 
   msg = ofc_message_create(MSG_ALLOC_HEAP, sizeof(FILE_CALL) + OFC_CALL_STACK_SIZE, OFC_NULL);
-  if (msg != OFC_NULL)
-    {
-      ofc_message_param_set (msg, 0, sizeof(FILE_CALL));
-      ofc_message_fifo_set (msg, (OFC_INT) sizeof(FILE_CALL), OFC_CALL_STACK_SIZE);
-    }
+  ofc_assert(msg != OFC_NULL, "Could not allocate msg for file_call\n");
+
+  ofc_message_param_set (msg, 0, sizeof(FILE_CALL));
+  ofc_message_fifo_set (msg, (OFC_INT) sizeof(FILE_CALL), OFC_CALL_STACK_SIZE);
+
   return (msg);
 }
 

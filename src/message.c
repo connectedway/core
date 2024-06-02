@@ -119,46 +119,44 @@ ofc_message_create(MSG_ALLOC_TYPE msgType, OFC_SIZET msgDataLength,
     OFC_INT i;
 
     msg = ofc_malloc(sizeof(OFC_MESSAGE));
-    if (msg == OFC_NULL)
-        ofc_process_crash("message: Couldn't alloc message\n");
-    else {
-        msg->destroy_after_send = OFC_FALSE;
-        msg->offset = 0;
-        msg->context = OFC_NULL;
-        msg->send_size = msgDataLength;
-        msg->count = msg->send_size;
-        msg->endian = MSG_ENDIAN_BIG;
-        msg->FIFO1base = 0;
-        msg->FIFO1 = 0;
-        msg->FIFO1size = 0;
-        msg->FIFO1rem = 0;
-        msg->base = 0;
-        msg->map = ofc_iovec_new();
-        msg->param_offset = 0;
-        if (msgData == OFC_NULL)
+
+    ofc_assert(msg != OFC_NULL, "message: Couldn't alloc message\n");
+
+    msg->destroy_after_send = OFC_FALSE;
+    msg->offset = 0;
+    msg->context = OFC_NULL;
+    msg->send_size = msgDataLength;
+    msg->count = msg->send_size;
+    msg->endian = MSG_ENDIAN_BIG;
+    msg->FIFO1base = 0;
+    msg->FIFO1 = 0;
+    msg->FIFO1size = 0;
+    msg->FIFO1rem = 0;
+    msg->base = 0;
+    msg->map = ofc_iovec_new();
+    msg->param_offset = 0;
+    if (msgData == OFC_NULL)
+      {
+        if (msgType == MSG_ALLOC_HEAP)
           {
-            if (msgType == MSG_ALLOC_HEAP)
-              {
-                ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_HEAP,
-                                 OFC_NULL, msgDataLength);
-              }
-            else
-              {
-                ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_STATIC,
-                                 OFC_NULL, msgDataLength);
-              }
+            ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_HEAP,
+                             OFC_NULL, msgDataLength);
           }
         else
           {
             ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_STATIC,
-                             msgData, msgDataLength);
+                             OFC_NULL, msgDataLength);
           }
+      }
+    else
+      {
+        ofc_iovec_insert(msg->map, 0, IOVEC_ALLOC_STATIC,
+                         msgData, msgDataLength);
+      }
 
 #if defined(OFC_MESSAGE_DEBUG)
-        if (msg != OFC_NULL)
-          ofc_message_debug_alloc(msg, RETURN_ADDRESS()) ;
+    ofc_message_debug_alloc(msg, RETURN_ADDRESS()) ;
 #endif
-    }
     return (msg);
 }
 

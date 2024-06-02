@@ -215,30 +215,31 @@ OFC_VOID OfcHandle16DebugDump (OFC_VOID)
 {
   HANDLE16_CONTEXT *handle ;
 
-  ofc_printf ("Handle 16 Dump\n") ;
-  ofc_printf ("Address of OfcHandle16DebugDump 0x%08x\n", OfcHandle16DebugDump) ;
+  ofc_log (OFC_LOG_DEBUG, "Handle 16 Dump\n") ;
+  ofc_log (OFC_LOG_DEBUG, "Handle 16 Count %d\n", handle16_count);
+  ofc_log (OFC_LOG_DEBUG, "Address of OfcHandle16DebugDump 0x%08x\n", OfcHandle16DebugDump) ;
 
 #if defined(__GNUC__)
-  ofc_printf ("%-10s %-10s %-10s %-10s %-10s\n", "Address",
+  ofc_log (OFC_LOG_DEBUG, "%-10s %-10s %-10s %-10s %-10s\n", "Address",
            "Caller1", "Caller2", "Caller3", "Caller4") ;
 
   for (handle = OfcHandle16Alloc ; handle != OFC_NULL ;
        handle = handle->dbgnext)
     {
-      ofc_printf ("%-10p %-10p %-10p %-10p %-10p\n", handle,
+      ofc_log (OFC_LOG_DEBUG, "%-10p %-10p %-10p %-10p %-10p %-10p\n", handle,
            handle->caller1, handle->caller2, handle->caller3,
-           handle->caller4) ;
+               handle->caller4, handle->ref) ;
     }
 #else
-  ofc_printf ("%-20s %-20s\n", "Address", "Caller") ;
+  ofc_log (OFC_LOG_DEBUG, "%-20s %-20s\n", "Address", "Caller") ;
 
   for (handle = OfcHandle16Alloc ; handle != OFC_NULL ; 
        handle = handle->dbgnext)
     {
-      ofc_printf ("%-20p %-20p\n", handle, handle->caller) ;
+      ofc_log (OFC_LOG_DEBUG, "%-20p %-20p\n", handle, handle->caller) ;
     }
 #endif
-  ofc_printf ("\n") ;
+  ofc_log (OFC_LOG_DEBUG, "\n") ;
 }
 
 #endif
@@ -518,6 +519,7 @@ OFC_CORE_LIB OFC_HANDLE16 ofc_handle16_create(OFC_VOID *context) {
         if (handle->instance == 0xFF || handle->instance == 0)
             handle->instance = 1;
         handle->alloc = OFC_TRUE;
+        ofc_assert(handle->ref == 0, "Handle16 ref not zero");
         handle->ref++;
         handle->context = context;
 #if defined(OFC_HANDLE_DEBUG)
