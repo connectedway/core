@@ -216,12 +216,11 @@ OFC_VOID OfcHandle16DebugDump (OFC_VOID)
   HANDLE16_CONTEXT *handle ;
 
   ofc_log (OFC_LOG_DEBUG, "Handle 16 Dump\n") ;
-  ofc_log (OFC_LOG_DEBUG, "Handle 16 Count %d\n", handle16_count);
   ofc_log (OFC_LOG_DEBUG, "Address of OfcHandle16DebugDump 0x%08x\n", OfcHandle16DebugDump) ;
 
 #if defined(__GNUC__)
-  ofc_log (OFC_LOG_DEBUG, "%-10s %-10s %-10s %-10s %-10s\n", "Address",
-           "Caller1", "Caller2", "Caller3", "Caller4") ;
+  ofc_log (OFC_LOG_DEBUG, "%-10s %-10s %-10s %-10s %-10s %-10s\n", "Address",
+           "Caller1", "Caller2", "Caller3", "Caller4", "Ref") ;
 
   for (handle = OfcHandle16Alloc ; handle != OFC_NULL ;
        handle = handle->dbgnext)
