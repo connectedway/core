@@ -52,11 +52,19 @@ ofc_heap_malloc_acct(OFC_SIZET size, struct heap_chunk *chunk) {
      * Put on the allocation queue
      */
     chunk->alloc_size = size;
-    ofc_lock(ofc_heap_stats.lock);
+    /*
+     * If heap_stats.lock is null, it's during initialization.
+     * skip locking
+     */
+    if (ofc_heap_stats.lock != OFC_NULL)
+      ofc_lock(ofc_heap_stats.lock);
+
     ofc_heap_stats.Total += size;
     if (ofc_heap_stats.Total >= ofc_heap_stats.Max)
         ofc_heap_stats.Max = ofc_heap_stats.Total;
-    ofc_unlock(ofc_heap_stats.lock);
+
+    if (ofc_heap_stats.lock != OFC_NULL)
+      ofc_unlock(ofc_heap_stats.lock);
 }
 
 static OFC_VOID
@@ -73,6 +81,10 @@ ofc_heap_load(OFC_VOID) {
 #if defined(OFC_HEAP_DEBUG)
     ofc_heap_stats.Allocated = OFC_NULL;
 #endif
+    /* Make NULL until we init the heap.  Since nothing
+     * is running, we don't need locks yet
+     */
+    ofc_heap_stats.lock = OFC_NULL;
     ofc_heap_init_impl();
     ofc_heap_stats.lock = ofc_lock_init();
 }
