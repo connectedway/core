@@ -98,6 +98,7 @@ set(OFC_HEADERS
     ${openfiles_BINARY_DIR}/ofc/config.h
     include/ofc/core.h
     include/ofc/file.h
+    include/ofc/framework.h
     include/ofc/fstype.h
     include/ofc/handle.h
     include/ofc/net.h

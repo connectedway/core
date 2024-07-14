@@ -7,6 +7,7 @@
 #define __OFC_CONFIG_H__
 
 #include "ofc/types.h"
+#include "ofc/framework.h"
 #include "ofc/net.h"
 #include "ofc/dom.h"
 
@@ -44,21 +45,6 @@ typedef enum {
     OFC_CONFIG_ICONFIG_MANUAL,    /**< Configure Network Manually  */
     OFC_CONFIG_ICONFIG_NUM
 } OFC_CONFIG_ICONFIG_TYPE;
-
-/**
- * Netbios Modes
- *
- * NetBIOS can operate in a number of different modes that govern whether
- * names are registered and resolved by broadcast, or by querying a WINS
- * server.
- */
-typedef enum {
-    OFC_CONFIG_BMODE = 0,    /**< Broadcast Mode  */
-    OFC_CONFIG_PMODE,        /**< WINS Mode  */
-    OFC_CONFIG_MMODE,        /**< Mixed Mode, Broadcast first  */
-    OFC_CONFIG_HMODE,        /**< Hybrid Mode, WINS first  */
-    OFC_CONFIG_MODE_MAX    /**< Number of Modes  */
-} OFC_CONFIG_MODE;
 
 #if defined(__cplusplus)
 extern "C"

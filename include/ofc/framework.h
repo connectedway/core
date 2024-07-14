@@ -11,7 +11,6 @@
 #include "ofc/core.h"
 #include "ofc/net.h"
 #include "ofc/path.h"
-#include "ofc/persist.h"
 #include "ofc/file.h"
 
 /**
@@ -73,6 +72,21 @@ typedef struct {
   OFC_INT num_wins;		//!< Number of Wins IP addresses
   OFC_IPADDR *winsaddr;		//!< Array of Wins IP addresses
 } OFC_FRAMEWORK_WINSLIST;
+
+/**
+ * Netbios Modes
+ *
+ * NetBIOS can operate in a number of different modes that govern whether
+ * names are registered and resolved by broadcast, or by querying a WINS
+ * server.
+ */
+typedef enum {
+    OFC_CONFIG_BMODE = 0,    /**< Broadcast Mode  */
+    OFC_CONFIG_PMODE,        /**< WINS Mode  */
+    OFC_CONFIG_MMODE,        /**< Mixed Mode, Broadcast first  */
+    OFC_CONFIG_HMODE,        /**< Hybrid Mode, WINS first  */
+    OFC_CONFIG_MODE_MAX    /**< Number of Modes  */
+} OFC_CONFIG_MODE;
 
 /**
  * An Interface Abstraction
