@@ -1726,7 +1726,7 @@ OFC_CORE_LIB OFC_VOID ofc_perist_set_logging(OFC_UINT log_level, OFC_BOOL log_co
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL)
       {
-        ofc_perist->log_level = log_level;
+        ofc_persist->log_level = log_level;
         ofc_persist->log_console = log_console;
       }
 }
