@@ -190,6 +190,12 @@ OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir, OFC_SIZET len)
 }
 
 OFC_CORE_LIB OFC_VOID
+ofc_framework_set_netbios(OFC_BOOL enabled)
+{
+  ofc_persist_set_netbios(enabled);
+}
+
+OFC_CORE_LIB OFC_VOID
 ofc_framework_set_host_name(OFC_LPCTSTR name, OFC_LPCTSTR workgroup,
                             OFC_LPCTSTR desc) {
     ofc_persist_set_node_name(name, workgroup, desc);
@@ -278,6 +284,12 @@ OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_root_dir(OFC_VOID) {
 
 OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir(OFC_LPTSTR str) {
     ofc_free(str);
+}
+
+OFC_CORE_LIB OFC_VOID ofc_framework_set_logging(OFC_UINT log_level, OFC_BOOL log_console)
+
+{
+  ofc_perist_set_logging(log_level, log_console);
 }
 
 OFC_VOID ofc_framework_set_interface_discovery(OFC_BOOL on) {

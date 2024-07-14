@@ -50,6 +50,7 @@
  * \ref ofc_framework_free_uuid | Free the uuid
  * \ref ofc_framework_get_root_dir | Get the root directory of stack
  * \ref ofc_framework_free_root_dir | Free the root directory string
+ * \ref ofc_framework_set_logging | Set logging behavior
  * \ref ofc_framework_set_interface_discovery | Should stack get network config from underlying system
  * \ref ofc_framework_get_interface_discovery | Get state of discovery
  * \ref ofc_framework_add_interface | Add an interface to stack
@@ -239,6 +240,14 @@ OFC_CORE_LIB OFC_BOOL ofc_get_config_dir(OFC_TCHAR *config_dir,
 OFC_CORE_LIB OFC_VOID ofc_set_config_path(OFC_TCHAR *filename);
 
 /**
+ * Enable/Disable NetBIOS
+ *
+ * \param enabled
+ * If OFC_TRUE, enable netbios, if OFC_FALSE, disable
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_framework_set_netbios(OFC_BOOL enabled);
+/**
  * Set the host name of the running instance
  *
  * Mostly used to set the server name but this will also set the
@@ -344,6 +353,22 @@ OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_root_dir(OFC_VOID);
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir(OFC_LPTSTR str);
 
+/**
+ * Set the logging behavior of Openfiles
+ *
+ * \param log_level
+ * The log level to capture.  All log levels less than or equal to this level will be captured.  Those greater
+ * will be ignored. \sa OFC_LOG_LEVEL
+ *
+ * \param log_console
+ * Set to OFC_TRUE if log messages should be output to console
+ *
+ * \note
+ * On Linux, captured logs are output to the syslog.  On Android, captured logs are output to the application's
+ * file directory.  On Windows, log file is written to the file "openfiles.log" in the current directory.
+ * On other platforms, see ConnectedWay support
+ */
+OFC_CORE_LIB OFC_VOID ofc_framework_set_logging(OFC_UINT log_level, OFC_BOOL log_console);
 /**
  * Set whether the stack should query the underlying platform for
  * available interfaces and IP addresses or whether the network

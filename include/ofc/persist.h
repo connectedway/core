@@ -212,6 +212,23 @@ ofc_persist_set_uuid(OFC_UUID *uuid);
  */
 OFC_CORE_LIB OFC_VOID
 ofc_persist_uuid(OFC_UUID *uuid);
+
+/**
+ * Set the logging behavior of Openfiles
+ *
+ * \param log_level
+ * The log level to capture.  All log levels less than or equal to this level will be captured.  Those greater
+ * will be ignored. \sa OFC_LOG_LEVEL
+ *
+ * \param log_console
+ * Set to OFC_TRUE if log messages should be output to console
+ *
+ * \note
+ * On Linux, captured logs are output to the syslog.  On Android, captured logs are output to the application's
+ * file directory.  On Windows, log file is written to the file "openfiles.log" in the current directory.
+ * On other platforms, see ConnectedWay support
+ */
+OFC_CORE_LIB OFC_VOID ofc_perist_set_logging(OFC_UINT log_level, OFC_BOOL log_console);
 /**
  * Set the Interface Configuration Mode
  *
