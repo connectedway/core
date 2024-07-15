@@ -91,6 +91,7 @@
  * \ref ofc_framework_save | Save Configuration to File
  * \ref ofc_framework_savebuf | Save Configuration to a buffer
  * \ref ofc_get_config_dir | Return directory of Configuration File
+ * \ref ofc_framework_set_netbios | Enable/Disable Netbios
  * \ref ofc_framework_set_host_name | Set the hostname
  * \ref ofc_framework_get_host_name | Get the host name of the system
  * \ref ofc_framework_free_host_name | Free hostname returned from ofc_get_host_name
