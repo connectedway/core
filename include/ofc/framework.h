@@ -17,11 +17,65 @@
  * \{
  * \defgroup framework Core Open Files Management APIs
  *
- * These APIs are for advanced use cases.  Assuming the build has been
- * configured with INIT_ON_LOAD, and OFC_PERSIST has also been configured
- * so that runtime configuration of the stack is restored from the 
- * runtime configuration file, there should be no need for an application
- * developer to call any of these routines.
+ * These APIs are for advanced use cases and manual initialization,
+ * configuration, and startup.  These APIs are generally not needed
+ * if the build is configured with INIT_ON_LOAD and OFC_PERSIST.
+ * Embedded devices without a file system, or that wish to control
+ * the stacks startup can build without those two build settings and
+ * use the apis available in here.  For an example of manual
+ * initialization, configuration, and startup, see \ref smbinit.c.
+ *
+ * There are three operations involved in starting up an Open Files
+ * stack:
+ *
+ *   - Initialize the Open Files state
+ *   - Configure the Open Files Stack
+ *   - Start up the stack
+ *
+ * Open Files (ConnectSMB) can implicitly initialize, configure and startup
+ * the stack, or the steps can be executed explicitly.
+ *
+ * The behavior is governed by two config variables.
+ * The config file used in the build (<platform>-behavior.cfg) contains two
+ * variables:
+ *
+ * INIT_ON_LOAD - Initialize libraries on load
+ * OFC_PERSIST - Build in persistent configuration support.
+ *
+ * If INIT_ON_LOAD is ON, OpenFiles will be initialized upon
+ * library load, the stack will be configured through the default configuration
+ * file, and the stack will be subsequently be sstarted.
+ *
+ * If INIT_ON_LOAD is OFF, an application will need to explicitly initialize
+ * both the core framework and the smb framework, configure the stack
+ * either through the persistent framework or explicitly through API calls, and
+ * then must manually startup the stack.
+ *
+ * A runtime application can examine the state of these configuration 
+ * variables which will be defined within the include file "ofc/config.h".
+ *
+ * If INIT_ON_LOAD is defined, then the stack will be implicitly initialized
+ * upon library load.  If INIT_ON_LOAD is undefined, the application must 
+ * perform the initialization, configuration, and startup itself.
+ *
+ * If the application is performing explicit initialization, it needs to
+ * configure the stack.  It can check whether OFC_PERSIST is defined or not.
+ * If it is defined, then the ability to configure the stack through a
+ * configuration file is supported.  Whether or not the configuration file
+ * has been set up or not is a deployment consideration.  If the platform
+ * supports OFC_PERSIST and the deployment has provided a configuration
+ * file, then the configuration can be loaded and stack subsequently
+ * configured from the loaded config, or the application can explicity
+ * configure the stack through APIs.  If OFC_PERSIST is not defined, the
+ * only way to configure the stack will be through the APIs.
+ *
+ * Lastly, if the application is performing it's own explicit initialization,
+ * it must start the stack after it has been configured.
+ *
+ * If the build has been configured with INIT_ON_LOAD, and OFC_PERSIST has
+ * also been configured so that runtime configuration of the stack is
+ * restored from the runtime configuration file, there should be no need
+ * for an application developer to call any of these routines.
  *
  * These APIs should be used if manual configuration of the stack is
  * required.
