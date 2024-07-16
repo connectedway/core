@@ -91,7 +91,7 @@ ofc_heap_load(OFC_VOID) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_heap_unload(OFC_VOID) {
-#if !defined(OF_SMB_SERVER) && !defined(OF_SMB_CLIENT)
+#if !defined(OF_SMB_SERVER)
     /* The client or server doesn't shutdown */
     OFC_LOCK save;
     save = ofc_heap_stats.lock;
