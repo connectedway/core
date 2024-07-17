@@ -190,7 +190,12 @@ extern "C"
  * Initialize the Open iles Stack
  *
  * This routine should be called before any other OpenFiles
- * function.  It initializes heap and other variables
+ * function.  It initializes heap and other variables.
+ *
+ * If the build param INIT_ON_LOAD is defined, the routine
+ * will implicitly be called when the library is loaded.  
+ * In that case, there is no need for the application to call
+ * it.
  */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_init(OFC_VOID);
@@ -200,6 +205,9 @@ ofc_framework_init(OFC_VOID);
  *
  * This will release all memory and destroy the heap.  The state of the
  * application should be as if Open Files has not been run.
+ *
+ * If INIT_ON_LOAD is defined, there is no need to call thi
+ * function.
  */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_destroy(OFC_VOID);
@@ -209,7 +217,11 @@ ofc_framework_destroy(OFC_VOID);
  *
  * This routine should be called after the stack has been
  * initialized and after all configuration has been performed.
- * It will start the various components running
+ * It will start the various components running.
+ *
+ * If INIT_ON_LOAD is defined, this function will be
+ * called implicitly.  In that case, the application need not
+ * call this function.
  */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_startup(OFC_VOID);
@@ -227,6 +239,12 @@ ofc_framework_startup_ev(OFC_HANDLE hScheduler, OFC_HANDLE hEvent);
 
 /**
  * Shutdown the OpenFiles Components
+ *
+ * Thi function will gracefully bring down core components
+ * of the Open Files stack.  If INIT_ON_LOAD is defined,
+ * then this function will be called implicitly when the
+ * application is unloaded.  In that case, there would be
+ * no reason to call this routine.
  */
 OFC_CORE_LIB OFC_VOID
 ofc_framework_shutdown(OFC_VOID);
