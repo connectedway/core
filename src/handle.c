@@ -14,6 +14,7 @@
 #include "ofc/waitset.h"
 #include "ofc/thread.h"
 #include "ofc/process.h"
+#include "ofc/backtrace.h"
 
 #include "ofc/impl/waitsetimpl.h"
 
@@ -58,14 +59,10 @@ typedef struct _HANDLE_CONTEXT {
 #if defined(OFC_HANDLE_DEBUG)
     struct _HANDLE_CONTEXT * dbgnext ;
     struct _HANDLE_CONTEXT * dbgprev ;
-#if defined(__GNUC__)
     OFC_VOID *caller1 ;
     OFC_VOID *caller2 ;
     OFC_VOID *caller3 ;
     OFC_VOID *caller4 ;
-#else
-    OFC_VOID *caller ;
-#endif
 #endif
 } HANDLE_CONTEXT;
 
@@ -78,14 +75,10 @@ typedef struct _HANDLE16_CONTEXT {
 #if defined(OFC_HANDLE_DEBUG)
     struct _HANDLE16_CONTEXT * dbgnext ;
     struct _HANDLE16_CONTEXT * dbgprev ;
-#if defined(__GNUC__)
     OFC_VOID *caller1 ;
     OFC_VOID *caller2 ;
     OFC_VOID *caller3 ;
     OFC_VOID *caller4 ;
-#else
-    OFC_VOID *caller ;
-#endif
 #endif
 } HANDLE16_CONTEXT;
 
@@ -105,6 +98,7 @@ OFC_VOID OfcHandleDebugInit (OFC_VOID)
 
 OFC_VOID OfcHandleDebugAlloc (HANDLE_CONTEXT *handle, OFC_VOID *ret)
 {
+  void *trace[8];
   /*
    * Put on the allocation queue
    */
@@ -114,15 +108,15 @@ OFC_VOID OfcHandleDebugAlloc (HANDLE_CONTEXT *handle, OFC_VOID *ret)
     OfcHandleAlloc->dbgprev = handle ;
   OfcHandleAlloc = handle ;
   handle->dbgprev = OFC_NULL ;
+
+  ofc_backtrace(trace, 8);
+
+  handle->caller1 = trace[4];
+  handle->caller2 = trace[5];
+  handle->caller3 = trace[6];
+  handle->caller4 = trace[7];
+
   ofc_unlock (HandleLock) ;
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
-  handle->caller1 = __builtin_return_address(1) ;
-  handle->caller2 = __builtin_return_address(2) ;
-  handle->caller3 = __builtin_return_address(3) ;
-  handle->caller4 = __builtin_return_address(4) ;
-#else
-  handle->caller = ret ;
-#endif
 }
 
 OFC_VOID ofc_handle_debug_free (HANDLE_CONTEXT *handle)
@@ -170,6 +164,7 @@ OFC_VOID ofc_handle_debug_dump (OFC_VOID)
 
 OFC_VOID OfcHandle16DebugAlloc (HANDLE16_CONTEXT *handle, OFC_VOID *ret)
 {
+  void *trace[8];
   /*
    * Put on the allocation queue
    */
@@ -179,19 +174,20 @@ OFC_VOID OfcHandle16DebugAlloc (HANDLE16_CONTEXT *handle, OFC_VOID *ret)
     OfcHandle16Alloc->dbgprev = handle ;
   OfcHandle16Alloc = handle ;
   handle->dbgprev = OFC_NULL ;
+
+  ofc_backtrace(trace, 8);
+
+  handle->caller1 = trace[4];
+  handle->caller2 = trace[5];
+  handle->caller3 = trace[6];
+  handle->caller4 = trace[7];
+
   ofc_unlock (HandleLock) ;
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
-  handle->caller1 = __builtin_return_address(1) ;
-  handle->caller2 = __builtin_return_address(2) ;
-  handle->caller3 = __builtin_return_address(3) ;
-  handle->caller4 = __builtin_return_address(4) ;
-#else
-  handle->caller = ret ;
-#endif
 }
 
 OFC_VOID OfcHandle16DebugFree (HANDLE16_CONTEXT *handle)
 {
+  void *trace[8];
   /*
    * Pull off the allocation queue
    */
@@ -202,12 +198,14 @@ OFC_VOID OfcHandle16DebugFree (HANDLE16_CONTEXT *handle)
     OfcHandle16Alloc = handle->dbgnext ;
   if (handle->dbgnext != OFC_NULL)
     handle->dbgnext->dbgprev = handle->dbgprev ;
-#if defined(__GNUC__) && defined(OFC_STACK_TRACE)
-  handle->caller1 = __builtin_return_address(1) ;
-  handle->caller2 = __builtin_return_address(2) ;
-  handle->caller3 = __builtin_return_address(3) ;
-  handle->caller4 = __builtin_return_address(4) ;
-#endif
+
+  ofc_backtrace(trace, 8);
+
+  handle->caller1 = trace[4];
+  handle->caller2 = trace[5];
+  handle->caller3 = trace[6];
+  handle->caller4 = trace[7];
+
   ofc_unlock (HandleLock) ;
 }
 
