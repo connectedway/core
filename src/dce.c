@@ -247,7 +247,7 @@ of_dce_read_message(OFC_HANDLE hFile)
 
   status = OFC_FALSE ;
   dceMessage = ofc_message_create (MSG_ALLOC_HEAP, DCE_HDR_SIZE, OFC_NULL) ;
-  if (dceMessage != OFC_HANDLE_NULL)
+  if (dceMessage != OFC_NULL)
     {
       ofc_message_set_endian (dceMessage, MSG_ENDIAN_LITTLE) ;
       /*
@@ -293,7 +293,7 @@ of_dce_read_message(OFC_HANDLE hFile)
   status = OFC_FALSE ;
   dceMessage = ofc_message_create (MSG_ALLOC_HEAP, 
 				  OFC_CALL_STACK_SIZE, OFC_NULL) ;
-  if (dceMessage != OFC_HANDLE_NULL)
+  if (dceMessage != OFC_NULL)
     {
       ofc_message_set_endian (dceMessage, MSG_ENDIAN_LITTLE) ;
       /*
@@ -342,7 +342,7 @@ of_dce_transact(OFC_HANDLE hFile, OFC_MESSAGE *dceMessage)
   
   response = ofc_message_create (MSG_ALLOC_HEAP, 
 				OFC_CALL_STACK_SIZE, OFC_NULL) ;
-  if (response != OFC_HANDLE_NULL)
+  if (response != OFC_NULL)
     {
       ofc_message_set_endian (response, MSG_ENDIAN_LITTLE) ;
 
