@@ -1048,7 +1048,7 @@ OFC_BOOL ServiceWrite(OFC_CLIENT_TEST *clientTest) {
     /*
      * Create a message to hold the header and data
      */
-    if (clientTest->write_msg == OFC_HANDLE_NULL) {
+    if (clientTest->write_msg == OFC_NULL) {
         size = ofc_strlen(CLIENT_MSG_DATA);
         clientTest->write_msg = ofc_message_create(MSG_ALLOC_HEAP,
                                                    CLIENT_MSG_HEADER_LEN + size,
@@ -1156,7 +1156,7 @@ static OFC_VOID ClientTestPreSelect(OFC_HANDLE app) {
                      * events
                      */
                     event_types = OFC_SOCKET_EVENT_CLOSE;
-                    if (clientTest->write_msg == OFC_HANDLE_NULL)
+                    if (clientTest->write_msg == OFC_NULL)
                         event_types |= OFC_SOCKET_EVENT_WRITE;
                     ofc_socket_enable(clientTest->hSocket, event_types);
 
