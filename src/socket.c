@@ -526,7 +526,7 @@ ofc_socket_read(OFC_HANDLE hSocket, OFC_MESSAGE *msg) {
 
     socket = ofc_handle_lock(hSocket);
     progress = OFC_FALSE;
-    if (socket != OFC_HANDLE_NULL) {
+    if (socket != OFC_NULL) {
         len = 0;
         if (msg->count > 0)
           {

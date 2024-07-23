@@ -63,7 +63,7 @@ OFC_VOID measurement_wait(struct perf_measurement *measurement)
 {
   OFC_HANDLE wait_event;
 
-  if (measurement != OFC_HANDLE_NULL)
+  if (measurement != OFC_NULL)
     {
       wait_event = ofc_event_create(OFC_EVENT_AUTO);
       measurement_stop(measurement, wait_event);
