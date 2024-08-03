@@ -102,6 +102,7 @@ set(OFC_HEADERS
     include/ofc/fstype.h
     include/ofc/handle.h
     include/ofc/net.h
+    include/ofc/process.h
     include/ofc/queue.h
     include/ofc/types.h
     include/ofc/waitset.h
