@@ -17,6 +17,8 @@
 #include "ofc/backtrace.h"
 #include "ofc/impl/heapimpl.h"
 
+#undef BACKTRACE_SYM
+
 struct heap_chunk {
     OFC_SIZET alloc_size;
 #if defined(OFC_HEAP_DEBUG)
@@ -25,10 +27,17 @@ struct heap_chunk {
     OFC_BOOL snap;
 
 #if (defined(__GNUC__) || defined(__clang__)) && defined(OFC_STACK_TRACE)
+#if defined(BACKTRACE_SYM)
+    OFC_CHAR caller1[120];
+    OFC_CHAR caller2[120];
+    OFC_CHAR caller3[120];
+    OFC_CHAR caller4[120];
+#else
     OFC_VOID *caller1;
     OFC_VOID *caller2;
     OFC_VOID *caller3;
     OFC_VOID *caller4;
+#endif
 #else
     OFC_VOID *caller ;
 #endif
@@ -106,7 +115,11 @@ ofc_heap_unload(OFC_VOID) {
 static OFC_VOID
 ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk)
 {
+#if defined(BACKTRACE_SYM)
+    char **trace;
+#else
     void *trace[8];
+#endif
 
     ofc_lock(ofc_heap_stats.lock);
     chunk->dbgnext = ofc_heap_stats.Allocated;
@@ -115,12 +128,27 @@ ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk)
     ofc_heap_stats.Allocated = chunk;
     chunk->dbgprev = 0;
 
+#if defined(BACKTRACE_SYM)
+    ofc_backtrace_sym(&trace, 8);
+
+    ofc_strncpy(chunk->caller1, trace[4], 119);
+    chunk->caller1[120] = '\0';
+    ofc_strncpy(chunk->caller2, trace[5], 119);
+    chunk->caller2[120] = '\0';
+    ofc_strncpy(chunk->caller3, trace[6], 119);
+    chunk->caller3[120] = '\0';
+    ofc_strncpy(chunk->caller4, trace[7], 119);
+    chunk->caller4[120] = '\0';
+
+    ofc_backtrace_sym_free(trace);
+#else
     ofc_backtrace(trace, 8);
 
     chunk->caller1 = trace[4];
     chunk->caller2 = trace[5];
     chunk->caller3 = trace[6];
     chunk->caller4 = trace[7];
+#endif
 
     chunk->snap = OFC_FALSE;
 
@@ -133,7 +161,11 @@ ofc_heap_debug_alloc(OFC_SIZET size, struct heap_chunk *chunk)
 
 static OFC_VOID
 ofc_heap_debug_free(struct heap_chunk *chunk) {
+#if defined(BACKTRACE_SYM)
+    char **trace;
+#else
     void *trace[8];
+#endif
     /*
      * Pull off the allocation queue
      */
@@ -162,19 +194,38 @@ ofc_heap_debug_free(struct heap_chunk *chunk) {
     if (chunk->dbgnext != OFC_NULL)
         chunk->dbgnext->dbgprev = chunk->dbgprev;
 
+#if defined(BACKTRACE_SYM)
+    ofc_backtrace_sym(&trace, 8);
+
+    ofc_strncpy(chunk->caller1, trace[4], 119);
+    chunk->caller1[120] = '\0';
+    ofc_strncpy(chunk->caller2, trace[5], 119);
+    chunk->caller2[120] = '\0';
+    ofc_strncpy(chunk->caller3, trace[6], 119);
+    chunk->caller3[120] = '\0';
+    ofc_strncpy(chunk->caller4, trace[7], 119);
+    chunk->caller4[120] = '\0';
+
+    ofc_backtrace_sym_free(trace);
+#else
     ofc_backtrace(trace, 8);
 
     chunk->caller1 = trace[4];
     chunk->caller2 = trace[5];
     chunk->caller3 = trace[6];
     chunk->caller4 = trace[7];
+#endif
 
     ofc_unlock(ofc_heap_stats.lock);
 }
 
 #endif
 
+#if defined(BACKTRACE_SYM)
+#define OBUF_SIZE 1024
+#else
 #define OBUF_SIZE 200
+#endif
 OFC_CORE_LIB OFC_VOID
 ofc_heap_dump_stats(OFC_VOID) {
 #if defined(OFC_HEAP_DEBUG)
@@ -205,10 +256,16 @@ ofc_heap_dump(OFC_VOID) {
         ofc_write_console(obuf);
     } else {
 
+#if defined(BACKTRACE_SYM)
+        len = ofc_snprintf(obuf, OBUF_SIZE,
+                           "%-16s %-10s %-16s\n",
+                           "Address", "Size", "Trace");
+#else
         len = ofc_snprintf(obuf, OBUF_SIZE,
                            "%-16s %-10s %-16s %-16s %-16s %-16s\n",
                            "Address", "Size", "Caller1", "Caller2", "Caller3",
                            "Caller4");
+#endif
         ofc_write_console(obuf);
     }
 
@@ -217,24 +274,38 @@ ofc_heap_dump(OFC_VOID) {
          chunk != OFC_NULL;
          chunk = chunk->dbgnext) {
         if (!chunk->snap) {
-#if defined(__cyg_profile)
-            len = ofc_snprintf (obuf, OBUF_SIZE,
-                         "%0-16p %-10d %0-16s %0-16s %0-16s %0-16s\n",
-                         chunk+1, (OFC_INT) chunk->alloc_size,
-                         __cyg_profile_addr2sym(chunk->caller1),
-                         __cyg_profile_addr2sym(chunk->caller2),
-                         __cyg_profile_addr2sym(chunk->caller3),
-                         __cyg_profile_addr2sym(chunk->caller4)) ;
+#if defined(BACKTRACE_SYM)
+	  len = ofc_snprintf(obuf, OBUF_SIZE,
+			     "%0-16p %-10d\n"
+			     "                           %s\n"
+			     "                           %s\n"
+			     "                           %s\n"
+			     "                           %s\n",
+			     chunk + 1, (OFC_INT) chunk->alloc_size,
+			     chunk->caller1,
+			     chunk->caller2,
+			     chunk->caller3,
+			     chunk->caller4);
 #else
-            len = ofc_snprintf(obuf, OBUF_SIZE,
-                               "%0-16p %-10d %0-16p %0-16p %0-16p %0-16p\n",
-                               chunk + 1, (OFC_INT) chunk->alloc_size,
-			       ofc_process_relative_addr(chunk->caller1),
-			       ofc_process_relative_addr(chunk->caller2),
-			       ofc_process_relative_addr(chunk->caller3),
-			       ofc_process_relative_addr(chunk->caller4));
+#if defined(__cyg_profile)
+	  len = ofc_snprintf (obuf, OBUF_SIZE,
+			      "%0-16p %-10d %0-16s %0-16s %0-16s %0-16s\n",
+			      chunk+1, (OFC_INT) chunk->alloc_size,
+			      __cyg_profile_addr2sym(chunk->caller1),
+			      __cyg_profile_addr2sym(chunk->caller2),
+			      __cyg_profile_addr2sym(chunk->caller3),
+			      __cyg_profile_addr2sym(chunk->caller4)) ;
+#else
+	  len = ofc_snprintf(obuf, OBUF_SIZE,
+			     "%0-16p %-10d %0-16p %0-16p %0-16p %0-16p\n",
+			     chunk + 1, (OFC_INT) chunk->alloc_size,
+			     ofc_process_relative_addr(chunk->caller1),
+			     ofc_process_relative_addr(chunk->caller2),
+			     ofc_process_relative_addr(chunk->caller3),
+			     ofc_process_relative_addr(chunk->caller4));
 #endif
-            ofc_write_console(obuf);
+#endif
+	  ofc_write_console(obuf);
         }
     }
     ofc_unlock(ofc_heap_stats.lock);
@@ -296,12 +367,26 @@ ofc_heap_dump_chunk(OFC_LPVOID mem) {
         chunk = mem;
         chunk--;
 
+
+#if defined(BACKTRACE_SYM)
+	ofc_printf("%0-16p %-10d\n"
+		   "                           %s\n"
+		   "                           %s\n"
+		   "                           %s\n"
+		   "                           %s\n",
+		   chunk + 1, (OFC_INT) chunk->alloc_size,
+		   chunk->caller1,
+		   chunk->caller2,
+		   chunk->caller3,
+		   chunk->caller4);
+#else
 	ofc_printf("%0-16p %-10d %0-16p %0-16p %0-16p %0-16p\n",
 		   chunk + 1, (OFC_INT) chunk->alloc_size,
 		   ofc_process_relative_addr(chunk->caller1),
 		   ofc_process_relative_addr(chunk->caller2),
 		   ofc_process_relative_addr(chunk->caller3),
 		   ofc_process_relative_addr(chunk->caller4));
+#endif	
     }
 #endif
 #endif
