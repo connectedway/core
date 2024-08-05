@@ -13,7 +13,7 @@ OFC_VOID ofc_backtrace(OFC_VOID **trace, OFC_SIZET len)
   ofc_backtrace_impl(trace, len);
 }
 
-#if !defined(__ANDROID__) && (defined(__linux__)
+#if !defined(__ANDROID__) && defined(__linux__)
 OFC_VOID ofc_backtrace_sym(OFC_CHAR ***trace, OFC_SIZET len)
 {
   return(ofc_backtrace_sym_impl(trace, len));

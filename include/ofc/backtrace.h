@@ -13,7 +13,7 @@ extern "C"
 {
 #endif
   OFC_VOID ofc_backtrace(OFC_VOID **trace, OFC_SIZET len);
-#if !defined(__ANDROID__) && (defined(__linux__)
+#if !defined(__ANDROID__) && defined(__linux__)
   OFC_VOID ofc_backtrace_sym(OFC_CHAR ***trace, OFC_SIZET len);
   OFC_VOID ofc_backtrace_sym_free(OFC_CHAR **trace);
 #endif
