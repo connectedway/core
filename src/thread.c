@@ -84,12 +84,14 @@ ofc_thread_set_variable(OFC_DWORD var, OFC_DWORD_PTR val) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_thread_create_local_storage(OFC_VOID) {
-    ofc_thread_create_local_storage_impl();
+  ofc_thread_create_local_storage_impl();
+  OfcFileThreadInit();
 }
 
 OFC_CORE_LIB OFC_VOID
 ofc_thread_destroy_local_storage(OFC_VOID) {
-    ofc_thread_destroy_local_storage_impl();
+  OfcFileThreadDeinit();
+  ofc_thread_destroy_local_storage_impl();
 }
 
 OFC_CORE_LIB OFC_VOID
