@@ -1619,6 +1619,16 @@ extern "C"
  */
 OFC_CORE_LIB OFC_VOID
 OfcFileInit(OFC_VOID);
+/**
+ * Initialize File Local Storage for Threads
+ */
+OFC_CORE_LIB OFC_VOID
+OfcFileThreadInit(OFC_VOID);
+/**
+ * Deinitialize File Local Storage for Threads
+ */
+OFC_CORE_LIB OFC_VOID
+OfcFileThreadDeinit(OFC_VOID);
 
 OFC_CORE_LIB OFC_VOID
 OfcFileDestroy(OFC_VOID);
@@ -2443,6 +2453,40 @@ OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl(OFC_HANDLE hFile,
                                          OFC_LPDWORD lpBytesReturned,
                                          OFC_HANDLE hOverlapped);
 
+/**
+ * Set the Current Directory
+ * 
+ * This will set the default directory for relative file paths
+ *
+ * \param lpPathName
+ * A path that includes the server URL
+ *
+ * \returns
+ * Status. Non-zero if succeeds, zero if failed.  (See OfcGetLasstError)
+ */
+OFC_CORE_LIB OFC_BOOL OfcSetCurrentDirectoryW(OFC_LPCTSTR lpPathName);
+OFC_CORE_LIB OFC_BOOL OfcSetCurrentDirectoryA(OFC_LPCSTR lpPathName);
+/**
+ * Get the Current Directory
+ * 
+ * This will return the default directory for relative file paths
+ *
+ * \param nBufferLength,
+ * Size of buffer to return the current directory to
+ * 
+ * \param lpBuffer
+ * Buffer to write the current directory to
+ *
+ * \returns
+ * Number of characters in the buffer (not including terminating char) or zero
+ * if it failed (See OfcGetLastError)
+ */
+OFC_CORE_LIB OFC_DWORD OfcGetCurrentDirectoryW(OFC_DWORD nBufferLength,
+					       OFC_LPTSTR lpBuffer);
+OFC_CORE_LIB OFC_DWORD OfcGetCurrentDirectoryA(OFC_DWORD nBufferLength,
+					       OFC_LPSTR lpBuffer);
+
+
 #if defined(__cplusplus)
 }
 #endif
@@ -2539,7 +2583,20 @@ OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl(OFC_HANDLE hFile,
  * \see OfcDismountA
  */
 #define OfcDismount OfcDismountW
-
+/**
+ * Set the Current Directory
+ *
+ * \see OfcSetCurrentDirectoryW
+ * \see OfcSetCurrentDirectoryA
+ */
+#define OfcSetCurrentDirectory OfcSetCurrentDirectoryW
+/**
+ * Get the Current Directory
+ *
+ * \see OfcGetCurrentDirectoryW
+ * \see OfcGetCurrentDirectoryA
+ */
+#define OfcGetCurrentDirectory OfcGetCurrentDirectoryW
 /**
  * \see OFC_WIN32_FIND_DATAW
  * \see OFC_WIN32_FIND_DATAA
@@ -2565,6 +2622,8 @@ OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl(OFC_HANDLE hFile,
 #define OfcGetDiskFreeSpace OfcGetDiskFreeSpaceA
 #define OfcGetVolumeInformation OfcGetVolumeInformationA
 #define OfcDismount OfcDismountA
+#define OfcSetCurrentDirectory OfcSetCurrentDirectoryA
+#define OfcGetCurrentDirectory OfcGetCurrentDirectoryA
 
 #define OFC_WIN32_FIND_DATA OFC_WIN32_FIND_DATAA
 #define OFC_LPWIN32_FIND_DATA OFC_LPWIN32_FIND_DATAA
