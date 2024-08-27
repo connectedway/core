@@ -104,6 +104,7 @@ set(OFC_HEADERS
     include/ofc/net.h
     include/ofc/process.h
     include/ofc/queue.h
+    include/ofc/thread.h
     include/ofc/types.h
     include/ofc/waitset.h
     include/ofc/path.h

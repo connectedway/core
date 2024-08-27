@@ -216,7 +216,8 @@ ofc_thread_set_wait(OFC_HANDLE hThread, OFC_HANDLE wait_set);
 }
 #endif
 /** \} */
+#if !defined(NO_RETURN)
 #include "impl/threadimpl.h"
-
+#endif
 #endif
 
