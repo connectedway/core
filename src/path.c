@@ -844,6 +844,7 @@ OFC_CORE_LIB OFC_PATH *ofc_map_path(OFC_LPCTSTR lpFileName,
 		path = ofc_path_createW(lpNewFileName);
 		ofc_free(lpNewFileName);
 	      }
+	    ofc_free(current_directory);
 	  }
       }
 

@@ -3333,6 +3333,8 @@ OFC_INT test_file(OFC_LPCSTR test_root)
         ofc_sleep(OFC_FS_TEST_INTERVAL);
     }
 
+  ofc_thread_destroy_local_storage();
+
   ofc_free(device);
   return (0);
 }

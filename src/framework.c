@@ -96,10 +96,8 @@ OFC_LOAD_CORE OFC_VOID ofc_load(OFC_VOID)
   
 OFC_UNLOAD_CORE OFC_VOID ofc_unload(OFC_VOID)
 {
-#if !defined(OF_SMB_CLIENT) && !defined(OF_SMB_SERVER)
   ofc_framework_shutdown();
   ofc_framework_destroy();
-#endif
 }
 
 OFC_CORE_LIB OFC_VOID ofc_framework_load(OFC_LPCTSTR filename)
