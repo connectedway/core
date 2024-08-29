@@ -36,20 +36,24 @@ static OFC_LPTSTR config_filename = OFC_NULL;
 
 /** \{ */
 
-OFC_CORE_LIB OFC_VOID
-ofc_framework_init(OFC_VOID) {
-    /*
-     * Load Open Files if not done as part of library load
-     */
-    ofc_core_load();
+OFC_HANDLE framework_scheduler = OFC_HANDLE_NULL;
 
-    /*
-     * Print out the banner
-     */
-    ofc_log(OFC_LOG_INFO, "OpenFiles (%s) %d.%d %s\n",
-	    OFC_SHARE_VARIANT,
-	    OFC_SHARE_MAJOR, OFC_SHARE_MINOR,
-	    OFC_SHARE_TAG);
+OFC_CORE_LIB OFC_VOID
+ofc_framework_init(OFC_VOID)
+{
+  /*
+   * Load Open Files if not done as part of library load
+   */
+  framework_scheduler = OFC_HANDLE_NULL;
+  ofc_core_load();
+
+  /*
+   * Print out the banner
+   */
+  ofc_log(OFC_LOG_INFO, "OpenFiles (%s) %d.%d %s\n",
+	  OFC_SHARE_VARIANT,
+	  OFC_SHARE_MAJOR, OFC_SHARE_MINOR,
+	  OFC_SHARE_TAG);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -62,11 +66,10 @@ ofc_framework_destroy(OFC_VOID) {
 }
 
 OFC_CORE_LIB OFC_VOID
-ofc_framework_startup(OFC_VOID) {
-    OFC_HANDLE hScheduler;
-
-    hScheduler = ofc_sched_create();
-    ofc_framework_startup_ev(hScheduler, OFC_HANDLE_NULL);
+ofc_framework_startup(OFC_VOID)
+{
+  framework_scheduler = ofc_sched_create();
+  ofc_framework_startup_ev(framework_scheduler, OFC_HANDLE_NULL);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -81,11 +84,17 @@ ofc_framework_startup_ev(OFC_HANDLE hScheduler, OFC_HANDLE hEvent) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_framework_shutdown(OFC_VOID) {
+  if (framework_scheduler != OFC_HANDLE_NULL)
+    {
 #if defined(OFC_NETMON)
 #if 0
-    ofc_netmon_shutdown (hScheduler, OFC_HANDLE_NULL) ;
+      ofc_netmon_shutdown (framework_scheduler, OFC_HANDLE_NULL) ;
 #endif
 #endif
+      ofc_sched_quit(framework_scheduler);
+      ofc_sched_destroy(framework_scheduler);
+      framework_scheduler = OFC_HANDLE_NULL;
+    }
 }
 
 OFC_LOAD_CORE OFC_VOID ofc_load(OFC_VOID)
