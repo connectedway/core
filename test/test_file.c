@@ -3144,9 +3144,6 @@ OFC_INT test_file(OFC_LPCSTR test_root)
 
   ofc_printf("Starting File Test with %S\n\n", device);
 
-  //ofc_sleep(1000);
-  ofc_thread_create_local_storage();
-
   /*
    * Create the test directory if it doesn't exist
    */
@@ -3332,8 +3329,6 @@ OFC_INT test_file(OFC_LPCSTR test_root)
       if (count != OFC_FILE_TEST_COUNT)
         ofc_sleep(OFC_FS_TEST_INTERVAL);
     }
-
-  ofc_thread_destroy_local_storage();
 
   ofc_free(device);
   return (0);

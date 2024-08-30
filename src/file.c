@@ -1272,6 +1272,7 @@ OfcDismountA(OFC_LPCSTR lpFileName) {
 OFC_CORE_LIB OFC_BOOL OfcSetCurrentDirectoryW(OFC_LPCTSTR lpPathName)
 {
   OFC_TCHAR *current_directory;
+  OFC_BOOL ret = OFC_FALSE;
 
   current_directory = (OFC_TCHAR *) ofc_thread_get_variable(OfcCurrentDirectory);
   if (current_directory != OFC_NULL)
@@ -1281,9 +1282,19 @@ OFC_CORE_LIB OFC_BOOL OfcSetCurrentDirectoryW(OFC_LPCTSTR lpPathName)
        */
       ofc_free(current_directory);
     }
-  current_directory = ofc_tstrdup(lpPathName);
-  ofc_thread_set_variable(OfcCurrentDirectory, (OFC_DWORD_PTR) current_directory);
-  return (OFC_TRUE);
+  if (lpPathName != OFC_NULL)
+    {
+      current_directory = ofc_tstrdup(lpPathName);
+      ofc_thread_set_variable(OfcCurrentDirectory, (OFC_DWORD_PTR) current_directory);
+
+      ret = OfcGetVolumeInformationW(current_directory,
+				     OFC_NULL, 0,
+				     OFC_NULL,
+				     OFC_NULL,
+				     OFC_NULL,
+				     OFC_NULL, 0);
+    }
+  return (ret);
 }
 
 OFC_CORE_LIB OFC_BOOL OfcSetCurrentDirectoryA(OFC_LPCSTR lpPathName)
@@ -1303,8 +1314,8 @@ OFC_CORE_LIB OFC_DWORD OfcGetCurrentDirectoryW(OFC_DWORD nBufferLength,
   OFC_TCHAR *current_directory;
   OFC_DWORD ret;
 
-  current_directory = (OFC_TCHAR *) ofc_thread_get_variable(OfcCurrentDirectory);
   ret = 0;
+  current_directory = (OFC_TCHAR *) ofc_thread_get_variable(OfcCurrentDirectory);
   if (current_directory != OFC_NULL)
     {
       /*
@@ -1427,7 +1438,8 @@ OfcFileGetOverlappedWaitQ(OFC_HANDLE hOverlapped) {
 
 OFC_CORE_LIB OFC_VOID
 OfcFileThreadInit(OFC_VOID) {
-  /* No-op */
+  ofc_thread_set_variable(OfcLastError, (OFC_DWORD_PTR) OFC_ERROR_SUCCESS);
+  ofc_thread_set_variable(OfcCurrentDirectory, (OFC_DWORD_PTR) OFC_NULL);
 }  
 
 OFC_CORE_LIB OFC_VOID
@@ -1435,13 +1447,14 @@ OfcFileThreadDeinit(OFC_VOID) {
   OFC_TCHAR *current_directory;
   current_directory = (OFC_TCHAR *) ofc_thread_get_variable(OfcCurrentDirectory);
   if (current_directory != OFC_NULL)
-    ofc_free(current_directory);
+    {
+      ofc_free(current_directory);
+    }
 }  
 
 OFC_CORE_LIB OFC_VOID
 OfcFileInit(OFC_VOID) {
     OfcLastError = ofc_thread_create_variable();
-    ofc_thread_set_variable(OfcLastError, (OFC_DWORD_PTR) OFC_ERROR_SUCCESS);
     OfcCurrentDirectory = ofc_thread_create_variable();
     init_workgroups();
 #if defined(OFC_FILE_DEBUG)
