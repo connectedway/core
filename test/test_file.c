@@ -369,15 +369,20 @@ static OFC_TCHAR *MakeFilename(OFC_CTCHAR *device, OFC_CTCHAR *name)
   OFC_SIZET devlen;
   OFC_SIZET namelen;
   OFC_TCHAR *filename;
+  OFC_TCHAR *p;
 
   devlen = ofc_tastrlen (device);
   namelen = ofc_tastrlen (name);
   filename =
     ofc_malloc((devlen + namelen + 2) * sizeof(OFC_TCHAR));
-  ofc_tastrcpy (filename, device);
-  filename[devlen] = TCHAR('/');
-  ofc_tastrcpy (&filename[devlen+1], name);
-  filename[devlen + 1 + namelen] = TCHAR_EOS;
+  p = filename;
+  ofc_tastrcpy (p, device);
+  p += devlen;
+  if (devlen > 0)
+    *p++ = TCHAR('/');
+  ofc_tastrcpy (p, name);
+  p += namelen;
+  *p++ = TCHAR_EOS;
   return (filename);
 }
 
@@ -3138,9 +3143,6 @@ OFC_INT test_file(OFC_LPCSTR test_root)
     }
 
   ofc_printf("Starting File Test with %S\n\n", device);
-
-  //ofc_sleep(1000);
-  ofc_thread_create_local_storage();
 
   /*
    * Create the test directory if it doesn't exist

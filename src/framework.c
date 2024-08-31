@@ -84,14 +84,17 @@ ofc_framework_startup_ev(OFC_HANDLE hScheduler, OFC_HANDLE hEvent) {
 
 OFC_CORE_LIB OFC_VOID
 ofc_framework_shutdown(OFC_VOID) {
+  if (framework_scheduler != OFC_HANDLE_NULL)
+    {
 #if defined(OFC_NETMON)
 #if 0
-    ofc_netmon_shutdown (framework_scheduler, OFC_HANDLE_NULL) ;
+      ofc_netmon_shutdown (framework_scheduler, OFC_HANDLE_NULL) ;
 #endif
 #endif
-    ofc_sched_quit(framework_scheduler);
-    ofc_sched_destroy(framework_scheduler);
-    framework_scheduler = OFC_HANDLE_NULL;
+      ofc_sched_quit(framework_scheduler);
+      ofc_sched_destroy(framework_scheduler);
+      framework_scheduler = OFC_HANDLE_NULL;
+    }
 }
 
 OFC_LOAD_CORE OFC_VOID ofc_load(OFC_VOID)

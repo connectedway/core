@@ -802,6 +802,52 @@ OFC_CORE_LIB OFC_PATH *ofc_map_path(OFC_LPCTSTR lpFileName,
 
     path = ofc_path_createW(lpFileName);
 
+    /*
+     * We will only consider the current directory if the path is
+     * not remote and not absolute
+     */
+    if (!ofc_path_absolute(path) && !ofc_path_remote(path))
+      {
+	/*
+	 * Do we have a current directory
+	 */
+	OFC_DWORD current_size;
+	current_size = OfcGetCurrentDirectory(0, OFC_NULL);
+	if (current_size > 0)
+	  {
+	    /* 
+	     * There is a current directory
+	     */
+	    OFC_LPTSTR current_directory;
+	    current_directory = ofc_malloc(sizeof(OFC_TCHAR) * current_size);
+	    if (OfcGetCurrentDirectory(current_size, current_directory) <= current_size)
+	      {
+		/*
+		 * We have obtained the current directory,
+		 * prepend the original lpFileName with the current directory
+		 * size of new file name is the ize of the current directory
+		 * plus a delimeter, plus the size of the original filename
+		 * plus a terminator.
+		 */
+		OFC_SIZET current_dir_len = ofc_tstrlen(current_directory);
+		OFC_SIZET file_name_len = ofc_tstrlen(lpFileName);
+		OFC_SIZET newlen = current_dir_len + 1 + file_name_len + 1;
+		OFC_LPTSTR lpNewFileName = ofc_malloc(sizeof(OFC_TCHAR) * newlen);
+		OFC_TCHAR *p = lpNewFileName;
+		ofc_tstrcpy (p, current_directory);
+		p += current_dir_len;
+		*p++ = TCHAR_SLASH;
+		ofc_tstrcpy(p, lpFileName);
+		p += file_name_len;
+		*p++ = TCHAR_EOS;
+		ofc_path_delete(path);
+		path = ofc_path_createW(lpNewFileName);
+		ofc_free(lpNewFileName);
+	      }
+	    ofc_free(current_directory);
+	  }
+      }
+
 #if defined(AUTHENTICATE)
     previous_server = OFC_NULL;
     do {

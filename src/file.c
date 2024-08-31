@@ -39,6 +39,7 @@ typedef struct _OFC_FILE_CONTEXT {
 } OFC_FILE_CONTEXT;
 
 OFC_DWORD OfcLastError;
+OFC_DWORD OfcCurrentDirectory;
 
 #if defined(OFC_FILE_DEBUG)
 typedef struct
@@ -1268,6 +1269,87 @@ OfcDismountA(OFC_LPCSTR lpFileName) {
     return (ret);
 }
 
+OFC_CORE_LIB OFC_BOOL OfcSetCurrentDirectoryW(OFC_LPCTSTR lpPathName)
+{
+  OFC_TCHAR *current_directory;
+  OFC_BOOL ret = OFC_FALSE;
+
+  current_directory = (OFC_TCHAR *) ofc_thread_get_variable(OfcCurrentDirectory);
+  if (current_directory != OFC_NULL)
+    {
+      /* 
+       * Get rid of current directory
+       */
+      ofc_free(current_directory);
+    }
+  if (lpPathName != OFC_NULL)
+    {
+      current_directory = ofc_tstrdup(lpPathName);
+      ofc_thread_set_variable(OfcCurrentDirectory,
+                              (OFC_DWORD_PTR) current_directory);
+
+      ret = OfcGetVolumeInformationW(current_directory,
+                                     OFC_NULL, 0,
+                                     OFC_NULL,
+                                     OFC_NULL,
+                                     OFC_NULL,
+                                     OFC_NULL, 0);
+    }
+  return (ret);
+}
+
+OFC_CORE_LIB OFC_BOOL OfcSetCurrentDirectoryA(OFC_LPCSTR lpPathName)
+{
+  OFC_TCHAR *lptPathName;
+  OFC_BOOL ret;
+
+  lptPathName = ofc_cstr2tstr(lpPathName);
+  ret = OfcSetCurrentDirectoryW(lptPathName);
+  ofc_free(lptPathName);
+  return (ret);
+}
+  
+OFC_CORE_LIB OFC_DWORD OfcGetCurrentDirectoryW(OFC_DWORD nBufferLength,
+					       OFC_LPTSTR lpBuffer)
+{
+  OFC_TCHAR *current_directory;
+  OFC_DWORD ret;
+
+  ret = 0;
+  current_directory = (OFC_TCHAR *) ofc_thread_get_variable(OfcCurrentDirectory);
+  if (current_directory != OFC_NULL)
+    {
+      /*
+       * Get the optimal size of the buffer
+       */
+      ret = ofc_tstrlen(current_directory) + 1;
+      /* 
+       * Copy over the buffer
+       */
+      if (ret <= nBufferLength && lpBuffer != OFC_NULL)
+	ofc_tstrncpy(lpBuffer, current_directory, nBufferLength);
+    }
+  return (ret);
+}
+  
+OFC_CORE_LIB OFC_DWORD OfcGetCurrentDirectoryA(OFC_DWORD nBufferLength,
+					       OFC_LPSTR lpBuffer)
+{
+  OFC_TCHAR *lptBuffer;
+  OFC_DWORD ret;
+
+  lptBuffer = ofc_malloc(sizeof(OFC_TCHAR) * nBufferLength);
+  
+  ret = OfcGetCurrentDirectoryW(nBufferLength, lptBuffer);
+  
+  if (ret <= nBufferLength)
+    {
+      lpBuffer = ofc_tstr2cstr(lptBuffer);
+    }
+  ofc_free(lptBuffer);
+  return (ret);
+}
+  
 OFC_CORE_LIB OFC_BOOL OfcDeviceIoControl(OFC_HANDLE hFile,
                                          OFC_DWORD dwIoControlCode,
                                          OFC_LPVOID lpInBuffer,
@@ -1356,9 +1438,25 @@ OfcFileGetOverlappedWaitQ(OFC_HANDLE hOverlapped) {
 }
 
 OFC_CORE_LIB OFC_VOID
+OfcFileThreadInit(OFC_VOID) {
+  ofc_thread_set_variable(OfcLastError, (OFC_DWORD_PTR) OFC_ERROR_SUCCESS);
+  ofc_thread_set_variable(OfcCurrentDirectory, (OFC_DWORD_PTR) OFC_NULL);
+}  
+
+OFC_CORE_LIB OFC_VOID
+OfcFileThreadDeinit(OFC_VOID) {
+  OFC_TCHAR *current_directory;
+  current_directory = (OFC_TCHAR *) ofc_thread_get_variable(OfcCurrentDirectory);
+  if (current_directory != OFC_NULL)
+    {
+      ofc_free(current_directory);
+    }
+}  
+
+OFC_CORE_LIB OFC_VOID
 OfcFileInit(OFC_VOID) {
     OfcLastError = ofc_thread_create_variable();
-    ofc_thread_set_variable(OfcLastError, (OFC_DWORD_PTR) OFC_ERROR_SUCCESS);
+    OfcCurrentDirectory = ofc_thread_create_variable();
     init_workgroups();
 #if defined(OFC_FILE_DEBUG)
     ofc_file_debug.Max = 0 ;
@@ -1375,4 +1473,5 @@ OfcFileDestroy(OFC_VOID) {
 #endif
     destroy_workgroups();
     ofc_thread_destroy_variable(OfcLastError);
+    ofc_thread_destroy_variable(OfcCurrentDirectory);
 }
