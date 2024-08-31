@@ -12,6 +12,7 @@
 #include "ofc/libc.h"
 #include "ofc/heap.h"
 #include "ofc/framework.h"
+#include "ofc/thread.h"
 #include "test_file.h"
 
 static OFC_INT test_startup(OFC_VOID) {
@@ -42,7 +43,9 @@ TEST_TEAR_DOWN(fs_darwin) {
 
 TEST(fs_darwin, test_fs_darwin) {
     OFC_INT ret;
+    ofc_thread_create_local_storage();
     ret = test_file(OFC_TEST_FS_DARWIN_PATH);
+    ofc_thread_destroy_local_storage();
     TEST_ASSERT_FALSE_MESSAGE(ret, "File Test Failed");
 }
 
