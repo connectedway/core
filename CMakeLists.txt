@@ -105,11 +105,10 @@ set(OFC_HEADERS
     include/ofc/process.h
     include/ofc/queue.h
     include/ofc/thread.h
-    include/ofc/types.h
-    include/ofc/waitset.h
-    include/ofc/path.h
     include/ofc/time.h
-    include/ofc/thread.h
+    include/ofc/types.h
+    include/ofc/path.h
+    include/ofc/waitset.h
     )
 
 set_target_properties(of_core_shared PROPERTIES
