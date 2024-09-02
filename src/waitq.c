@@ -227,6 +227,28 @@ ofc_waitq_unlink(OFC_HANDLE qHandle, OFC_VOID *qElement) {
     }
 }
 
+/*
+ * ofc_waitq_reset - Reset the underlying event, i.e. clear it
+ *
+ * Accepts:
+ *    qHead - Pointer to the head of the list
+ *
+ * Returns:
+ *    nothing
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_waitq_reset(OFC_HANDLE qHandle)
+{
+  WAIT_QUEUE *pWaitQueue;
+
+  pWaitQueue = ofc_handle_lock(qHandle);
+  if (pWaitQueue != OFC_NULL)
+    {
+      ofc_event_reset(pWaitQueue->hEvent);
+      ofc_handle_unlock(qHandle);
+    }
+}
+
 OFC_CORE_LIB OFC_VOID
 ofc_waitq_clear(OFC_HANDLE qHandle) {
     WAIT_QUEUE *pWaitQueue;

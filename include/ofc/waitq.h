@@ -105,6 +105,17 @@ ofc_waitq_next(OFC_HANDLE qHead, OFC_VOID *qElement);
  */
 OFC_CORE_LIB OFC_VOID
 ofc_waitq_unlink(OFC_HANDLE qHead, OFC_VOID *qElement);
+ /**
+ * ofc_waitq_reset - Reset the underlying event, i.e. clear it
+ *
+ * Accepts:
+ *    qHead - Pointer to the head of the list
+ *
+ * Returns:
+ *    nothing
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_waitq_reset(OFC_HANDLE qHandle);
 /**
  * Clear the contents of a wait queue
  *
