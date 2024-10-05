@@ -1014,7 +1014,17 @@ struct _err2str err2str[] =
                 {OFC_ERROR_BAD_DEVICE,              "Bad Device"},
                 {OFC_ERROR_INVALID_PASSWORDNAME,    "Invalid Password Name"},
                 {OFC_ERROR_LOGON_FAILURE,           "Logon Failure"},
-                {OFC_ERROR_NOT_ENOUGH_QUOTA,        "Not Enough Quota"}
+                {OFC_ERROR_NOT_ENOUGH_QUOTA,        "Not Enough Quota"},
+                {OFC_ERROR_CONNECTION_REFUSED,      "Connection Refuesd"},
+                {OFC_ERROR_NETWORK_UNREACHABLE,     "Network Unreachable"},
+                {OFC_ERROR_PROTOCOL_UNREACHABLE,    "Protocol Unreachable"},
+                {OFC_ERROR_INVALID_LOGON_HOURS,     "Invalid Logon Hours"},
+                {OFC_ERROR_INVALID_WORKSTATION,     "Invalid Workstation"},
+                {OFC_ERROR_PASSWORD_EXPIRED,        "Password Expired"},
+                {OFC_ERROR_LOGON_NOT_GRANTED,       "Logon Not Granted"},
+                {OFC_ERROR_TIMEOUT,                 "Connection Timeout"},
+                {OFC_ERROR_ACCOUNT_EXPIRED,         "Account Expired"},
+                {OFC_ERROR_ACCOUNT_LOCKED_OUT,      "Account Locked Out"}
         };
 
 OFC_CORE_LIB const OFC_CHAR *ofc_get_error_string(OFC_DWORD dwerr) {
