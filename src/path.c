@@ -1184,10 +1184,13 @@ OFC_CORE_LIB OFC_SIZET ofc_path_make_urlW(OFC_LPTSTR *filename,
             }
 
             if (domain != OFC_NULL) {
+	      if (ofc_tstrcmp(username, TSTR("")) == 0)
+		len += ofc_path_out_str(domain, filename, rem);
+	      else
                 len += ofc_path_out_escaped(domain, filename, rem);
             }
         }
-        len += ofc_path_out_char(TCHAR_AMP, filename, rem);
+	len += ofc_path_out_char(TCHAR_AMP, filename, rem);
     }
 
     if (server != OFC_NULL) {
