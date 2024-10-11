@@ -91,6 +91,7 @@ typedef struct {
     OFC_BOOL loaded;
 
     OFC_UUID uuid;
+    OFC_CHAR *default_realm;
     OFC_UINT32 update_count;
     OFC_HANDLE subconfigs;
 } OFC_CONFIG;
@@ -229,6 +230,16 @@ ofc_persist_make_dom(OFC_VOID) {
                 ofc_dom_append_child(config_node, node);
             else
                 error_state = OFC_TRUE;
+        }
+
+        if (!error_state && ofc_persist->default_realm != OFC_NULL) {
+          node = ofc_dom_create_element_cdata(doc,
+                                              "realm",
+                                              ofc_persist->default_realm);
+          if (node != OFC_NULL)
+            ofc_dom_append_child(config_node, node);
+          else
+            error_state = OFC_TRUE;
         }
 
         if (!error_state) {
@@ -600,6 +611,12 @@ ofc_persist_parse_dom(OFC_DOMNode *config_dom) {
             value = ofc_dom_get_element_cdata(config_dom, "uuid");
             if (value != OFC_NULL) {
                 ofc_atouuid(value, ofc_persist->uuid);
+            }
+
+            value = ofc_dom_get_element_cdata(config_dom, "realm");
+            if (value != OFC_NULL) {
+              ofc_log(OFC_LOG_INFO, "Default Realm: %s\n", value);
+              ofc_persist->default_realm = ofc_strdup(value);
             }
 
             value = ofc_dom_get_element_cdata(config_dom, "description");
@@ -1084,6 +1101,10 @@ ofc_persist_free(OFC_VOID) {
 
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
+        if (ofc_persist->default_realm != OFC_NULL) {
+          ofc_free(ofc_persist->default_realm);
+          ofc_persist->default_realm = OFC_NULL;
+        }
         if (ofc_persist->workstation_name != OFC_NULL) {
             ofc_free(ofc_persist->workstation_name);
             ofc_persist->workstation_name = OFC_NULL;
@@ -1133,6 +1154,7 @@ ofc_persist_default(OFC_VOID) {
 
         ofc_persist_free();
 
+        ofc_persist->default_realm = OFC_NULL;
         tstr = ofc_cstr2tstr(OFC_DEFAULT_NAME);
 
         ofc_persist->workstation_name = tstr;
@@ -1170,6 +1192,7 @@ ofc_persist_init(OFC_VOID) {
             ofc_persist->log_level = OFC_LOG_DEFAULT;
             ofc_persist->log_console = OFC_LOG_CONSOLE;
             ofc_persist->loaded = OFC_FALSE;
+            ofc_persist->default_realm = OFC_NULL;
             ofc_persist->workstation_name = OFC_NULL;
             ofc_persist->workstation_domain = OFC_NULL;
             ofc_persist->workstation_desc = OFC_NULL;
@@ -1719,7 +1742,7 @@ ofc_persist_set_node_name(OFC_LPCTSTR name,
     }
 }
 
-OFC_CORE_LIB OFC_VOID ofc_perist_set_logging(OFC_UINT log_level, OFC_BOOL log_console)
+OFC_CORE_LIB OFC_VOID ofc_persist_set_logging(OFC_UINT log_level, OFC_BOOL log_console)
 {
     OFC_CONFIG *ofc_persist;
 
@@ -1774,6 +1797,19 @@ ofc_persist_uuid(OFC_UUID *uuid) {
         ofc_memset(uuid, '\0', OFC_UUID_LEN);
 }
 
+OFC_CORE_LIB OFC_CCHAR *
+ofc_persist_realm(OFC_VOID) {
+    OFC_CONFIG *ofc_persist;
+    OFC_CCHAR *realm;
+
+    ofc_persist = ofc_get_config();
+    if (ofc_persist != OFC_NULL) {
+      realm = ofc_persist->default_realm;
+    } else
+      realm = OFC_NULL;
+    return (realm);
+}
+
 OFC_CORE_LIB OFC_VOID
 ofc_persist_set_uuid(OFC_UUID *uuid) {
     OFC_CONFIG *ofc_persist;
@@ -1781,6 +1817,21 @@ ofc_persist_set_uuid(OFC_UUID *uuid) {
     ofc_persist = ofc_get_config();
     if (ofc_persist != OFC_NULL) {
         ofc_memcpy(ofc_persist->uuid, uuid, OFC_UUID_LEN);
+    }
+}
+
+OFC_CORE_LIB OFC_VOID
+ofc_persist_set_realm(OFC_CCHAR *realm) {
+    OFC_CONFIG *ofc_persist;
+
+    ofc_persist = ofc_get_config();
+    if (ofc_persist != OFC_NULL) {
+      if (ofc_persist->default_realm != OFC_NULL)
+        {
+          ofc_free(ofc_persist->default_realm);
+          ofc_persist->default_realm = OFC_NULL;
+        }
+      ofc_persist->default_realm = ofc_strdup(realm);
     }
 }
 
