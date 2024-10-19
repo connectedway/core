@@ -28,7 +28,6 @@
 
 static OFC_LPTSTR config_filename = OFC_NULL;
 
-
 /**
  * \defgroup init Initialization
  * \ingroup Applications
@@ -259,6 +258,20 @@ OFC_CORE_LIB OFC_VOID ofc_framework_free_description(OFC_LPTSTR str) {
     ofc_free(str);
 }
 
+OFC_VOID ofc_framework_set_realm(const OFC_CHAR *realm)
+{
+  if (realm != OFC_NULL)
+    ofc_log(OFC_LOG_INFO, "Setting Default Kerberos Realm to %s\n", realm);
+  else
+    ofc_log(OFC_LOG_INFO, "Clearing Default Kerbros Realm\n");
+  ofc_persist_set_realm(realm);
+}
+
+OFC_CCHAR *ofc_framework_get_realm(OFC_VOID)
+{
+  return (ofc_persist_realm());
+}
+
 OFC_VOID ofc_framework_set_uuid(const OFC_CHAR *cuuid) {
     OFC_UUID uuid;
 
@@ -296,7 +309,7 @@ OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir(OFC_LPTSTR str) {
 OFC_CORE_LIB OFC_VOID ofc_framework_set_logging(OFC_UINT log_level, OFC_BOOL log_console)
 
 {
-  ofc_perist_set_logging(log_level, log_console);
+  ofc_persist_set_logging(log_level, log_console);
 }
 
 OFC_VOID ofc_framework_set_interface_discovery(OFC_BOOL on) {

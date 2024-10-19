@@ -1169,29 +1169,31 @@ OFC_CORE_LIB OFC_SIZET ofc_path_make_urlW(OFC_LPTSTR *filename,
     len += ofc_path_out_char(delimeter, filename, rem);
     len += ofc_path_out_char(delimeter, filename, rem);
 
-    if (username != OFC_NULL) {
-        len += ofc_path_out_escaped(username, filename, rem);
+    if (username != OFC_NULL || password != OFC_NULL || domain != OFC_NULL)
+      {
+       if (username != OFC_NULL)
+         len += ofc_path_out_escaped(username, filename, rem);
 
-        if (password != OFC_NULL || domain != OFC_NULL) {
-            len += ofc_path_out_char(TCHAR_COLON, filename, rem);
+       if (password != OFC_NULL || domain != OFC_NULL)
+         {
+           len += ofc_path_out_char(TCHAR_COLON, filename, rem);
 
-            if (password != OFC_NULL && password[0] != TCHAR_EOS) {
-                len += ofc_path_out_escaped(password, filename, rem);
+           if (password != OFC_NULL)
+             len += ofc_path_out_escaped(password, filename, rem);
 
-                if (domain != OFC_NULL) {
-                    len += ofc_path_out_char(TCHAR_COLON, filename, rem);
-                }
-            }
+           if (domain != OFC_NULL)
+             {
+               len += ofc_path_out_char(TCHAR_COLON, filename, rem);
 
-            if (domain != OFC_NULL) {
-	      if (ofc_tstrcmp(username, TSTR("")) == 0)
-		len += ofc_path_out_str(domain, filename, rem);
-	      else
-                len += ofc_path_out_escaped(domain, filename, rem);
-            }
-        }
+               if (username == OFC_NULL ||
+                   (ofc_tstrcmp(username, TSTR("")) == 0))
+                 len += ofc_path_out_str(domain, filename, rem);
+               else
+                 len += ofc_path_out_escaped(domain, filename, rem);
+             }
+         }
         len += ofc_path_out_char(TCHAR_AMP, filename, rem);
-    }
+      }
 
     if (server != OFC_NULL) {
         len += ofc_path_out_str(server, filename, rem);

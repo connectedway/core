@@ -200,6 +200,22 @@ OFC_CORE_LIB OFC_VOID
 ofc_persist_uuid(OFC_UUID *uuid);
 
 /**
+ * Set the Node's Default Kerberos Realm
+ *
+ * \param realm Pointer to the default kerberos realm of target servers
+ */
+OFC_CORE_LIB OFC_VOID
+ofc_persist_set_realm(OFC_CCHAR *realm);
+
+/**
+ * Return the default Kerberos Realm of target servers
+ *
+ * \returns default Kerberos Realm
+ */
+OFC_CORE_LIB OFC_CCHAR *
+ofc_persist_realm(OFC_VOID);
+
+/**
  * Set the logging behavior of Openfiles
  *
  * \param log_level
@@ -214,7 +230,7 @@ ofc_persist_uuid(OFC_UUID *uuid);
  * file directory.  On Windows, log file is written to the file "openfiles.log" in the current directory.
  * On other platforms, see ConnectedWay support
  */
-OFC_CORE_LIB OFC_VOID ofc_perist_set_logging(OFC_UINT log_level, OFC_BOOL log_console);
+OFC_CORE_LIB OFC_VOID ofc_persist_set_logging(OFC_UINT log_level, OFC_BOOL log_console);
 /**
  * Set the Interface Configuration Mode
  *

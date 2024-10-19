@@ -99,6 +99,8 @@
  * \ref ofc_framework_free_workgroup | Free workgroup returned
  * \ref ofc_framework_get_description | Get the Description of the System
  * \ref ofc_framework_free_description | Free Description
+ * \ref ofc_framework_set_realm | Set default Kerberos Realm
+ * \ref ofc_framework_get_realm | Get default Kerberos Realm
  * \ref ofc_framework_set_uuid | Set UUID of system
  * \ref ofc_framework_get_uuid | Gets the UUID of the system
  * \ref ofc_framework_free_uuid | Free the uuid
@@ -399,6 +401,32 @@ OFC_CORE_LIB OFC_LPTSTR ofc_framework_get_description(OFC_VOID);
  * Description String to free
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_free_description(OFC_LPTSTR str);
+
+/**
+ * Set the default Kerberos Realm
+ *
+ * This should be called to set the default Kerberos Realm for target
+ * SMB Servers.  If this is not called during system initialization, you
+ * should be sure to configure the "default_realm" property within the
+ * libdefaults section of the krb5.conf file.  If neither this nor the
+ * krb5.conf default_realm property is not set, you will receive a missing
+ * default realm GSAPI error upon attempting to authenticate with Kerberos
+ * or Active Directory.
+ *
+ * \param realm
+ * Default Realm for your target servers
+ */
+OFC_VOID ofc_framework_set_realm(const OFC_CHAR *realm);
+
+/**
+ * Return the default realm.
+ *
+ * This is intended to be called internally.
+ *
+ * \returns
+ * Default Realm of your target servers
+ */
+OFC_CCHAR *ofc_framework_get_realm(OFC_VOID);
 
 /**
  * Set the UUID of the host
