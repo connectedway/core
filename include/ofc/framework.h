@@ -36,8 +36,8 @@
  * the stack, or the steps can be executed explicitly.
  *
  * The behavior is governed by two config variables.
- * The config file used in the build (<platform>-behavior.cfg) contains two
- * variables:
+ * The config file used in the build, \verbatim  <platform>-behavior.cfg
+ * \endverbatim , contains two variables:
  *
  * INIT_ON_LOAD - Initialize libraries on load
  * OFC_PERSIST - Build in persistent configuration support.
@@ -509,9 +509,23 @@ OFC_BOOL ofc_framework_get_interface_discovery(OFC_VOID);
  * Add an interface.
  *
  * Only useful if interface discovery is off
+ * See the description of interface parameters.
  *
- * iface
+ * \param iface
  * Interface description to add
+ *
+ * \note There are client deployments which do not care which interface
+ * is used for a connection to the server.  In these situations, it may
+ * be useful to turn off interface discovery,disable the network monitor
+ * and add a single default interface using this call.  
+ *
+ * \see ofc_framework_set_interface_discovery 
+ * \see behavior-configuration 
+ *
+ * The default interface configuration can contain 0.0.0.0 as the 
+ * interface IP, 255.255.255.255 for the broadcast address, and 
+ * 0.0.0.0 for the netmask.  Default netbios mode and WINS configuration
+ * can alo be specified.
  */
 OFC_VOID ofc_framework_add_interface(OFC_FRAMEWORK_INTERFACE *iface);
 
