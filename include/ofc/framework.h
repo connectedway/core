@@ -517,15 +517,14 @@ OFC_BOOL ofc_framework_get_interface_discovery(OFC_VOID);
  * \note There are client deployments which do not care which interface
  * is used for a connection to the server.  In these situations, it may
  * be useful to turn off interface discovery,disable the network monitor
- * and add a single default interface using this call.  
+ * and add a single default interface using this call.  The default
+ * interface configuration can contain 0.0.0.0 as the interface IP, 
+ * 255.255.255.255 for the broadcast address, and 0.0.0.0 for the netmask  
+ * Default netbios mode and WINS configuration can alo be specified.
  *
  * \see ofc_framework_set_interface_discovery 
- * \see behavior-configuration 
  *
- * The default interface configuration can contain 0.0.0.0 as the 
- * interface IP, 255.255.255.255 for the broadcast address, and 
- * 0.0.0.0 for the netmask.  Default netbios mode and WINS configuration
- * can alo be specified.
+ * \see [Configuration Platform Behavior](group__config.html#behavior)
  */
 OFC_VOID ofc_framework_add_interface(OFC_FRAMEWORK_INTERFACE *iface);
 
