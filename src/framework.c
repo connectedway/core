@@ -9,6 +9,7 @@
 #include "ofc/framework.h"
 #include "ofc/core.h"
 #include "ofc/config.h"
+#include "ofc/console.h"
 #include "ofc/types.h"
 #include "ofc/handle.h"
 #include "ofc/libc.h"
@@ -46,13 +47,6 @@ ofc_framework_init(OFC_VOID)
   framework_scheduler = OFC_HANDLE_NULL;
   ofc_core_load();
 
-  /*
-   * Print out the banner
-   */
-  ofc_log(OFC_LOG_INFO, "OpenFiles (%s) %d.%d %s\n",
-	  OFC_SHARE_VARIANT,
-	  OFC_SHARE_MAJOR, OFC_SHARE_MINOR,
-	  OFC_SHARE_TAG);
 }
 
 OFC_CORE_LIB OFC_VOID
@@ -67,6 +61,14 @@ ofc_framework_destroy(OFC_VOID) {
 OFC_CORE_LIB OFC_VOID
 ofc_framework_startup(OFC_VOID)
 {
+  /*
+   * Print out the banner
+   */
+  ofc_log(OFC_LOG_INFO, "OpenFiles (%s) %d.%d %s\n",
+	  OFC_SHARE_VARIANT,
+	  OFC_SHARE_MAJOR, OFC_SHARE_MINOR,
+	  OFC_SHARE_TAG);
+
   framework_scheduler = ofc_sched_create();
   ofc_framework_startup_ev(framework_scheduler, OFC_HANDLE_NULL);
 }
@@ -310,6 +312,14 @@ OFC_CORE_LIB OFC_VOID ofc_framework_set_logging(OFC_UINT log_level, OFC_BOOL log
 
 {
   ofc_persist_set_logging(log_level, log_console);
+}
+
+OFC_CORE_LIB OFC_VOID
+ofc_framework_set_log_file(OFC_CHAR *log_file,
+			   OFC_LARGE_INTEGER rollover_size,
+			   OFC_UINT max_instance)
+{
+  ofc_console_set_log_file(log_file, rollover_size, max_instance);
 }
 
 OFC_VOID ofc_framework_set_interface_discovery(OFC_BOOL on) {

@@ -106,6 +106,7 @@
  * \ref ofc_framework_get_root_dir | Get the root directory of stack
  * \ref ofc_framework_free_root_dir | Free the root directory string
  * \ref ofc_framework_set_logging | Set logging behavior
+ * \ref ofc_framework_set_log_file | Set log file (Linux Only)
  * \ref ofc_framework_set_interface_discovery | Should stack get network config from underlying system
  * \ref ofc_framework_get_interface_discovery | Get state of discovery
  * \ref ofc_framework_add_interface | Add an interface to stack
@@ -482,6 +483,53 @@ OFC_CORE_LIB OFC_VOID ofc_framework_free_root_dir(OFC_LPTSTR str);
  * On other platforms, see ConnectedWay support
  */
 OFC_CORE_LIB OFC_VOID ofc_framework_set_logging(OFC_UINT log_level, OFC_BOOL log_console);
+/**
+ * Set the log file used by openfiles
+ *
+ * This will fine tune the behavior of logging on Linux.  On Linux, openfile
+ * log messages are typically written to the syslog.  Standard Linux syslog
+ * or rsyslog services, can move the log data to whatever final location 
+ * desired.  In the case that a syslog service is not instaled on the target
+ * system, yet the deployment still wishes some custom log file behavior, 
+ * this call can be used.
+ *
+ * \note
+ * This call is only valid on Linux platforms.  It is a no-op on all
+ * other platforms.
+ *
+ * \note
+ * The configuration set by this call is not persistent.  Once the system
+ * is rebooted or the stack reinitialized, the settings will revert to
+ * the default.  Therefore, the configuration should be set with the call
+ * after each time the stack is reinitialized.
+ *
+ * \param log_file
+ * The log file pattern to use.  It is of the form of a printf string with
+ * a single %d field to denote an instance.  The intance is initialized
+ * to zero.  Existing files will be overwritten as they are rolled over
+ * but they will not be removed prior.  Therefore it is the responsibility
+ * of the caller to assure that no stale files are left in the directory
+ * before the stack is initialized.  A null file pointer will signify that
+ * log files should be written to syslog (the default) rather than a
+ * seperate file.
+ *
+ * \param rollover_size
+ * The number of bytes in an instance of the log file.  Once a log file
+ * exceeds this number of bytes, the intance will increment.  A log file
+ * instance may exceed this number, but only by the number of bytes in the
+ * last log file message.  A Value of 0 specifies the default which is
+ * 1048576 bytes (1 MB)
+ *
+ * \param max_instance
+ * The maximum number of instances of the log files.  The default is 10.
+ * This means that the aggregate storage size of Open Files log files
+ * will be around max_instance * rollover_size.  
+ */
+  OFC_CORE_LIB OFC_VOID
+  ofc_framework_set_log_file(OFC_CHAR *log_file,
+			     OFC_LARGE_INTEGER rollover_size,
+			     OFC_UINT max_instance);
+
 /**
  * Set whether the stack should query the underlying platform for
  * available interfaces and IP addresses or whether the network
